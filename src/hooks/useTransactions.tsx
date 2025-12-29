@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Transaction } from '@/types/database';
 import { useAuth } from './useAuth';
@@ -13,17 +13,20 @@ import {
   calculateFinancialMood
 } from '@/lib/gameLogic';
 import { toast } from '@/hooks/use-toast';
+import { useSound } from '@/contexts/SoundContext';
 
 import { Quest, Badge } from '@/types/database';
 
 export const useTransactions = () => {
   const { user } = useAuth();
   const { profile, refetch: refetchProfile } = useProfile();
+  const { playSound } = useSound();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [celebrationData, setCelebrationData] = useState<{
     quest: Quest | null;
     badge: Badge | null;
+    levelUp: boolean;
   } | null>(null);
 
   const fetchTransactions = async () => {
@@ -111,14 +114,17 @@ export const useTransactions = () => {
       .eq('id', user.id);
 
     // Check for level up
-    if (newLevel > profile.level) {
+    const didLevelUp = newLevel > profile.level;
+    if (didLevelUp) {
+      playSound('levelUp');
       toast({
         title: "🎉 Level Up!",
         description: `You're now Level ${newLevel} - ${newLevelTitle}!`,
       });
     }
 
-    // Show XP earned
+    // Play XP sound and show toast
+    playSound('xpGain');
     toast({
       title: `+${xpEarned} XP`,
       description: `Earned from logging ${transaction.type.toLowerCase()}`,
@@ -132,10 +138,19 @@ export const useTransactions = () => {
     const unlockedBadges = await checkAndUpdateBadges(user.id, updatedProfile, transactionCount);
 
     // Trigger celebration for first completed quest and first unlocked badge
-    if (completedQuests.length > 0 || unlockedBadges.length > 0) {
+    if (completedQuests.length > 0 || unlockedBadges.length > 0 || didLevelUp) {
+      // Play sounds for completions
+      if (completedQuests.length > 0) {
+        playSound('questComplete');
+      }
+      if (unlockedBadges.length > 0) {
+        setTimeout(() => playSound('badgeUnlock'), 300);
+      }
+      
       setCelebrationData({
         quest: completedQuests[0] || null,
-        badge: unlockedBadges[0] || null
+        badge: unlockedBadges[0] || null,
+        levelUp: didLevelUp
       });
     }
 
