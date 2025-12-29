@@ -141,7 +141,14 @@ export type Database = {
           created_at: string
           description: string
           id: string
+          is_active: boolean
           is_completed: boolean
+          period_end_date: string | null
+          period_start_date: string | null
+          progress_current: number
+          progress_target: number
+          quest_key: string | null
+          season: string | null
           title: string
           type: string
           user_id: string
@@ -152,7 +159,14 @@ export type Database = {
           created_at?: string
           description: string
           id?: string
+          is_active?: boolean
           is_completed?: boolean
+          period_end_date?: string | null
+          period_start_date?: string | null
+          progress_current?: number
+          progress_target?: number
+          quest_key?: string | null
+          season?: string | null
           title: string
           type: string
           user_id: string
@@ -163,7 +177,14 @@ export type Database = {
           created_at?: string
           description?: string
           id?: string
+          is_active?: boolean
           is_completed?: boolean
+          period_end_date?: string | null
+          period_start_date?: string | null
+          progress_current?: number
+          progress_target?: number
+          quest_key?: string | null
+          season?: string | null
           title?: string
           type?: string
           user_id?: string
@@ -229,6 +250,9 @@ export type Database = {
     }
     Functions: {
       get_level_title: { Args: { user_level: number }; Returns: string }
+      get_period_end: { Args: { period_type: string }; Returns: string }
+      get_period_start: { Args: { period_type: string }; Returns: string }
+      reset_expired_quests: { Args: { p_user_id: string }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
