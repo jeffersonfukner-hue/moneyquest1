@@ -107,6 +107,11 @@ export type Database = {
           level_title: string
           locale: string
           streak: number
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          subscription_expires_at: string | null
+          subscription_plan: string
+          subscription_started_at: string | null
           total_expenses: number
           total_income: number
           updated_at: string
@@ -125,6 +130,11 @@ export type Database = {
           level_title?: string
           locale?: string
           streak?: number
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_expires_at?: string | null
+          subscription_plan?: string
+          subscription_started_at?: string | null
           total_expenses?: number
           total_income?: number
           updated_at?: string
@@ -143,6 +153,11 @@ export type Database = {
           level_title?: string
           locale?: string
           streak?: number
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_expires_at?: string | null
+          subscription_plan?: string
+          subscription_started_at?: string | null
           total_expenses?: number
           total_income?: number
           updated_at?: string
