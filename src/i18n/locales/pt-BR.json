@@ -64,7 +64,9 @@
   },
   "transactions": {
     "title": "Transações",
+    "recent": "Transações Recentes",
     "recentTransactions": "Transações Recentes",
+    "viewMore": "Ver mais",
     "income": "Receita",
     "expense": "Despesa",
     "addTransaction": "Adicionar Transação",
