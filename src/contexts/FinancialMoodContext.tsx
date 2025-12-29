@@ -89,8 +89,13 @@ export const FinancialMoodProvider = ({ children }: { children: ReactNode }) => 
 
 export const useFinancialMood = () => {
   const context = useContext(FinancialMoodContext);
+  // Return default values if context is not available (e.g., on Auth page)
   if (!context) {
-    throw new Error('useFinancialMood must be used within a FinancialMoodProvider');
+    return {
+      mood: 'NEUTRAL' as FinancialMood,
+      moodConfig: MOOD_CONFIG['NEUTRAL'],
+      isLoading: true
+    };
   }
   return context;
 };
