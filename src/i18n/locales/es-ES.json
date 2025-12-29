@@ -101,7 +101,17 @@
     "spendingByCategory": "Gastos por Categoría",
     "monthlySavings": "Ahorro Mensual",
     "saved": "Ahorrado",
-    "target": "Meta"
+    "target": "Meta",
+    "monthlyComparison": "Comparativo Mensual",
+    "spentMore": "gastó más que el mes anterior",
+    "spentLess": "gastó menos que el mes anterior",
+    "spentSame": "mismo valor del mes anterior",
+    "difference": "Diferencia"
+  },
+  "months": {
+    "jan": "Ene", "feb": "Feb", "mar": "Mar", "apr": "Abr",
+    "may": "May", "jun": "Jun", "jul": "Jul", "aug": "Ago",
+    "sep": "Sep", "oct": "Oct", "nov": "Nov", "dec": "Dic"
   },
   "stats": {
     "dayStreak": "Racha de Días",

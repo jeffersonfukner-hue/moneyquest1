@@ -14,6 +14,7 @@ import { TransactionsList } from '@/components/game/TransactionsList';
 import { RecentTransactionsCard } from '@/components/game/RecentTransactionsCard';
 import { SpendingByCategoryChart } from '@/components/game/SpendingByCategoryChart';
 import { MonthlySavingsWidget } from '@/components/game/MonthlySavingsWidget';
+import { MonthlyComparisonWidget } from '@/components/game/MonthlyComparisonWidget';
 import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
 import { MoodIndicator } from '@/components/game/MoodIndicator';
 import { QuestCelebration } from '@/components/game/QuestCelebration';
@@ -64,6 +65,7 @@ const Index = () => {
             <LevelProgress profile={profile} />
             <StatsCards profile={profile} />
             <MonthlySavingsWidget transactions={transactions} />
+            <MonthlyComparisonWidget transactions={transactions} />
             <SpendingByCategoryChart transactions={transactions} />
             <RecentTransactionsCard transactions={transactions} onViewMore={setActiveTab} />
             <AICoachCard />

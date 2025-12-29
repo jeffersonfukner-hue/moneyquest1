@@ -101,7 +101,17 @@
     "spendingByCategory": "Spending by Category",
     "monthlySavings": "Monthly Savings",
     "saved": "Saved",
-    "target": "Target"
+    "target": "Target",
+    "monthlyComparison": "Monthly Comparison",
+    "spentMore": "spent more than last month",
+    "spentLess": "spent less than last month",
+    "spentSame": "same as last month",
+    "difference": "Difference"
+  },
+  "months": {
+    "jan": "Jan", "feb": "Feb", "mar": "Mar", "apr": "Apr",
+    "may": "May", "jun": "Jun", "jul": "Jul", "aug": "Aug",
+    "sep": "Sep", "oct": "Oct", "nov": "Nov", "dec": "Dec"
   },
   "stats": {
     "dayStreak": "Day Streak",
