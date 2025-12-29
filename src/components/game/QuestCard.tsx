@@ -1,7 +1,16 @@
 import { Quest } from '@/types/database';
-import { CheckCircle2, Circle, Clock } from 'lucide-react';
+import { CheckCircle2, Circle, Clock, Award } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
-import { getTimeUntilReset, QUEST_TYPE_CONFIG } from '@/lib/gameLogic';
+import { getTimeUntilReset, QUEST_TYPE_CONFIG, getSeasonalBadgeName } from '@/lib/gameLogic';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
+// Badge icon mapping for rewards preview
+const SEASONAL_BADGE_ICONS: Record<string, { icon: string; name: string }> = {
+  'christmas': { icon: '🎄', name: 'Christmas Planner' },
+  'halloween': { icon: '🎃', name: 'Pumpkin Saver' },
+  'easter': { icon: '🥚', name: 'Golden Egg' },
+  'carnival': { icon: '🎭', name: 'Smart Reveler' }
+};
 
 interface QuestCardProps {
   quest: Quest;
@@ -15,6 +24,9 @@ export const QuestCard = ({ quest, showTimer = false }: QuestCardProps) => {
     : 0;
   const hasProgress = quest.progress_target > 1;
   const timeInfo = getTimeUntilReset(quest.period_end_date, quest.type);
+  
+  // Get badge reward for special quests
+  const badgeReward = quest.season ? SEASONAL_BADGE_ICONS[quest.season.toLowerCase()] : null;
 
   return (
     <div 
@@ -72,6 +84,33 @@ export const QuestCard = ({ quest, showTimer = false }: QuestCardProps) => {
             </span>
           </div>
           <Progress value={progressPercent} className="h-2" />
+        </div>
+      )}
+
+      {/* Badge reward preview for special quests */}
+      {badgeReward && !quest.is_completed && (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="mt-2 ml-8 flex items-center gap-2 p-2 rounded-lg bg-gradient-to-r from-yellow-500/10 to-amber-500/10 border border-yellow-500/20">
+                <Award className="w-4 h-4 text-yellow-500" />
+                <span className="text-xs text-muted-foreground">Unlocks:</span>
+                <span className="text-lg">{badgeReward.icon}</span>
+                <span className="text-xs font-medium text-foreground">{badgeReward.name}</span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-sm">Complete this quest to unlock the <strong>{badgeReward.name}</strong> badge!</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
+      
+      {/* Show unlocked badge for completed special quests */}
+      {badgeReward && quest.is_completed && (
+        <div className="mt-2 ml-8 flex items-center gap-2 p-2 rounded-lg bg-primary/10 border border-primary/20">
+          <span className="text-lg">{badgeReward.icon}</span>
+          <span className="text-xs font-medium text-primary">Badge Unlocked!</span>
         </div>
       )}
     </div>
