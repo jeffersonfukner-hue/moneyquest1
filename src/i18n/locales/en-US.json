@@ -357,5 +357,125 @@
     "loading": "Generating story...",
     "error": "The narrative crystal is recharging...",
     "tapToContinue": "Tap to continue"
+  },
+  "admin": {
+    "title": "Super Admin",
+    "description": "System administration panel",
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "engagement": "Engagement",
+    "logs": "Logs",
+    "analytics": "Analytics",
+    "totalUsers": "Total Users",
+    "activeToday": "Active Today",
+    "active7Days": "Active 7 Days",
+    "active30Days": "Active 30 Days",
+    "freeUsers": "Free Users",
+    "premiumUsers": "Premium Users",
+    "engagementRate": "Engagement Rate",
+    "atRiskUsers": "At Risk Users",
+    "usersManagement": "User Management",
+    "engagementAlerts": "Engagement Alerts",
+    "adminLogs": "Admin Logs",
+    "noUsers": "No users found",
+    "noLogs": "No logs found",
+    "search": "Search users...",
+    "filterByStatus": "Filter by status",
+    "filterByPlan": "Filter by plan",
+    "allStatuses": "All statuses",
+    "allPlans": "All plans",
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "blocked": "Blocked"
+    },
+    "plan": {
+      "free": "Free",
+      "premium": "Premium"
+    },
+    "risk": {
+      "low": "Low Risk",
+      "medium": "Medium Risk",
+      "high": "High Risk",
+      "none": "No Risk"
+    },
+    "actions": {
+      "grantPremium": "Grant Premium",
+      "revokePremium": "Revoke Premium",
+      "blockUser": "Block User",
+      "unblockUser": "Unblock User",
+      "grantBonus": "Grant Bonus",
+      "sendMessage": "Send Message",
+      "viewDetails": "View Details"
+    },
+    "premium": {
+      "title": "Manage Premium",
+      "grantTitle": "Grant Premium",
+      "revokeTitle": "Revoke Premium",
+      "duration": "Duration",
+      "lifetime": "Lifetime",
+      "days7": "7 days",
+      "days30": "30 days",
+      "days90": "90 days",
+      "custom": "Custom",
+      "note": "Note (optional)",
+      "notePlaceholder": "Reason for change...",
+      "grantSuccess": "Premium granted successfully!",
+      "revokeSuccess": "Premium revoked successfully!",
+      "error": "Error updating subscription"
+    },
+    "bonus": {
+      "title": "Grant Bonus",
+      "type": "Bonus Type",
+      "xp": "XP",
+      "premiumDays": "Premium Days",
+      "amount": "Amount",
+      "grantSuccess": "Bonus granted successfully!",
+      "error": "Error granting bonus"
+    },
+    "message": {
+      "title": "Send Message",
+      "messageTitle": "Title",
+      "content": "Content",
+      "sendSuccess": "Message sent successfully!",
+      "error": "Error sending message"
+    },
+    "block": {
+      "confirmTitle": "Block User",
+      "confirmDesc": "Are you sure you want to block this user?",
+      "success": "User blocked successfully!",
+      "error": "Error blocking user"
+    },
+    "unblock": {
+      "confirmTitle": "Unblock User",
+      "confirmDesc": "Are you sure you want to unblock this user?",
+      "success": "User unblocked successfully!",
+      "error": "Error unblocking user"
+    },
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "status": "Status",
+      "plan": "Plan",
+      "lastAccess": "Last Access",
+      "createdAt": "Created At",
+      "actions": "Actions",
+      "daysInactive": "Days Inactive",
+      "riskLevel": "Risk Level"
+    },
+    "logTypes": {
+      "PREMIUM_GRANT": "Premium Granted",
+      "PREMIUM_REVOKE": "Premium Revoked",
+      "BLOCK_USER": "User Blocked",
+      "UNBLOCK_USER": "User Unblocked",
+      "GRANT_BONUS": "Bonus Granted",
+      "SEND_MESSAGE": "Message Sent"
+    },
+    "filterByAction": "Filter by action",
+    "allActions": "All actions",
+    "never": "Never",
+    "daysAgo": "{{days}} days ago",
+    "accessDenied": "Access Denied",
+    "accessDeniedDesc": "You do not have permission to access this page."
   }
 }

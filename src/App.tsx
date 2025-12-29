@@ -20,6 +20,11 @@ import AICoach from "./pages/AICoach";
 import CategoryGoals from "./pages/CategoryGoals";
 import Categories from "./pages/Categories";
 import NotFound from "./pages/NotFound";
+import SuperAdminDashboard from "./pages/admin/SuperAdminDashboard";
+import UsersManagement from "./pages/admin/UsersManagement";
+import EngagementAlerts from "./pages/admin/EngagementAlerts";
+import AdminLogs from "./pages/admin/AdminLogs";
+import { AdminRoute } from "./components/admin/AdminRoute";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +50,11 @@ const App = () => (
                         <Route path="/ai-coach" element={<AICoach />} />
                         <Route path="/category-goals" element={<CategoryGoals />} />
                         <Route path="/categories" element={<Categories />} />
+                        {/* Admin Routes */}
+                        <Route path="/super-admin" element={<AdminRoute><SuperAdminDashboard /></AdminRoute>} />
+                        <Route path="/super-admin/users" element={<AdminRoute><UsersManagement /></AdminRoute>} />
+                        <Route path="/super-admin/engagement" element={<AdminRoute><EngagementAlerts /></AdminRoute>} />
+                        <Route path="/super-admin/logs" element={<AdminRoute><AdminLogs /></AdminRoute>} />
                         <Route path="*" element={<NotFound />} />
                       </Routes>
                     </BrowserRouter>
