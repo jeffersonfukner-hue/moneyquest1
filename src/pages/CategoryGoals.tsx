@@ -6,6 +6,8 @@ import { useProfile } from '@/hooks/useProfile';
 import { useCategoryGoals, CategoryGoal } from '@/hooks/useCategoryGoals';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useSpendingSuggestions } from '@/hooks/useSpendingSuggestions';
+import { useCategories } from '@/hooks/useCategories';
 import { MobileHeader } from '@/components/navigation/MobileHeader';
 import { BottomNavigation } from '@/components/navigation/BottomNavigation';
 import { SeasonalDecorations } from '@/components/game/SeasonalDecorations';
@@ -16,7 +18,7 @@ import { GoalsMonthlyReport } from '@/components/goals/GoalsMonthlyReport';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { ArrowLeft, Target, Plus, Loader2, Lock, PiggyBank, BarChart3 } from 'lucide-react';
+import { ArrowLeft, Target, Plus, Loader2, Lock, PiggyBank, BarChart3, Lightbulb, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 const CategoryGoals = () => {
   const { t } = useTranslation();
@@ -26,6 +28,8 @@ const CategoryGoals = () => {
   const { goals, loading: goalsLoading, addGoal, updateGoal, deleteGoal } = useCategoryGoals();
   const { canAccessCategoryGoals } = useSubscription();
   const { formatCurrency } = useCurrency();
+  const { getCategoriesWithoutGoals, loading: suggestionsLoading } = useSpendingSuggestions();
+  const { getCategoriesByType } = useCategories();
   
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingGoal, setEditingGoal] = useState<CategoryGoal | null>(null);
@@ -53,6 +57,28 @@ const CategoryGoals = () => {
   const totalBudget = goals.reduce((sum, g) => sum + g.budget_limit, 0);
   const totalSpent = goals.reduce((sum, g) => sum + (g.spent || 0), 0);
   const totalRemaining = totalBudget - totalSpent;
+
+  // Get smart suggestions for categories without goals
+  const smartSuggestions = getCategoriesWithoutGoals(existingCategories);
+  const expenseCategories = getCategoriesByType('EXPENSE');
+  
+  // Get category icon from categories list
+  const getCategoryIcon = (categoryName: string): string => {
+    const cat = expenseCategories.find(c => c.name === categoryName);
+    return cat?.icon || '📦';
+  };
+
+  const getTrendIcon = (trend: 'increasing' | 'decreasing' | 'stable') => {
+    switch (trend) {
+      case 'increasing': return TrendingUp;
+      case 'decreasing': return TrendingDown;
+      default: return Minus;
+    }
+  };
+
+  const handleCreateSuggestedGoal = (category: string, amount: number) => {
+    addGoal(category, amount);
+  };
 
   const handleEdit = (goal: CategoryGoal) => {
     setEditingGoal(goal);
@@ -146,6 +172,51 @@ const CategoryGoals = () => {
                 </Button>
               )}
             </div>
+
+            {/* Smart Suggestions Section */}
+            {!suggestionsLoading && smartSuggestions.length > 0 && (
+              <Card className="mb-6 border-primary/30 bg-gradient-to-br from-primary/5 to-transparent">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Lightbulb className="h-5 w-5 text-primary" />
+                    <span className="font-medium">{t('categoryGoals.suggestions.smartSuggestions')}</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {t('categoryGoals.suggestions.smartSuggestionsDesc')}
+                  </p>
+                  <div className="space-y-3">
+                    {smartSuggestions.slice(0, 3).map(suggestion => {
+                      const TrendIcon = getTrendIcon(suggestion.trend);
+                      return (
+                        <div 
+                          key={suggestion.category}
+                          className="flex items-center justify-between p-3 bg-background rounded-lg border border-border/50"
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="text-xl">{getCategoryIcon(suggestion.category)}</span>
+                            <div>
+                              <p className="font-medium text-sm">{suggestion.category}</p>
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <span>{t('categoryGoals.suggestions.average')}: {formatCurrency(suggestion.averageSpending)}</span>
+                                <TrendIcon className="h-3 w-3" />
+                              </div>
+                            </div>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleCreateSuggestedGoal(suggestion.category, suggestion.suggestions.balanced)}
+                            className="text-xs"
+                          >
+                            {formatCurrency(suggestion.suggestions.balanced)}
+                          </Button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Goals List */}
             {goalsLoading ? (

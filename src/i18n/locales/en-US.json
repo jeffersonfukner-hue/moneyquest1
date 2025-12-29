@@ -354,6 +354,22 @@
       "good": "Good",
       "warning": "Warning",
       "over": "Over"
+    },
+    "suggestions": {
+      "title": "Based on your spending",
+      "average": "Average",
+      "perMonth": "/month",
+      "conservative": "Conservative",
+      "balanced": "Balanced",
+      "flexible": "Flexible",
+      "increasing": "increasing",
+      "decreasing": "decreasing",
+      "stable": "stable",
+      "noHistory": "No spending history for this category",
+      "monthsAnalyzed": "Based on {{months}} months of data",
+      "recommended": "Recommended",
+      "smartSuggestions": "Smart Suggestions",
+      "smartSuggestionsDesc": "Categories you spend on that don't have a budget yet"
     }
   },
   "categories": {

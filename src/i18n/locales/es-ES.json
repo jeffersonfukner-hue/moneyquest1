@@ -354,6 +354,22 @@
       "good": "Bien",
       "warning": "Alerta",
       "over": "Excedido"
+    },
+    "suggestions": {
+      "title": "Basado en tus gastos",
+      "average": "Promedio",
+      "perMonth": "/mes",
+      "conservative": "Conservador",
+      "balanced": "Equilibrado",
+      "flexible": "Flexible",
+      "increasing": "aumentando",
+      "decreasing": "disminuyendo",
+      "stable": "estable",
+      "noHistory": "Sin historial de gastos para esta categoría",
+      "monthsAnalyzed": "Basado en {{months}} meses de datos",
+      "recommended": "Recomendado",
+      "smartSuggestions": "Sugerencias Inteligentes",
+      "smartSuggestionsDesc": "Categorías en las que gastas pero aún no tienen presupuesto"
     }
   },
   "categories": {

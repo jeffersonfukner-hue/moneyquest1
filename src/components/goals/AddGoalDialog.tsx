@@ -13,6 +13,8 @@ import {
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { CategoryGoal } from '@/hooks/useCategoryGoals';
 import { useCategories } from '@/hooks/useCategories';
+import { useSpendingSuggestions } from '@/hooks/useSpendingSuggestions';
+import { BudgetSuggestion } from './BudgetSuggestion';
 import { Category } from '@/types/database';
 
 interface AddGoalDialogProps {
@@ -35,11 +37,13 @@ export const AddGoalDialog = ({
   const { t } = useTranslation();
   const { currencySymbol } = useCurrency();
   const { getCategoriesByType, loading: categoriesLoading } = useCategories();
+  const { getSuggestionForCategory, loading: suggestionsLoading } = useSpendingSuggestions();
   const [category, setCategory] = useState('');
   const [budgetLimit, setBudgetLimit] = useState('');
   const [loading, setLoading] = useState(false);
 
   const isEditing = !!editingGoal;
+  const currentSuggestion = category ? getSuggestionForCategory(category) : null;
 
   // Get expense categories from user's dynamic categories
   const expenseCategories = getCategoriesByType('EXPENSE');
@@ -132,6 +136,16 @@ export const AddGoalDialog = ({
               </SelectContent>
             </Select>
           </div>
+
+          {/* Budget Suggestions */}
+          {!isEditing && category && (
+            <BudgetSuggestion
+              suggestion={currentSuggestion}
+              onSelectAmount={(amount) => setBudgetLimit(amount.toString())}
+              selectedAmount={budgetLimit ? parseFloat(budgetLimit) : undefined}
+              loading={suggestionsLoading}
+            />
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="budgetLimit">
