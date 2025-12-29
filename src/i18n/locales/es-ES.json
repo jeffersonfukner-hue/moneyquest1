@@ -137,7 +137,15 @@
     "yourStats": "Tus Estadísticas",
     "saveChanges": "Guardar Cambios",
     "saveSuccess": "¡Perfil actualizado con éxito!",
-    "saveError": "Error al actualizar perfil"
+    "saveError": "Error al actualizar perfil",
+    "uploadPhoto": "Subir Foto",
+    "removePhoto": "Eliminar Foto",
+    "useEmojiInstead": "Usar emoji",
+    "photoUploading": "Subiendo...",
+    "photoUploadSuccess": "Foto actualizada con éxito",
+    "photoUploadError": "Error al subir foto",
+    "photoSizeLimit": "Tamaño máximo: 2MB",
+    "photoFormats": "Formatos: JPG, PNG, WebP"
   },
   "quests": {
     "title": "Misiones",
@@ -177,6 +185,10 @@
     "soundOff": "Desactivado",
     "theme": "Tema",
     "themeAuto": "Automático (Estacional)",
+    "appearance": "Apariencia",
+    "themeLight": "Claro",
+    "themeDark": "Oscuro",
+    "themeSystem": "Sistema",
     "account": "Cuenta",
     "profile": "Perfil",
     "notifications": "Notificaciones",

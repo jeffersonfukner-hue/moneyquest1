@@ -137,7 +137,15 @@
     "yourStats": "Your Stats",
     "saveChanges": "Save Changes",
     "saveSuccess": "Profile updated successfully!",
-    "saveError": "Failed to update profile"
+    "saveError": "Failed to update profile",
+    "uploadPhoto": "Upload Photo",
+    "removePhoto": "Remove Photo",
+    "useEmojiInstead": "Use emoji instead",
+    "photoUploading": "Uploading...",
+    "photoUploadSuccess": "Photo updated successfully",
+    "photoUploadError": "Failed to upload photo",
+    "photoSizeLimit": "Maximum file size: 2MB",
+    "photoFormats": "Supported formats: JPG, PNG, WebP"
   },
   "quests": {
     "title": "Quests",
@@ -177,6 +185,10 @@
     "soundOff": "Off",
     "theme": "Theme",
     "themeAuto": "Auto (Seasonal)",
+    "appearance": "Appearance",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System",
     "account": "Account",
     "profile": "Profile",
     "notifications": "Notifications",

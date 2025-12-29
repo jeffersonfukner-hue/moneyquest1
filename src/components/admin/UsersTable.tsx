@@ -32,6 +32,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import type { AdminUser } from '@/types/admin';
+import { AvatarDisplay } from '@/components/profile/AvatarDisplay';
 
 interface UsersTableProps {
   users: AdminUser[];
@@ -107,7 +108,11 @@ export const UsersTable = ({
               <TableRow key={user.id} className="hover:bg-muted/30">
                 <TableCell>
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl">{user.avatar_icon}</span>
+                    <AvatarDisplay
+                      avatarUrl={(user as any).avatar_url}
+                      avatarIcon={user.avatar_icon}
+                      size="md"
+                    />
                     <div>
                       <p className="font-medium">{user.display_name || 'No name'}</p>
                       <p className="text-sm text-muted-foreground">{user.email}</p>

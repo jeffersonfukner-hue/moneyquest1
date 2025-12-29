@@ -3,6 +3,7 @@ export type FinancialMood = 'VERY_POSITIVE' | 'POSITIVE' | 'NEUTRAL' | 'NEGATIVE
 export type SupportedLanguage = 'pt-BR' | 'en-US' | 'es-ES';
 export type SupportedCurrency = 'BRL' | 'USD' | 'EUR';
 export type SubscriptionPlan = 'FREE' | 'PREMIUM';
+export type ThemePreference = 'light' | 'dark' | 'system';
 
 export interface Profile {
   id: string;
@@ -10,6 +11,7 @@ export interface Profile {
   level: number;
   level_title: string;
   avatar_icon: string;
+  avatar_url: string | null;
   display_name: string | null;
   streak: number;
   total_income: number;
@@ -24,6 +26,7 @@ export interface Profile {
   subscription_expires_at: string | null;
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
+  theme_preference: ThemePreference;
   created_at: string;
   updated_at: string;
 }
