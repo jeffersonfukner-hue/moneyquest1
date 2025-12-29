@@ -15,6 +15,7 @@ import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
 import { MoodIndicator } from '@/components/game/MoodIndicator';
 import { QuestCelebration } from '@/components/game/QuestCelebration';
 import { SeasonalDecorations } from '@/components/game/SeasonalDecorations';
+import { NarrativeEvent } from '@/components/game/NarrativeEvent';
 import { BottomNavigation, type TabId } from '@/components/navigation/BottomNavigation';
 import { MobileHeader } from '@/components/navigation/MobileHeader';
 import { AICoachCard } from '@/components/ai/AICoachCard';
@@ -26,7 +27,7 @@ const Index = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { profile, loading: profileLoading } = useProfile();
-  const { transactions, addTransaction, deleteTransaction, celebrationData, clearCelebration } = useTransactions();
+  const { transactions, addTransaction, deleteTransaction, celebrationData, clearCelebration, narrativeData, clearNarrative } = useTransactions();
   const { quests, refetch: refetchQuests } = useQuests();
   const { badges, refetch: refetchBadges } = useBadges();
   
@@ -106,6 +107,16 @@ const Index = () => {
           refetchBadges();
         }}
       />
+
+      {narrativeData && (
+        <NarrativeEvent
+          narrative={narrativeData.narrative}
+          impact={narrativeData.impact}
+          eventType={narrativeData.eventType}
+          category={narrativeData.category}
+          onClose={clearNarrative}
+        />
+      )}
     </div>
   );
 };

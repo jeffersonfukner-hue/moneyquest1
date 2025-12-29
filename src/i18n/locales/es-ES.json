@@ -299,5 +299,10 @@
     "deleteError": "Error al eliminar meta",
     "deleteConfirmTitle": "Eliminar Meta",
     "deleteConfirmDesc": "¿Estás seguro de que quieres eliminar la meta de {{category}}?"
+  },
+  "narrative": {
+    "loading": "Generando historia...",
+    "error": "El cristal narrativo está recargando...",
+    "tapToContinue": "Toca para continuar"
   }
 }

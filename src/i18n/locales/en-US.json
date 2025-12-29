@@ -299,5 +299,10 @@
     "deleteError": "Failed to delete goal",
     "deleteConfirmTitle": "Delete Goal",
     "deleteConfirmDesc": "Are you sure you want to delete the goal for {{category}}?"
+  },
+  "narrative": {
+    "loading": "Generating story...",
+    "error": "The narrative crystal is recharging...",
+    "tapToContinue": "Tap to continue"
   }
 }
