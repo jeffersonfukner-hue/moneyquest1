@@ -12,6 +12,7 @@ import { BadgesGrid } from '@/components/game/BadgesGrid';
 import { TransactionsList } from '@/components/game/TransactionsList';
 import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
 import { MoodIndicator } from '@/components/game/MoodIndicator';
+import { QuestCelebration } from '@/components/game/QuestCelebration';
 import { Button } from '@/components/ui/button';
 import { LogOut, Gamepad2 } from 'lucide-react';
 
@@ -19,9 +20,9 @@ const Index = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading, signOut } = useAuth();
   const { profile, loading: profileLoading } = useProfile();
-  const { transactions, addTransaction, deleteTransaction } = useTransactions();
-  const { quests } = useQuests();
-  const { badges } = useBadges();
+  const { transactions, addTransaction, deleteTransaction, celebrationData, clearCelebration } = useTransactions();
+  const { quests, refetch: refetchQuests } = useQuests();
+  const { badges, refetch: refetchBadges } = useBadges();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -75,6 +76,16 @@ const Index = () => {
       </main>
 
       <AddTransactionDialog onAdd={addTransaction} />
+      
+      <QuestCelebration 
+        completedQuest={celebrationData?.quest || null}
+        unlockedBadge={celebrationData?.badge || null}
+        onClose={() => {
+          clearCelebration();
+          refetchQuests();
+          refetchBadges();
+        }}
+      />
     </div>
   );
 };

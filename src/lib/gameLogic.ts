@@ -209,6 +209,40 @@ export const calculateQuestProgress = async (
       return count || 0;
     }
 
+    case 'special_halloween': {
+      // Count any income transactions (savings) in October
+      const { count } = await supabase
+        .from('transactions')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .eq('type', 'INCOME');
+      return count || 0;
+    }
+
+    case 'special_easter': {
+      // Count unique days with income transactions
+      const { data } = await supabase
+        .from('transactions')
+        .select('date')
+        .eq('user_id', userId)
+        .eq('type', 'INCOME');
+      
+      if (!data) return 0;
+      const uniqueDays = new Set(data.map(t => t.date));
+      return uniqueDays.size;
+    }
+
+    case 'special_carnival': {
+      // Count entertainment-related expenses
+      const { count } = await supabase
+        .from('transactions')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .eq('type', 'EXPENSE')
+        .in('category', ['Entertainment', 'Food', 'Shopping']);
+      return count || 0;
+    }
+
     default:
       return 0;
   }
