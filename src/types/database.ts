@@ -37,6 +37,7 @@ export interface Transaction {
   type: 'INCOME' | 'EXPENSE';
   date: string;
   xp_earned: number;
+  currency: SupportedCurrency;
   created_at: string;
 }
 
