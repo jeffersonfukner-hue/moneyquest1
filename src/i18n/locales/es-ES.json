@@ -353,7 +353,21 @@
       "excellent": "Excelente",
       "good": "Bien",
       "warning": "Alerta",
-      "over": "Excedido"
+      "over": "Excedido",
+      "currentMonth": "Este Mes"
+    },
+    "history": {
+      "title": "Historial de Rendimiento",
+      "noHistory": "Sin historial aún",
+      "noHistoryDesc": "Completa un mes con metas activas para ver tu historial de rendimiento",
+      "successRate": "Tasa de Éxito",
+      "monthsTracked": "Meses Rastreados",
+      "categoryTrends": "Tendencias por Categoría",
+      "avgUsage": "Uso promedio",
+      "months": "meses",
+      "improving": "mejorando",
+      "declining": "necesita atención",
+      "stable": "estable"
     },
     "suggestions": {
       "title": "Basado en tus gastos",

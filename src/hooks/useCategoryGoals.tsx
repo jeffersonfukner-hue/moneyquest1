@@ -26,6 +26,18 @@ export const useCategoryGoals = () => {
     try {
       setLoading(true);
       
+      // Archive previous month's goals if needed (runs at start of new month)
+      const today = new Date();
+      const isFirstWeekOfMonth = today.getDate() <= 7;
+      if (isFirstWeekOfMonth) {
+        try {
+          await supabase.rpc('archive_monthly_goals', { p_user_id: user.id });
+        } catch (archiveError) {
+          // Silently fail - archiving is not critical
+          console.log('Goal archiving skipped or already done');
+        }
+      }
+      
       // Fetch goals
       const { data: goalsData, error: goalsError } = await supabase
         .from('category_goals')

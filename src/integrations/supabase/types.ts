@@ -181,6 +181,63 @@ export type Database = {
         }
         Relationships: []
       }
+      category_goal_history: {
+        Row: {
+          budget_limit: number
+          category: string
+          created_at: string
+          goal_id: string | null
+          id: string
+          percentage_used: number
+          period_month: number
+          period_year: number
+          spent: number
+          status: string
+          user_id: string
+        }
+        Insert: {
+          budget_limit: number
+          category: string
+          created_at?: string
+          goal_id?: string | null
+          id?: string
+          percentage_used?: number
+          period_month: number
+          period_year: number
+          spent?: number
+          status?: string
+          user_id: string
+        }
+        Update: {
+          budget_limit?: number
+          category?: string
+          created_at?: string
+          goal_id?: string | null
+          id?: string
+          percentage_used?: number
+          period_month?: number
+          period_year?: number
+          spent?: number
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "category_goal_history_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "category_goals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "category_goal_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       category_goals: {
         Row: {
           budget_limit: number
@@ -621,6 +678,7 @@ export type Database = {
         Args: { _note?: string; _status: string; _target_user_id: string }
         Returns: undefined
       }
+      archive_monthly_goals: { Args: { p_user_id: string }; Returns: undefined }
       create_default_categories: {
         Args: { p_user_id: string }
         Returns: undefined
