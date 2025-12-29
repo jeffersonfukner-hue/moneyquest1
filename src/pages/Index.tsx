@@ -6,8 +6,11 @@ import { useProfile } from '@/hooks/useProfile';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useQuests } from '@/hooks/useQuests';
 import { useBadges } from '@/hooks/useBadges';
+import { useCategoryGoals } from '@/hooks/useCategoryGoals';
 import { LevelProgress } from '@/components/game/LevelProgress';
 import { StatsCards } from '@/components/game/StatsCards';
+import { ResourceBars } from '@/components/game/ResourceBars';
+import { LeaderboardCard } from '@/components/game/LeaderboardCard';
 import { QuestsPanel } from '@/components/game/QuestsPanel';
 import { BadgesGrid } from '@/components/game/BadgesGrid';
 import { TransactionsList } from '@/components/game/TransactionsList';
@@ -34,6 +37,7 @@ const Index = () => {
   const { transactions, addTransaction, deleteTransaction, celebrationData, clearCelebration, narrativeData, clearNarrative } = useTransactions();
   const { quests, refetch: refetchQuests } = useQuests();
   const { badges, refetch: refetchBadges } = useBadges();
+  const { goals } = useCategoryGoals();
   
   const [activeTab, setActiveTab] = useState<TabId>('home');
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -64,6 +68,8 @@ const Index = () => {
           <div className="space-y-4">
             <LevelProgress profile={profile} />
             <StatsCards profile={profile} />
+            <ResourceBars transactions={transactions} categoryGoals={goals} />
+            <LeaderboardCard />
             <MonthlySavingsWidget transactions={transactions} />
             <MonthlyComparisonWidget transactions={transactions} />
             <SpendingByCategoryChart transactions={transactions} />

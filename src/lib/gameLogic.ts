@@ -237,6 +237,117 @@ export const calculateQuestProgress = async (
       return Math.max(0, profile.total_income - profile.total_expenses);
     }
 
+    // New weekly challenge quests
+    case 'frugal_friday': {
+      // Check if any Friday in the current week had zero expenses
+      const weekStartDate = new Date(weekStart);
+      const todayDate = new Date(today);
+      let frugalFridayCount = 0;
+      
+      // Find Fridays in this week
+      for (let d = new Date(weekStartDate); d <= todayDate; d.setDate(d.getDate() + 1)) {
+        if (d.getDay() === 5) { // Friday
+          const fridayStr = d.toISOString().split('T')[0];
+          const { count } = await supabase
+            .from('transactions')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', userId)
+            .eq('type', 'EXPENSE')
+            .eq('date', fridayStr);
+          if (count === 0) frugalFridayCount++;
+        }
+      }
+      return frugalFridayCount;
+    }
+
+    case 'income_hunter': {
+      // Count unique income sources this week
+      const { data } = await supabase
+        .from('transactions')
+        .select('category')
+        .eq('user_id', userId)
+        .eq('type', 'INCOME')
+        .gte('date', weekStart)
+        .lte('date', today);
+      
+      if (!data) return 0;
+      return new Set(data.map(t => t.category)).size;
+    }
+
+    case 'spending_freeze': {
+      // Count days with zero expenses this week
+      const { data: expenses } = await supabase
+        .from('transactions')
+        .select('date')
+        .eq('user_id', userId)
+        .eq('type', 'EXPENSE')
+        .gte('date', weekStart)
+        .lte('date', today);
+      
+      const expenseDays = new Set(expenses?.map(t => t.date) || []);
+      const weekStartDate = new Date(weekStart);
+      const todayDate = new Date(today);
+      let noSpendDays = 0;
+      
+      for (let d = new Date(weekStartDate); d <= todayDate; d.setDate(d.getDate() + 1)) {
+        const dateStr = d.toISOString().split('T')[0];
+        if (!expenseDays.has(dateStr)) noSpendDays++;
+      }
+      return noSpendDays;
+    }
+
+    case 'category_focus': {
+      // Check if user has kept a category goal under budget this week
+      const { data: goals } = await supabase
+        .from('category_goals')
+        .select('category, budget_limit')
+        .eq('user_id', userId);
+      
+      if (!goals || goals.length === 0) return 0;
+      
+      const { data: weekExpenses } = await supabase
+        .from('transactions')
+        .select('category, amount')
+        .eq('user_id', userId)
+        .eq('type', 'EXPENSE')
+        .gte('date', weekStart)
+        .lte('date', today);
+      
+      // Calculate spending by category this week
+      const categorySpending: Record<string, number> = {};
+      (weekExpenses || []).forEach(t => {
+        categorySpending[t.category] = (categorySpending[t.category] || 0) + Number(t.amount);
+      });
+      
+      // Check if at least one category is under 80% of its weekly budget (budget / 4)
+      const underControl = goals.some(g => {
+        const weeklyBudget = Number(g.budget_limit) / 4;
+        const spent = categorySpending[g.category] || 0;
+        return spent <= weeklyBudget * 0.8;
+      });
+      
+      return underControl ? 1 : 0;
+    }
+
+    case 'savings_sprint': {
+      // Check if savings rate >= 20% this week
+      const { data: weekData } = await supabase
+        .from('transactions')
+        .select('amount, type')
+        .eq('user_id', userId)
+        .gte('date', weekStart)
+        .lte('date', today);
+      
+      if (!weekData) return 0;
+      
+      const income = weekData.filter(t => t.type === 'INCOME').reduce((s, t) => s + Number(t.amount), 0);
+      const expenses = weekData.filter(t => t.type === 'EXPENSE').reduce((s, t) => s + Number(t.amount), 0);
+      
+      if (income === 0) return 0;
+      const savingsRate = (income - expenses) / income;
+      return savingsRate >= 0.2 ? 1 : 0;
+    }
+
     // Special seasonal quests
     case 'special_christmas': {
       // Count holiday-related expenses (Shopping, Entertainment, Other)
