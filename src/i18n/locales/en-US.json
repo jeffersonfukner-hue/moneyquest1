@@ -500,6 +500,17 @@
       "week2": "Last Week",
       "week3": "2 Weeks Ago",
       "week4": "3 Weeks Ago"
+    },
+    "funnel": {
+      "title": "Conversion Funnel",
+      "description": "User journey: Registration → First Use → Recurring Use → Premium",
+      "registration": "Registration",
+      "firstUse": "First Use",
+      "recurringUse": "Recurring Use",
+      "premium": "Premium",
+      "registrationToFirstUse": "Registration → First Use",
+      "firstUseToRecurring": "First Use → Recurring",
+      "recurringToPremium": "Recurring → Premium"
     }
   }
 }

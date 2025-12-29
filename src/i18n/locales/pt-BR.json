@@ -500,6 +500,17 @@
       "week2": "Semana Passada",
       "week3": "2 Semanas Atrás",
       "week4": "3 Semanas Atrás"
+    },
+    "funnel": {
+      "title": "Funil de Conversão",
+      "description": "Jornada do usuário: Cadastro → Primeiro Uso → Uso Recorrente → Premium",
+      "registration": "Cadastro",
+      "firstUse": "Primeiro Uso",
+      "recurringUse": "Uso Recorrente",
+      "premium": "Premium",
+      "registrationToFirstUse": "Cadastro → Primeiro Uso",
+      "firstUseToRecurring": "Primeiro Uso → Recorrente",
+      "recurringToPremium": "Recorrente → Premium"
     }
   }
 }

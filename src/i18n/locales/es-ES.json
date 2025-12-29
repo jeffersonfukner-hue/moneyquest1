@@ -500,6 +500,17 @@
       "week2": "Semana Pasada",
       "week3": "Hace 2 Semanas",
       "week4": "Hace 3 Semanas"
+    },
+    "funnel": {
+      "title": "Embudo de Conversión",
+      "description": "Jornada del usuario: Registro → Primer Uso → Uso Recurrente → Premium",
+      "registration": "Registro",
+      "firstUse": "Primer Uso",
+      "recurringUse": "Uso Recurrente",
+      "premium": "Premium",
+      "registrationToFirstUse": "Registro → Primer Uso",
+      "firstUseToRecurring": "Primer Uso → Recurrente",
+      "recurringToPremium": "Recurrente → Premium"
     }
   }
 }
