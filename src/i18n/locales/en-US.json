@@ -271,5 +271,33 @@
       "creditsDesc": "Please try again later.",
       "generic": "Something went wrong. Please try again."
     }
+  },
+  "categoryGoals": {
+    "title": "Category Goals",
+    "pageTitle": "Category Goals",
+    "pageDescription": "Set monthly spending limits by category",
+    "cardDescription": "Track your spending limits by category",
+    "lockedTitle": "Premium Feature",
+    "lockedDescription": "Unlock category goals to set monthly spending limits and track your progress!",
+    "addGoal": "Add Goal",
+    "editGoal": "Edit Goal",
+    "monthlyLimit": "Monthly Limit",
+    "monthlySummary": "Monthly Summary",
+    "budget": "Budget",
+    "spent": "Spent",
+    "remaining": "{{amount}} left",
+    "overBudget": "{{amount}} over budget",
+    "nearLimit": "Near limit",
+    "noGoals": "No Goals Yet",
+    "noGoalsDescription": "Set spending limits for your categories to better control your finances!",
+    "fetchError": "Failed to load goals",
+    "addSuccess": "Goal added successfully!",
+    "addError": "Failed to add goal",
+    "updateSuccess": "Goal updated successfully!",
+    "updateError": "Failed to update goal",
+    "deleteSuccess": "Goal deleted successfully!",
+    "deleteError": "Failed to delete goal",
+    "deleteConfirmTitle": "Delete Goal",
+    "deleteConfirmDesc": "Are you sure you want to delete the goal for {{category}}?"
   }
 }
