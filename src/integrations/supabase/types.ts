@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_logs: {
+        Row: {
+          action_type: string
+          admin_id: string
+          created_at: string | null
+          details: Json | null
+          id: string
+          note: string | null
+          target_user_id: string | null
+        }
+        Insert: {
+          action_type: string
+          admin_id: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          note?: string | null
+          target_user_id?: string | null
+        }
+        Update: {
+          action_type?: string
+          admin_id?: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          note?: string | null
+          target_user_id?: string | null
+        }
+        Relationships: []
+      }
       badges: {
         Row: {
           created_at: string
@@ -150,6 +180,36 @@ export type Database = {
         }
         Relationships: []
       }
+      message_templates: {
+        Row: {
+          category: string | null
+          content: string
+          created_at: string | null
+          created_by: string | null
+          id: string
+          name: string
+          title: string
+        }
+        Insert: {
+          category?: string | null
+          content: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          name: string
+          title: string
+        }
+        Update: {
+          category?: string | null
+          content?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          name?: string
+          title?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_icon: string
@@ -163,6 +223,7 @@ export type Database = {
           level: number
           level_title: string
           locale: string
+          status: string | null
           streak: number
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
@@ -186,6 +247,7 @@ export type Database = {
           level?: number
           level_title?: string
           locale?: string
+          status?: string | null
           streak?: number
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
@@ -209,6 +271,7 @@ export type Database = {
           level?: number
           level_title?: string
           locale?: string
+          status?: string | null
           streak?: number
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
@@ -334,11 +397,163 @@ export type Database = {
           },
         ]
       }
+      user_bonuses: {
+        Row: {
+          amount: number
+          applied_at: string | null
+          bonus_type: string
+          granted_by: string
+          id: string
+          note: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          applied_at?: string | null
+          bonus_type: string
+          granted_by: string
+          id?: string
+          note?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          applied_at?: string | null
+          bonus_type?: string
+          granted_by?: string
+          id?: string
+          note?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_messages: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          message_type: string | null
+          sender_id: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message_type?: string | null
+          sender_id?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message_type?: string | null
+          sender_id?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      admin_get_all_profiles: {
+        Args: never
+        Returns: {
+          avatar_icon: string
+          created_at: string
+          currency: string
+          display_name: string | null
+          financial_mood: string
+          id: string
+          language: string
+          last_active_date: string | null
+          level: number
+          level_title: string
+          locale: string
+          status: string | null
+          streak: number
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          subscription_expires_at: string | null
+          subscription_plan: string
+          subscription_started_at: string | null
+          total_expenses: number
+          total_income: number
+          updated_at: string
+          xp: number
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "profiles"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      admin_get_analytics: { Args: never; Returns: Json }
+      admin_get_at_risk_users: {
+        Args: never
+        Returns: {
+          days_inactive: number
+          display_name: string
+          last_active_date: string
+          risk_level: string
+          subscription_plan: string
+          user_id: string
+        }[]
+      }
+      admin_get_user_email: { Args: { _user_id: string }; Returns: string }
+      admin_grant_bonus: {
+        Args: {
+          _amount: number
+          _bonus_type: string
+          _note?: string
+          _target_user_id: string
+        }
+        Returns: undefined
+      }
+      admin_update_subscription: {
+        Args: {
+          _expires_at?: string
+          _note?: string
+          _plan: string
+          _target_user_id: string
+        }
+        Returns: undefined
+      }
+      admin_update_user_status: {
+        Args: { _note?: string; _status: string; _target_user_id: string }
+        Returns: undefined
+      }
       create_default_categories: {
         Args: { p_user_id: string }
         Returns: undefined
@@ -346,10 +561,18 @@ export type Database = {
       get_level_title: { Args: { user_level: number }; Returns: string }
       get_period_end: { Args: { period_type: string }; Returns: string }
       get_period_start: { Args: { period_type: string }; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_super_admin: { Args: { _user_id: string }; Returns: boolean }
       reset_expired_quests: { Args: { p_user_id: string }; Returns: undefined }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "super_admin" | "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -476,6 +699,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["super_admin", "admin", "user"],
+    },
   },
 } as const
