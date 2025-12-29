@@ -48,10 +48,22 @@ export const CurrencyProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 };
 
+// Default values for when context is not available (e.g., during initial render)
+const defaultCurrencyContext: CurrencyContextType = {
+  currency: 'BRL',
+  locale: 'pt-BR',
+  formatCurrency: (amount: number) => new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount),
+  setCurrency: async () => {},
+  currencySymbol: 'R$',
+};
+
 export const useCurrency = (): CurrencyContextType => {
   const context = useContext(CurrencyContext);
-  if (context === undefined) {
-    throw new Error('useCurrency must be used within a CurrencyProvider');
-  }
-  return context;
+  // Return default context if not within provider (graceful degradation)
+  return context ?? defaultCurrencyContext;
 };
