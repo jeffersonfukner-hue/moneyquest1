@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Plus, ArrowUpCircle, ArrowDownCircle, CalendarIcon } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Plus, ArrowUpCircle, ArrowDownCircle, CalendarIcon, Coins } from 'lucide-react';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
@@ -10,11 +10,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { TransactionType } from '@/types/database';
+import { TransactionType, SupportedCurrency } from '@/types/database';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useCategories } from '@/hooks/useCategories';
 import { QuickAddCategoryDialog } from '@/components/categories/QuickAddCategoryDialog';
+import { SUPPORTED_CURRENCIES } from '@/i18n';
 
 interface AddTransactionDialogProps {
   onAdd: (transaction: {
@@ -40,9 +41,15 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
+  const [selectedCurrency, setSelectedCurrency] = useState<SupportedCurrency>(currency);
   const [date, setDate] = useState<Date>(new Date());
   const [loading, setLoading] = useState(false);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
+
+  // Update selected currency when user's default currency changes
+  useEffect(() => {
+    setSelectedCurrency(currency);
+  }, [currency]);
 
   // Use controlled or internal state
   const isControlled = controlledOpen !== undefined;
@@ -60,13 +67,14 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
       category,
       type,
       date: format(date, 'yyyy-MM-dd'),
-      currency,
+      currency: selectedCurrency,
     });
 
     if (!error) {
       setDescription('');
       setAmount('');
       setCategory('');
+      setSelectedCurrency(currency);
       setDate(new Date());
       setOpen(false);
     }
@@ -154,18 +162,35 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="amount">{t('transactions.amount')} ({currencySymbol})</Label>
-            <Input
-              id="amount"
-              type="number"
-              step="0.01"
-              min="0.01"
-              placeholder="0.00"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              required
-              className="min-h-[48px]"
-            />
+            <Label htmlFor="amount">{t('transactions.amount')}</Label>
+            <div className="flex gap-2">
+              <Select value={selectedCurrency} onValueChange={(v) => setSelectedCurrency(v as SupportedCurrency)}>
+                <SelectTrigger className="w-24 min-h-[48px] flex-shrink-0">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-popover z-50">
+                  {Object.entries(SUPPORTED_CURRENCIES).map(([code, config]) => (
+                    <SelectItem key={code} value={code} className="min-h-[44px]">
+                      <span className="flex items-center gap-2">
+                        <Coins className="w-4 h-4" />
+                        <span>{config.symbol}</span>
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Input
+                id="amount"
+                type="number"
+                step="0.01"
+                min="0.01"
+                placeholder="0.00"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                required
+                className="min-h-[48px] flex-1"
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
