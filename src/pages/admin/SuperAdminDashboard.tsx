@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Users, UserCheck, Crown, TrendingUp, Activity, AlertTriangle } from 'lucide-react';
+import { Users, UserCheck, Crown, TrendingUp, Activity, AlertTriangle, Filter } from 'lucide-react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { StatsCard } from '@/components/admin/StatsCard';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useAdminData } from '@/hooks/useAdminData';
 import { 
   PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, 
-  Tooltip, BarChart, Bar, CartesianGrid, Legend, Area, AreaChart 
+  Tooltip, BarChart, Bar, CartesianGrid, Legend, Area, AreaChart, FunnelChart, Funnel, LabelList
 } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -115,6 +115,46 @@ const SuperAdminDashboard = () => {
       { name: t('admin.risk.high'), value: atRiskUsers.filter(u => u.risk_level === 'high').length, color: '#ef4444' },
     ];
   }, [atRiskUsers, t]);
+
+  // Conversion funnel data: Registration → First use → Recurring use → Premium
+  const funnelData = useMemo(() => {
+    if (!analytics || !users) return [];
+    
+    const totalUsers = analytics.total_users || 0;
+    // Users who have logged in at least once (have last_active_date)
+    const firstUse = users.filter(u => u.last_active_date).length;
+    // Recurring users (active in the last 30 days)
+    const recurringUse = analytics.active_30days || 0;
+    // Premium users
+    const premium = analytics.premium_users || 0;
+    
+    return [
+      { 
+        name: t('admin.funnel.registration'), 
+        value: totalUsers, 
+        fill: '#3b82f6',
+        percentage: '100%'
+      },
+      { 
+        name: t('admin.funnel.firstUse'), 
+        value: firstUse, 
+        fill: '#22c55e',
+        percentage: totalUsers > 0 ? `${((firstUse / totalUsers) * 100).toFixed(1)}%` : '0%'
+      },
+      { 
+        name: t('admin.funnel.recurringUse'), 
+        value: recurringUse, 
+        fill: '#eab308',
+        percentage: totalUsers > 0 ? `${((recurringUse / totalUsers) * 100).toFixed(1)}%` : '0%'
+      },
+      { 
+        name: t('admin.funnel.premium'), 
+        value: premium, 
+        fill: '#8b5cf6',
+        percentage: totalUsers > 0 ? `${((premium / totalUsers) * 100).toFixed(1)}%` : '0%'
+      },
+    ];
+  }, [analytics, users, t]);
 
   // Custom tooltip for charts
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -358,6 +398,111 @@ const SuperAdminDashboard = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Conversion Funnel - Full Width */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Filter className="w-5 h-5 text-primary" />
+              {t('admin.funnel.title')}
+            </CardTitle>
+            <CardDescription>{t('admin.funnel.description')}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <FunnelChart>
+                  <Tooltip 
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const data = payload[0].payload;
+                        return (
+                          <div className="bg-popover border border-border rounded-lg shadow-lg p-3">
+                            <p className="font-medium text-foreground">{data.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {data.value} {t('admin.charts.users')} ({data.percentage})
+                            </p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Funnel
+                    dataKey="value"
+                    data={funnelData}
+                    isAnimationActive
+                  >
+                    <LabelList 
+                      position="right" 
+                      fill="hsl(var(--foreground))" 
+                      stroke="none" 
+                      dataKey="name"
+                      fontSize={12}
+                    />
+                    <LabelList 
+                      position="center" 
+                      fill="white" 
+                      stroke="none" 
+                      dataKey={(entry: any) => `${entry.value} (${entry.percentage})`}
+                      fontSize={11}
+                      fontWeight={600}
+                    />
+                    {funnelData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Funnel>
+                </FunnelChart>
+              </ResponsiveContainer>
+            </div>
+            {/* Funnel Legend */}
+            <div className="flex flex-wrap justify-center gap-4 mt-4 pt-4 border-t border-border">
+              {funnelData.map((item, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <div 
+                    className="w-3 h-3 rounded-full" 
+                    style={{ backgroundColor: item.fill }}
+                  />
+                  <span className="text-sm text-foreground">{item.name}</span>
+                  <Badge variant="secondary" className="text-xs">
+                    {item.percentage}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+            {/* Conversion Rates */}
+            <div className="grid grid-cols-3 gap-4 mt-4">
+              {funnelData.length > 1 && (
+                <>
+                  <div className="text-center p-3 bg-muted/50 rounded-lg">
+                    <p className="text-lg font-bold text-foreground">
+                      {funnelData[0].value > 0 
+                        ? ((funnelData[1].value / funnelData[0].value) * 100).toFixed(1) 
+                        : 0}%
+                    </p>
+                    <p className="text-xs text-muted-foreground">{t('admin.funnel.registrationToFirstUse')}</p>
+                  </div>
+                  <div className="text-center p-3 bg-muted/50 rounded-lg">
+                    <p className="text-lg font-bold text-foreground">
+                      {funnelData[1].value > 0 
+                        ? ((funnelData[2].value / funnelData[1].value) * 100).toFixed(1) 
+                        : 0}%
+                    </p>
+                    <p className="text-xs text-muted-foreground">{t('admin.funnel.firstUseToRecurring')}</p>
+                  </div>
+                  <div className="text-center p-3 bg-muted/50 rounded-lg">
+                    <p className="text-lg font-bold text-foreground">
+                      {funnelData[2].value > 0 
+                        ? ((funnelData[3].value / funnelData[2].value) * 100).toFixed(1) 
+                        : 0}%
+                    </p>
+                    <p className="text-xs text-muted-foreground">{t('admin.funnel.recurringToPremium')}</p>
+                  </div>
+                </>
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Secondary Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
