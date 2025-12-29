@@ -197,6 +197,18 @@ export const calculateQuestProgress = async (
       return profile.total_expenses <= totalBudget ? 1 : 0;
     }
 
+    // Special seasonal quests
+    case 'special_christmas': {
+      // Count holiday-related expenses (Shopping, Entertainment, Other)
+      const { count } = await supabase
+        .from('transactions')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .eq('type', 'EXPENSE')
+        .in('category', ['Shopping', 'Entertainment', 'Other']);
+      return count || 0;
+    }
+
     default:
       return 0;
   }
