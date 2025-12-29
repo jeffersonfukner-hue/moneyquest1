@@ -18,7 +18,8 @@
     "yesterday": "Ayer",
     "noData": "No se encontraron datos",
     "success": "Éxito",
-    "error": "Error"
+    "error": "Error",
+    "refresh": "Actualizar"
   },
   "auth": {
     "login": "Iniciar Sesión",
@@ -177,7 +178,10 @@
     "themeAuto": "Automático (Estacional)",
     "account": "Cuenta",
     "profile": "Perfil",
-    "notifications": "Notificaciones"
+    "notifications": "Notificaciones",
+    "exchangeRates": "Tipos de Cambio",
+    "lastUpdated": "Actualizado",
+    "ratesNotLoaded": "Tasas no cargadas"
   },
   "mood": {
     "veryPositive": "Muy Positivo",

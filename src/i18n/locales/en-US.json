@@ -18,7 +18,8 @@
     "yesterday": "Yesterday",
     "noData": "No data found",
     "success": "Success",
-    "error": "Error"
+    "error": "Error",
+    "refresh": "Refresh"
   },
   "auth": {
     "login": "Sign In",
@@ -177,7 +178,10 @@
     "themeAuto": "Auto (Seasonal)",
     "account": "Account",
     "profile": "Profile",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "exchangeRates": "Exchange Rates",
+    "lastUpdated": "Last updated",
+    "ratesNotLoaded": "Rates not loaded"
   },
   "mood": {
     "veryPositive": "Very Positive",

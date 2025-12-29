@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Globe, Coins, Volume2, LogOut, Crown } from 'lucide-react';
+import { ChevronLeft, Globe, Coins, Volume2, LogOut, Crown, RefreshCw, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -13,6 +13,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { useSubscription, PREMIUM_PRICING } from '@/contexts/SubscriptionContext';
 import { SUPPORTED_LANGUAGES, SUPPORTED_CURRENCIES, type SupportedLanguage, type SupportedCurrency } from '@/i18n';
 import { PremiumBadge } from '@/components/subscription/PremiumBadge';
+import { useExchangeRates } from '@/hooks/useExchangeRates';
+import { format } from 'date-fns';
 
 const Settings = () => {
   const { t } = useTranslation();
@@ -22,6 +24,7 @@ const Settings = () => {
   const { isMuted, toggleMute } = useSound();
   const { signOut } = useAuth();
   const { isPremium, canAccessMultiLanguage, canAccessMultiCurrency, plan } = useSubscription();
+  const { rates, lastUpdate, loading: ratesLoading, refreshRates, getRate } = useExchangeRates();
 
   const pricing = PREMIUM_PRICING[currency] || PREMIUM_PRICING.USD;
 
@@ -164,6 +167,57 @@ const Settings = () => {
                 <Crown className="w-4 h-4 text-amber-500" />
               </div>
             )}
+          </CardContent>
+        </Card>
+
+        {/* Exchange Rates */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <TrendingUp className="w-5 h-5 text-primary" />
+              {t('settings.exchangeRates')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div className="bg-muted/50 rounded-lg p-3">
+                <p className="text-xs text-muted-foreground mb-1">USD → BRL</p>
+                <p className="font-mono font-semibold text-foreground">
+                  {getRate('USD', 'BRL').toFixed(2)}
+                </p>
+              </div>
+              <div className="bg-muted/50 rounded-lg p-3">
+                <p className="text-xs text-muted-foreground mb-1">EUR → BRL</p>
+                <p className="font-mono font-semibold text-foreground">
+                  {getRate('EUR', 'BRL').toFixed(2)}
+                </p>
+              </div>
+              <div className="bg-muted/50 rounded-lg p-3">
+                <p className="text-xs text-muted-foreground mb-1">EUR → USD</p>
+                <p className="font-mono font-semibold text-foreground">
+                  {getRate('EUR', 'USD').toFixed(2)}
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between pt-2 border-t border-border/50">
+              <p className="text-xs text-muted-foreground">
+                {lastUpdate 
+                  ? `${t('settings.lastUpdated')}: ${format(lastUpdate, 'dd/MM/yyyy HH:mm')}`
+                  : t('settings.ratesNotLoaded')
+                }
+              </p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={refreshRates}
+                disabled={ratesLoading}
+                className="min-h-[36px]"
+              >
+                <RefreshCw className={`w-4 h-4 mr-1 ${ratesLoading ? 'animate-spin' : ''}`} />
+                {t('common.refresh')}
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
