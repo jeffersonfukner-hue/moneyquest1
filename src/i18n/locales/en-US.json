@@ -476,6 +476,30 @@
     "never": "Never",
     "daysAgo": "{{days}} days ago",
     "accessDenied": "Access Denied",
-    "accessDeniedDesc": "You do not have permission to access this page."
+    "accessDeniedDesc": "You do not have permission to access this page.",
+    "charts": {
+      "planDistribution": "Plan Distribution",
+      "planDistributionDesc": "Free vs Premium user ratio",
+      "activityTrend": "Activity Trend",
+      "activityTrendDesc": "Active and new users over the last 7 days",
+      "activeUsers": "Active Users",
+      "newUsers": "New Users",
+      "engagementLevels": "Engagement Levels",
+      "engagementLevelsDesc": "User distribution by activity level",
+      "highlyEngaged": "Highly Engaged",
+      "moderatelyEngaged": "Moderately Engaged",
+      "lowEngaged": "Low Engaged",
+      "inactive": "Inactive",
+      "newUsersByWeek": "New Users by Week",
+      "newUsersByWeekDesc": "Registrations in the last 30 days",
+      "riskDistribution": "Risk Distribution",
+      "riskDistributionDesc": "At-risk users by level",
+      "users": "users",
+      "last7days": "last 7 days",
+      "week1": "This Week",
+      "week2": "Last Week",
+      "week3": "2 Weeks Ago",
+      "week4": "3 Weeks Ago"
+    }
   }
 }
