@@ -14,11 +14,17 @@ import {
 } from '@/lib/gameLogic';
 import { toast } from '@/hooks/use-toast';
 
+import { Quest, Badge } from '@/types/database';
+
 export const useTransactions = () => {
   const { user } = useAuth();
   const { profile, refetch: refetchProfile } = useProfile();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
+  const [celebrationData, setCelebrationData] = useState<{
+    quest: Quest | null;
+    badge: Badge | null;
+  } | null>(null);
 
   const fetchTransactions = async () => {
     if (!user) {
@@ -125,14 +131,23 @@ export const useTransactions = () => {
     const completedQuests = await checkAndUpdateQuests(user.id, updatedProfile, transactionCount);
     const unlockedBadges = await checkAndUpdateBadges(user.id, updatedProfile, transactionCount);
 
-    completedQuests.forEach(quest => {
+    // Trigger celebration for first completed quest and first unlocked badge
+    if (completedQuests.length > 0 || unlockedBadges.length > 0) {
+      setCelebrationData({
+        quest: completedQuests[0] || null,
+        badge: unlockedBadges[0] || null
+      });
+    }
+
+    // Still show toasts for any additional completions
+    completedQuests.slice(1).forEach(quest => {
       toast({
         title: "🎯 Quest Complete!",
         description: `${quest.title} - +${quest.xp_reward} XP`,
       });
     });
 
-    unlockedBadges.forEach(badge => {
+    unlockedBadges.slice(1).forEach(badge => {
       toast({
         title: `${badge.icon} Badge Unlocked!`,
         description: badge.name,
@@ -160,5 +175,15 @@ export const useTransactions = () => {
     return { error };
   };
 
-  return { transactions, loading, addTransaction, deleteTransaction, refetch: fetchTransactions };
+  const clearCelebration = () => setCelebrationData(null);
+
+  return { 
+    transactions, 
+    loading, 
+    addTransaction, 
+    deleteTransaction, 
+    refetch: fetchTransactions,
+    celebrationData,
+    clearCelebration
+  };
 };
