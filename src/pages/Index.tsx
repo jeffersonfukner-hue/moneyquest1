@@ -18,6 +18,7 @@ import { SeasonalDecorations } from '@/components/game/SeasonalDecorations';
 import { BottomNavigation, type TabId } from '@/components/navigation/BottomNavigation';
 import { MobileHeader } from '@/components/navigation/MobileHeader';
 import { AICoachCard } from '@/components/ai/AICoachCard';
+import { CategoryGoalsCard } from '@/components/goals/CategoryGoalsCard';
 import { Gamepad2 } from 'lucide-react';
 
 const Index = () => {
@@ -59,6 +60,7 @@ const Index = () => {
             <LevelProgress profile={profile} />
             <StatsCards profile={profile} />
             <AICoachCard />
+            <CategoryGoalsCard />
             <MoodIndicator />
           </div>
         );

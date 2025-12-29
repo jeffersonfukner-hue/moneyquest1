@@ -271,5 +271,33 @@
       "creditsDesc": "Por favor, inténtalo de nuevo más tarde.",
       "generic": "Algo salió mal. Por favor, inténtalo de nuevo."
     }
+  },
+  "categoryGoals": {
+    "title": "Metas por Categoría",
+    "pageTitle": "Metas por Categoría",
+    "pageDescription": "Define límites mensuales de gastos por categoría",
+    "cardDescription": "Controla tus límites de gastos por categoría",
+    "lockedTitle": "Función Premium",
+    "lockedDescription": "¡Desbloquea metas por categoría para definir límites mensuales y seguir tu progreso!",
+    "addGoal": "Añadir Meta",
+    "editGoal": "Editar Meta",
+    "monthlyLimit": "Límite Mensual",
+    "monthlySummary": "Resumen Mensual",
+    "budget": "Presupuesto",
+    "spent": "Gastado",
+    "remaining": "{{amount}} restante",
+    "overBudget": "{{amount}} sobre el límite",
+    "nearLimit": "Cerca del límite",
+    "noGoals": "Sin Metas Aún",
+    "noGoalsDescription": "¡Define límites de gastos para tus categorías y controla mejor tus finanzas!",
+    "fetchError": "Error al cargar metas",
+    "addSuccess": "¡Meta añadida con éxito!",
+    "addError": "Error al añadir meta",
+    "updateSuccess": "¡Meta actualizada con éxito!",
+    "updateError": "Error al actualizar meta",
+    "deleteSuccess": "¡Meta eliminada con éxito!",
+    "deleteError": "Error al eliminar meta",
+    "deleteConfirmTitle": "Eliminar Meta",
+    "deleteConfirmDesc": "¿Estás seguro de que quieres eliminar la meta de {{category}}?"
   }
 }
