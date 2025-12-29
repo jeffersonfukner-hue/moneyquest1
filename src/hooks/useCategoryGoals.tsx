@@ -3,6 +3,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from 'react-i18next';
+import { SupportedCurrency } from '@/types/database';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 export interface CategoryGoal {
   id: string;
@@ -17,6 +19,7 @@ export const useCategoryGoals = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const { t } = useTranslation();
+  const { convertToUserCurrency } = useCurrency();
   const [goals, setGoals] = useState<CategoryGoal[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -53,17 +56,19 @@ export const useCategoryGoals = () => {
 
       const { data: transactions, error: txError } = await supabase
         .from('transactions')
-        .select('category, amount')
+        .select('category, amount, currency')
         .eq('user_id', user.id)
         .eq('type', 'EXPENSE')
         .gte('date', monthStartStr);
 
       if (txError) throw txError;
 
-      // Calculate spent per category
+      // Calculate spent per category with currency conversion
       const spentByCategory: Record<string, number> = {};
       transactions?.forEach(tx => {
-        spentByCategory[tx.category] = (spentByCategory[tx.category] || 0) + Number(tx.amount);
+        const txCurrency = (tx.currency || 'BRL') as SupportedCurrency;
+        const convertedAmount = convertToUserCurrency(Number(tx.amount), txCurrency);
+        spentByCategory[tx.category] = (spentByCategory[tx.category] || 0) + convertedAmount;
       });
 
       // Merge goals with spending data
@@ -84,7 +89,7 @@ export const useCategoryGoals = () => {
     } finally {
       setLoading(false);
     }
-  }, [user, toast, t]);
+  }, [user, toast, t, convertToUserCurrency]);
 
   useEffect(() => {
     fetchGoals();

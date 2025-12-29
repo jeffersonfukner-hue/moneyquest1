@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Globe, Coins, Volume2, LogOut, Crown, RefreshCw, TrendingUp, FolderOpen, ChevronRight, Target, Shield, Sun, Moon, Monitor } from 'lucide-react';
+import { ChevronLeft, Globe, Coins, Volume2, LogOut, Crown, RefreshCw, TrendingUp, FolderOpen, ChevronRight, Target, Shield, Sun, Moon, Monitor, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -11,12 +11,34 @@ import { useCurrency } from '@/contexts/CurrencyContext';
 import { useSound } from '@/contexts/SoundContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/useProfile';
 import { useSubscription, PREMIUM_PRICING } from '@/contexts/SubscriptionContext';
 import { SUPPORTED_LANGUAGES, SUPPORTED_CURRENCIES, type SupportedLanguage, type SupportedCurrency } from '@/i18n';
 import { PremiumBadge } from '@/components/subscription/PremiumBadge';
 import { useExchangeRates } from '@/hooks/useExchangeRates';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { format } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
+
+const TIMEZONES = [
+  { value: 'America/Sao_Paulo', label: 'Brasília (BRT)' },
+  { value: 'America/New_York', label: 'New York (EST)' },
+  { value: 'America/Chicago', label: 'Chicago (CST)' },
+  { value: 'America/Denver', label: 'Denver (MST)' },
+  { value: 'America/Los_Angeles', label: 'Los Angeles (PST)' },
+  { value: 'America/Mexico_City', label: 'Mexico City (CST)' },
+  { value: 'America/Buenos_Aires', label: 'Buenos Aires (ART)' },
+  { value: 'America/Lima', label: 'Lima (PET)' },
+  { value: 'America/Bogota', label: 'Bogotá (COT)' },
+  { value: 'Europe/London', label: 'London (GMT)' },
+  { value: 'Europe/Madrid', label: 'Madrid (CET)' },
+  { value: 'Europe/Paris', label: 'Paris (CET)' },
+  { value: 'Europe/Berlin', label: 'Berlin (CET)' },
+  { value: 'Europe/Lisbon', label: 'Lisbon (WET)' },
+  { value: 'Asia/Tokyo', label: 'Tokyo (JST)' },
+  { value: 'Asia/Shanghai', label: 'Shanghai (CST)' },
+  { value: 'Australia/Sydney', label: 'Sydney (AEST)' },
+];
 
 const Settings = () => {
   const { t } = useTranslation();
@@ -26,11 +48,14 @@ const Settings = () => {
   const { isMuted, toggleMute } = useSound();
   const { theme, setTheme } = useTheme();
   const { signOut } = useAuth();
+  const { profile, updateProfile } = useProfile();
+  const { toast } = useToast();
   const { isPremium, canAccessMultiLanguage, canAccessMultiCurrency, plan } = useSubscription();
   const { rates, lastUpdate, loading: ratesLoading, refreshRates, getRate } = useExchangeRates();
   const { isSuperAdmin } = useAdminAuth();
 
   const pricing = PREMIUM_PRICING[currency] || PREMIUM_PRICING.USD;
+  const currentTimezone = profile?.timezone || 'America/Sao_Paulo';
 
   const handleLanguageChange = async (value: string) => {
     await setLanguage(value as SupportedLanguage);
@@ -42,6 +67,22 @@ const Settings = () => {
 
   const handleThemeChange = async (value: string) => {
     await setTheme(value as 'light' | 'dark' | 'system');
+  };
+
+  const handleTimezoneChange = async (value: string) => {
+    const { error } = await updateProfile({ timezone: value });
+    if (error) {
+      toast({
+        title: t('common.error'),
+        description: t('settings.timezoneError'),
+        variant: 'destructive',
+      });
+    } else {
+      toast({
+        title: t('common.success'),
+        description: t('settings.timezoneSuccess'),
+      });
+    }
   };
 
   const handleSignOut = async () => {

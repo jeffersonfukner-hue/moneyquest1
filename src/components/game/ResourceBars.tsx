@@ -2,8 +2,10 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Transaction, CategoryGoal } from '@/types/database';
+import { Transaction, CategoryGoal, SupportedCurrency } from '@/types/database';
 import { cn } from '@/lib/utils';
+import { getMonthStartString } from '@/lib/dateUtils';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 interface ResourceBarsProps {
   transactions: Transaction[];
@@ -62,22 +64,24 @@ const RESOURCE_CONFIG: Record<string, {
 
 export const ResourceBars = ({ transactions, categoryGoals = [] }: ResourceBarsProps) => {
   const { t } = useTranslation();
+  const { convertToUserCurrency } = useCurrency();
   
-  // Get current month's expenses by category
+  // Get current month's expenses by category with currency conversion
   const monthlySpending = useMemo(() => {
-    const now = new Date();
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+    const monthStart = getMonthStartString();
     
     const spending: Record<string, number> = {};
     
     transactions
       .filter(t => t.type === 'EXPENSE' && t.date >= monthStart)
       .forEach(t => {
-        spending[t.category] = (spending[t.category] || 0) + Number(t.amount);
+        const txCurrency = (t.currency || 'BRL') as SupportedCurrency;
+        const convertedAmount = convertToUserCurrency(Number(t.amount), txCurrency);
+        spending[t.category] = (spending[t.category] || 0) + convertedAmount;
       });
     
     return spending;
-  }, [transactions]);
+  }, [transactions, convertToUserCurrency]);
 
   // Get max values from category goals or use defaults
   const getMaxValue = (category: string): number => {

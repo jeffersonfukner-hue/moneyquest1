@@ -4,6 +4,7 @@ import { Progress } from '@/components/ui/progress';
 import { Wallet, TrendingUp, TrendingDown } from 'lucide-react';
 import { Transaction, SupportedCurrency } from '@/types/database';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { parseDateString } from '@/lib/dateUtils';
 
 interface MonthlySavingsWidgetProps {
   transactions: Transaction[];
@@ -19,7 +20,7 @@ export const MonthlySavingsWidget = ({ transactions }: MonthlySavingsWidgetProps
   const currentYear = now.getFullYear();
 
   const monthlyTransactions = transactions.filter((tx) => {
-    const txDate = new Date(tx.date);
+    const txDate = parseDateString(tx.date);
     return txDate.getMonth() === currentMonth && txDate.getFullYear() === currentYear;
   });
 

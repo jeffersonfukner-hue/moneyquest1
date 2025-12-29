@@ -436,6 +436,7 @@ export type Database = {
           subscription_plan: string
           subscription_started_at: string | null
           theme_preference: string
+          timezone: string
           total_expenses: number
           total_income: number
           updated_at: string
@@ -462,6 +463,7 @@ export type Database = {
           subscription_plan?: string
           subscription_started_at?: string | null
           theme_preference?: string
+          timezone?: string
           total_expenses?: number
           total_income?: number
           updated_at?: string
@@ -488,6 +490,7 @@ export type Database = {
           subscription_plan?: string
           subscription_started_at?: string | null
           theme_preference?: string
+          timezone?: string
           total_expenses?: number
           total_income?: number
           updated_at?: string
@@ -794,6 +797,7 @@ export type Database = {
           subscription_plan: string
           subscription_started_at: string | null
           theme_preference: string
+          timezone: string
           total_expenses: number
           total_income: number
           updated_at: string
