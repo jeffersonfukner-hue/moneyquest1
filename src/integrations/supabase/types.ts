@@ -61,6 +61,39 @@ export type Database = {
           },
         ]
       }
+      categories: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          icon: string | null
+          id: string
+          is_default: boolean | null
+          name: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          icon?: string | null
+          id?: string
+          is_default?: boolean | null
+          name: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          icon?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       category_goals: {
         Row: {
           budget_limit: number
@@ -92,6 +125,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      exchange_rates: {
+        Row: {
+          base_currency: string
+          id: string
+          rate: number
+          target_currency: string
+          updated_at: string | null
+        }
+        Insert: {
+          base_currency: string
+          id?: string
+          rate: number
+          target_currency: string
+          updated_at?: string | null
+        }
+        Update: {
+          base_currency?: string
+          id?: string
+          rate?: number
+          target_currency?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -279,6 +336,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_default_categories: {
+        Args: { p_user_id: string }
+        Returns: undefined
+      }
       get_level_title: { Args: { user_level: number }; Returns: string }
       get_period_end: { Args: { period_type: string }; Returns: string }
       get_period_start: { Args: { period_type: string }; Returns: string }

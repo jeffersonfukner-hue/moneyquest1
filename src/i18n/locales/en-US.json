@@ -318,6 +318,35 @@
     "deleteConfirmTitle": "Delete Goal",
     "deleteConfirmDesc": "Are you sure you want to delete the goal for {{category}}?"
   },
+  "categories": {
+    "title": "Categories",
+    "pageDescription": "Manage your income and expense categories",
+    "income": "Income",
+    "expense": "Expense",
+    "addCategory": "Add Category",
+    "editCategory": "Edit Category",
+    "deleteCategory": "Delete Category",
+    "categoryName": "Category name",
+    "selectIcon": "Select icon",
+    "selectColor": "Select color",
+    "newCategory": "New category...",
+    "defaultCategory": "Default category",
+    "cannotDeleteDefault": "Default categories cannot be deleted",
+    "duplicateError": "A category with this name already exists",
+    "noCategories": "No categories yet",
+    "addSuccess": "Category added successfully!",
+    "addError": "Failed to add category",
+    "updateSuccess": "Category updated successfully!",
+    "updateError": "Failed to update category",
+    "deleteSuccess": "Category deleted successfully!",
+    "deleteError": "Failed to delete category",
+    "deleteConfirmDesc": "Are you sure you want to delete {{category}}?"
+  },
+  "currency": {
+    "conversion": "Conversion",
+    "exchangeRate": "Exchange rate",
+    "lastUpdated": "Last updated"
+  },
   "narrative": {
     "loading": "Generating story...",
     "error": "The narrative crystal is recharging...",

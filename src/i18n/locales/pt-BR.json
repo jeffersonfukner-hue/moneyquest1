@@ -318,6 +318,35 @@
     "deleteConfirmTitle": "Excluir Meta",
     "deleteConfirmDesc": "Tem certeza que deseja excluir a meta de {{category}}?"
   },
+  "categories": {
+    "title": "Categorias",
+    "pageDescription": "Gerencie suas categorias de receita e despesa",
+    "income": "Receitas",
+    "expense": "Despesas",
+    "addCategory": "Adicionar Categoria",
+    "editCategory": "Editar Categoria",
+    "deleteCategory": "Excluir Categoria",
+    "categoryName": "Nome da categoria",
+    "selectIcon": "Selecionar ícone",
+    "selectColor": "Selecionar cor",
+    "newCategory": "Nova categoria...",
+    "defaultCategory": "Categoria padrão",
+    "cannotDeleteDefault": "Categorias padrão não podem ser excluídas",
+    "duplicateError": "Já existe uma categoria com este nome",
+    "noCategories": "Nenhuma categoria ainda",
+    "addSuccess": "Categoria adicionada com sucesso!",
+    "addError": "Falha ao adicionar categoria",
+    "updateSuccess": "Categoria atualizada com sucesso!",
+    "updateError": "Falha ao atualizar categoria",
+    "deleteSuccess": "Categoria excluída com sucesso!",
+    "deleteError": "Falha ao excluir categoria",
+    "deleteConfirmDesc": "Tem certeza que deseja excluir {{category}}?"
+  },
+  "currency": {
+    "conversion": "Conversão",
+    "exchangeRate": "Taxa de câmbio",
+    "lastUpdated": "Atualizado em"
+  },
   "narrative": {
     "loading": "Gerando história...",
     "error": "O cristal narrativo está recarregando...",

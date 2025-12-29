@@ -318,6 +318,35 @@
     "deleteConfirmTitle": "Eliminar Meta",
     "deleteConfirmDesc": "¿Estás seguro de que quieres eliminar la meta de {{category}}?"
   },
+  "categories": {
+    "title": "Categorías",
+    "pageDescription": "Gestiona tus categorías de ingresos y gastos",
+    "income": "Ingresos",
+    "expense": "Gastos",
+    "addCategory": "Añadir Categoría",
+    "editCategory": "Editar Categoría",
+    "deleteCategory": "Eliminar Categoría",
+    "categoryName": "Nombre de la categoría",
+    "selectIcon": "Seleccionar icono",
+    "selectColor": "Seleccionar color",
+    "newCategory": "Nueva categoría...",
+    "defaultCategory": "Categoría predeterminada",
+    "cannotDeleteDefault": "Las categorías predeterminadas no se pueden eliminar",
+    "duplicateError": "Ya existe una categoría con este nombre",
+    "noCategories": "Sin categorías aún",
+    "addSuccess": "¡Categoría añadida con éxito!",
+    "addError": "Error al añadir categoría",
+    "updateSuccess": "¡Categoría actualizada con éxito!",
+    "updateError": "Error al actualizar categoría",
+    "deleteSuccess": "¡Categoría eliminada con éxito!",
+    "deleteError": "Error al eliminar categoría",
+    "deleteConfirmDesc": "¿Estás seguro de que quieres eliminar {{category}}?"
+  },
+  "currency": {
+    "conversion": "Conversión",
+    "exchangeRate": "Tipo de cambio",
+    "lastUpdated": "Última actualización"
+  },
   "narrative": {
     "loading": "Generando historia...",
     "error": "El cristal narrativo está recargando...",

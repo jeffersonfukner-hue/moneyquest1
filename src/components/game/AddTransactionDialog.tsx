@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Plus, ArrowUpCircle, ArrowDownCircle, CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
@@ -10,10 +10,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { CATEGORIES } from '@/lib/gameLogic';
 import { TransactionType } from '@/types/database';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useCategories } from '@/hooks/useCategories';
+import { QuickAddCategoryDialog } from '@/components/categories/QuickAddCategoryDialog';
 
 interface AddTransactionDialogProps {
   onAdd: (transaction: {
@@ -31,6 +32,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   const { t } = useTranslation();
   const { dateLocale } = useLanguage();
   const { currencySymbol } = useCurrency();
+  const { getCategoriesByType, addCategory } = useCategories();
   
   const [internalOpen, setInternalOpen] = useState(false);
   const [type, setType] = useState<TransactionType>('EXPENSE');
@@ -39,6 +41,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   const [category, setCategory] = useState('');
   const [date, setDate] = useState<Date>(new Date());
   const [loading, setLoading] = useState(false);
+  const [quickAddOpen, setQuickAddOpen] = useState(false);
 
   // Use controlled or internal state
   const isControlled = controlledOpen !== undefined;
@@ -68,26 +71,21 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
     setLoading(false);
   };
 
-  const categories = type === 'INCOME' ? CATEGORIES.INCOME : CATEGORIES.EXPENSE;
+  const categories = getCategoriesByType(type);
 
-  // Map category keys to translation keys
-  const getCategoryTranslationKey = (cat: string): string => {
-    const keyMap: Record<string, string> = {
-      'Salary': 'salary',
-      'Freelance': 'freelance',
-      'Investments': 'investment',
-      'Gift': 'gift',
-      'Other Income': 'other_income',
-      'Food': 'food',
-      'Transport': 'transport',
-      'Entertainment': 'entertainment',
-      'Shopping': 'shopping',
-      'Bills': 'bills',
-      'Health': 'health',
-      'Education': 'education',
-      'Other': 'other_expense',
-    };
-    return keyMap[cat] || cat.toLowerCase().replace(/\s+/g, '_');
+  const handleQuickAddCategory = async (name: string, icon: string, color: string) => {
+    const newCat = await addCategory(name, type, icon, color);
+    if (newCat) {
+      setCategory(newCat.name);
+    }
+  };
+
+  const handleCategoryChange = (value: string) => {
+    if (value === '__new__') {
+      setQuickAddOpen(true);
+    } else {
+      setCategory(value);
+    }
   };
 
   return (
@@ -170,16 +168,25 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
 
           <div className="space-y-2">
             <Label htmlFor="category">{t('transactions.category')}</Label>
-            <Select value={category} onValueChange={setCategory} required>
+            <Select value={category} onValueChange={handleCategoryChange} required>
               <SelectTrigger className="min-h-[48px]">
                 <SelectValue placeholder={t('transactions.selectCategory')} />
               </SelectTrigger>
               <SelectContent>
                 {categories.map(cat => (
-                  <SelectItem key={cat} value={cat} className="min-h-[44px]">
-                    {t(`transactions.categories.${getCategoryTranslationKey(cat)}`, cat)}
+                  <SelectItem key={cat.id} value={cat.name} className="min-h-[44px]">
+                    <span className="flex items-center gap-2">
+                      <span>{cat.icon}</span>
+                      <span>{cat.name}</span>
+                    </span>
                   </SelectItem>
                 ))}
+                <SelectItem value="__new__" className="min-h-[44px] text-primary">
+                  <span className="flex items-center gap-2">
+                    <Plus className="h-4 w-4" />
+                    <span>{t('categories.newCategory')}</span>
+                  </span>
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -220,6 +227,13 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
             {loading ? t('common.loading') : `${t('common.add')} 🎮`}
           </Button>
         </form>
+
+        <QuickAddCategoryDialog
+          open={quickAddOpen}
+          onOpenChange={setQuickAddOpen}
+          onAdd={handleQuickAddCategory}
+          type={type}
+        />
       </DialogContent>
     </Dialog>
   );
