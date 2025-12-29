@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useLeaderboard, LeaderboardEntry } from '@/hooks/useLeaderboard';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
+import { AvatarDisplay } from '@/components/profile/AvatarDisplay';
 
 const getRankIcon = (rank: number) => {
   if (rank === 1) return <Crown className="w-5 h-5 text-yellow-500" />;
@@ -28,7 +29,11 @@ const LeaderboardRow = ({ entry, isCurrentUser }: { entry: LeaderboardEntry; isC
     <div className="w-8 flex justify-center">
       {getRankIcon(entry.rank || 0)}
     </div>
-    <div className="text-2xl">{entry.avatar_icon}</div>
+    <AvatarDisplay
+      avatarUrl={(entry as any).avatar_url}
+      avatarIcon={entry.avatar_icon}
+      size="md"
+    />
     <div className="flex-1 min-w-0">
       <p className={cn(
         "font-medium truncate",
@@ -151,7 +156,11 @@ export default function Leaderboard() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="text-3xl">{myEntry?.avatar_icon}</div>
+                    <AvatarDisplay
+                      avatarUrl={(myEntry as any)?.avatar_url}
+                      avatarIcon={myEntry?.avatar_icon || '🎮'}
+                      size="lg"
+                    />
                     <div>
                       <p className="font-bold">{myEntry?.display_name}</p>
                       <p className="text-sm text-muted-foreground">Level {myEntry?.level}</p>

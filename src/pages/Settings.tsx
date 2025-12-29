@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Globe, Coins, Volume2, LogOut, Crown, RefreshCw, TrendingUp, FolderOpen, ChevronRight, Target, Shield } from 'lucide-react';
+import { ChevronLeft, Globe, Coins, Volume2, LogOut, Crown, RefreshCw, TrendingUp, FolderOpen, ChevronRight, Target, Shield, Sun, Moon, Monitor } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useSound } from '@/contexts/SoundContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/hooks/useAuth';
 import { useSubscription, PREMIUM_PRICING } from '@/contexts/SubscriptionContext';
 import { SUPPORTED_LANGUAGES, SUPPORTED_CURRENCIES, type SupportedLanguage, type SupportedCurrency } from '@/i18n';
@@ -23,6 +24,7 @@ const Settings = () => {
   const { language, setLanguage } = useLanguage();
   const { currency, setCurrency } = useCurrency();
   const { isMuted, toggleMute } = useSound();
+  const { theme, setTheme } = useTheme();
   const { signOut } = useAuth();
   const { isPremium, canAccessMultiLanguage, canAccessMultiCurrency, plan } = useSubscription();
   const { rates, lastUpdate, loading: ratesLoading, refreshRates, getRate } = useExchangeRates();
@@ -36,6 +38,10 @@ const Settings = () => {
 
   const handleCurrencyChange = async (value: string) => {
     await setCurrency(value as SupportedCurrency);
+  };
+
+  const handleThemeChange = async (value: string) => {
+    await setTheme(value as 'light' | 'dark' | 'system');
   };
 
   const handleSignOut = async () => {
@@ -87,6 +93,43 @@ const Settings = () => {
                 {t('subscription.upgrade')}
               </Button>
             )}
+          </CardContent>
+        </Card>
+
+        {/* Theme */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Sun className="w-5 h-5 text-primary" />
+              {t('settings.appearance')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Select value={theme} onValueChange={handleThemeChange}>
+              <SelectTrigger className="min-h-[48px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="light" className="min-h-[44px]">
+                  <span className="flex items-center gap-2">
+                    <Sun className="w-4 h-4" />
+                    <span>{t('settings.themeLight')}</span>
+                  </span>
+                </SelectItem>
+                <SelectItem value="dark" className="min-h-[44px]">
+                  <span className="flex items-center gap-2">
+                    <Moon className="w-4 h-4" />
+                    <span>{t('settings.themeDark')}</span>
+                  </span>
+                </SelectItem>
+                <SelectItem value="system" className="min-h-[44px]">
+                  <span className="flex items-center gap-2">
+                    <Monitor className="w-4 h-4" />
+                    <span>{t('settings.themeSystem')}</span>
+                  </span>
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </CardContent>
         </Card>
 

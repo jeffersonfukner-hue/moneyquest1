@@ -417,6 +417,7 @@ export type Database = {
       profiles: {
         Row: {
           avatar_icon: string
+          avatar_url: string | null
           created_at: string
           currency: string
           display_name: string | null
@@ -434,6 +435,7 @@ export type Database = {
           subscription_expires_at: string | null
           subscription_plan: string
           subscription_started_at: string | null
+          theme_preference: string
           total_expenses: number
           total_income: number
           updated_at: string
@@ -441,6 +443,7 @@ export type Database = {
         }
         Insert: {
           avatar_icon?: string
+          avatar_url?: string | null
           created_at?: string
           currency?: string
           display_name?: string | null
@@ -458,6 +461,7 @@ export type Database = {
           subscription_expires_at?: string | null
           subscription_plan?: string
           subscription_started_at?: string | null
+          theme_preference?: string
           total_expenses?: number
           total_income?: number
           updated_at?: string
@@ -465,6 +469,7 @@ export type Database = {
         }
         Update: {
           avatar_icon?: string
+          avatar_url?: string | null
           created_at?: string
           currency?: string
           display_name?: string | null
@@ -482,6 +487,7 @@ export type Database = {
           subscription_expires_at?: string | null
           subscription_plan?: string
           subscription_started_at?: string | null
+          theme_preference?: string
           total_expenses?: number
           total_income?: number
           updated_at?: string
@@ -769,6 +775,7 @@ export type Database = {
         Args: never
         Returns: {
           avatar_icon: string
+          avatar_url: string | null
           created_at: string
           currency: string
           display_name: string | null
@@ -786,6 +793,7 @@ export type Database = {
           subscription_expires_at: string | null
           subscription_plan: string
           subscription_started_at: string | null
+          theme_preference: string
           total_expenses: number
           total_income: number
           updated_at: string

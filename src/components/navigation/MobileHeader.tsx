@@ -6,6 +6,7 @@ import { SeasonalThemeIndicator } from '@/components/game/SeasonalThemeIndicator
 import { Button } from '@/components/ui/button';
 import { useProfile } from '@/hooks/useProfile';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { AvatarDisplay } from '@/components/profile/AvatarDisplay';
 
 interface MobileHeaderProps {
   onSettingsClick: () => void;
@@ -26,7 +27,11 @@ export const MobileHeader = ({ onSettingsClick, onProfileClick }: MobileHeaderPr
           className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           aria-label={t('settings.profile')}
         >
-          <span className="text-xl">{profile?.avatar_icon || '🎮'}</span>
+          <AvatarDisplay
+            avatarUrl={profile?.avatar_url}
+            avatarIcon={profile?.avatar_icon || '🎮'}
+            size="sm"
+          />
           <h1 className="font-display font-bold text-lg text-foreground">MoneyQuest</h1>
         </button>
         

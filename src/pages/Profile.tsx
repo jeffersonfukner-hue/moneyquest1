@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Check, User, Flame, TrendingUp, TrendingDown, Coins, Star, Target } from 'lucide-react';
+import { ArrowLeft, Check, User, Flame, TrendingUp, TrendingDown, Coins, Star, Target, ChevronDown } from 'lucide-react';
 import { useProfile } from '@/hooks/useProfile';
 import { useAuth } from '@/hooks/useAuth';
 import { useCurrency } from '@/contexts/CurrencyContext';
@@ -9,7 +9,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { toast } from '@/hooks/use-toast';
+import { AvatarUpload } from '@/components/profile/AvatarUpload';
 
 const AVATAR_OPTIONS = [
   '🎮', '🚀', '💎', '🔥', '⭐', '🏆', '💰', '🎯', 
@@ -24,15 +26,26 @@ const Profile = () => {
   const { user } = useAuth();
   const { formatCurrency } = useCurrency();
   
-  const [displayName, setDisplayName] = useState(profile?.display_name || '');
-  const [selectedAvatar, setSelectedAvatar] = useState(profile?.avatar_icon || '🎮');
+  const [displayName, setDisplayName] = useState('');
+  const [selectedAvatar, setSelectedAvatar] = useState('🎮');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
+
+  useEffect(() => {
+    if (profile) {
+      setDisplayName(profile.display_name || '');
+      setSelectedAvatar(profile.avatar_icon || '🎮');
+      setAvatarUrl(profile.avatar_url || null);
+    }
+  }, [profile]);
 
   const handleSave = async () => {
     setSaving(true);
     const { error } = await updateProfile({
       display_name: displayName || null,
       avatar_icon: selectedAvatar,
+      avatar_url: avatarUrl,
     });
     
     if (error) {
@@ -48,6 +61,19 @@ const Profile = () => {
       });
     }
     setSaving(false);
+  };
+
+  const handleAvatarUpload = (url: string) => {
+    setAvatarUrl(url);
+  };
+
+  const handleAvatarDelete = () => {
+    setAvatarUrl(null);
+  };
+
+  const handleEmojiSelect = (emoji: string) => {
+    setSelectedAvatar(emoji);
+    setAvatarUrl(null); // Clear photo when selecting emoji
   };
 
   if (loading || !profile) {
@@ -126,27 +152,40 @@ const Profile = () => {
               {t('profile.avatar')}
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="flex justify-center mb-4">
-              <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-primary/10 rounded-full flex items-center justify-center text-5xl border-4 border-primary/30">
-                {selectedAvatar}
-              </div>
-            </div>
-            <div className="grid grid-cols-8 gap-2">
-              {AVATAR_OPTIONS.map((avatar) => (
-                <button
-                  key={avatar}
-                  onClick={() => setSelectedAvatar(avatar)}
-                  className={`w-10 h-10 text-xl rounded-lg flex items-center justify-center transition-all ${
-                    selectedAvatar === avatar
-                      ? 'bg-primary text-primary-foreground scale-110 shadow-lg'
-                      : 'bg-muted hover:bg-muted/80'
-                  }`}
-                >
-                  {avatar}
-                </button>
-              ))}
-            </div>
+          <CardContent className="space-y-4">
+            <AvatarUpload
+              currentUrl={avatarUrl}
+              fallbackEmoji={selectedAvatar}
+              onUploadComplete={handleAvatarUpload}
+              onDelete={handleAvatarDelete}
+            />
+
+            {/* Emoji picker as alternative */}
+            <Collapsible open={emojiPickerOpen} onOpenChange={setEmojiPickerOpen}>
+              <CollapsibleTrigger asChild>
+                <Button variant="ghost" size="sm" className="w-full text-muted-foreground">
+                  <span>{t('profile.useEmojiInstead')}</span>
+                  <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${emojiPickerOpen ? 'rotate-180' : ''}`} />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="pt-4">
+                <div className="grid grid-cols-8 gap-2">
+                  {AVATAR_OPTIONS.map((avatar) => (
+                    <button
+                      key={avatar}
+                      onClick={() => handleEmojiSelect(avatar)}
+                      className={`w-10 h-10 text-xl rounded-lg flex items-center justify-center transition-all ${
+                        selectedAvatar === avatar && !avatarUrl
+                          ? 'bg-primary text-primary-foreground scale-110 shadow-lg'
+                          : 'bg-muted hover:bg-muted/80'
+                      }`}
+                    >
+                      {avatar}
+                    </button>
+                  ))}
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
           </CardContent>
         </Card>
 

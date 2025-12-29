@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Progress } from '@/components/ui/progress';
 import { getXPProgress, XP_PER_LEVEL } from '@/lib/gameLogic';
 import { Profile } from '@/types/database';
+import { AvatarDisplay } from '@/components/profile/AvatarDisplay';
 
 interface LevelProgressProps {
   profile: Profile;
@@ -16,8 +17,13 @@ export const LevelProgress = ({ profile }: LevelProgressProps) => {
     <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-md animate-slide-up">
       <div className="flex items-center gap-4 mb-4">
         <div className="relative">
-          <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-level rounded-full flex items-center justify-center text-2xl sm:text-3xl shadow-glow-primary animate-float">
-            {profile.avatar_icon}
+          <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-level rounded-full flex items-center justify-center shadow-glow-primary animate-float overflow-hidden">
+            <AvatarDisplay
+              avatarUrl={profile.avatar_url}
+              avatarIcon={profile.avatar_icon}
+              size="lg"
+              className="w-full h-full border-0"
+            />
           </div>
           <div className="absolute -bottom-1 -right-1 bg-xp text-accent-foreground text-xs font-bold px-2 py-0.5 rounded-full shadow-glow-accent">
             {t('stats.level')} {profile.level}
