@@ -23,9 +23,16 @@
     "logout": "Sair",
     "email": "E-mail",
     "password": "Senha",
+    "confirmPassword": "Confirmar Senha",
     "emailPlaceholder": "seu@email.com",
     "passwordPlaceholder": "Mínimo 6 caracteres",
+    "confirmPasswordPlaceholder": "Digite a senha novamente",
     "forgotPassword": "Esqueceu a senha?",
+    "resetPassword": "Recuperar Senha",
+    "resetPasswordDescription": "Digite seu e-mail para receber um link de recuperação",
+    "sendResetLink": "Enviar Link",
+    "resetEmailSent": "E-mail enviado!",
+    "checkInbox": "Verifique sua caixa de entrada",
     "dontHaveAccount": "Não tem conta?",
     "alreadyHaveAccount": "Já tem conta?",
     "welcomeBack": "Bem-vindo de volta!",
@@ -40,7 +47,8 @@
       "invalidCredentials": "E-mail ou senha incorretos",
       "userExists": "Este e-mail já está cadastrado",
       "emailNotConfirmed": "Por favor, confirme seu e-mail",
-      "weakPassword": "A senha deve ter pelo menos 6 caracteres"
+      "weakPassword": "A senha deve ter pelo menos 6 caracteres",
+      "passwordMismatch": "As senhas não coincidem"
     }
   },
   "navigation": {
