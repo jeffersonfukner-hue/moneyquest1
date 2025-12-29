@@ -598,5 +598,88 @@
       "settingsSaved": "Settings saved successfully!",
       "settingsError": "Error saving settings"
     }
+  },
+  "dailyReward": {
+    "title": "Daily Reward",
+    "claimNow": "Claim Now!",
+    "claimed": "Claimed!",
+    "claimYourReward": "Claim Your Daily Reward",
+    "streakBonus": "Streak Bonus",
+    "day": "Day",
+    "days": "days",
+    "streak": "Day Streak",
+    "currentStreak": "Current Streak",
+    "multiplier": "Multiplier",
+    "baseXP": "Base XP",
+    "bonusXP": "Bonus XP",
+    "totalXP": "Total XP",
+    "keepItUp": "Keep it up!",
+    "comeBackTomorrow": "Come back tomorrow!",
+    "rewardClaimed": "Daily reward claimed!",
+    "streakMilestone": "Streak milestone!",
+    "streakLost": "Streak was reset",
+    "calendar": {
+      "title": "Streak Calendar",
+      "thisWeek": "This Week",
+      "claimedDays": "Claimed Days",
+      "missedDays": "Missed Days"
+    },
+    "multipliers": {
+      "day1": "1x",
+      "day2": "1.25x",
+      "day3": "1.5x",
+      "day4": "1.75x",
+      "day5": "2x",
+      "day6": "2.25x",
+      "day7": "2.5x"
+    }
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "global": "Global",
+    "friends": "Friends",
+    "yourRank": "Your Rank",
+    "rank": "Rank",
+    "level": "Level",
+    "xp": "XP",
+    "joinLeaderboard": "Join Leaderboard",
+    "leaveLeaderboard": "Leave Leaderboard",
+    "joined": "Joined!",
+    "left": "Left leaderboard",
+    "notJoined": "Not on Leaderboard",
+    "joinToCompete": "Join to compete with others!",
+    "publicProfile": "Public Profile",
+    "privateProfile": "Private (Friends Only)",
+    "visibilityUpdated": "Visibility updated",
+    "top3": "Top 3",
+    "viewAll": "View All",
+    "noParticipants": "No participants yet",
+    "beFirst": "Be the first to join!",
+    "noFriends": "No friends on leaderboard",
+    "addFriends": "Add friends to compete!",
+    "pendingRequests": "Pending Requests",
+    "friendRequest": {
+      "send": "Send Friend Request",
+      "accept": "Accept",
+      "reject": "Reject",
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "sent": "Request sent!",
+      "error": "Error sending request"
+    }
+  },
+  "resourceBars": {
+    "title": "Resource Status",
+    "provisions": "Provisions",
+    "travelFuel": "Travel Fuel",
+    "funEnergy": "Fun Energy",
+    "treasure": "Treasure",
+    "kingdomTax": "Kingdom Tax",
+    "lifeEssence": "Life Essence",
+    "magicScrolls": "Magic Scrolls",
+    "guildFees": "Guild Fees",
+    "ofBudget": "of budget",
+    "noBudget": "No budget set",
+    "overBudget": "Over budget!"
   }
 }
