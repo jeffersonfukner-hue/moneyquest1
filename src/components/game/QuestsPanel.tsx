@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Quest, QuestType } from '@/types/database';
 import { Target } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -12,15 +13,16 @@ interface QuestsPanelProps {
 
 type TabType = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'SPECIAL';
 
-const QUEST_TABS: { type: TabType; label: string }[] = [
-  { type: 'DAILY', label: 'Daily' },
-  { type: 'WEEKLY', label: 'Weekly' },
-  { type: 'MONTHLY', label: 'Monthly' },
-  { type: 'SPECIAL', label: 'Special' },
-];
-
 export const QuestsPanel = ({ quests }: QuestsPanelProps) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('DAILY');
+
+  const QUEST_TABS: { type: TabType; labelKey: string }[] = [
+    { type: 'DAILY', labelKey: 'quests.daily' },
+    { type: 'WEEKLY', labelKey: 'quests.weekly' },
+    { type: 'MONTHLY', labelKey: 'quests.monthly' },
+    { type: 'SPECIAL', labelKey: 'quests.special' },
+  ];
 
   const getQuestsByType = (type: QuestType): Quest[] => {
     return quests.filter(q => q.type === type);
@@ -34,7 +36,6 @@ export const QuestsPanel = ({ quests }: QuestsPanelProps) => {
     };
   };
 
-  // Get the first quest of a type to show the timer
   const getFirstQuestForTimer = (type: QuestType): Quest | undefined => {
     return getQuestsByType(type).find(q => !q.is_completed && q.period_end_date);
   };
@@ -42,16 +43,16 @@ export const QuestsPanel = ({ quests }: QuestsPanelProps) => {
   const achievementQuests = getQuestsByType('ACHIEVEMENT');
 
   return (
-    <div className="bg-card rounded-2xl p-6 shadow-md animate-slide-up" style={{ animationDelay: '0.3s' }}>
+    <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-md animate-slide-up" style={{ animationDelay: '0.3s' }}>
       <div className="flex items-center gap-2 mb-4">
         <div className="w-8 h-8 bg-gradient-quest rounded-lg flex items-center justify-center">
           <Target className="w-4 h-4 text-primary-foreground" />
         </div>
-        <h3 className="font-display text-lg font-semibold text-foreground">Quests</h3>
+        <h3 className="font-display text-lg font-semibold text-foreground">{t('quests.title')}</h3>
       </div>
 
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabType)}>
-        <TabsList className="grid grid-cols-4 mb-4">
+        <TabsList className="grid grid-cols-4 mb-4 h-auto">
           {QUEST_TABS.map(tab => {
             const stats = getCompletionCount(tab.type);
             const config = QUEST_TYPE_CONFIG[tab.type];
@@ -59,10 +60,10 @@ export const QuestsPanel = ({ quests }: QuestsPanelProps) => {
               <TabsTrigger 
                 key={tab.type} 
                 value={tab.type}
-                className="text-xs sm:text-sm flex items-center gap-1"
+                className="text-xs py-2 flex flex-col sm:flex-row items-center gap-0.5 sm:gap-1 min-h-[44px]"
               >
                 <span>{config.icon}</span>
-                <span className="hidden sm:inline">{tab.label}</span>
+                <span className="hidden sm:inline">{t(tab.labelKey)}</span>
                 {stats.total > 0 && (
                   <span className="text-[10px] opacity-70">
                     {stats.completed}/{stats.total}
@@ -100,10 +101,7 @@ export const QuestsPanel = ({ quests }: QuestsPanelProps) => {
                 </div>
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
-                  <p className="text-sm">No {tab.label.toLowerCase()} quests available</p>
-                  {tab.type === 'SPECIAL' && (
-                    <p className="text-xs mt-1">Check back during special events!</p>
-                  )}
+                  <p className="text-sm">{t('common.noData')}</p>
                 </div>
               )}
             </TabsContent>
@@ -111,12 +109,11 @@ export const QuestsPanel = ({ quests }: QuestsPanelProps) => {
         })}
       </Tabs>
 
-      {/* Achievement quests section */}
       {achievementQuests.length > 0 && (
         <div className="mt-6 pt-4 border-t border-border">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-sm">{QUEST_TYPE_CONFIG.ACHIEVEMENT.icon}</span>
-            <h4 className="text-sm font-medium text-foreground">Achievements</h4>
+            <h4 className="text-sm font-medium text-foreground">{t('quests.achievement')}</h4>
             <span className="text-xs text-muted-foreground">
               {achievementQuests.filter(q => q.is_completed).length}/{achievementQuests.length}
             </span>
