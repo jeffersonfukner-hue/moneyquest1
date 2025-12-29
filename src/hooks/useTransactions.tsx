@@ -56,7 +56,8 @@ export const useTransactions = () => {
     if (!error && data) {
       setTransactions(data.map(t => ({
         ...t,
-        type: t.type as Transaction['type']
+        type: t.type as Transaction['type'],
+        currency: (t.currency || 'BRL') as Transaction['currency']
       })));
     }
     setLoading(false);
@@ -67,7 +68,7 @@ export const useTransactions = () => {
   }, [user]);
 
   const addTransaction = async (
-    transaction: Omit<Transaction, 'id' | 'user_id' | 'xp_earned' | 'created_at'>
+    transaction: Omit<Transaction, 'id' | 'user_id' | 'xp_earned' | 'created_at' | 'currency'> & { currency: string }
   ) => {
     if (!user || !profile) return { error: new Error('Not authenticated') };
 

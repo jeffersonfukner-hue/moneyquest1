@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Locale } from 'date-fns';
-import { Transaction } from '@/types/database';
+import { Transaction, SupportedCurrency } from '@/types/database';
 import { ArrowUpCircle, ArrowDownCircle, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { format, subDays } from 'date-fns';
@@ -19,7 +19,7 @@ type FilterPeriod = 'all' | 'week' | 'month' | 'year';
 export const TransactionsList = ({ transactions, onDelete }: TransactionsListProps) => {
   const { t } = useTranslation();
   const { dateLocale } = useLanguage();
-  const { formatCurrency } = useCurrency();
+  const { formatCurrency, currency: userCurrency, formatConverted } = useCurrency();
   const [filter, setFilter] = useState<FilterPeriod>('all');
 
   const filteredTransactions = useMemo(() => {
@@ -110,6 +110,8 @@ export const TransactionsList = ({ transactions, onDelete }: TransactionsListPro
                     onDelete={onDelete}
                     dateLocale={dateLocale}
                     formatCurrency={formatCurrency}
+                    userCurrency={userCurrency}
+                    formatConverted={formatConverted}
                   />
                 ))}
               </div>
@@ -125,50 +127,68 @@ const TransactionItem = ({
   transaction, 
   onDelete,
   dateLocale,
-  formatCurrency
+  formatCurrency,
+  userCurrency,
+  formatConverted
 }: { 
   transaction: Transaction; 
   onDelete: (id: string) => void;
   dateLocale: Locale;
   formatCurrency: (amount: number) => string;
-}) => (
-  <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-xl hover:bg-muted/50 transition-colors group">
-    <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-      transaction.type === 'INCOME' 
-        ? 'bg-income/20' 
-        : 'bg-expense/20'
-    }`}>
-      {transaction.type === 'INCOME' ? (
-        <ArrowUpCircle className="w-5 h-5 text-income" />
-      ) : (
-        <ArrowDownCircle className="w-5 h-5 text-expense" />
-      )}
-    </div>
-    
-    <div className="flex-1 min-w-0">
-      <p className="text-sm font-medium text-foreground truncate">
-        {transaction.description}
-      </p>
-      <p className="text-xs text-muted-foreground">
-        {format(new Date(transaction.date), "d MMM", { locale: dateLocale })} • {transaction.category} • +{transaction.xp_earned} XP
-      </p>
-    </div>
-
-    <div className="text-right flex-shrink-0">
-      <p className={`text-sm font-bold ${
-        transaction.type === 'INCOME' ? 'text-income' : 'text-expense'
+  userCurrency: SupportedCurrency;
+  formatConverted: (amount: number, from: SupportedCurrency) => string;
+}) => {
+  const transactionCurrency = transaction.currency || 'BRL';
+  const isDifferentCurrency = transactionCurrency !== userCurrency;
+  
+  return (
+    <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-xl hover:bg-muted/50 transition-colors group">
+      <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+        transaction.type === 'INCOME' 
+          ? 'bg-income/20' 
+          : 'bg-expense/20'
       }`}>
-        {transaction.type === 'INCOME' ? '+' : '-'}{formatCurrency(transaction.amount)}
-      </p>
-    </div>
+        {transaction.type === 'INCOME' ? (
+          <ArrowUpCircle className="w-5 h-5 text-income" />
+        ) : (
+          <ArrowDownCircle className="w-5 h-5 text-expense" />
+        )}
+      </div>
+      
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-foreground truncate">
+          {transaction.description}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          {format(new Date(transaction.date), "d MMM", { locale: dateLocale })} • {transaction.category} • +{transaction.xp_earned} XP
+        </p>
+      </div>
 
-    <Button
-      variant="ghost"
-      size="icon"
-      className="w-8 h-8 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-      onClick={() => onDelete(transaction.id)}
-    >
-      <Trash2 className="w-4 h-4" />
-    </Button>
-  </div>
-);
+      <div className="text-right flex-shrink-0">
+        <p className={`text-sm font-bold ${
+          transaction.type === 'INCOME' ? 'text-income' : 'text-expense'
+        }`}>
+          {transaction.type === 'INCOME' ? '+' : '-'}
+          {isDifferentCurrency 
+            ? formatConverted(transaction.amount, transactionCurrency as SupportedCurrency)
+            : formatCurrency(transaction.amount)
+          }
+        </p>
+        {isDifferentCurrency && (
+          <p className="text-xs text-muted-foreground">
+            ({formatCurrency(transaction.amount).replace(userCurrency, transactionCurrency)})
+          </p>
+        )}
+      </div>
+
+      <Button
+        variant="ghost"
+        size="icon"
+        className="w-8 h-8 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+        onClick={() => onDelete(transaction.id)}
+      >
+        <Trash2 className="w-4 h-4" />
+      </Button>
+    </div>
+  );
+};

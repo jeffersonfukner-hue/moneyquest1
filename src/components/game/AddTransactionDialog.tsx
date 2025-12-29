@@ -23,6 +23,7 @@ interface AddTransactionDialogProps {
     category: string;
     type: TransactionType;
     date: string;
+    currency: string;
   }) => Promise<{ error: Error | null }>;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -31,7 +32,7 @@ interface AddTransactionDialogProps {
 export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange }: AddTransactionDialogProps) => {
   const { t } = useTranslation();
   const { dateLocale } = useLanguage();
-  const { currencySymbol } = useCurrency();
+  const { currencySymbol, currency } = useCurrency();
   const { getCategoriesByType, addCategory } = useCategories();
   
   const [internalOpen, setInternalOpen] = useState(false);
@@ -59,6 +60,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
       category,
       type,
       date: format(date, 'yyyy-MM-dd'),
+      currency,
     });
 
     if (!error) {
