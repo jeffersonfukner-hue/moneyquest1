@@ -98,8 +98,6 @@ const Index = () => {
         return <TransactionsList transactions={transactions} onDelete={deleteTransaction} />;
       case 'quests':
         return <QuestsPanel quests={quests} />;
-      case 'badges':
-        return <BadgesGrid badges={badges} />;
       default:
         return null;
     }

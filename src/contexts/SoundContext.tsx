@@ -6,7 +6,14 @@ interface SoundContextType {
   playSound: (type: SoundType) => void;
 }
 
-export type SoundType = 'questComplete' | 'badgeUnlock' | 'levelUp' | 'xpGain' | 'click';
+export type SoundType = 
+  | 'questComplete' | 'badgeUnlock' | 'levelUp' | 'xpGain' | 'click'
+  // Narrative event sounds - Combat (Expenses)
+  | 'combatLow' | 'combatMedium' | 'combatHigh' | 'combatCritical'
+  // Narrative event sounds - Treasure (Income)
+  | 'treasureSmall' | 'treasureMedium' | 'treasureLarge'
+  // Category ambient sounds
+  | 'shieldBlock';
 
 const SoundContext = createContext<SoundContextType | undefined>(undefined);
 
@@ -115,7 +122,79 @@ const SOUNDS: Record<SoundType, () => void> = {
   click: () => {
     // Soft click
     playSynthSound(600, 0.05, 'sine', { attack: 0.001, decay: 0.02, sustain: 0.2, release: 0.02 });
-  }
+  },
+
+  // Combat sounds (Expenses) - darker, percussive tones
+  combatLow: () => {
+    // Light shield tap - soft thud
+    playSynthSound(150, 0.12, 'triangle', { attack: 0.01, decay: 0.08, sustain: 0.1, release: 0.03 });
+  },
+
+  combatMedium: () => {
+    // Sword clash - metallic ring
+    playMelody([
+      { freq: 400, duration: 0.08, delay: 0 },
+      { freq: 800, duration: 0.15, delay: 0.02 },
+      { freq: 600, duration: 0.1, delay: 0.08 },
+    ], 'sawtooth');
+  },
+
+  combatHigh: () => {
+    // Heavy impact - deep bass + crash
+    playMelody([
+      { freq: 80, duration: 0.25, delay: 0 },
+      { freq: 120, duration: 0.2, delay: 0.05 },
+      { freq: 500, duration: 0.15, delay: 0.1 },
+    ], 'square');
+  },
+
+  combatCritical: () => {
+    // Critical hit - dramatic descending + rumble
+    playMelody([
+      { freq: 600, duration: 0.1, delay: 0 },
+      { freq: 400, duration: 0.1, delay: 0.08 },
+      { freq: 200, duration: 0.15, delay: 0.15 },
+      { freq: 100, duration: 0.3, delay: 0.2 },
+      { freq: 80, duration: 0.4, delay: 0.35 },
+    ], 'sawtooth');
+  },
+
+  // Treasure sounds (Income) - bright, rewarding tones
+  treasureSmall: () => {
+    // Coin pickup - high chime
+    playSynthSound(1200, 0.12, 'sine', { attack: 0.01, decay: 0.05, sustain: 0.4, release: 0.06 });
+  },
+
+  treasureMedium: () => {
+    // Coin pile - cascading chimes
+    playMelody([
+      { freq: 800, duration: 0.1, delay: 0 },
+      { freq: 1000, duration: 0.1, delay: 0.05 },
+      { freq: 1200, duration: 0.1, delay: 0.1 },
+      { freq: 1400, duration: 0.15, delay: 0.15 },
+    ], 'sine');
+  },
+
+  treasureLarge: () => {
+    // Treasure chest - fanfare + sparkles
+    playMelody([
+      { freq: 523.25, duration: 0.12, delay: 0 },    // C5
+      { freq: 659.25, duration: 0.12, delay: 0.08 }, // E5
+      { freq: 783.99, duration: 0.12, delay: 0.16 }, // G5
+      { freq: 1046.50, duration: 0.25, delay: 0.24 },// C6
+      { freq: 1318.51, duration: 0.3, delay: 0.35 }, // E6
+    ], 'triangle');
+  },
+
+  // Shield sound (essential expenses)
+  shieldBlock: () => {
+    // Soft defensive sound
+    playMelody([
+      { freq: 300, duration: 0.08, delay: 0 },
+      { freq: 400, duration: 0.1, delay: 0.03 },
+      { freq: 350, duration: 0.12, delay: 0.08 },
+    ], 'triangle');
+  },
 };
 
 const STORAGE_KEY = 'moneyquest-sound-muted';

@@ -584,6 +584,50 @@ export type Database = {
         }
         Relationships: []
       }
+      transaction_narratives: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string | null
+          event_type: string
+          id: string
+          impact: string
+          narrative: string
+          transaction_id: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string | null
+          event_type: string
+          id?: string
+          impact: string
+          narrative: string
+          transaction_id: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          impact?: string
+          narrative?: string
+          transaction_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transaction_narratives_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: true
+            referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transactions: {
         Row: {
           amount: number

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { X } from 'lucide-react';
 import { IMPACT_COLORS, IMPACT_ICONS, INCOME_ICONS } from '@/lib/narrativeConfig';
+import { getNarrativeSound } from '@/lib/soundEffects';
 import { useSound } from '@/contexts/SoundContext';
 
 interface NarrativeEventProps {
@@ -8,6 +9,7 @@ interface NarrativeEventProps {
   impact: 'low' | 'medium' | 'high' | 'critical';
   eventType: 'INCOME' | 'EXPENSE';
   category?: string;
+  amount?: number;
   onClose: () => void;
 }
 
@@ -16,6 +18,7 @@ export const NarrativeEvent = ({
   impact, 
   eventType, 
   category,
+  amount,
   onClose 
 }: NarrativeEventProps) => {
   const [displayedText, setDisplayedText] = useState('');
@@ -42,10 +45,11 @@ export const NarrativeEvent = ({
     return () => clearInterval(timer);
   }, [narrative]);
 
-  // Play sound on mount
+  // Play contextual sound on mount
   useEffect(() => {
-    playSound('click');
-  }, [playSound]);
+    const soundType = getNarrativeSound(eventType, impact, category || '', amount);
+    playSound(soundType);
+  }, [playSound, eventType, impact, category, amount]);
 
   // Auto-close after reading time
   useEffect(() => {
