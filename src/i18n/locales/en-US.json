@@ -325,6 +325,7 @@
   "categories": {
     "title": "Categories",
     "pageDescription": "Manage your income and expense categories",
+    "manageCategories": "Manage income and expense categories",
     "income": "Income",
     "expense": "Expense",
     "addCategory": "Add Category",

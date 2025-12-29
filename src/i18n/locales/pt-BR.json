@@ -325,6 +325,7 @@
   "categories": {
     "title": "Categorias",
     "pageDescription": "Gerencie suas categorias de receita e despesa",
+    "manageCategories": "Gerencie categorias de receita e despesa",
     "income": "Receitas",
     "expense": "Despesas",
     "addCategory": "Adicionar Categoria",

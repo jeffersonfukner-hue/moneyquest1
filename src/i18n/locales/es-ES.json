@@ -325,6 +325,7 @@
   "categories": {
     "title": "Categorías",
     "pageDescription": "Gestiona tus categorías de ingresos y gastos",
+    "manageCategories": "Gestiona categorías de ingresos y gastos",
     "income": "Ingresos",
     "expense": "Gastos",
     "addCategory": "Añadir Categoría",
