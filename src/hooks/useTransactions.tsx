@@ -201,16 +201,27 @@ export const useTransactions = () => {
     generateNarrative(transaction.amount, transaction.category, transaction.type)
       .then(async (result) => {
         if (result) {
+          // Re-fetch to get the new transaction ID
+          const { data: latestTx } = await supabase
+            .from('transactions')
+            .select('id')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
           // Save narrative to journal
-          await supabase.from('transaction_narratives').insert({
-            user_id: user.id,
-            transaction_id: transactions[0]?.id, // Best effort - get from latest
-            narrative: result.narrative,
-            impact: result.impact,
-            category: transaction.category,
-            event_type: transaction.type,
-            amount: transaction.amount,
-          }).catch(console.error);
+          if (latestTx) {
+            await supabase.from('transaction_narratives').insert({
+              user_id: user.id,
+              transaction_id: latestTx.id,
+              narrative: result.narrative,
+              impact: result.impact,
+              category: transaction.category,
+              event_type: transaction.type,
+              amount: transaction.amount,
+            });
+          }
 
           setNarrativeData({
             narrative: result.narrative,

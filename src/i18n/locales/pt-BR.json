@@ -61,6 +61,7 @@
     "add": "Adicionar",
     "quests": "Missões",
     "badges": "Conquistas",
+    "journal": "Diário",
     "settings": "Configurações"
   },
   "transactions": {
@@ -681,5 +682,27 @@
     "ofBudget": "do orçamento",
     "noBudget": "Sem orçamento definido",
     "overBudget": "Acima do orçamento!"
+  },
+  "journal": {
+    "title": "Diário de Aventuras",
+    "questStats": "Estatísticas da Jornada",
+    "combatEncounters": "Encontros de Combate",
+    "treasuresFound": "Tesouros Encontrados",
+    "criticalHits": "Golpes Críticos",
+    "goldCollected": "Ouro Coletado",
+    "damageTaken": "Dano Recebido",
+    "biggestTreasure": "Maior Tesouro",
+    "mostDangerous": "Categoria Mais Perigosa",
+    "filterType": "Filtrar por tipo",
+    "filterImpact": "Filtrar por impacto",
+    "treasures": "Tesouros",
+    "battles": "Batalhas",
+    "impactLow": "Impacto Baixo",
+    "impactMedium": "Impacto Médio",
+    "impactHigh": "Impacto Alto",
+    "impactCritical": "Impacto Crítico",
+    "loadMore": "Carregar Mais Entradas",
+    "emptyTitle": "Sua aventura começa agora!",
+    "emptyDescription": "Comece a registrar transações para construir sua crônica de missões. Cada transação se torna uma história épica em sua aventura financeira."
   }
 }

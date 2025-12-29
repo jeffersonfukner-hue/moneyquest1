@@ -141,6 +141,7 @@ const Index = () => {
           impact={narrativeData.impact}
           eventType={narrativeData.eventType}
           category={narrativeData.category}
+          amount={narrativeData.amount}
           onClose={clearNarrative}
         />
       )}

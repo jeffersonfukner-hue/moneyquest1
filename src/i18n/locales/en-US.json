@@ -61,6 +61,7 @@
     "add": "Add",
     "quests": "Quests",
     "badges": "Badges",
+    "journal": "Journal",
     "settings": "Settings"
   },
   "transactions": {
@@ -681,5 +682,27 @@
     "ofBudget": "of budget",
     "noBudget": "No budget set",
     "overBudget": "Over budget!"
+  },
+  "journal": {
+    "title": "Adventure Journal",
+    "questStats": "Quest Statistics",
+    "combatEncounters": "Combat Encounters",
+    "treasuresFound": "Treasures Found",
+    "criticalHits": "Critical Hits",
+    "goldCollected": "Gold Collected",
+    "damageTaken": "Damage Taken",
+    "biggestTreasure": "Biggest Treasure",
+    "mostDangerous": "Most Dangerous Category",
+    "filterType": "Filter by type",
+    "filterImpact": "Filter by impact",
+    "treasures": "Treasures",
+    "battles": "Battles",
+    "impactLow": "Low Impact",
+    "impactMedium": "Medium Impact",
+    "impactHigh": "High Impact",
+    "impactCritical": "Critical Impact",
+    "loadMore": "Load More Entries",
+    "emptyTitle": "Your adventure begins now!",
+    "emptyDescription": "Start logging transactions to build your quest chronicle. Each transaction becomes an epic tale in your financial adventure."
   }
 }
