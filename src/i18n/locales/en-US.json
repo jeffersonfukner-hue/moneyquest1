@@ -520,6 +520,20 @@
       "day30": "Day 30",
       "retained": "retained",
       "retentionRate": "Retention Rate"
+    },
+    "retentionAlerts": {
+      "title": "Retention Alerts",
+      "description": "Automatic notifications when retention falls below threshold",
+      "configure": "Configure",
+      "configureThresholds": "Configure Retention Thresholds",
+      "settingsTitle": "Alert Settings",
+      "enableAlerts": "Enable Alerts",
+      "minThreshold": "- Minimum Threshold",
+      "belowThreshold": "below threshold",
+      "currentRate": "Current rate",
+      "threshold": "Threshold",
+      "settingsSaved": "Settings saved successfully!",
+      "settingsError": "Error saving settings"
     }
   }
 }

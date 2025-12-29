@@ -520,6 +520,20 @@
       "day30": "Día 30",
       "retained": "retenidos",
       "retentionRate": "Tasa de Retención"
+    },
+    "retentionAlerts": {
+      "title": "Alertas de Retención",
+      "description": "Notificaciones automáticas cuando la retención cae por debajo del umbral",
+      "configure": "Configurar",
+      "configureThresholds": "Configurar Umbrales de Retención",
+      "settingsTitle": "Configuración de Alertas",
+      "enableAlerts": "Habilitar Alertas",
+      "minThreshold": "- Umbral Mínimo",
+      "belowThreshold": "por debajo del umbral",
+      "currentRate": "Tasa actual",
+      "threshold": "Umbral",
+      "settingsSaved": "¡Configuración guardada con éxito!",
+      "settingsError": "Error al guardar configuración"
     }
   }
 }

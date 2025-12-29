@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Users, UserCheck, Crown, TrendingUp, Activity, AlertTriangle, Filter, Calendar } from 'lucide-react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { StatsCard } from '@/components/admin/StatsCard';
+import { RetentionAlerts } from '@/components/admin/RetentionAlerts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useAdminData } from '@/hooks/useAdminData';
 import { 
@@ -286,6 +287,9 @@ const SuperAdminDashboard = () => {
           <h1 className="text-2xl lg:text-3xl font-display font-bold">{t('admin.dashboard')}</h1>
           <p className="text-muted-foreground">{t('admin.description')}</p>
         </div>
+
+        {/* Retention Alerts */}
+        <RetentionAlerts />
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
