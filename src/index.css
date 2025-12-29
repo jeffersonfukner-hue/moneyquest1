@@ -259,6 +259,113 @@
   --gradient-card: linear-gradient(145deg, hsl(260 22% 14%), hsl(260 25% 10%));
 }
 
+/* ========================================
+   SEASONAL THEMES
+   ======================================== */
+
+/* Christmas Theme - Festive red and green */
+.season-christmas {
+  --primary: 0 72% 51%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 142 76% 36%;
+  --secondary-foreground: 0 0% 100%;
+  --accent: 45 93% 47%;
+  --accent-foreground: 30 80% 15%;
+  --ring: 0 72% 51%;
+  --gradient-hero: linear-gradient(135deg, hsl(0 72% 51%), hsl(142 76% 36%));
+  --gradient-quest: linear-gradient(135deg, hsl(0 72% 51%), hsl(0 65% 45%));
+  --shadow-glow-primary: 0 0 24px hsl(0 72% 51% / 0.4);
+}
+
+.season-christmas.dark {
+  --primary: 0 70% 55%;
+  --secondary: 142 70% 42%;
+  --gradient-hero: linear-gradient(135deg, hsl(0 70% 55%), hsl(142 70% 42%));
+}
+
+/* Halloween Theme - Spooky orange and purple */
+.season-halloween {
+  --background: 30 15% 10%;
+  --foreground: 35 20% 92%;
+  --card: 30 18% 14%;
+  --card-foreground: 35 20% 92%;
+  --primary: 25 95% 53%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 270 60% 50%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 30 15% 18%;
+  --muted-foreground: 30 12% 55%;
+  --accent: 45 100% 51%;
+  --accent-foreground: 30 80% 15%;
+  --border: 30 15% 22%;
+  --ring: 25 95% 53%;
+  --gradient-hero: linear-gradient(135deg, hsl(25 95% 53%), hsl(270 60% 50%));
+  --gradient-quest: linear-gradient(135deg, hsl(270 60% 50%), hsl(280 55% 45%));
+  --gradient-card: linear-gradient(145deg, hsl(30 18% 16%), hsl(30 15% 12%));
+  --shadow-glow-primary: 0 0 24px hsl(25 95% 53% / 0.5);
+}
+
+.season-halloween.dark {
+  --background: 30 20% 6%;
+  --card: 30 18% 10%;
+  --border: 30 15% 18%;
+}
+
+/* Easter Theme - Pastel spring colors */
+.season-easter {
+  --background: 300 30% 97%;
+  --foreground: 280 40% 20%;
+  --card: 300 25% 99%;
+  --card-foreground: 280 40% 20%;
+  --primary: 280 60% 65%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 160 50% 55%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 300 20% 92%;
+  --muted-foreground: 280 15% 45%;
+  --accent: 45 90% 65%;
+  --accent-foreground: 30 80% 20%;
+  --border: 300 20% 88%;
+  --ring: 280 60% 65%;
+  --gradient-hero: linear-gradient(135deg, hsl(280 60% 65%), hsl(160 50% 55%));
+  --gradient-quest: linear-gradient(135deg, hsl(45 90% 65%), hsl(35 85% 60%));
+  --gradient-card: linear-gradient(145deg, hsl(300 25% 99%), hsl(300 30% 96%));
+  --shadow-glow-primary: 0 0 24px hsl(280 60% 65% / 0.35);
+}
+
+.season-easter.dark {
+  --background: 280 25% 10%;
+  --foreground: 300 20% 92%;
+  --card: 280 22% 14%;
+  --card-foreground: 300 20% 92%;
+  --primary: 280 55% 62%;
+  --secondary: 160 45% 50%;
+  --muted: 280 20% 18%;
+  --muted-foreground: 280 15% 55%;
+  --border: 280 20% 22%;
+  --gradient-card: linear-gradient(145deg, hsl(280 22% 16%), hsl(280 25% 12%));
+}
+
+/* Carnival Theme - Vibrant party colors */
+.season-carnival {
+  --primary: 320 80% 55%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 180 70% 45%;
+  --secondary-foreground: 0 0% 100%;
+  --accent: 45 100% 55%;
+  --accent-foreground: 30 80% 15%;
+  --ring: 320 80% 55%;
+  --gradient-hero: linear-gradient(135deg, hsl(320 80% 55%), hsl(45 100% 55%), hsl(180 70% 45%));
+  --gradient-quest: linear-gradient(135deg, hsl(320 80% 55%), hsl(280 70% 50%));
+  --shadow-glow-primary: 0 0 24px hsl(320 80% 55% / 0.4);
+}
+
+.season-carnival.dark {
+  --primary: 320 75% 58%;
+  --secondary: 180 65% 50%;
+  --gradient-hero: linear-gradient(135deg, hsl(320 75% 58%), hsl(45 95% 55%), hsl(180 65% 50%));
+}
+
 @layer base {
   * {
     @apply border-border;
