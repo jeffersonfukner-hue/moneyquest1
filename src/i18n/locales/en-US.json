@@ -97,6 +97,12 @@
       "other_expense": "Other Expenses"
     }
   },
+  "dashboard": {
+    "spendingByCategory": "Spending by Category",
+    "monthlySavings": "Monthly Savings",
+    "saved": "Saved",
+    "target": "Target"
+  },
   "stats": {
     "dayStreak": "Day Streak",
     "streak": "Streak",

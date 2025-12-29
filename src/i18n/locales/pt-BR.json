@@ -97,6 +97,12 @@
       "other_expense": "Outras Despesas"
     }
   },
+  "dashboard": {
+    "spendingByCategory": "Gastos por Categoria",
+    "monthlySavings": "Economia Mensal",
+    "saved": "Economizado",
+    "target": "Meta"
+  },
   "stats": {
     "dayStreak": "Sequência de Dias",
     "streak": "Sequência",
