@@ -1,10 +1,13 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { Locale } from 'date-fns';
 import { Transaction } from '@/types/database';
 import { ArrowUpCircle, ArrowDownCircle, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { format, subDays } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 interface TransactionsListProps {
   transactions: Transaction[];
@@ -14,6 +17,9 @@ interface TransactionsListProps {
 type FilterPeriod = 'all' | 'week' | 'month' | 'year';
 
 export const TransactionsList = ({ transactions, onDelete }: TransactionsListProps) => {
+  const { t } = useTranslation();
+  const { dateLocale } = useLanguage();
+  const { formatCurrency } = useCurrency();
   const [filter, setFilter] = useState<FilterPeriod>('all');
 
   const filteredTransactions = useMemo(() => {
@@ -29,7 +35,6 @@ export const TransactionsList = ({ transactions, onDelete }: TransactionsListPro
     });
   }, [transactions, filter]);
 
-  // Group filtered transactions by date
   const groupedTransactions = useMemo(() => {
     return filteredTransactions.reduce((groups, transaction) => {
       const date = transaction.date;
@@ -47,35 +52,39 @@ export const TransactionsList = ({ transactions, onDelete }: TransactionsListPro
         <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
           <span className="text-3xl">📝</span>
         </div>
-        <h3 className="font-display text-lg font-semibold text-foreground mb-2">Nenhuma transação ainda</h3>
+        <h3 className="font-display text-lg font-semibold text-foreground mb-2">
+          {t('transactions.noTransactions')}
+        </h3>
         <p className="text-sm text-muted-foreground">
-          Comece a registrar suas receitas e despesas para ganhar XP!
+          {t('transactions.startTracking')}
         </p>
       </div>
     );
   }
 
   return (
-    <div className="bg-card rounded-2xl p-6 shadow-md animate-slide-up" style={{ animationDelay: '0.4s' }}>
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-        <h3 className="font-display text-lg font-semibold text-foreground">Transações</h3>
+    <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-md animate-slide-up" style={{ animationDelay: '0.4s' }}>
+      <div className="flex flex-col gap-3 mb-4">
+        <h3 className="font-display text-lg font-semibold text-foreground">
+          {t('transactions.title')}
+        </h3>
         <ToggleGroup 
           type="single" 
           value={filter} 
           onValueChange={(v) => v && setFilter(v as FilterPeriod)}
-          className="bg-muted/50 rounded-lg p-1"
+          className="bg-muted/50 rounded-lg p-1 self-start"
         >
-          <ToggleGroupItem value="all" className="text-xs px-3 py-1.5 data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">
-            Tudo
+          <ToggleGroupItem value="all" className="text-xs px-3 py-1.5 min-h-[36px] data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">
+            {t('common.all')}
           </ToggleGroupItem>
-          <ToggleGroupItem value="week" className="text-xs px-3 py-1.5 data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">
-            Semana
+          <ToggleGroupItem value="week" className="text-xs px-3 py-1.5 min-h-[36px] data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">
+            {t('common.week')}
           </ToggleGroupItem>
-          <ToggleGroupItem value="month" className="text-xs px-3 py-1.5 data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">
-            Mês
+          <ToggleGroupItem value="month" className="text-xs px-3 py-1.5 min-h-[36px] data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">
+            {t('common.month')}
           </ToggleGroupItem>
-          <ToggleGroupItem value="year" className="text-xs px-3 py-1.5 data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">
-            Ano
+          <ToggleGroupItem value="year" className="text-xs px-3 py-1.5 min-h-[36px] data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">
+            {t('common.year')}
           </ToggleGroupItem>
         </ToggleGroup>
       </div>
@@ -83,15 +92,15 @@ export const TransactionsList = ({ transactions, onDelete }: TransactionsListPro
       {filteredTransactions.length === 0 ? (
         <div className="text-center py-8">
           <p className="text-sm text-muted-foreground">
-            Nenhuma transação encontrada para este período.
+            {t('transactions.noTransactionsForPeriod')}
           </p>
         </div>
       ) : (
-        <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
+        <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
           {Object.entries(groupedTransactions).map(([date, txs]) => (
             <div key={date}>
               <p className="text-xs font-medium text-muted-foreground mb-2">
-                {format(new Date(date), "EEEE, d 'de' MMMM", { locale: ptBR })}
+                {format(new Date(date), "EEEE, d MMMM", { locale: dateLocale })}
               </p>
               <div className="space-y-2">
                 {txs.map(transaction => (
@@ -99,6 +108,8 @@ export const TransactionsList = ({ transactions, onDelete }: TransactionsListPro
                     key={transaction.id} 
                     transaction={transaction} 
                     onDelete={onDelete}
+                    dateLocale={dateLocale}
+                    formatCurrency={formatCurrency}
                   />
                 ))}
               </div>
@@ -112,13 +123,17 @@ export const TransactionsList = ({ transactions, onDelete }: TransactionsListPro
 
 const TransactionItem = ({ 
   transaction, 
-  onDelete 
+  onDelete,
+  dateLocale,
+  formatCurrency
 }: { 
   transaction: Transaction; 
   onDelete: (id: string) => void;
+  dateLocale: Locale;
+  formatCurrency: (amount: number) => string;
 }) => (
   <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-xl hover:bg-muted/50 transition-colors group">
-    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+    <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
       transaction.type === 'INCOME' 
         ? 'bg-income/20' 
         : 'bg-expense/20'
@@ -135,22 +150,22 @@ const TransactionItem = ({
         {transaction.description}
       </p>
       <p className="text-xs text-muted-foreground">
-        {format(new Date(transaction.date), "d MMM", { locale: ptBR })} • {transaction.category} • +{transaction.xp_earned} XP
+        {format(new Date(transaction.date), "d MMM", { locale: dateLocale })} • {transaction.category} • +{transaction.xp_earned} XP
       </p>
     </div>
 
-    <div className="text-right">
+    <div className="text-right flex-shrink-0">
       <p className={`text-sm font-bold ${
         transaction.type === 'INCOME' ? 'text-income' : 'text-expense'
       }`}>
-        {transaction.type === 'INCOME' ? '+' : '-'}${transaction.amount.toLocaleString()}
+        {transaction.type === 'INCOME' ? '+' : '-'}{formatCurrency(transaction.amount)}
       </p>
     </div>
 
     <Button
       variant="ghost"
       size="icon"
-      className="w-8 h-8 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+      className="w-8 h-8 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
       onClick={() => onDelete(transaction.id)}
     >
       <Trash2 className="w-4 h-4" />
