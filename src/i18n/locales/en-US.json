@@ -23,9 +23,16 @@
     "logout": "Sign Out",
     "email": "Email",
     "password": "Password",
+    "confirmPassword": "Confirm Password",
     "emailPlaceholder": "your@email.com",
     "passwordPlaceholder": "Minimum 6 characters",
+    "confirmPasswordPlaceholder": "Enter password again",
     "forgotPassword": "Forgot password?",
+    "resetPassword": "Reset Password",
+    "resetPasswordDescription": "Enter your email to receive a reset link",
+    "sendResetLink": "Send Reset Link",
+    "resetEmailSent": "Email sent!",
+    "checkInbox": "Check your inbox",
     "dontHaveAccount": "Don't have an account?",
     "alreadyHaveAccount": "Already have an account?",
     "welcomeBack": "Welcome back!",
@@ -40,7 +47,8 @@
       "invalidCredentials": "Invalid email or password",
       "userExists": "This email is already registered",
       "emailNotConfirmed": "Please confirm your email",
-      "weakPassword": "Password must be at least 6 characters"
+      "weakPassword": "Password must be at least 6 characters",
+      "passwordMismatch": "Passwords do not match"
     }
   },
   "navigation": {

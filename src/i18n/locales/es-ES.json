@@ -23,9 +23,16 @@
     "logout": "Cerrar Sesión",
     "email": "Correo electrónico",
     "password": "Contraseña",
+    "confirmPassword": "Confirmar Contraseña",
     "emailPlaceholder": "tu@correo.com",
     "passwordPlaceholder": "Mínimo 6 caracteres",
+    "confirmPasswordPlaceholder": "Ingresa la contraseña nuevamente",
     "forgotPassword": "¿Olvidaste la contraseña?",
+    "resetPassword": "Recuperar Contraseña",
+    "resetPasswordDescription": "Ingresa tu correo para recibir un enlace de recuperación",
+    "sendResetLink": "Enviar Enlace",
+    "resetEmailSent": "¡Correo enviado!",
+    "checkInbox": "Revisa tu bandeja de entrada",
     "dontHaveAccount": "¿No tienes cuenta?",
     "alreadyHaveAccount": "¿Ya tienes cuenta?",
     "welcomeBack": "¡Bienvenido de nuevo!",
@@ -40,7 +47,8 @@
       "invalidCredentials": "Correo o contraseña incorrectos",
       "userExists": "Este correo ya está registrado",
       "emailNotConfirmed": "Por favor, confirma tu correo",
-      "weakPassword": "La contraseña debe tener al menos 6 caracteres"
+      "weakPassword": "La contraseña debe tener al menos 6 caracteres",
+      "passwordMismatch": "Las contraseñas no coinciden"
     }
   },
   "navigation": {
