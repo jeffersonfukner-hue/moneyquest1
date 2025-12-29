@@ -2,6 +2,7 @@
   "common": {
     "loading": "Carregando...",
     "save": "Salvar",
+    "saving": "Salvando...",
     "cancel": "Cancelar",
     "delete": "Excluir",
     "add": "Adicionar",
@@ -15,7 +16,9 @@
     "year": "Ano",
     "today": "Hoje",
     "yesterday": "Ontem",
-    "noData": "Nenhum dado encontrado"
+    "noData": "Nenhum dado encontrado",
+    "success": "Sucesso",
+    "error": "Erro"
   },
   "auth": {
     "login": "Entrar",
@@ -94,6 +97,8 @@
   },
   "stats": {
     "dayStreak": "Sequência de Dias",
+    "streak": "Sequência",
+    "days": "dias",
     "totalIncome": "Receita Total",
     "totalExpenses": "Despesas Totais",
     "totalSaved": "Total Economizado",
@@ -101,6 +106,18 @@
     "level": "Nível",
     "xp": "XP",
     "xpToNextLevel": "XP para o próximo nível"
+  },
+  "profile": {
+    "title": "Perfil",
+    "avatar": "Avatar",
+    "displayName": "Nome de Exibição",
+    "displayNameLabel": "Seu nome",
+    "displayNamePlaceholder": "Digite seu nome",
+    "displayNameHint": "É assim que você aparecerá no app",
+    "yourStats": "Suas Estatísticas",
+    "saveChanges": "Salvar Alterações",
+    "saveSuccess": "Perfil atualizado com sucesso!",
+    "saveError": "Falha ao atualizar perfil"
   },
   "quests": {
     "title": "Missões",

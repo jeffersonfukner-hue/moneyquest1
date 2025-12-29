@@ -98,6 +98,7 @@ export type Database = {
           avatar_icon: string
           created_at: string
           currency: string
+          display_name: string | null
           financial_mood: string
           id: string
           language: string
@@ -115,6 +116,7 @@ export type Database = {
           avatar_icon?: string
           created_at?: string
           currency?: string
+          display_name?: string | null
           financial_mood?: string
           id: string
           language?: string
@@ -132,6 +134,7 @@ export type Database = {
           avatar_icon?: string
           created_at?: string
           currency?: string
+          display_name?: string | null
           financial_mood?: string
           id?: string
           language?: string
