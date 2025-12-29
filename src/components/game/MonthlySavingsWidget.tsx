@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Wallet, TrendingUp, TrendingDown } from 'lucide-react';
-import { Transaction } from '@/types/database';
+import { Transaction, SupportedCurrency } from '@/types/database';
 import { useCurrency } from '@/contexts/CurrencyContext';
 
 interface MonthlySavingsWidgetProps {
@@ -11,7 +11,7 @@ interface MonthlySavingsWidgetProps {
 
 export const MonthlySavingsWidget = ({ transactions }: MonthlySavingsWidgetProps) => {
   const { t } = useTranslation();
-  const { formatCurrency } = useCurrency();
+  const { formatCurrency, convertToUserCurrency } = useCurrency();
 
   // Filter transactions from current month
   const now = new Date();
@@ -25,11 +25,11 @@ export const MonthlySavingsWidget = ({ transactions }: MonthlySavingsWidgetProps
 
   const monthlyIncome = monthlyTransactions
     .filter((tx) => tx.type === 'INCOME')
-    .reduce((sum, tx) => sum + tx.amount, 0);
+    .reduce((sum, tx) => sum + convertToUserCurrency(tx.amount, (tx.currency || 'BRL') as SupportedCurrency), 0);
 
   const monthlyExpenses = monthlyTransactions
     .filter((tx) => tx.type === 'EXPENSE')
-    .reduce((sum, tx) => sum + tx.amount, 0);
+    .reduce((sum, tx) => sum + convertToUserCurrency(tx.amount, (tx.currency || 'BRL') as SupportedCurrency), 0);
 
   const savings = monthlyIncome - monthlyExpenses;
   const savingsRate = monthlyIncome > 0 ? (savings / monthlyIncome) * 100 : 0;

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, TrendingDown, Minus, BarChart3 } from 'lucide-react';
-import { Transaction } from '@/types/database';
+import { Transaction, SupportedCurrency } from '@/types/database';
 import { useCurrency } from '@/contexts/CurrencyContext';
 
 interface MonthlyComparisonWidgetProps {
@@ -10,7 +10,7 @@ interface MonthlyComparisonWidgetProps {
 
 export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidgetProps) => {
   const { t } = useTranslation();
-  const { formatCurrency } = useCurrency();
+  const { formatCurrency, convertToUserCurrency } = useCurrency();
 
   const now = new Date();
   const currentMonth = now.getMonth();
@@ -20,7 +20,7 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
   const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
   const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
 
-  // Filter transactions by month
+  // Filter transactions by month with currency conversion
   const currentMonthExpenses = transactions
     .filter((tx) => {
       const txDate = new Date(tx.date);
@@ -30,7 +30,7 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
         txDate.getFullYear() === currentYear
       );
     })
-    .reduce((sum, tx) => sum + tx.amount, 0);
+    .reduce((sum, tx) => sum + convertToUserCurrency(tx.amount, (tx.currency || 'BRL') as SupportedCurrency), 0);
 
   const prevMonthExpenses = transactions
     .filter((tx) => {
@@ -41,7 +41,7 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
         txDate.getFullYear() === prevYear
       );
     })
-    .reduce((sum, tx) => sum + tx.amount, 0);
+    .reduce((sum, tx) => sum + convertToUserCurrency(tx.amount, (tx.currency || 'BRL') as SupportedCurrency), 0);
 
   // Calculate percentage change
   const percentChange = prevMonthExpenses > 0 

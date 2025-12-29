@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { PieChart as PieChartIcon } from 'lucide-react';
-import { Transaction } from '@/types/database';
+import { Transaction, SupportedCurrency } from '@/types/database';
 import { useCurrency } from '@/contexts/CurrencyContext';
 
 interface SpendingByCategoryChartProps {
@@ -22,7 +22,7 @@ const COLORS = [
 
 export const SpendingByCategoryChart = ({ transactions }: SpendingByCategoryChartProps) => {
   const { t } = useTranslation();
-  const { formatCurrency } = useCurrency();
+  const { formatCurrency, convertToUserCurrency } = useCurrency();
 
   // Filter only expenses from current month
   const now = new Date();
@@ -38,10 +38,11 @@ export const SpendingByCategoryChart = ({ transactions }: SpendingByCategoryChar
     );
   });
 
-  // Group by category
+  // Group by category with currency conversion
   const categoryTotals = monthlyExpenses.reduce((acc, tx) => {
     const category = tx.category || 'Outros';
-    acc[category] = (acc[category] || 0) + tx.amount;
+    const convertedAmount = convertToUserCurrency(tx.amount, (tx.currency || 'BRL') as SupportedCurrency);
+    acc[category] = (acc[category] || 0) + convertedAmount;
     return acc;
   }, {} as Record<string, number>);
 
