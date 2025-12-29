@@ -10,9 +10,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { CATEGORIES } from '@/lib/gameLogic';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { CategoryGoal } from '@/hooks/useCategoryGoals';
+import { useCategories } from '@/hooks/useCategories';
+import { Category } from '@/types/database';
 
 interface AddGoalDialogProps {
   open: boolean;
@@ -33,11 +34,15 @@ export const AddGoalDialog = ({
 }: AddGoalDialogProps) => {
   const { t } = useTranslation();
   const { currencySymbol } = useCurrency();
+  const { getCategoriesByType, loading: categoriesLoading } = useCategories();
   const [category, setCategory] = useState('');
   const [budgetLimit, setBudgetLimit] = useState('');
   const [loading, setLoading] = useState(false);
 
   const isEditing = !!editingGoal;
+
+  // Get expense categories from user's dynamic categories
+  const expenseCategories = getCategoriesByType('EXPENSE');
 
   useEffect(() => {
     if (editingGoal) {
@@ -71,8 +76,8 @@ export const AddGoalDialog = ({
   };
 
   // Filter out categories that already have goals (except when editing)
-  const availableCategories = CATEGORIES.EXPENSE.filter(
-    cat => !existingCategories.includes(cat) || (isEditing && editingGoal?.category === cat)
+  const availableCategories = expenseCategories.filter(
+    cat => !existingCategories.includes(cat.name) || (isEditing && editingGoal?.category === cat.name)
   );
 
   // Map category to translation key
@@ -88,6 +93,13 @@ export const AddGoalDialog = ({
       'Other': 'other_expense',
     };
     return keyMap[cat] || cat.toLowerCase().replace(/\s+/g, '_');
+  };
+
+  // Get display name for category (use icon + translated name or custom name)
+  const getCategoryDisplayName = (cat: Category): string => {
+    const translationKey = getCategoryTranslationKey(cat.name);
+    const translated = t(`transactions.categories.${translationKey}`, cat.name);
+    return `${cat.icon || '📦'} ${translated}`;
   };
 
   return (
@@ -113,8 +125,8 @@ export const AddGoalDialog = ({
               </SelectTrigger>
               <SelectContent>
                 {availableCategories.map(cat => (
-                  <SelectItem key={cat} value={cat} className="min-h-[44px]">
-                    {t(`transactions.categories.${getCategoryTranslationKey(cat)}`, cat)}
+                  <SelectItem key={cat.id} value={cat.name} className="min-h-[44px]">
+                    {getCategoryDisplayName(cat)}
                   </SelectItem>
                 ))}
               </SelectContent>

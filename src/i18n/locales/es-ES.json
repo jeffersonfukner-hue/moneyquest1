@@ -321,7 +321,10 @@
     "deleteSuccess": "¡Meta eliminada con éxito!",
     "deleteError": "Error al eliminar meta",
     "deleteConfirmTitle": "Eliminar Meta",
-    "deleteConfirmDesc": "¿Estás seguro de que quieres eliminar la meta de {{category}}?"
+    "deleteConfirmDesc": "¿Estás seguro de que quieres eliminar la meta de {{category}}?",
+    "alertsCount": "{{count}} categorías sobre el límite",
+    "dailyBudget": "{{amount}}/día restante",
+    "daysRemaining": "{{days}} días restantes del mes"
   },
   "categories": {
     "title": "Categorías",
