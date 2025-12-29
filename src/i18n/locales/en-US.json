@@ -321,7 +321,10 @@
     "deleteSuccess": "Goal deleted successfully!",
     "deleteError": "Failed to delete goal",
     "deleteConfirmTitle": "Delete Goal",
-    "deleteConfirmDesc": "Are you sure you want to delete the goal for {{category}}?"
+    "deleteConfirmDesc": "Are you sure you want to delete the goal for {{category}}?",
+    "alertsCount": "{{count}} categories over budget",
+    "dailyBudget": "{{amount}}/day remaining",
+    "daysRemaining": "{{days}} days left this month"
   },
   "categories": {
     "title": "Categories",

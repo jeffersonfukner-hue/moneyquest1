@@ -197,6 +197,46 @@ export const calculateQuestProgress = async (
       return profile.total_expenses <= totalBudget ? 1 : 0;
     }
 
+    // Achievement quests
+    case 'achievement_budget': {
+      // Count category goals created by user
+      const { count } = await supabase
+        .from('category_goals')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId);
+      return count || 0;
+    }
+
+    case 'achievement_first': {
+      // Count total transactions
+      const { count } = await supabase
+        .from('transactions')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId);
+      return count || 0;
+    }
+
+    case 'achievement_streak7': {
+      // Get current streak from profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('streak')
+        .eq('id', userId)
+        .single();
+      return profile?.streak || 0;
+    }
+
+    case 'achievement_save1000': {
+      // Get total saved amount
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('total_income, total_expenses')
+        .eq('id', userId)
+        .single();
+      if (!profile) return 0;
+      return Math.max(0, profile.total_income - profile.total_expenses);
+    }
+
     // Special seasonal quests
     case 'special_christmas': {
       // Count holiday-related expenses (Shopping, Entertainment, Other)

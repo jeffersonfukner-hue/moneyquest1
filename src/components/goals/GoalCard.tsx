@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { CategoryGoal } from '@/hooks/useCategoryGoals';
 import { useCurrency } from '@/contexts/CurrencyContext';
-import { Pencil, Trash2, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { useCategories } from '@/hooks/useCategories';
+import { Pencil, Trash2, AlertTriangle, CheckCircle2, TrendingDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   AlertDialog,
@@ -17,6 +18,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface GoalCardProps {
   goal: CategoryGoal;
@@ -27,6 +33,7 @@ interface GoalCardProps {
 export const GoalCard = ({ goal, onEdit, onDelete }: GoalCardProps) => {
   const { t } = useTranslation();
   const { formatCurrency } = useCurrency();
+  const { getCategoryByName } = useCategories();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const spent = goal.spent || 0;
@@ -35,6 +42,16 @@ export const GoalCard = ({ goal, onEdit, onDelete }: GoalCardProps) => {
   const remaining = limit - spent;
   const isOverBudget = spent > limit;
   const isNearLimit = percentage >= 80 && !isOverBudget;
+
+  // Calculate daily budget prediction
+  const today = new Date();
+  const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+  const currentDay = today.getDate();
+  const daysRemaining = daysInMonth - currentDay;
+  const dailyBudget = daysRemaining > 0 ? Math.max(0, remaining / daysRemaining) : 0;
+
+  // Get category info from user's categories
+  const categoryInfo = getCategoryByName(goal.category, 'EXPENSE');
 
   // Map category to translation key
   const getCategoryTranslationKey = (cat: string): string => {
@@ -52,6 +69,9 @@ export const GoalCard = ({ goal, onEdit, onDelete }: GoalCardProps) => {
   };
 
   const getCategoryEmoji = (cat: string): string => {
+    // First try to get from user's category
+    if (categoryInfo?.icon) return categoryInfo.icon;
+    
     const emojiMap: Record<string, string> = {
       'Food': '🍔',
       'Transport': '🚗',
@@ -111,14 +131,34 @@ export const GoalCard = ({ goal, onEdit, onDelete }: GoalCardProps) => {
             </span>
           </div>
           
-          <Progress 
-            value={percentage} 
-            className={cn(
-              "h-2",
-              isOverBudget && "[&>div]:bg-destructive",
-              isNearLimit && "[&>div]:bg-amber-500"
-            )}
-          />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="relative">
+                <Progress 
+                  value={percentage} 
+                  className={cn(
+                    "h-3 transition-all cursor-help",
+                    isOverBudget && "[&>div]:bg-destructive",
+                    isNearLimit && "[&>div]:bg-amber-500"
+                  )}
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-[200px]">
+              <div className="space-y-1 text-xs">
+                <p><strong>{percentage.toFixed(1)}%</strong> {t('categoryGoals.spent').toLowerCase()}</p>
+                {!isOverBudget && daysRemaining > 0 && (
+                  <p className="flex items-center gap-1 text-muted-foreground">
+                    <TrendingDown className="h-3 w-3" />
+                    {t('categoryGoals.dailyBudget', { amount: formatCurrency(dailyBudget) })}
+                  </p>
+                )}
+                <p className="text-muted-foreground">
+                  {t('categoryGoals.daysRemaining', { days: daysRemaining })}
+                </p>
+              </div>
+            </TooltipContent>
+          </Tooltip>
           
           <div className="flex items-center justify-between text-sm">
             {isOverBudget ? (
