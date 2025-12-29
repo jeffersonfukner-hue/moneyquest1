@@ -19,6 +19,7 @@ import Upgrade from "./pages/Upgrade";
 import AICoach from "./pages/AICoach";
 import CategoryGoals from "./pages/CategoryGoals";
 import Categories from "./pages/Categories";
+import Leaderboard from "./pages/Leaderboard";
 import NotFound from "./pages/NotFound";
 import SuperAdminDashboard from "./pages/admin/SuperAdminDashboard";
 import UsersManagement from "./pages/admin/UsersManagement";
@@ -50,6 +51,7 @@ const App = () => (
                         <Route path="/ai-coach" element={<AICoach />} />
                         <Route path="/category-goals" element={<CategoryGoals />} />
                         <Route path="/categories" element={<Categories />} />
+                        <Route path="/leaderboard" element={<Leaderboard />} />
                         {/* Admin Routes */}
                         <Route path="/super-admin" element={<AdminRoute><SuperAdminDashboard /></AdminRoute>} />
                         <Route path="/super-admin/users" element={<AdminRoute><UsersManagement /></AdminRoute>} />

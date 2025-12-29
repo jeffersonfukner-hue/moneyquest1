@@ -294,6 +294,66 @@ export type Database = {
         }
         Relationships: []
       }
+      friend_connections: {
+        Row: {
+          created_at: string | null
+          friend_id: string
+          id: string
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          friend_id: string
+          id?: string
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          friend_id?: string
+          id?: string
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      leaderboard_participants: {
+        Row: {
+          avatar_icon: string
+          display_name: string
+          id: string
+          is_public: boolean | null
+          joined_at: string | null
+          level: number
+          updated_at: string | null
+          user_id: string
+          xp: number
+        }
+        Insert: {
+          avatar_icon?: string
+          display_name: string
+          id?: string
+          is_public?: boolean | null
+          joined_at?: string | null
+          level?: number
+          updated_at?: string | null
+          user_id: string
+          xp?: number
+        }
+        Update: {
+          avatar_icon?: string
+          display_name?: string
+          id?: string
+          is_public?: boolean | null
+          joined_at?: string | null
+          level?: number
+          updated_at?: string | null
+          user_id?: string
+          xp?: number
+        }
+        Relationships: []
+      }
       message_templates: {
         Row: {
           category: string | null
