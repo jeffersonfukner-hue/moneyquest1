@@ -81,6 +81,25 @@ export interface Badge {
   created_at: string;
 }
 
+export interface Category {
+  id: string;
+  user_id: string;
+  name: string;
+  type: 'INCOME' | 'EXPENSE';
+  icon: string;
+  color: string;
+  is_default: boolean;
+  created_at: string;
+}
+
+export interface ExchangeRate {
+  id: string;
+  base_currency: SupportedCurrency;
+  target_currency: SupportedCurrency;
+  rate: number;
+  updated_at: string;
+}
+
 export type TransactionType = 'INCOME' | 'EXPENSE';
 export type QuestType = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'SPECIAL' | 'ACHIEVEMENT';
 export type BadgeRequirementType = 'XP' | 'STREAK' | 'TOTAL_SAVED' | 'COUNT';

@@ -18,6 +18,7 @@ import Profile from "./pages/Profile";
 import Upgrade from "./pages/Upgrade";
 import AICoach from "./pages/AICoach";
 import CategoryGoals from "./pages/CategoryGoals";
+import Categories from "./pages/Categories";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +44,7 @@ const App = () => (
                         <Route path="/upgrade" element={<Upgrade />} />
                         <Route path="/ai-coach" element={<AICoach />} />
                         <Route path="/category-goals" element={<CategoryGoals />} />
+                        <Route path="/categories" element={<Categories />} />
                         <Route path="*" element={<NotFound />} />
                       </Routes>
                     </BrowserRouter>
