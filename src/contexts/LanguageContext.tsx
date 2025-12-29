@@ -59,7 +59,13 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 export const useLanguage = (): LanguageContextType => {
   const context = useContext(LanguageContext);
   if (context === undefined) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
+    // Return default values for resilience during early render
+    return {
+      language: 'pt-BR',
+      setLanguage: async () => {},
+      dateLocale: ptBR,
+      supportedLanguages: SUPPORTED_LANGUAGES,
+    };
   }
   return context;
 };
