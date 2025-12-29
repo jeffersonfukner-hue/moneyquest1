@@ -1,5 +1,10 @@
 import { useState } from 'react';
-import { Plus, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
+import { Plus, ArrowUpCircle, ArrowDownCircle, CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,6 +29,7 @@ export const AddTransactionDialog = ({ onAdd }: AddTransactionDialogProps) => {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
+  const [date, setDate] = useState<Date>(new Date());
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,13 +42,14 @@ export const AddTransactionDialog = ({ onAdd }: AddTransactionDialogProps) => {
       amount: parseFloat(amount),
       category,
       type,
-      date: new Date().toISOString().split('T')[0],
+      date: format(date, 'yyyy-MM-dd'),
     });
 
     if (!error) {
       setDescription('');
       setAmount('');
       setCategory('');
+      setDate(new Date());
       setOpen(false);
     }
     setLoading(false);
@@ -132,7 +139,35 @@ export const AddTransactionDialog = ({ onAdd }: AddTransactionDialogProps) => {
             </Select>
           </div>
 
-          <Button 
+          <div className="space-y-2">
+            <Label>Data</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !date && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date ? format(date, "PPP", { locale: ptBR }) : <span>Selecione a data</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={(d) => d && setDate(d)}
+                  disabled={(d) => d > new Date()}
+                  initialFocus
+                  className="pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <Button
             type="submit" 
             className="w-full bg-gradient-hero hover:opacity-90"
             disabled={loading || !description || !amount || !category}
