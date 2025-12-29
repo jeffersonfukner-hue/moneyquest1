@@ -11,6 +11,7 @@ import { StatsCards } from '@/components/game/StatsCards';
 import { QuestsPanel } from '@/components/game/QuestsPanel';
 import { BadgesGrid } from '@/components/game/BadgesGrid';
 import { TransactionsList } from '@/components/game/TransactionsList';
+import { RecentTransactionsCard } from '@/components/game/RecentTransactionsCard';
 import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
 import { MoodIndicator } from '@/components/game/MoodIndicator';
 import { QuestCelebration } from '@/components/game/QuestCelebration';
@@ -60,6 +61,7 @@ const Index = () => {
           <div className="space-y-4">
             <LevelProgress profile={profile} />
             <StatsCards profile={profile} />
+            <RecentTransactionsCard transactions={transactions} onViewMore={setActiveTab} />
             <AICoachCard />
             <CategoryGoalsCard />
             <MoodIndicator />
