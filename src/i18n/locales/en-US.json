@@ -23,12 +23,25 @@
     "logout": "Sign Out",
     "email": "Email",
     "password": "Password",
+    "emailPlaceholder": "your@email.com",
+    "passwordPlaceholder": "Minimum 6 characters",
     "forgotPassword": "Forgot password?",
     "dontHaveAccount": "Don't have an account?",
     "alreadyHaveAccount": "Already have an account?",
     "welcomeBack": "Welcome back!",
-    "createAccount": "Create your account",
-    "signInWith": "Sign in with"
+    "accountCreated": "Account created!",
+    "createAccount": "Create Account",
+    "startQuest": "Start Quest",
+    "questBegin": "Let the quest begin! 🎮",
+    "tagline": "Level up your finances",
+    "error": "Error",
+    "signInWith": "Sign in with",
+    "errors": {
+      "invalidCredentials": "Invalid email or password",
+      "userExists": "This email is already registered",
+      "emailNotConfirmed": "Please confirm your email",
+      "weakPassword": "Password must be at least 6 characters"
+    }
   },
   "navigation": {
     "home": "Home",

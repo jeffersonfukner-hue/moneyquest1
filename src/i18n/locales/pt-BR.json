@@ -23,12 +23,25 @@
     "logout": "Sair",
     "email": "E-mail",
     "password": "Senha",
+    "emailPlaceholder": "seu@email.com",
+    "passwordPlaceholder": "Mínimo 6 caracteres",
     "forgotPassword": "Esqueceu a senha?",
     "dontHaveAccount": "Não tem conta?",
     "alreadyHaveAccount": "Já tem conta?",
     "welcomeBack": "Bem-vindo de volta!",
-    "createAccount": "Crie sua conta",
-    "signInWith": "Entrar com"
+    "accountCreated": "Conta criada!",
+    "createAccount": "Criar Conta",
+    "startQuest": "Iniciar Jornada",
+    "questBegin": "Que a jornada comece! 🎮",
+    "tagline": "Suba de nível nas suas finanças",
+    "error": "Erro",
+    "signInWith": "Entrar com",
+    "errors": {
+      "invalidCredentials": "E-mail ou senha incorretos",
+      "userExists": "Este e-mail já está cadastrado",
+      "emailNotConfirmed": "Por favor, confirme seu e-mail",
+      "weakPassword": "A senha deve ter pelo menos 6 caracteres"
+    }
   },
   "navigation": {
     "home": "Início",

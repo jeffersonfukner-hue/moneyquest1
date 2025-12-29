@@ -23,12 +23,25 @@
     "logout": "Cerrar Sesión",
     "email": "Correo electrónico",
     "password": "Contraseña",
+    "emailPlaceholder": "tu@correo.com",
+    "passwordPlaceholder": "Mínimo 6 caracteres",
     "forgotPassword": "¿Olvidaste la contraseña?",
     "dontHaveAccount": "¿No tienes cuenta?",
     "alreadyHaveAccount": "¿Ya tienes cuenta?",
     "welcomeBack": "¡Bienvenido de nuevo!",
-    "createAccount": "Crea tu cuenta",
-    "signInWith": "Iniciar sesión con"
+    "accountCreated": "¡Cuenta creada!",
+    "createAccount": "Crear Cuenta",
+    "startQuest": "Iniciar Aventura",
+    "questBegin": "¡Que comience la aventura! 🎮",
+    "tagline": "Sube de nivel en tus finanzas",
+    "error": "Error",
+    "signInWith": "Iniciar sesión con",
+    "errors": {
+      "invalidCredentials": "Correo o contraseña incorrectos",
+      "userExists": "Este correo ya está registrado",
+      "emailNotConfirmed": "Por favor, confirma tu correo",
+      "weakPassword": "La contraseña debe tener al menos 6 caracteres"
+    }
   },
   "navigation": {
     "home": "Inicio",
