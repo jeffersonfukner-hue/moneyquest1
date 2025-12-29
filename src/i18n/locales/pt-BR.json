@@ -598,5 +598,88 @@
       "settingsSaved": "Configurações salvas com sucesso!",
       "settingsError": "Erro ao salvar configurações"
     }
+  },
+  "dailyReward": {
+    "title": "Recompensa Diária",
+    "claimNow": "Resgatar!",
+    "claimed": "Resgatado!",
+    "claimYourReward": "Resgate Sua Recompensa Diária",
+    "streakBonus": "Bônus de Sequência",
+    "day": "Dia",
+    "days": "dias",
+    "streak": "Sequência de Dias",
+    "currentStreak": "Sequência Atual",
+    "multiplier": "Multiplicador",
+    "baseXP": "XP Base",
+    "bonusXP": "XP Bônus",
+    "totalXP": "XP Total",
+    "keepItUp": "Continue assim!",
+    "comeBackTomorrow": "Volte amanhã!",
+    "rewardClaimed": "Recompensa diária resgatada!",
+    "streakMilestone": "Marco de sequência!",
+    "streakLost": "Sequência foi reiniciada",
+    "calendar": {
+      "title": "Calendário de Sequência",
+      "thisWeek": "Esta Semana",
+      "claimedDays": "Dias Resgatados",
+      "missedDays": "Dias Perdidos"
+    },
+    "multipliers": {
+      "day1": "1x",
+      "day2": "1,25x",
+      "day3": "1,5x",
+      "day4": "1,75x",
+      "day5": "2x",
+      "day6": "2,25x",
+      "day7": "2,5x"
+    }
+  },
+  "leaderboard": {
+    "title": "Ranking",
+    "global": "Global",
+    "friends": "Amigos",
+    "yourRank": "Sua Posição",
+    "rank": "Posição",
+    "level": "Nível",
+    "xp": "XP",
+    "joinLeaderboard": "Entrar no Ranking",
+    "leaveLeaderboard": "Sair do Ranking",
+    "joined": "Entrou!",
+    "left": "Saiu do ranking",
+    "notJoined": "Fora do Ranking",
+    "joinToCompete": "Entre para competir com outros!",
+    "publicProfile": "Perfil Público",
+    "privateProfile": "Privado (Apenas Amigos)",
+    "visibilityUpdated": "Visibilidade atualizada",
+    "top3": "Top 3",
+    "viewAll": "Ver Todos",
+    "noParticipants": "Nenhum participante ainda",
+    "beFirst": "Seja o primeiro a entrar!",
+    "noFriends": "Nenhum amigo no ranking",
+    "addFriends": "Adicione amigos para competir!",
+    "pendingRequests": "Solicitações Pendentes",
+    "friendRequest": {
+      "send": "Enviar Solicitação",
+      "accept": "Aceitar",
+      "reject": "Rejeitar",
+      "pending": "Pendente",
+      "accepted": "Aceito",
+      "sent": "Solicitação enviada!",
+      "error": "Erro ao enviar solicitação"
+    }
+  },
+  "resourceBars": {
+    "title": "Status de Recursos",
+    "provisions": "Provisões",
+    "travelFuel": "Combustível de Viagem",
+    "funEnergy": "Energia de Diversão",
+    "treasure": "Tesouro",
+    "kingdomTax": "Taxa do Reino",
+    "lifeEssence": "Essência Vital",
+    "magicScrolls": "Pergaminhos Mágicos",
+    "guildFees": "Taxas da Guilda",
+    "ofBudget": "do orçamento",
+    "noBudget": "Sem orçamento definido",
+    "overBudget": "Acima do orçamento!"
   }
 }
