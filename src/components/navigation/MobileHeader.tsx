@@ -1,9 +1,11 @@
-import { Settings } from 'lucide-react';
+import { Settings, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { SoundToggle } from '@/components/game/SoundToggle';
 import { SeasonalThemeIndicator } from '@/components/game/SeasonalThemeIndicator';
 import { Button } from '@/components/ui/button';
 import { useProfile } from '@/hooks/useProfile';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 
 interface MobileHeaderProps {
   onSettingsClick: () => void;
@@ -13,6 +15,8 @@ interface MobileHeaderProps {
 export const MobileHeader = ({ onSettingsClick, onProfileClick }: MobileHeaderProps) => {
   const { t } = useTranslation();
   const { profile } = useProfile();
+  const { isSuperAdmin } = useAdminAuth();
+  const navigate = useNavigate();
 
   return (
     <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border safe-area-top">
@@ -29,6 +33,17 @@ export const MobileHeader = ({ onSettingsClick, onProfileClick }: MobileHeaderPr
         <div className="flex items-center gap-1">
           <SeasonalThemeIndicator />
           <SoundToggle />
+          {isSuperAdmin && (
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => navigate('/super-admin')}
+              aria-label={t('admin.title')}
+              className="min-h-[44px] min-w-[44px] text-amber-500"
+            >
+              <Shield className="w-5 h-5" />
+            </Button>
+          )}
           <Button 
             variant="ghost" 
             size="icon" 

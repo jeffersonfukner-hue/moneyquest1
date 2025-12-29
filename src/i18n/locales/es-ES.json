@@ -357,5 +357,125 @@
     "loading": "Generando historia...",
     "error": "El cristal narrativo está recargando...",
     "tapToContinue": "Toca para continuar"
+  },
+  "admin": {
+    "title": "Super Admin",
+    "description": "Panel de administración del sistema",
+    "dashboard": "Dashboard",
+    "users": "Usuarios",
+    "engagement": "Engagement",
+    "logs": "Logs",
+    "analytics": "Analytics",
+    "totalUsers": "Total de Usuarios",
+    "activeToday": "Activos Hoy",
+    "active7Days": "Activos 7 Días",
+    "active30Days": "Activos 30 Días",
+    "freeUsers": "Usuarios Free",
+    "premiumUsers": "Usuarios Premium",
+    "engagementRate": "Tasa de Engagement",
+    "atRiskUsers": "Usuarios en Riesgo",
+    "usersManagement": "Gestión de Usuarios",
+    "engagementAlerts": "Alertas de Engagement",
+    "adminLogs": "Logs Administrativos",
+    "noUsers": "No se encontraron usuarios",
+    "noLogs": "No se encontraron logs",
+    "search": "Buscar usuarios...",
+    "filterByStatus": "Filtrar por estado",
+    "filterByPlan": "Filtrar por plan",
+    "allStatuses": "Todos los estados",
+    "allPlans": "Todos los planes",
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "blocked": "Bloqueado"
+    },
+    "plan": {
+      "free": "Free",
+      "premium": "Premium"
+    },
+    "risk": {
+      "low": "Riesgo Bajo",
+      "medium": "Riesgo Medio",
+      "high": "Riesgo Alto",
+      "none": "Sin Riesgo"
+    },
+    "actions": {
+      "grantPremium": "Conceder Premium",
+      "revokePremium": "Revocar Premium",
+      "blockUser": "Bloquear Usuario",
+      "unblockUser": "Desbloquear Usuario",
+      "grantBonus": "Conceder Bono",
+      "sendMessage": "Enviar Mensaje",
+      "viewDetails": "Ver Detalles"
+    },
+    "premium": {
+      "title": "Gestionar Premium",
+      "grantTitle": "Conceder Premium",
+      "revokeTitle": "Revocar Premium",
+      "duration": "Duración",
+      "lifetime": "Vitalicio",
+      "days7": "7 días",
+      "days30": "30 días",
+      "days90": "90 días",
+      "custom": "Personalizado",
+      "note": "Nota (opcional)",
+      "notePlaceholder": "Motivo del cambio...",
+      "grantSuccess": "¡Premium concedido con éxito!",
+      "revokeSuccess": "¡Premium revocado con éxito!",
+      "error": "Error al actualizar suscripción"
+    },
+    "bonus": {
+      "title": "Conceder Bono",
+      "type": "Tipo de Bono",
+      "xp": "XP",
+      "premiumDays": "Días de Premium",
+      "amount": "Cantidad",
+      "grantSuccess": "¡Bono concedido con éxito!",
+      "error": "Error al conceder bono"
+    },
+    "message": {
+      "title": "Enviar Mensaje",
+      "messageTitle": "Título",
+      "content": "Contenido",
+      "sendSuccess": "¡Mensaje enviado con éxito!",
+      "error": "Error al enviar mensaje"
+    },
+    "block": {
+      "confirmTitle": "Bloquear Usuario",
+      "confirmDesc": "¿Estás seguro de que quieres bloquear a este usuario?",
+      "success": "¡Usuario bloqueado con éxito!",
+      "error": "Error al bloquear usuario"
+    },
+    "unblock": {
+      "confirmTitle": "Desbloquear Usuario",
+      "confirmDesc": "¿Estás seguro de que quieres desbloquear a este usuario?",
+      "success": "¡Usuario desbloqueado con éxito!",
+      "error": "Error al desbloquear usuario"
+    },
+    "columns": {
+      "name": "Nombre",
+      "email": "Correo",
+      "status": "Estado",
+      "plan": "Plan",
+      "lastAccess": "Último Acceso",
+      "createdAt": "Fecha de Registro",
+      "actions": "Acciones",
+      "daysInactive": "Días Inactivo",
+      "riskLevel": "Nivel de Riesgo"
+    },
+    "logTypes": {
+      "PREMIUM_GRANT": "Premium Concedido",
+      "PREMIUM_REVOKE": "Premium Revocado",
+      "BLOCK_USER": "Usuario Bloqueado",
+      "UNBLOCK_USER": "Usuario Desbloqueado",
+      "GRANT_BONUS": "Bono Concedido",
+      "SEND_MESSAGE": "Mensaje Enviado"
+    },
+    "filterByAction": "Filtrar por acción",
+    "allActions": "Todas las acciones",
+    "never": "Nunca",
+    "daysAgo": "hace {{days}} días",
+    "accessDenied": "Acceso Denegado",
+    "accessDeniedDesc": "No tienes permiso para acceder a esta página."
   }
 }

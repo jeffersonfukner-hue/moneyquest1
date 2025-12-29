@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Globe, Coins, Volume2, LogOut, Crown, RefreshCw, TrendingUp, FolderOpen, ChevronRight, Target } from 'lucide-react';
+import { ChevronLeft, Globe, Coins, Volume2, LogOut, Crown, RefreshCw, TrendingUp, FolderOpen, ChevronRight, Target, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -14,6 +14,7 @@ import { useSubscription, PREMIUM_PRICING } from '@/contexts/SubscriptionContext
 import { SUPPORTED_LANGUAGES, SUPPORTED_CURRENCIES, type SupportedLanguage, type SupportedCurrency } from '@/i18n';
 import { PremiumBadge } from '@/components/subscription/PremiumBadge';
 import { useExchangeRates } from '@/hooks/useExchangeRates';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { format } from 'date-fns';
 
 const Settings = () => {
@@ -25,6 +26,7 @@ const Settings = () => {
   const { signOut } = useAuth();
   const { isPremium, canAccessMultiLanguage, canAccessMultiCurrency, plan } = useSubscription();
   const { rates, lastUpdate, loading: ratesLoading, refreshRates, getRate } = useExchangeRates();
+  const { isSuperAdmin } = useAdminAuth();
 
   const pricing = PREMIUM_PRICING[currency] || PREMIUM_PRICING.USD;
 
@@ -262,6 +264,29 @@ const Settings = () => {
             <ChevronRight className="w-5 h-5 text-muted-foreground" />
           </CardContent>
         </Card>
+
+        {/* Super Admin - Only visible to super admins */}
+        {isSuperAdmin && (
+          <Card 
+            className="cursor-pointer hover:border-amber-400/30 transition-colors border-amber-400/20 bg-gradient-to-br from-amber-400/5 to-amber-500/5"
+            onClick={() => navigate('/super-admin')}
+          >
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center">
+                <Shield className="w-5 h-5 text-amber-950" />
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold text-foreground">
+                  {t('admin.title')}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {t('admin.description')}
+                </p>
+              </div>
+              <ChevronRight className="w-5 h-5 text-amber-500" />
+            </CardContent>
+          </Card>
+        )}
 
         {/* Sound */}
         <Card>
