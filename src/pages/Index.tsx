@@ -13,6 +13,8 @@ import { TransactionsList } from '@/components/game/TransactionsList';
 import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
 import { MoodIndicator } from '@/components/game/MoodIndicator';
 import { QuestCelebration } from '@/components/game/QuestCelebration';
+import { SeasonalThemeIndicator } from '@/components/game/SeasonalThemeIndicator';
+import { SeasonalDecorations } from '@/components/game/SeasonalDecorations';
 import { Button } from '@/components/ui/button';
 import { LogOut, Gamepad2 } from 'lucide-react';
 
@@ -44,7 +46,9 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-24 relative">
+      <SeasonalDecorations />
+      
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -53,7 +57,8 @@ const Index = () => {
             </div>
             <h1 className="font-display text-xl font-bold text-gradient-primary">MoneyQuest</h1>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <SeasonalThemeIndicator />
             <MoodIndicator />
             <Button variant="ghost" size="icon" onClick={signOut}>
               <LogOut className="w-5 h-5" />
@@ -62,7 +67,7 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6 space-y-6">
+      <main className="container mx-auto px-4 py-6 space-y-6 relative z-10">
         <LevelProgress profile={profile} />
         <StatsCards profile={profile} />
         

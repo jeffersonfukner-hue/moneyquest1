@@ -1,11 +1,15 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useQuests } from '@/hooks/useQuests';
 
-type SeasonalTheme = 'default' | 'christmas' | 'halloween' | 'easter' | 'carnival';
+export type SeasonalTheme = 'default' | 'christmas' | 'halloween' | 'easter' | 'carnival';
 
 interface SeasonalThemeContextType {
   activeTheme: SeasonalTheme;
+  detectedTheme: SeasonalTheme;
+  previewTheme: SeasonalTheme | null;
   isLoading: boolean;
+  setPreviewTheme: (theme: SeasonalTheme | null) => void;
+  availableThemes: SeasonalTheme[];
 }
 
 const SeasonalThemeContext = createContext<SeasonalThemeContextType | undefined>(undefined);
@@ -43,9 +47,15 @@ export const SEASONAL_THEME_CONFIG: Record<SeasonalTheme, {
   }
 };
 
+const ALL_THEMES: SeasonalTheme[] = ['default', 'christmas', 'halloween', 'easter', 'carnival'];
+
 export const SeasonalThemeProvider = ({ children }: { children: ReactNode }) => {
   const { quests, loading } = useQuests();
-  const [activeTheme, setActiveTheme] = useState<SeasonalTheme>('default');
+  const [detectedTheme, setDetectedTheme] = useState<SeasonalTheme>('default');
+  const [previewTheme, setPreviewTheme] = useState<SeasonalTheme | null>(null);
+
+  // The active theme is either the preview or the detected theme
+  const activeTheme = previewTheme ?? detectedTheme;
 
   useEffect(() => {
     if (loading) return;
@@ -77,7 +87,7 @@ export const SeasonalThemeProvider = ({ children }: { children: ReactNode }) => 
       }
     }
 
-    setActiveTheme(newTheme);
+    setDetectedTheme(newTheme);
   }, [quests, loading]);
 
   // Apply theme class to document
@@ -94,7 +104,14 @@ export const SeasonalThemeProvider = ({ children }: { children: ReactNode }) => 
   }, [activeTheme]);
 
   return (
-    <SeasonalThemeContext.Provider value={{ activeTheme, isLoading: loading }}>
+    <SeasonalThemeContext.Provider value={{ 
+      activeTheme, 
+      detectedTheme,
+      previewTheme,
+      isLoading: loading,
+      setPreviewTheme,
+      availableThemes: ALL_THEMES
+    }}>
       {children}
     </SeasonalThemeContext.Provider>
   );
@@ -103,7 +120,14 @@ export const SeasonalThemeProvider = ({ children }: { children: ReactNode }) => 
 export const useSeasonalTheme = () => {
   const context = useContext(SeasonalThemeContext);
   if (!context) {
-    return { activeTheme: 'default' as SeasonalTheme, isLoading: false };
+    return { 
+      activeTheme: 'default' as SeasonalTheme, 
+      detectedTheme: 'default' as SeasonalTheme,
+      previewTheme: null,
+      isLoading: false,
+      setPreviewTheme: () => {},
+      availableThemes: ALL_THEMES
+    };
   }
   return context;
 };
