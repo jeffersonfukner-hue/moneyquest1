@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, TrendingDown, Minus, BarChart3 } from 'lucide-react';
 import { Transaction, SupportedCurrency } from '@/types/database';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { parseDateString } from '@/lib/dateUtils';
 
 interface MonthlyComparisonWidgetProps {
   transactions: Transaction[];
@@ -23,7 +24,7 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
   // Filter transactions by month with currency conversion
   const currentMonthExpenses = transactions
     .filter((tx) => {
-      const txDate = new Date(tx.date);
+      const txDate = parseDateString(tx.date);
       return (
         tx.type === 'EXPENSE' &&
         txDate.getMonth() === currentMonth &&
@@ -34,7 +35,7 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
 
   const prevMonthExpenses = transactions
     .filter((tx) => {
-      const txDate = new Date(tx.date);
+      const txDate = parseDateString(tx.date);
       return (
         tx.type === 'EXPENSE' &&
         txDate.getMonth() === prevMonth &&

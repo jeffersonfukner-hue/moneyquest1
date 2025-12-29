@@ -8,6 +8,8 @@ import { format, subDays } from 'date-fns';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { parseDateString } from '@/lib/dateUtils';
+import { formatMoney } from '@/lib/formatters';
 
 interface TransactionsListProps {
   transactions: Transaction[];
@@ -25,7 +27,7 @@ export const TransactionsList = ({ transactions, onDelete }: TransactionsListPro
   const filteredTransactions = useMemo(() => {
     const now = new Date();
     return transactions.filter(t => {
-      const txDate = new Date(t.date);
+      const txDate = parseDateString(t.date);
       switch (filter) {
         case 'week': return txDate >= subDays(now, 7);
         case 'month': return txDate >= subDays(now, 30);
@@ -100,7 +102,7 @@ export const TransactionsList = ({ transactions, onDelete }: TransactionsListPro
           {Object.entries(groupedTransactions).map(([date, txs]) => (
             <div key={date}>
               <p className="text-xs font-medium text-muted-foreground mb-2">
-                {format(new Date(date), "EEEE, d MMMM", { locale: dateLocale })}
+                {format(parseDateString(date), "EEEE, d MMMM", { locale: dateLocale })}
               </p>
               <div className="space-y-2">
                 {txs.map(transaction => (
@@ -160,7 +162,7 @@ const TransactionItem = ({
           {transaction.description}
         </p>
         <p className="text-xs text-muted-foreground">
-          {format(new Date(transaction.date), "d MMM", { locale: dateLocale })} • {transaction.category} • +{transaction.xp_earned} XP
+          {format(parseDateString(transaction.date), "d MMM", { locale: dateLocale })} • {transaction.category} • +{transaction.xp_earned} XP
         </p>
       </div>
 
@@ -176,7 +178,7 @@ const TransactionItem = ({
         </p>
         {isDifferentCurrency && (
           <p className="text-xs text-muted-foreground">
-            ({formatCurrency(transaction.amount).replace(userCurrency, transactionCurrency)})
+            ({formatMoney(transaction.amount, transactionCurrency as SupportedCurrency)})
           </p>
         )}
       </div>

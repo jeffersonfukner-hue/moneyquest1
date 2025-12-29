@@ -4,6 +4,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recha
 import { PieChart as PieChartIcon } from 'lucide-react';
 import { Transaction, SupportedCurrency } from '@/types/database';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { parseDateString } from '@/lib/dateUtils';
 
 interface SpendingByCategoryChartProps {
   transactions: Transaction[];
@@ -30,7 +31,7 @@ export const SpendingByCategoryChart = ({ transactions }: SpendingByCategoryChar
   const currentYear = now.getFullYear();
 
   const monthlyExpenses = transactions.filter((tx) => {
-    const txDate = new Date(tx.date);
+    const txDate = parseDateString(tx.date);
     return (
       tx.type === 'EXPENSE' &&
       txDate.getMonth() === currentMonth &&

@@ -4,6 +4,7 @@ import { JournalEntry as JournalEntryType } from '@/hooks/useAdventureJournal';
 import { IMPACT_COLORS, IMPACT_ICONS, INCOME_ICONS } from '@/lib/narrativeConfig';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { cn } from '@/lib/utils';
+import { parseDateString } from '@/lib/dateUtils';
 
 interface JournalEntryProps {
   entry: JournalEntryType;
@@ -27,7 +28,7 @@ export const JournalEntry = ({ entry }: JournalEntryProps) => {
   const { formatCurrency } = useCurrency();
   
   const isIncome = entry.eventType === 'INCOME';
-  const formattedDate = format(new Date(entry.createdAt), 'MMM d, yyyy • h:mm a');
+  const formattedDate = format(parseDateString(entry.createdAt), 'MMM d, yyyy • h:mm a');
   
   // Get the appropriate icon
   const icon = isIncome 
