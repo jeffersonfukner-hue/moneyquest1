@@ -9,7 +9,8 @@ import {
   getLevelTitle, 
   calculateStreak,
   checkAndUpdateBadges,
-  checkAndUpdateQuests
+  checkAndUpdateQuests,
+  calculateFinancialMood
 } from '@/lib/gameLogic';
 import { toast } from '@/hooks/use-toast';
 
@@ -91,6 +92,11 @@ export const useTransactions = () => {
     } else {
       profileUpdates.total_expenses = profile.total_expenses + transaction.amount;
     }
+
+    // Calculate new financial mood
+    const newTotalIncome = profileUpdates.total_income as number ?? profile.total_income;
+    const newTotalExpenses = profileUpdates.total_expenses as number ?? profile.total_expenses;
+    profileUpdates.financial_mood = calculateFinancialMood(newTotalIncome, newTotalExpenses);
 
     // Update profile
     await supabase
