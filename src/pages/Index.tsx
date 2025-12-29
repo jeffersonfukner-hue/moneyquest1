@@ -75,7 +75,7 @@ const Index = () => {
     <div className="min-h-screen bg-background pb-20 relative">
       <SeasonalDecorations />
       
-      <MobileHeader onSettingsClick={() => navigate('/settings')} />
+      <MobileHeader onSettingsClick={() => navigate('/settings')} onProfileClick={() => navigate('/profile')} />
 
       <main className="px-4 py-4 max-w-md mx-auto relative z-10">
         {renderTabContent()}

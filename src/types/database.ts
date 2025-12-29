@@ -9,6 +9,7 @@ export interface Profile {
   level: number;
   level_title: string;
   avatar_icon: string;
+  display_name: string | null;
   streak: number;
   total_income: number;
   total_expenses: number;

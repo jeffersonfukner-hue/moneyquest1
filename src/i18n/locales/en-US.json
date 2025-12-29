@@ -2,6 +2,7 @@
   "common": {
     "loading": "Loading...",
     "save": "Save",
+    "saving": "Saving...",
     "cancel": "Cancel",
     "delete": "Delete",
     "add": "Add",
@@ -15,7 +16,9 @@
     "year": "Year",
     "today": "Today",
     "yesterday": "Yesterday",
-    "noData": "No data found"
+    "noData": "No data found",
+    "success": "Success",
+    "error": "Error"
   },
   "auth": {
     "login": "Sign In",
@@ -94,6 +97,8 @@
   },
   "stats": {
     "dayStreak": "Day Streak",
+    "streak": "Streak",
+    "days": "days",
     "totalIncome": "Total Income",
     "totalExpenses": "Total Expenses",
     "totalSaved": "Total Saved",
@@ -101,6 +106,18 @@
     "level": "Level",
     "xp": "XP",
     "xpToNextLevel": "XP to next level"
+  },
+  "profile": {
+    "title": "Profile",
+    "avatar": "Avatar",
+    "displayName": "Display Name",
+    "displayNameLabel": "Your name",
+    "displayNamePlaceholder": "Enter your name",
+    "displayNameHint": "This is how you'll appear in the app",
+    "yourStats": "Your Stats",
+    "saveChanges": "Save Changes",
+    "saveSuccess": "Profile updated successfully!",
+    "saveError": "Failed to update profile"
   },
   "quests": {
     "title": "Quests",
