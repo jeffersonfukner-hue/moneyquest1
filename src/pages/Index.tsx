@@ -15,6 +15,7 @@ import { MoodIndicator } from '@/components/game/MoodIndicator';
 import { QuestCelebration } from '@/components/game/QuestCelebration';
 import { SeasonalThemeIndicator } from '@/components/game/SeasonalThemeIndicator';
 import { SeasonalDecorations } from '@/components/game/SeasonalDecorations';
+import { SoundToggle } from '@/components/game/SoundToggle';
 import { Button } from '@/components/ui/button';
 import { LogOut, Gamepad2 } from 'lucide-react';
 
@@ -57,9 +58,10 @@ const Index = () => {
             </div>
             <h1 className="font-display text-xl font-bold text-gradient-primary">MoneyQuest</h1>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <SeasonalThemeIndicator />
             <MoodIndicator />
+            <SoundToggle />
             <Button variant="ghost" size="icon" onClick={signOut}>
               <LogOut className="w-5 h-5" />
             </Button>
