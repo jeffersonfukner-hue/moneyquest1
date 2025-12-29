@@ -20,6 +20,7 @@ import AICoach from "./pages/AICoach";
 import CategoryGoals from "./pages/CategoryGoals";
 import Categories from "./pages/Categories";
 import Leaderboard from "./pages/Leaderboard";
+import AdventureJournal from "./pages/AdventureJournal";
 import NotFound from "./pages/NotFound";
 import SuperAdminDashboard from "./pages/admin/SuperAdminDashboard";
 import UsersManagement from "./pages/admin/UsersManagement";
@@ -52,6 +53,7 @@ const App = () => (
                         <Route path="/category-goals" element={<CategoryGoals />} />
                         <Route path="/categories" element={<Categories />} />
                         <Route path="/leaderboard" element={<Leaderboard />} />
+                        <Route path="/journal" element={<AdventureJournal />} />
                         {/* Admin Routes */}
                         <Route path="/super-admin" element={<AdminRoute><SuperAdminDashboard /></AdminRoute>} />
                         <Route path="/super-admin/users" element={<AdminRoute><UsersManagement /></AdminRoute>} />

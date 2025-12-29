@@ -24,6 +24,7 @@ interface NarrativeData {
   impact: 'low' | 'medium' | 'high' | 'critical';
   eventType: 'INCOME' | 'EXPENSE';
   category: string;
+  amount?: number;
 }
 
 export const useTransactions = () => {
@@ -196,15 +197,27 @@ export const useTransactions = () => {
         .catch(console.error);
     }
 
-    // Generate narrative in background (non-blocking)
+    // Generate narrative in background (non-blocking) and save to journal
     generateNarrative(transaction.amount, transaction.category, transaction.type)
-      .then((result) => {
+      .then(async (result) => {
         if (result) {
+          // Save narrative to journal
+          await supabase.from('transaction_narratives').insert({
+            user_id: user.id,
+            transaction_id: transactions[0]?.id, // Best effort - get from latest
+            narrative: result.narrative,
+            impact: result.impact,
+            category: transaction.category,
+            event_type: transaction.type,
+            amount: transaction.amount,
+          }).catch(console.error);
+
           setNarrativeData({
             narrative: result.narrative,
             impact: result.impact,
             eventType: transaction.type,
             category: transaction.category,
+            amount: transaction.amount,
           });
         }
       })

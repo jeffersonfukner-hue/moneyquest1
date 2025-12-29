@@ -1,8 +1,9 @@
-import { Home, ArrowLeftRight, Plus, Target, Trophy, Settings } from 'lucide-react';
+import { Home, ArrowLeftRight, Plus, Target, BookOpen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
-export type TabId = 'home' | 'transactions' | 'add' | 'quests' | 'badges';
+export type TabId = 'home' | 'transactions' | 'add' | 'quests' | 'journal';
 
 interface BottomNavigationProps {
   activeTab: TabId;
@@ -12,13 +13,14 @@ interface BottomNavigationProps {
 
 export const BottomNavigation = ({ activeTab, onTabChange, onAddClick }: BottomNavigationProps) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const tabs = [
     { id: 'home' as TabId, icon: Home, label: t('navigation.home') },
     { id: 'transactions' as TabId, icon: ArrowLeftRight, label: t('navigation.transactions') },
     { id: 'add' as TabId, icon: Plus, label: t('navigation.add'), isAction: true },
     { id: 'quests' as TabId, icon: Target, label: t('navigation.quests') },
-    { id: 'badges' as TabId, icon: Trophy, label: t('navigation.badges') },
+    { id: 'journal' as TabId, icon: BookOpen, label: t('navigation.journal'), isLink: true },
   ];
 
   return (
@@ -39,6 +41,24 @@ export const BottomNavigation = ({ activeTab, onTabChange, onAddClick }: BottomN
                 <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-lg shadow-primary/30 active:scale-95 transition-transform">
                   <Icon className="w-7 h-7 text-primary-foreground" />
                 </div>
+              </button>
+            );
+          }
+
+          // Link to external page
+          if (tab.isLink) {
+            return (
+              <button
+                key={tab.id}
+                onClick={() => navigate('/journal')}
+                className={cn(
+                  "flex flex-col items-center justify-center gap-1 min-w-[64px] min-h-[48px] rounded-lg transition-colors",
+                  "text-muted-foreground hover:text-foreground"
+                )}
+                aria-label={tab.label}
+              >
+                <Icon className="w-5 h-5 transition-transform" />
+                <span className="text-[10px] font-medium">{tab.label}</span>
               </button>
             );
           }
