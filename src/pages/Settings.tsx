@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Globe, Coins, Volume2, LogOut, Crown, RefreshCw, TrendingUp, FolderOpen, ChevronRight } from 'lucide-react';
+import { ChevronLeft, Globe, Coins, Volume2, LogOut, Crown, RefreshCw, TrendingUp, FolderOpen, ChevronRight, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -236,6 +236,27 @@ const Settings = () => {
               </p>
               <p className="text-xs text-muted-foreground">
                 {t('categories.manageCategories')}
+              </p>
+            </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground" />
+          </CardContent>
+        </Card>
+
+        {/* Category Goals */}
+        <Card 
+          className="cursor-pointer hover:border-primary/30 transition-colors"
+          onClick={() => navigate('/category-goals')}
+        >
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+              <Target className="w-5 h-5 text-primary" />
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-foreground">
+                {t('categoryGoals.title')}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {t('categoryGoals.manageBudgets')}
               </p>
             </div>
             <ChevronRight className="w-5 h-5 text-muted-foreground" />
