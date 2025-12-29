@@ -1,10 +1,13 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMonthlyGoalsReport, CategoryPerformance } from '@/hooks/useMonthlyGoalsReport';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, TrendingDown, Target, AlertTriangle, CheckCircle, Trophy, Loader2 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { GoalHistoryPanel } from './GoalHistoryPanel';
+import { TrendingUp, TrendingDown, Target, AlertTriangle, CheckCircle, Trophy, Loader2, History, BarChart3 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 interface GoalsMonthlyReportProps {
@@ -58,11 +61,25 @@ export const GoalsMonthlyReport = ({ onClose }: GoalsMonthlyReportProps) => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold">{t('categoryGoals.report.title')}</h2>
-        <p className="text-muted-foreground">{report.month} {report.year}</p>
-      </div>
+      {/* Tabs for Current Month vs History */}
+      <Tabs defaultValue="current" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="current" className="flex items-center gap-2">
+            <BarChart3 className="h-4 w-4" />
+            {t('categoryGoals.report.currentMonth')}
+          </TabsTrigger>
+          <TabsTrigger value="history" className="flex items-center gap-2">
+            <History className="h-4 w-4" />
+            {t('categoryGoals.history.title')}
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="current" className="mt-4 space-y-6">
+          {/* Header */}
+          <div className="text-center space-y-2">
+            <h2 className="text-2xl font-bold">{t('categoryGoals.report.title')}</h2>
+            <p className="text-muted-foreground">{report.month} {report.year}</p>
+          </div>
 
       {/* Overall Score */}
       <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
@@ -225,6 +242,12 @@ export const GoalsMonthlyReport = ({ onClose }: GoalsMonthlyReportProps) => {
           </div>
         </CardContent>
       </Card>
+        </TabsContent>
+
+        <TabsContent value="history" className="mt-4">
+          <GoalHistoryPanel />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

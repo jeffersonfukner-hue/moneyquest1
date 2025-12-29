@@ -353,7 +353,21 @@
       "excellent": "Excellent",
       "good": "Good",
       "warning": "Warning",
-      "over": "Over"
+      "over": "Over",
+      "currentMonth": "This Month"
+    },
+    "history": {
+      "title": "Performance History",
+      "noHistory": "No history yet",
+      "noHistoryDesc": "Complete a month with active goals to see your performance history",
+      "successRate": "Success Rate",
+      "monthsTracked": "Months Tracked",
+      "categoryTrends": "Category Trends",
+      "avgUsage": "Avg usage",
+      "months": "months",
+      "improving": "improving",
+      "declining": "needs work",
+      "stable": "stable"
     },
     "suggestions": {
       "title": "Based on your spending",

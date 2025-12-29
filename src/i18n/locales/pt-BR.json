@@ -353,7 +353,21 @@
       "excellent": "Excelente",
       "good": "Bom",
       "warning": "Alerta",
-      "over": "Acima"
+      "over": "Acima",
+      "currentMonth": "Este Mês"
+    },
+    "history": {
+      "title": "Histórico de Desempenho",
+      "noHistory": "Sem histórico ainda",
+      "noHistoryDesc": "Complete um mês com metas ativas para ver seu histórico de desempenho",
+      "successRate": "Taxa de Sucesso",
+      "monthsTracked": "Meses Rastreados",
+      "categoryTrends": "Tendências por Categoria",
+      "avgUsage": "Uso médio",
+      "months": "meses",
+      "improving": "melhorando",
+      "declining": "precisa atenção",
+      "stable": "estável"
     },
     "suggestions": {
       "title": "Baseado nos seus gastos",
