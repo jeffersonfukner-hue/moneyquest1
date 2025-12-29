@@ -520,6 +520,20 @@
       "day30": "Dia 30",
       "retained": "retidos",
       "retentionRate": "Taxa de Retenção"
+    },
+    "retentionAlerts": {
+      "title": "Alertas de Retenção",
+      "description": "Notificações automáticas quando a retenção cai abaixo do limite",
+      "configure": "Configurar",
+      "configureThresholds": "Configurar Limites de Retenção",
+      "settingsTitle": "Configurações de Alertas",
+      "enableAlerts": "Habilitar Alertas",
+      "minThreshold": "- Limite Mínimo",
+      "belowThreshold": "abaixo do limite",
+      "currentRate": "Taxa atual",
+      "threshold": "Limite",
+      "settingsSaved": "Configurações salvas com sucesso!",
+      "settingsError": "Erro ao salvar configurações"
     }
   }
 }

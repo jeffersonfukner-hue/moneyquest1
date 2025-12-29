@@ -44,6 +44,63 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_notifications: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          metadata: Json | null
+          notification_type: string
+          severity: string
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          metadata?: Json | null
+          notification_type: string
+          severity?: string
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          metadata?: Json | null
+          notification_type?: string
+          severity?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      admin_settings: {
+        Row: {
+          id: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          id?: string
+          setting_key: string
+          setting_value: Json
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          id?: string
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       badges: {
         Row: {
           created_at: string
@@ -486,6 +543,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_check_retention_alerts: { Args: never; Returns: Json }
       admin_get_all_profiles: {
         Args: never
         Returns: {
@@ -538,6 +596,15 @@ export type Database = {
           _bonus_type: string
           _note?: string
           _target_user_id: string
+        }
+        Returns: undefined
+      }
+      admin_update_retention_thresholds: {
+        Args: {
+          _day1: number
+          _day30: number
+          _day7: number
+          _enabled: boolean
         }
         Returns: undefined
       }
