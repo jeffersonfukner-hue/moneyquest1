@@ -242,5 +242,34 @@
       "advanced_themes": "Themes",
       "data_export": "Export"
     }
+  },
+  "aiCoach": {
+    "title": "AI Coach",
+    "pageTitle": "AI Financial Coach",
+    "pageDescription": "Your personal AI-powered financial advisor",
+    "featureName": "AI Financial Coach",
+    "lockedTitle": "Premium Feature",
+    "lockedDescription": "Unlock AI-powered financial insights and personalized coaching to level up your money game!",
+    "coachName": "Coach",
+    "thinking": "Thinking...",
+    "inputPlaceholder": "Ask me anything about your finances...",
+    "welcome": {
+      "title": "Hey there, adventurer! 👋",
+      "description": "I'm your AI Financial Coach. I can analyze your spending, give savings tips, and help you level up your finances. What would you like to know?"
+    },
+    "actions": {
+      "spendingAnalysis": "Analyze Spending",
+      "savingsTip": "Savings Tip",
+      "monthlySummary": "Monthly Summary",
+      "goalCoaching": "Goal Coaching",
+      "quickInsight": "Quick Insight"
+    },
+    "error": {
+      "rateLimit": "Too Many Requests",
+      "rateLimitDesc": "Please wait a moment before trying again.",
+      "credits": "AI Credits Exhausted",
+      "creditsDesc": "Please try again later.",
+      "generic": "Something went wrong. Please try again."
+    }
   }
 }

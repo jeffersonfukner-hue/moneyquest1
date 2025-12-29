@@ -242,5 +242,34 @@
       "advanced_themes": "Temas",
       "data_export": "Exportar"
     }
+  },
+  "aiCoach": {
+    "title": "Coach IA",
+    "pageTitle": "Coach Financeiro IA",
+    "pageDescription": "Seu consultor financeiro pessoal com IA",
+    "featureName": "Coach Financeiro IA",
+    "lockedTitle": "Recurso Premium",
+    "lockedDescription": "Desbloqueie insights financeiros com IA e coaching personalizado para evoluir suas finanças!",
+    "coachName": "Coach",
+    "thinking": "Pensando...",
+    "inputPlaceholder": "Pergunte qualquer coisa sobre suas finanças...",
+    "welcome": {
+      "title": "E aí, aventureiro! 👋",
+      "description": "Sou seu Coach Financeiro com IA. Posso analisar seus gastos, dar dicas de economia e ajudar você a evoluir suas finanças. O que gostaria de saber?"
+    },
+    "actions": {
+      "spendingAnalysis": "Analisar Gastos",
+      "savingsTip": "Dica de Economia",
+      "monthlySummary": "Resumo Mensal",
+      "goalCoaching": "Coaching de Metas",
+      "quickInsight": "Insight Rápido"
+    },
+    "error": {
+      "rateLimit": "Muitas Requisições",
+      "rateLimitDesc": "Por favor, aguarde um momento antes de tentar novamente.",
+      "credits": "Créditos de IA Esgotados",
+      "creditsDesc": "Por favor, tente novamente mais tarde.",
+      "generic": "Algo deu errado. Por favor, tente novamente."
+    }
   }
 }

@@ -16,6 +16,7 @@ import Auth from "./pages/Auth";
 import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import Upgrade from "./pages/Upgrade";
+import AICoach from "./pages/AICoach";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,6 +40,7 @@ const App = () => (
                         <Route path="/settings" element={<Settings />} />
                         <Route path="/profile" element={<Profile />} />
                         <Route path="/upgrade" element={<Upgrade />} />
+                        <Route path="/ai-coach" element={<AICoach />} />
                         <Route path="*" element={<NotFound />} />
                       </Routes>
                     </BrowserRouter>
