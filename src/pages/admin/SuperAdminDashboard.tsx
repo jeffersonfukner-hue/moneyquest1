@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Users, UserCheck, Crown, TrendingUp, Activity, AlertTriangle, Filter } from 'lucide-react';
+import { Users, UserCheck, Crown, TrendingUp, Activity, AlertTriangle, Filter, Calendar } from 'lucide-react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { StatsCard } from '@/components/admin/StatsCard';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -152,6 +152,83 @@ const SuperAdminDashboard = () => {
         value: premium, 
         fill: '#8b5cf6',
         percentage: totalUsers > 0 ? `${((premium / totalUsers) * 100).toFixed(1)}%` : '0%'
+      },
+    ];
+  }, [analytics, users, t]);
+
+  // Retention data: Day 1, Day 7, Day 30
+  const retentionData = useMemo(() => {
+    if (!analytics || !users) return [];
+    
+    const totalUsers = analytics.total_users || 0;
+    if (totalUsers === 0) return [];
+    
+    const now = new Date();
+    
+    // Day 1 retention: Users who logged in at least once after registration
+    const day1Retained = users.filter(u => {
+      if (!u.last_active_date || !u.created_at) return false;
+      const createdAt = new Date(u.created_at);
+      const lastActive = new Date(u.last_active_date);
+      const createdDate = createdAt.toDateString();
+      const lastActiveDate = lastActive.toDateString();
+      return createdDate !== lastActiveDate; // Logged in on a different day than creation
+    }).length;
+    
+    // Day 7 retention: Users still active 7+ days after registration
+    const day7Retained = users.filter(u => {
+      if (!u.last_active_date || !u.created_at) return false;
+      const createdAt = new Date(u.created_at);
+      const lastActive = new Date(u.last_active_date);
+      const daysSinceCreation = Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      const daysActiveSinceCreation = Math.floor((lastActive.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      return daysSinceCreation >= 7 && daysActiveSinceCreation >= 7;
+    }).length;
+    
+    // Day 30 retention: Users still active 30+ days after registration
+    const day30Retained = users.filter(u => {
+      if (!u.last_active_date || !u.created_at) return false;
+      const createdAt = new Date(u.created_at);
+      const lastActive = new Date(u.last_active_date);
+      const daysSinceCreation = Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      const daysActiveSinceCreation = Math.floor((lastActive.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      return daysSinceCreation >= 30 && daysActiveSinceCreation >= 30;
+    }).length;
+    
+    // Calculate eligible users for each cohort
+    const eligibleDay7 = users.filter(u => {
+      const createdAt = new Date(u.created_at);
+      const daysSinceCreation = Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      return daysSinceCreation >= 7;
+    }).length || 1;
+    
+    const eligibleDay30 = users.filter(u => {
+      const createdAt = new Date(u.created_at);
+      const daysSinceCreation = Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      return daysSinceCreation >= 30;
+    }).length || 1;
+    
+    return [
+      { 
+        name: t('admin.retention.day1'), 
+        retained: day1Retained,
+        total: totalUsers,
+        rate: ((day1Retained / totalUsers) * 100).toFixed(1),
+        fill: '#22c55e'
+      },
+      { 
+        name: t('admin.retention.day7'), 
+        retained: day7Retained,
+        total: eligibleDay7,
+        rate: ((day7Retained / eligibleDay7) * 100).toFixed(1),
+        fill: '#3b82f6'
+      },
+      { 
+        name: t('admin.retention.day30'), 
+        retained: day30Retained,
+        total: eligibleDay30,
+        rate: ((day30Retained / eligibleDay30) * 100).toFixed(1),
+        fill: '#8b5cf6'
       },
     ];
   }, [analytics, users, t]);
@@ -563,6 +640,79 @@ const SuperAdminDashboard = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Retention Chart */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-primary" />
+              {t('admin.retention.title')}
+            </CardTitle>
+            <CardDescription>{t('admin.retention.description')}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={retentionData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                  <YAxis 
+                    stroke="hsl(var(--muted-foreground))" 
+                    fontSize={12}
+                    tickFormatter={(value) => `${value}%`}
+                    domain={[0, 100]}
+                  />
+                  <Tooltip 
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const data = payload[0].payload;
+                        return (
+                          <div className="bg-popover border border-border rounded-lg shadow-lg p-3">
+                            <p className="font-medium text-foreground">{data.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {data.retained} / {data.total} {t('admin.charts.users')}
+                            </p>
+                            <p className="text-sm font-bold" style={{ color: data.fill }}>
+                              {data.rate}% {t('admin.retention.retained')}
+                            </p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Bar 
+                    dataKey="rate" 
+                    name={t('admin.retention.retentionRate')}
+                    radius={[4, 4, 0, 0]}
+                  >
+                    {retentionData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            {/* Retention Stats */}
+            <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-border">
+              {retentionData.map((item, index) => (
+                <div key={index} className="text-center p-3 bg-muted/50 rounded-lg">
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <div 
+                      className="w-3 h-3 rounded-full" 
+                      style={{ backgroundColor: item.fill }}
+                    />
+                    <span className="text-sm font-medium text-foreground">{item.name}</span>
+                  </div>
+                  <p className="text-2xl font-bold text-foreground">{item.rate}%</p>
+                  <p className="text-xs text-muted-foreground">
+                    {item.retained} / {item.total} {t('admin.charts.users')}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Quick Stats Summary */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

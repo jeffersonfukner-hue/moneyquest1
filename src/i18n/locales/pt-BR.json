@@ -511,6 +511,15 @@
       "registrationToFirstUse": "Cadastro → Primeiro Uso",
       "firstUseToRecurring": "Primeiro Uso → Recorrente",
       "recurringToPremium": "Recorrente → Premium"
+    },
+    "retention": {
+      "title": "Retenção de Usuários",
+      "description": "Análise de quantos usuários continuam ativos após o cadastro",
+      "day1": "Dia 1",
+      "day7": "Dia 7",
+      "day30": "Dia 30",
+      "retained": "retidos",
+      "retentionRate": "Taxa de Retenção"
     }
   }
 }
