@@ -1,24 +1,107 @@
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Crown, Check, Sparkles, Zap } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { ChevronLeft, Crown, Check, Sparkles, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useSubscription, PREMIUM_PRICING, PREMIUM_BENEFITS } from '@/contexts/SubscriptionContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { PremiumBadge } from '@/components/subscription/PremiumBadge';
+import { useProfile } from '@/hooks/useProfile';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+
+// Stripe Price IDs - These need to be created in your Stripe Dashboard
+// Create a product "MoneyQuest Premium" with prices for each currency
+const STRIPE_PRICES = {
+  BRL: '', // Add your BRL price ID: price_xxx
+  USD: '', // Add your USD price ID: price_xxx
+  EUR: '', // Add your EUR price ID: price_xxx
+} as const;
 
 const Upgrade = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { isPremium, plan } = useSubscription();
   const { currency } = useCurrency();
+  const { refetch: refetchProfile } = useProfile();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isCheckingSubscription, setIsCheckingSubscription] = useState(false);
 
   const pricing = PREMIUM_PRICING[currency] || PREMIUM_PRICING.USD;
+  const priceId = STRIPE_PRICES[currency] || STRIPE_PRICES.USD;
+
+  // Check for success/cancel from Stripe redirect
+  useEffect(() => {
+    const success = searchParams.get('success');
+    const canceled = searchParams.get('canceled');
+
+    if (success === 'true') {
+      toast.success(t('subscription.welcomePremium') || 'Welcome to Premium!');
+      // Check subscription status
+      checkSubscription();
+    } else if (canceled === 'true') {
+      toast.info(t('subscription.checkoutCanceled') || 'Checkout was canceled');
+    }
+  }, [searchParams, t]);
+
+  const checkSubscription = async () => {
+    setIsCheckingSubscription(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('check-subscription');
+      if (error) throw error;
+      
+      console.log('Subscription check result:', data);
+      await refetchProfile();
+    } catch (error) {
+      console.error('Error checking subscription:', error);
+    } finally {
+      setIsCheckingSubscription(false);
+    }
+  };
 
   const handleSubscribe = async () => {
-    // This will be connected to Stripe
-    toast.info(t('subscription.comingSoon'));
+    if (!priceId) {
+      toast.error(t('subscription.setupRequired') || 'Stripe products need to be configured. Please contact support.');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { priceId }
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      }
+    } catch (error) {
+      console.error('Error creating checkout:', error);
+      toast.error(t('subscription.checkoutError') || 'Failed to start checkout. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('customer-portal');
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      }
+    } catch (error) {
+      console.error('Error opening customer portal:', error);
+      toast.error(t('subscription.portalError') || 'Failed to open subscription management. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const freeFeatures = [
@@ -157,16 +240,42 @@ const Upgrade = () => {
           </Card>
         </div>
 
-        {/* Subscribe Button */}
-        {!isPremium && (
+        {/* Action Button */}
+        {isPremium ? (
+          <Button
+            onClick={handleManageSubscription}
+            disabled={isLoading}
+            size="lg"
+            variant="outline"
+            className="w-full min-h-[52px] text-base font-semibold"
+          >
+            {isLoading ? (
+              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+            ) : null}
+            {t('subscription.manageSubscription') || 'Manage Subscription'}
+          </Button>
+        ) : (
           <Button
             onClick={handleSubscribe}
+            disabled={isLoading || !priceId}
             size="lg"
             className="w-full bg-gradient-to-r from-amber-400 to-amber-500 text-amber-950 hover:from-amber-500 hover:to-amber-600 min-h-[52px] text-base font-semibold shadow-lg shadow-amber-500/30"
           >
-            <Sparkles className="w-5 h-5 mr-2" />
+            {isLoading ? (
+              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+            ) : (
+              <Sparkles className="w-5 h-5 mr-2" />
+            )}
             {t('subscription.subscribeTo', { price: pricing.formatted })}
           </Button>
+        )}
+
+        {/* Refresh subscription button */}
+        {isCheckingSubscription && (
+          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span>{t('subscription.checkingStatus') || 'Checking subscription status...'}</span>
+          </div>
         )}
 
         {/* Benefits List */}
