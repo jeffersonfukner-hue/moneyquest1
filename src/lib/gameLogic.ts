@@ -1,5 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
-import { Profile, Transaction, Quest, Badge } from '@/types/database';
+import { Profile, Transaction, Quest, Badge, QuestType } from '@/types/database';
 
 export const XP_PER_LEVEL = 1000;
 
@@ -103,16 +103,109 @@ export const checkAndUpdateBadges = async (
   return newlyUnlocked;
 };
 
+// Calculate quest progress based on quest key and transaction data
+export const calculateQuestProgress = async (
+  userId: string,
+  questKey: string,
+  questType: QuestType
+): Promise<number> => {
+  const today = new Date().toISOString().split('T')[0];
+  const weekStart = getWeekStart();
+  const monthStart = getMonthStart();
+
+  switch (questKey) {
+    case 'daily_checkin':
+    case 'daily_expense':
+    case 'daily_categorized': {
+      const { count } = await supabase
+        .from('transactions')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .eq('date', today);
+      return count || 0;
+    }
+
+    case 'weekly_balance': {
+      const { data } = await supabase
+        .from('transactions')
+        .select('date')
+        .eq('user_id', userId)
+        .gte('date', weekStart)
+        .lte('date', today);
+      
+      if (!data) return 0;
+      const uniqueDays = new Set(data.map(t => t.date));
+      return uniqueDays.size;
+    }
+
+    case 'weekly_categories': {
+      const { data } = await supabase
+        .from('transactions')
+        .select('category')
+        .eq('user_id', userId)
+        .eq('type', 'EXPENSE')
+        .gte('date', weekStart)
+        .lte('date', today);
+      
+      if (!data) return 0;
+      const uniqueCategories = new Set(data.map(t => t.category));
+      return uniqueCategories.size;
+    }
+
+    case 'monthly_discipline': {
+      const { data } = await supabase
+        .from('transactions')
+        .select('date')
+        .eq('user_id', userId)
+        .gte('date', monthStart)
+        .lte('date', today);
+      
+      if (!data) return 0;
+      const weeksWithTransactions = new Set(
+        data.map(t => getWeekNumber(new Date(t.date)))
+      );
+      return weeksWithTransactions.size;
+    }
+
+    case 'monthly_savings': {
+      // Check if expenses are below goal
+      const { data: goals } = await supabase
+        .from('category_goals')
+        .select('budget_limit')
+        .eq('user_id', userId);
+      
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('total_expenses')
+        .eq('id', userId)
+        .single();
+      
+      if (!goals || goals.length === 0 || !profile) return 0;
+      
+      const totalBudget = goals.reduce((sum, g) => sum + Number(g.budget_limit), 0);
+      return profile.total_expenses <= totalBudget ? 1 : 0;
+    }
+
+    default:
+      return 0;
+  }
+};
+
+// Check and update quests with new progress system
 export const checkAndUpdateQuests = async (
   userId: string,
   profile: Profile,
   transactionCount: number
 ): Promise<Quest[]> => {
+  // First, reset any expired quests
+  await supabase.rpc('reset_expired_quests', { p_user_id: userId });
+
   const { data: quests } = await supabase
     .from('quests')
     .select('*')
     .eq('user_id', userId)
-    .eq('is_completed', false);
+    .eq('is_completed', false)
+    .eq('is_active', true);
 
   if (!quests) return [];
 
@@ -122,16 +215,29 @@ export const checkAndUpdateQuests = async (
 
   for (const quest of quests) {
     let shouldComplete = false;
+    let newProgress = quest.progress_current;
 
-    // Check quest completion based on title
-    if (quest.title === 'First Steps' && transactionCount >= 1) {
-      shouldComplete = true;
-    } else if (quest.title === 'Daily Logger' && quest.type === 'DAILY') {
-      shouldComplete = true;
-    } else if (quest.title === 'Week Warrior' && profile.streak >= 7) {
-      shouldComplete = true;
-    } else if (quest.title === 'Saver Supreme' && totalSaved >= 1000) {
-      shouldComplete = true;
+    // Handle different quest types
+    if (quest.quest_key) {
+      newProgress = await calculateQuestProgress(userId, quest.quest_key, quest.type as QuestType);
+      shouldComplete = newProgress >= quest.progress_target;
+
+      // Update progress
+      if (newProgress !== quest.progress_current) {
+        await supabase
+          .from('quests')
+          .update({ progress_current: newProgress })
+          .eq('id', quest.id);
+      }
+    } else {
+      // Legacy quest handling
+      if (quest.title === 'First Steps' && transactionCount >= 1) {
+        shouldComplete = true;
+      } else if (quest.title === 'Week Warrior' && profile.streak >= 7) {
+        shouldComplete = true;
+      } else if (quest.title === 'Saver Supreme' && totalSaved >= 1000) {
+        shouldComplete = true;
+      }
     }
 
     if (shouldComplete) {
@@ -139,7 +245,8 @@ export const checkAndUpdateQuests = async (
         .from('quests')
         .update({ 
           is_completed: true, 
-          completed_at: today 
+          completed_at: today,
+          progress_current: quest.progress_target
         })
         .eq('id', quest.id);
 
@@ -152,12 +259,93 @@ export const checkAndUpdateQuests = async (
       completedQuests.push({ 
         ...quest, 
         is_completed: true,
-        type: quest.type as Quest['type']
+        progress_current: quest.progress_target,
+        type: quest.type as QuestType
       });
+
+      // Check if this is a special quest with badge reward
+      if (quest.type === 'SPECIAL' && quest.season) {
+        const badgeName = getSeasonalBadgeName(quest.season);
+        if (badgeName) {
+          await supabase
+            .from('badges')
+            .update({ 
+              is_unlocked: true, 
+              unlocked_at: new Date().toISOString() 
+            })
+            .eq('user_id', userId)
+            .eq('name', badgeName);
+        }
+      }
     }
   }
 
   return completedQuests;
+};
+
+// Helper functions
+export const getWeekStart = (): string => {
+  const now = new Date();
+  const dayOfWeek = now.getDay();
+  const diff = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+  const weekStart = new Date(now.setDate(diff));
+  return weekStart.toISOString().split('T')[0];
+};
+
+export const getMonthStart = (): string => {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+};
+
+export const getWeekNumber = (date: Date): number => {
+  const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+  const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
+  return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+};
+
+export const getSeasonalBadgeName = (season: string): string | null => {
+  const badgeMap: Record<string, string> = {
+    'halloween': 'Pumpkin Saver',
+    'christmas': 'Christmas Planner',
+    'carnival': 'Smart Reveler',
+    'easter': 'Golden Egg'
+  };
+  return badgeMap[season.toLowerCase()] || null;
+};
+
+// Get time remaining until quest resets
+export const getTimeUntilReset = (periodEndDate: string | null, questType: QuestType): { 
+  hours: number; 
+  minutes: number; 
+  days: number;
+  displayText: string;
+} => {
+  if (!periodEndDate) {
+    return { hours: 0, minutes: 0, days: 0, displayText: 'N/A' };
+  }
+
+  const now = new Date();
+  const endDate = new Date(periodEndDate + 'T23:59:59');
+  const diff = endDate.getTime() - now.getTime();
+
+  if (diff <= 0) {
+    return { hours: 0, minutes: 0, days: 0, displayText: 'Resetting...' };
+  }
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+  let displayText = '';
+  if (days > 0) {
+    displayText = `${days}d ${hours}h`;
+  } else if (hours > 0) {
+    displayText = `${hours}h ${minutes}m`;
+  } else {
+    displayText = `${minutes}m`;
+  }
+
+  return { hours, minutes, days, displayText };
 };
 
 export const CATEGORIES = {
@@ -166,3 +354,41 @@ export const CATEGORIES = {
 };
 
 export const AVATAR_ICONS = ['🎮', '🚀', '💰', '⚡', '🌟', '🔥', '💎', '🏆', '👑', '🎯'];
+
+export const QUEST_TYPE_CONFIG: Record<QuestType, { 
+  icon: string; 
+  label: string; 
+  color: string;
+  bgColor: string;
+}> = {
+  DAILY: { 
+    icon: '🌅', 
+    label: 'Daily', 
+    color: 'text-amber-500',
+    bgColor: 'bg-amber-500/10'
+  },
+  WEEKLY: { 
+    icon: '📅', 
+    label: 'Weekly', 
+    color: 'text-blue-500',
+    bgColor: 'bg-blue-500/10'
+  },
+  MONTHLY: { 
+    icon: '📆', 
+    label: 'Monthly', 
+    color: 'text-purple-500',
+    bgColor: 'bg-purple-500/10'
+  },
+  SPECIAL: { 
+    icon: '✨', 
+    label: 'Special', 
+    color: 'text-pink-500',
+    bgColor: 'bg-pink-500/10'
+  },
+  ACHIEVEMENT: { 
+    icon: '🏆', 
+    label: 'Achievement', 
+    color: 'text-primary',
+    bgColor: 'bg-primary/10'
+  }
+};

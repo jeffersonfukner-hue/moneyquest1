@@ -38,10 +38,18 @@ export interface Quest {
   title: string;
   description: string;
   xp_reward: number;
-  type: 'DAILY' | 'ACHIEVEMENT';
+  type: QuestType;
   is_completed: boolean;
   completed_at: string | null;
   created_at: string;
+  // New fields for enhanced quest system
+  period_start_date: string | null;
+  period_end_date: string | null;
+  progress_current: number;
+  progress_target: number;
+  quest_key: string | null;
+  is_active: boolean;
+  season: string | null;
 }
 
 export interface Badge {
@@ -58,5 +66,5 @@ export interface Badge {
 }
 
 export type TransactionType = 'INCOME' | 'EXPENSE';
-export type QuestType = 'DAILY' | 'ACHIEVEMENT';
+export type QuestType = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'SPECIAL' | 'ACHIEVEMENT';
 export type BadgeRequirementType = 'XP' | 'STREAK' | 'TOTAL_SAVED' | 'COUNT';
