@@ -270,6 +270,36 @@ export type Database = {
           },
         ]
       }
+      daily_rewards: {
+        Row: {
+          created_at: string | null
+          current_streak: number
+          id: string
+          last_claim_date: string | null
+          total_claims: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_streak?: number
+          id?: string
+          last_claim_date?: string | null
+          total_claims?: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          current_streak?: number
+          id?: string
+          last_claim_date?: string | null
+          total_claims?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       exchange_rates: {
         Row: {
           base_currency: string
@@ -524,6 +554,36 @@ export type Database = {
           },
         ]
       }
+      reward_history: {
+        Row: {
+          claimed_at: string | null
+          id: string
+          multiplier: number
+          reward_type: string
+          streak_day: number
+          user_id: string
+          xp_earned: number
+        }
+        Insert: {
+          claimed_at?: string | null
+          id?: string
+          multiplier?: number
+          reward_type?: string
+          streak_day: number
+          user_id: string
+          xp_earned: number
+        }
+        Update: {
+          claimed_at?: string | null
+          id?: string
+          multiplier?: number
+          reward_type?: string
+          streak_day?: number
+          user_id?: string
+          xp_earned?: number
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           amount: number
@@ -739,10 +799,12 @@ export type Database = {
         Returns: undefined
       }
       archive_monthly_goals: { Args: { p_user_id: string }; Returns: undefined }
+      claim_daily_reward: { Args: { p_user_id: string }; Returns: Json }
       create_default_categories: {
         Args: { p_user_id: string }
         Returns: undefined
       }
+      get_daily_reward_status: { Args: { p_user_id: string }; Returns: Json }
       get_level_title: { Args: { user_level: number }; Returns: string }
       get_period_end: { Args: { period_type: string }; Returns: string }
       get_period_start: { Args: { period_type: string }; Returns: string }
