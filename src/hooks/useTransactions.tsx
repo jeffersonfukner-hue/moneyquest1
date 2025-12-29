@@ -14,13 +14,22 @@ import {
 } from '@/lib/gameLogic';
 import { toast } from '@/hooks/use-toast';
 import { useSound } from '@/contexts/SoundContext';
+import { useNarrativeEngine } from './useNarrativeEngine';
 
 import { Quest, Badge } from '@/types/database';
+
+interface NarrativeData {
+  narrative: string;
+  impact: 'low' | 'medium' | 'high' | 'critical';
+  eventType: 'INCOME' | 'EXPENSE';
+  category: string;
+}
 
 export const useTransactions = () => {
   const { user } = useAuth();
   const { profile, refetch: refetchProfile } = useProfile();
   const { playSound } = useSound();
+  const { generateNarrative } = useNarrativeEngine();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [celebrationData, setCelebrationData] = useState<{
@@ -28,6 +37,7 @@ export const useTransactions = () => {
     badge: Badge | null;
     levelUp: boolean;
   } | null>(null);
+  const [narrativeData, setNarrativeData] = useState<NarrativeData | null>(null);
 
   const fetchTransactions = async () => {
     if (!user) {
@@ -172,6 +182,20 @@ export const useTransactions = () => {
     await fetchTransactions();
     await refetchProfile();
 
+    // Generate narrative in background (non-blocking)
+    generateNarrative(transaction.amount, transaction.category, transaction.type)
+      .then((result) => {
+        if (result) {
+          setNarrativeData({
+            narrative: result.narrative,
+            impact: result.impact,
+            eventType: transaction.type,
+            category: transaction.category,
+          });
+        }
+      })
+      .catch(console.error);
+
     return { error: null };
   };
 
@@ -191,6 +215,7 @@ export const useTransactions = () => {
   };
 
   const clearCelebration = () => setCelebrationData(null);
+  const clearNarrative = () => setNarrativeData(null);
 
   return { 
     transactions, 
@@ -199,6 +224,8 @@ export const useTransactions = () => {
     deleteTransaction, 
     refetch: fetchTransactions,
     celebrationData,
-    clearCelebration
+    clearCelebration,
+    narrativeData,
+    clearNarrative
   };
 };
