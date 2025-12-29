@@ -7,8 +7,12 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { FinancialMoodProvider } from "@/contexts/FinancialMoodContext";
 import { SeasonalThemeProvider } from "@/contexts/SeasonalThemeContext";
 import { SoundProvider } from "@/contexts/SoundContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
+import { CurrencyProvider } from "@/contexts/CurrencyContext";
+import '@/i18n';
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -18,19 +22,24 @@ const App = () => (
     <TooltipProvider>
       <AuthProvider>
         <SoundProvider>
-          <FinancialMoodProvider>
-            <SeasonalThemeProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </BrowserRouter>
-            </SeasonalThemeProvider>
-          </FinancialMoodProvider>
+          <LanguageProvider>
+            <CurrencyProvider>
+              <FinancialMoodProvider>
+                <SeasonalThemeProvider>
+                  <Toaster />
+                  <Sonner />
+                  <BrowserRouter>
+                    <Routes>
+                      <Route path="/" element={<Index />} />
+                      <Route path="/auth" element={<Auth />} />
+                      <Route path="/settings" element={<Settings />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </BrowserRouter>
+                </SeasonalThemeProvider>
+              </FinancialMoodProvider>
+            </CurrencyProvider>
+          </LanguageProvider>
         </SoundProvider>
       </AuthProvider>
     </TooltipProvider>

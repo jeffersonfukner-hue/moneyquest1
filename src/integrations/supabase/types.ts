@@ -97,11 +97,14 @@ export type Database = {
         Row: {
           avatar_icon: string
           created_at: string
+          currency: string
           financial_mood: string
           id: string
+          language: string
           last_active_date: string | null
           level: number
           level_title: string
+          locale: string
           streak: number
           total_expenses: number
           total_income: number
@@ -111,11 +114,14 @@ export type Database = {
         Insert: {
           avatar_icon?: string
           created_at?: string
+          currency?: string
           financial_mood?: string
           id: string
+          language?: string
           last_active_date?: string | null
           level?: number
           level_title?: string
+          locale?: string
           streak?: number
           total_expenses?: number
           total_income?: number
@@ -125,11 +131,14 @@ export type Database = {
         Update: {
           avatar_icon?: string
           created_at?: string
+          currency?: string
           financial_mood?: string
           id?: string
+          language?: string
           last_active_date?: string | null
           level?: number
           level_title?: string
+          locale?: string
           streak?: number
           total_expenses?: number
           total_income?: number

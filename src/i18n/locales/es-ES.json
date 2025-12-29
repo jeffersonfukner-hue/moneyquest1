@@ -1,0 +1,139 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "add": "Añadir",
+    "edit": "Editar",
+    "confirm": "Confirmar",
+    "back": "Volver",
+    "next": "Siguiente",
+    "all": "Todo",
+    "week": "Semana",
+    "month": "Mes",
+    "year": "Año",
+    "today": "Hoy",
+    "yesterday": "Ayer",
+    "noData": "No se encontraron datos"
+  },
+  "auth": {
+    "login": "Iniciar Sesión",
+    "signup": "Registrarse",
+    "logout": "Cerrar Sesión",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "forgotPassword": "¿Olvidaste la contraseña?",
+    "dontHaveAccount": "¿No tienes cuenta?",
+    "alreadyHaveAccount": "¿Ya tienes cuenta?",
+    "welcomeBack": "¡Bienvenido de nuevo!",
+    "createAccount": "Crea tu cuenta",
+    "signInWith": "Iniciar sesión con"
+  },
+  "navigation": {
+    "home": "Inicio",
+    "transactions": "Transacciones",
+    "add": "Añadir",
+    "quests": "Misiones",
+    "badges": "Logros",
+    "settings": "Ajustes"
+  },
+  "transactions": {
+    "title": "Transacciones",
+    "recentTransactions": "Transacciones Recientes",
+    "income": "Ingreso",
+    "expense": "Gasto",
+    "addTransaction": "Añadir Transacción",
+    "description": "Descripción",
+    "amount": "Monto",
+    "category": "Categoría",
+    "date": "Fecha",
+    "type": "Tipo",
+    "selectCategory": "Selecciona una categoría",
+    "selectDate": "Selecciona una fecha",
+    "noTransactions": "Sin transacciones aún",
+    "noTransactionsForPeriod": "Sin transacciones en este período",
+    "startTracking": "¡Empieza a registrar tus transacciones!",
+    "deleteConfirm": "¿Estás seguro de que quieres eliminar esta transacción?",
+    "categories": {
+      "salary": "Salario",
+      "freelance": "Freelance",
+      "investment": "Inversiones",
+      "gift": "Regalo",
+      "other_income": "Otros Ingresos",
+      "food": "Comida",
+      "transport": "Transporte",
+      "entertainment": "Entretenimiento",
+      "shopping": "Compras",
+      "bills": "Facturas",
+      "health": "Salud",
+      "education": "Educación",
+      "other_expense": "Otros Gastos"
+    }
+  },
+  "stats": {
+    "dayStreak": "Racha de Días",
+    "totalIncome": "Ingresos Totales",
+    "totalExpenses": "Gastos Totales",
+    "totalSaved": "Total Ahorrado",
+    "netLoss": "Pérdida Neta",
+    "level": "Nivel",
+    "xp": "XP",
+    "xpToNextLevel": "XP para el siguiente nivel"
+  },
+  "quests": {
+    "title": "Misiones",
+    "daily": "Diaria",
+    "weekly": "Semanal",
+    "monthly": "Mensual",
+    "special": "Especial",
+    "achievement": "Logro",
+    "completed": "Completada",
+    "inProgress": "En Progreso",
+    "reward": "Recompensa",
+    "timeLeft": "Tiempo restante",
+    "progress": "Progreso",
+    "expires": "Expira en"
+  },
+  "badges": {
+    "title": "Logros",
+    "unlocked": "Desbloqueado",
+    "locked": "Bloqueado",
+    "unlockedAt": "Desbloqueado el"
+  },
+  "levels": {
+    "novice_saver": "Ahorrador Novato",
+    "budget_apprentice": "Aprendiz de Presupuesto",
+    "money_manager": "Gestor de Dinero",
+    "finance_wizard": "Mago de las Finanzas",
+    "wealth_warrior": "Guerrero de la Riqueza",
+    "economy_expert": "Experto en Economía",
+    "legendary_investor": "Inversor Legendario"
+  },
+  "settings": {
+    "title": "Ajustes",
+    "language": "Idioma",
+    "currency": "Moneda",
+    "sound": "Sonidos",
+    "soundOn": "Activado",
+    "soundOff": "Desactivado",
+    "theme": "Tema",
+    "themeAuto": "Automático (Estacional)",
+    "account": "Cuenta",
+    "profile": "Perfil",
+    "notifications": "Notificaciones"
+  },
+  "mood": {
+    "veryPositive": "Muy Positivo",
+    "positive": "Positivo",
+    "neutral": "Neutro",
+    "negative": "Negativo",
+    "critical": "Crítico"
+  },
+  "celebration": {
+    "questCompleted": "¡Misión Completada!",
+    "badgeUnlocked": "¡Logro Desbloqueado!",
+    "levelUp": "¡Subiste de Nivel!",
+    "congratulations": "¡Felicidades!"
+  }
+}

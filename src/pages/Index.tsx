@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { useTransactions } from '@/hooks/useTransactions';
@@ -13,19 +14,22 @@ import { TransactionsList } from '@/components/game/TransactionsList';
 import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
 import { MoodIndicator } from '@/components/game/MoodIndicator';
 import { QuestCelebration } from '@/components/game/QuestCelebration';
-import { SeasonalThemeIndicator } from '@/components/game/SeasonalThemeIndicator';
 import { SeasonalDecorations } from '@/components/game/SeasonalDecorations';
-import { SoundToggle } from '@/components/game/SoundToggle';
-import { Button } from '@/components/ui/button';
-import { LogOut, Gamepad2 } from 'lucide-react';
+import { BottomNavigation, type TabId } from '@/components/navigation/BottomNavigation';
+import { MobileHeader } from '@/components/navigation/MobileHeader';
+import { Gamepad2 } from 'lucide-react';
 
 const Index = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user, loading: authLoading, signOut } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { profile, loading: profileLoading } = useProfile();
   const { transactions, addTransaction, deleteTransaction, celebrationData, clearCelebration } = useTransactions();
   const { quests, refetch: refetchQuests } = useQuests();
   const { badges, refetch: refetchBadges } = useBadges();
+  
+  const [activeTab, setActiveTab] = useState<TabId>('home');
+  const [showAddDialog, setShowAddDialog] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -40,49 +44,54 @@ const Index = () => {
           <div className="w-16 h-16 bg-gradient-hero rounded-2xl flex items-center justify-center mx-auto mb-4 animate-pulse">
             <Gamepad2 className="w-8 h-8 text-primary-foreground" />
           </div>
-          <p className="text-muted-foreground">Loading your quest...</p>
+          <p className="text-muted-foreground">{t('common.loading')}</p>
         </div>
       </div>
     );
   }
 
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'home':
+        return (
+          <div className="space-y-4">
+            <LevelProgress profile={profile} />
+            <StatsCards profile={profile} />
+            <MoodIndicator />
+          </div>
+        );
+      case 'transactions':
+        return <TransactionsList transactions={transactions} onDelete={deleteTransaction} />;
+      case 'quests':
+        return <QuestsPanel quests={quests} />;
+      case 'badges':
+        return <BadgesGrid badges={badges} />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-background pb-24 relative">
+    <div className="min-h-screen bg-background pb-20 relative">
       <SeasonalDecorations />
       
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-hero rounded-xl flex items-center justify-center">
-              <Gamepad2 className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <h1 className="font-display text-xl font-bold text-gradient-primary">MoneyQuest</h1>
-          </div>
-          <div className="flex items-center gap-1">
-            <SeasonalThemeIndicator />
-            <MoodIndicator />
-            <SoundToggle />
-            <Button variant="ghost" size="icon" onClick={signOut}>
-              <LogOut className="w-5 h-5" />
-            </Button>
-          </div>
-        </div>
-      </header>
+      <MobileHeader onSettingsClick={() => navigate('/settings')} />
 
-      <main className="container mx-auto px-4 py-6 space-y-6 relative z-10">
-        <LevelProgress profile={profile} />
-        <StatsCards profile={profile} />
-        
-        <div className="grid lg:grid-cols-2 gap-6">
-          <div className="space-y-6">
-            <QuestsPanel quests={quests} />
-            <BadgesGrid badges={badges} />
-          </div>
-          <TransactionsList transactions={transactions} onDelete={deleteTransaction} />
-        </div>
+      <main className="px-4 py-4 max-w-md mx-auto relative z-10">
+        {renderTabContent()}
       </main>
 
-      <AddTransactionDialog onAdd={addTransaction} />
+      <BottomNavigation 
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        onAddClick={() => setShowAddDialog(true)}
+      />
+
+      <AddTransactionDialog 
+        onAdd={addTransaction}
+        open={showAddDialog}
+        onOpenChange={setShowAddDialog}
+      />
       
       <QuestCelebration 
         completedQuest={celebrationData?.quest || null}

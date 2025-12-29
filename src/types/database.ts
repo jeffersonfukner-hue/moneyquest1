@@ -1,5 +1,8 @@
 export type FinancialMood = 'VERY_POSITIVE' | 'POSITIVE' | 'NEUTRAL' | 'NEGATIVE' | 'CRITICAL';
 
+export type SupportedLanguage = 'pt-BR' | 'en-US' | 'es-ES';
+export type SupportedCurrency = 'BRL' | 'USD' | 'EUR';
+
 export interface Profile {
   id: string;
   xp: number;
@@ -11,6 +14,9 @@ export interface Profile {
   total_expenses: number;
   last_active_date: string | null;
   financial_mood: FinancialMood;
+  language: SupportedLanguage;
+  locale: string;
+  currency: SupportedCurrency;
   created_at: string;
   updated_at: string;
 }
