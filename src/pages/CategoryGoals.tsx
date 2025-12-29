@@ -12,9 +12,11 @@ import { SeasonalDecorations } from '@/components/game/SeasonalDecorations';
 import { UpgradePrompt } from '@/components/subscription/UpgradePrompt';
 import { GoalCard } from '@/components/goals/GoalCard';
 import { AddGoalDialog } from '@/components/goals/AddGoalDialog';
+import { GoalsMonthlyReport } from '@/components/goals/GoalsMonthlyReport';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, Target, Plus, Loader2, Lock, PiggyBank } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { ArrowLeft, Target, Plus, Loader2, Lock, PiggyBank, BarChart3 } from 'lucide-react';
 
 const CategoryGoals = () => {
   const { t } = useTranslation();
@@ -27,6 +29,7 @@ const CategoryGoals = () => {
   
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingGoal, setEditingGoal] = useState<CategoryGoal | null>(null);
+  const [showReport, setShowReport] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -122,15 +125,27 @@ const CategoryGoals = () => {
               </Card>
             )}
 
-            {/* Add Goal Button */}
-            <Button
-              onClick={() => setShowAddDialog(true)}
-              className="w-full mb-6 min-h-[48px]"
-              variant="outline"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              {t('categoryGoals.addGoal')}
-            </Button>
+            {/* Action Buttons */}
+            <div className="flex gap-2 mb-6">
+              <Button
+                onClick={() => setShowAddDialog(true)}
+                className="flex-1 min-h-[48px]"
+                variant="outline"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                {t('categoryGoals.addGoal')}
+              </Button>
+              {goals.length > 0 && (
+                <Button
+                  onClick={() => setShowReport(true)}
+                  variant="outline"
+                  className="min-h-[48px]"
+                >
+                  <BarChart3 className="h-4 w-4 mr-2" />
+                  {t('categoryGoals.report.viewReport')}
+                </Button>
+              )}
+            </div>
 
             {/* Goals List */}
             {goalsLoading ? (
@@ -170,6 +185,16 @@ const CategoryGoals = () => {
               existingCategories={existingCategories}
               editingGoal={editingGoal}
             />
+
+            {/* Monthly Report Sheet */}
+            <Sheet open={showReport} onOpenChange={setShowReport}>
+              <SheetContent side="bottom" className="h-[90vh] overflow-y-auto">
+                <SheetHeader className="mb-4">
+                  <SheetTitle>{t('categoryGoals.report.title')}</SheetTitle>
+                </SheetHeader>
+                <GoalsMonthlyReport onClose={() => setShowReport(false)} />
+              </SheetContent>
+            </Sheet>
           </>
         ) : (
           <Card>
