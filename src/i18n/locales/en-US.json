@@ -1,0 +1,139 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "add": "Add",
+    "edit": "Edit",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "all": "All",
+    "week": "Week",
+    "month": "Month",
+    "year": "Year",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "noData": "No data found"
+  },
+  "auth": {
+    "login": "Sign In",
+    "signup": "Sign Up",
+    "logout": "Sign Out",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot password?",
+    "dontHaveAccount": "Don't have an account?",
+    "alreadyHaveAccount": "Already have an account?",
+    "welcomeBack": "Welcome back!",
+    "createAccount": "Create your account",
+    "signInWith": "Sign in with"
+  },
+  "navigation": {
+    "home": "Home",
+    "transactions": "Transactions",
+    "add": "Add",
+    "quests": "Quests",
+    "badges": "Badges",
+    "settings": "Settings"
+  },
+  "transactions": {
+    "title": "Transactions",
+    "recentTransactions": "Recent Transactions",
+    "income": "Income",
+    "expense": "Expense",
+    "addTransaction": "Add Transaction",
+    "description": "Description",
+    "amount": "Amount",
+    "category": "Category",
+    "date": "Date",
+    "type": "Type",
+    "selectCategory": "Select a category",
+    "selectDate": "Select a date",
+    "noTransactions": "No transactions yet",
+    "noTransactionsForPeriod": "No transactions for this period",
+    "startTracking": "Start tracking your transactions!",
+    "deleteConfirm": "Are you sure you want to delete this transaction?",
+    "categories": {
+      "salary": "Salary",
+      "freelance": "Freelance",
+      "investment": "Investments",
+      "gift": "Gift",
+      "other_income": "Other Income",
+      "food": "Food",
+      "transport": "Transport",
+      "entertainment": "Entertainment",
+      "shopping": "Shopping",
+      "bills": "Bills",
+      "health": "Health",
+      "education": "Education",
+      "other_expense": "Other Expenses"
+    }
+  },
+  "stats": {
+    "dayStreak": "Day Streak",
+    "totalIncome": "Total Income",
+    "totalExpenses": "Total Expenses",
+    "totalSaved": "Total Saved",
+    "netLoss": "Net Loss",
+    "level": "Level",
+    "xp": "XP",
+    "xpToNextLevel": "XP to next level"
+  },
+  "quests": {
+    "title": "Quests",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "special": "Special",
+    "achievement": "Achievement",
+    "completed": "Completed",
+    "inProgress": "In Progress",
+    "reward": "Reward",
+    "timeLeft": "Time left",
+    "progress": "Progress",
+    "expires": "Expires in"
+  },
+  "badges": {
+    "title": "Badges",
+    "unlocked": "Unlocked",
+    "locked": "Locked",
+    "unlockedAt": "Unlocked at"
+  },
+  "levels": {
+    "novice_saver": "Novice Saver",
+    "budget_apprentice": "Budget Apprentice",
+    "money_manager": "Money Manager",
+    "finance_wizard": "Finance Wizard",
+    "wealth_warrior": "Wealth Warrior",
+    "economy_expert": "Economy Expert",
+    "legendary_investor": "Legendary Investor"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "currency": "Currency",
+    "sound": "Sound",
+    "soundOn": "On",
+    "soundOff": "Off",
+    "theme": "Theme",
+    "themeAuto": "Auto (Seasonal)",
+    "account": "Account",
+    "profile": "Profile",
+    "notifications": "Notifications"
+  },
+  "mood": {
+    "veryPositive": "Very Positive",
+    "positive": "Positive",
+    "neutral": "Neutral",
+    "negative": "Negative",
+    "critical": "Critical"
+  },
+  "celebration": {
+    "questCompleted": "Quest Completed!",
+    "badgeUnlocked": "Badge Unlocked!",
+    "levelUp": "Level Up!",
+    "congratulations": "Congratulations!"
+  }
+}

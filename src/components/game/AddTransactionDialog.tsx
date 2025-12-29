@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, ArrowUpCircle, ArrowDownCircle, CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -12,6 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { CATEGORIES } from '@/lib/gameLogic';
 import { TransactionType } from '@/types/database';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 interface AddTransactionDialogProps {
   onAdd: (transaction: {
@@ -21,16 +23,27 @@ interface AddTransactionDialogProps {
     type: TransactionType;
     date: string;
   }) => Promise<{ error: Error | null }>;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export const AddTransactionDialog = ({ onAdd }: AddTransactionDialogProps) => {
-  const [open, setOpen] = useState(false);
+export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange }: AddTransactionDialogProps) => {
+  const { t } = useTranslation();
+  const { dateLocale } = useLanguage();
+  const { currencySymbol } = useCurrency();
+  
+  const [internalOpen, setInternalOpen] = useState(false);
   const [type, setType] = useState<TransactionType>('EXPENSE');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
   const [date, setDate] = useState<Date>(new Date());
   const [loading, setLoading] = useState(false);
+
+  // Use controlled or internal state
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = isControlled ? (onOpenChange || (() => {})) : setInternalOpen;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,19 +70,41 @@ export const AddTransactionDialog = ({ onAdd }: AddTransactionDialogProps) => {
 
   const categories = type === 'INCOME' ? CATEGORIES.INCOME : CATEGORIES.EXPENSE;
 
+  // Map category keys to translation keys
+  const getCategoryTranslationKey = (cat: string): string => {
+    const keyMap: Record<string, string> = {
+      'Salary': 'salary',
+      'Freelance': 'freelance',
+      'Investments': 'investment',
+      'Gift': 'gift',
+      'Other Income': 'other_income',
+      'Food': 'food',
+      'Transport': 'transport',
+      'Entertainment': 'entertainment',
+      'Shopping': 'shopping',
+      'Bills': 'bills',
+      'Health': 'health',
+      'Education': 'education',
+      'Other': 'other_expense',
+    };
+    return keyMap[cat] || cat.toLowerCase().replace(/\s+/g, '_');
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button 
-          size="lg" 
-          className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-gradient-hero hover:opacity-90 transition-all hover:scale-105"
-        >
-          <Plus className="w-6 h-6" />
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      {!isControlled && (
+        <DialogTrigger asChild>
+          <Button 
+            size="lg" 
+            className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-gradient-hero hover:opacity-90 transition-all hover:scale-105"
+          >
+            <Plus className="w-6 h-6" />
+          </Button>
+        </DialogTrigger>
+      )}
+      <DialogContent className="sm:max-w-md mx-4">
         <DialogHeader>
-          <DialogTitle className="font-display text-xl">Add Transaction</DialogTitle>
+          <DialogTitle className="font-display text-xl">{t('transactions.addTransaction')}</DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -77,42 +112,49 @@ export const AddTransactionDialog = ({ onAdd }: AddTransactionDialogProps) => {
             <Button
               type="button"
               variant={type === 'INCOME' ? 'default' : 'outline'}
-              className={`flex-1 ${type === 'INCOME' ? 'bg-income hover:bg-income/90' : ''}`}
+              className={cn(
+                "flex-1 min-h-[48px]",
+                type === 'INCOME' && 'bg-income hover:bg-income/90'
+              )}
               onClick={() => {
                 setType('INCOME');
                 setCategory('');
               }}
             >
               <ArrowUpCircle className="w-4 h-4 mr-2" />
-              Income
+              {t('transactions.income')}
             </Button>
             <Button
               type="button"
               variant={type === 'EXPENSE' ? 'default' : 'outline'}
-              className={`flex-1 ${type === 'EXPENSE' ? 'bg-expense hover:bg-expense/90' : ''}`}
+              className={cn(
+                "flex-1 min-h-[48px]",
+                type === 'EXPENSE' && 'bg-expense hover:bg-expense/90'
+              )}
               onClick={() => {
                 setType('EXPENSE');
                 setCategory('');
               }}
             >
               <ArrowDownCircle className="w-4 h-4 mr-2" />
-              Expense
+              {t('transactions.expense')}
             </Button>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t('transactions.description')}</Label>
             <Input
               id="description"
-              placeholder="What was this for?"
+              placeholder={t('transactions.description')}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
+              className="min-h-[48px]"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="amount">Amount ($)</Label>
+            <Label htmlFor="amount">{t('transactions.amount')} ({currencySymbol})</Label>
             <Input
               id="amount"
               type="number"
@@ -122,36 +164,39 @@ export const AddTransactionDialog = ({ onAdd }: AddTransactionDialogProps) => {
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               required
+              className="min-h-[48px]"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="category">Category</Label>
+            <Label htmlFor="category">{t('transactions.category')}</Label>
             <Select value={category} onValueChange={setCategory} required>
-              <SelectTrigger>
-                <SelectValue placeholder="Select category" />
+              <SelectTrigger className="min-h-[48px]">
+                <SelectValue placeholder={t('transactions.selectCategory')} />
               </SelectTrigger>
               <SelectContent>
                 {categories.map(cat => (
-                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                  <SelectItem key={cat} value={cat} className="min-h-[44px]">
+                    {t(`transactions.categories.${getCategoryTranslationKey(cat)}`, cat)}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label>Data</Label>
+            <Label>{t('transactions.date')}</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start text-left font-normal",
+                    "w-full justify-start text-left font-normal min-h-[48px]",
                     !date && "text-muted-foreground"
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP", { locale: ptBR }) : <span>Selecione a data</span>}
+                  {date ? format(date, "PPP", { locale: dateLocale }) : <span>{t('transactions.selectDate')}</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -169,10 +214,10 @@ export const AddTransactionDialog = ({ onAdd }: AddTransactionDialogProps) => {
 
           <Button
             type="submit" 
-            className="w-full bg-gradient-hero hover:opacity-90"
+            className="w-full min-h-[48px] bg-gradient-hero hover:opacity-90"
             disabled={loading || !description || !amount || !category}
           >
-            {loading ? 'Adding...' : 'Add Transaction & Earn XP 🎮'}
+            {loading ? t('common.loading') : `${t('common.add')} 🎮`}
           </Button>
         </form>
       </DialogContent>
