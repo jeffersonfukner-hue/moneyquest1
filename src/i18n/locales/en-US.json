@@ -324,7 +324,37 @@
     "deleteConfirmDesc": "Are you sure you want to delete the goal for {{category}}?",
     "alertsCount": "{{count}} categories over budget",
     "dailyBudget": "{{amount}}/day remaining",
-    "daysRemaining": "{{days}} days left this month"
+    "daysRemaining": "{{days}} days left this month",
+    "alert80Title": "⚠️ Budget Warning",
+    "alert80": "{{category}} is at {{percentage}}% of your monthly limit!",
+    "alert100Title": "🚨 Budget Exceeded",
+    "alert100": "You've exceeded your {{category}} budget for this month!",
+    "quickAdd": {
+      "prompt": "Set a budget for this category?",
+      "setBudget": "Set Budget",
+      "skip": "Skip",
+      "success": "Budget created!"
+    },
+    "report": {
+      "title": "Monthly Budget Report",
+      "viewReport": "View Report",
+      "noData": "No goals to analyze. Create some category goals first!",
+      "adherenceRate": "Budget Adherence",
+      "withinBudget": "Within Budget",
+      "overBudget": "Over Budget",
+      "bestCategory": "Best Performing",
+      "worstCategory": "Needs Attention",
+      "ofBudget": "of budget used",
+      "comparison": "Budget vs Spending",
+      "breakdown": "Category Breakdown",
+      "budget": "Budget",
+      "spent": "Spent",
+      "total": "Total",
+      "excellent": "Excellent",
+      "good": "Good",
+      "warning": "Warning",
+      "over": "Over"
+    }
   },
   "categories": {
     "title": "Categories",

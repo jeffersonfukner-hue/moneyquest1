@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Plus, ArrowUpCircle, ArrowDownCircle, CalendarIcon, Coins } from 'lucide-react';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
@@ -14,7 +14,10 @@ import { TransactionType, SupportedCurrency } from '@/types/database';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useCategories } from '@/hooks/useCategories';
+import { useCategoryGoals } from '@/hooks/useCategoryGoals';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import { QuickAddCategoryDialog } from '@/components/categories/QuickAddCategoryDialog';
+import { QuickAddGoalPrompt } from '@/components/goals/QuickAddGoalPrompt';
 import { SUPPORTED_CURRENCIES } from '@/i18n';
 
 interface AddTransactionDialogProps {
@@ -35,6 +38,8 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   const { dateLocale } = useLanguage();
   const { currencySymbol, currency } = useCurrency();
   const { getCategoriesByType, addCategory } = useCategories();
+  const { goals, refetch: refetchGoals } = useCategoryGoals();
+  const { canAccessCategoryGoals } = useSubscription();
   
   const [internalOpen, setInternalOpen] = useState(false);
   const [type, setType] = useState<TransactionType>('EXPENSE');
@@ -45,6 +50,22 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   const [date, setDate] = useState<Date>(new Date());
   const [loading, setLoading] = useState(false);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const [showGoalPrompt, setShowGoalPrompt] = useState(false);
+
+  // Check if selected category has a goal
+  const categoryHasGoal = useMemo(() => {
+    if (!category || type !== 'EXPENSE') return true;
+    return goals.some(g => g.category === category);
+  }, [category, goals, type]);
+
+  // Show goal prompt when selecting expense category without goal (premium only)
+  useEffect(() => {
+    if (type === 'EXPENSE' && category && !categoryHasGoal && canAccessCategoryGoals) {
+      setShowGoalPrompt(true);
+    } else {
+      setShowGoalPrompt(false);
+    }
+  }, [category, categoryHasGoal, type, canAccessCategoryGoals]);
 
   // Update selected currency when user's default currency changes
   useEffect(() => {
@@ -216,6 +237,17 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
                 </SelectItem>
               </SelectContent>
             </Select>
+            
+            {showGoalPrompt && (
+              <QuickAddGoalPrompt
+                category={category}
+                onSuccess={() => {
+                  setShowGoalPrompt(false);
+                  refetchGoals();
+                }}
+                onDismiss={() => setShowGoalPrompt(false)}
+              />
+            )}
           </div>
 
           <div className="space-y-2">

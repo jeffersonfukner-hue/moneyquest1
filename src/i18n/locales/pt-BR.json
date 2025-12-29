@@ -324,7 +324,37 @@
     "deleteConfirmDesc": "Tem certeza que deseja excluir a meta de {{category}}?",
     "alertsCount": "{{count}} categorias acima do limite",
     "dailyBudget": "{{amount}}/dia restante",
-    "daysRemaining": "{{days}} dias restantes no mês"
+    "daysRemaining": "{{days}} dias restantes no mês",
+    "alert80Title": "⚠️ Alerta de Orçamento",
+    "alert80": "{{category}} está em {{percentage}}% do seu limite mensal!",
+    "alert100Title": "🚨 Orçamento Excedido",
+    "alert100": "Você excedeu o orçamento de {{category}} neste mês!",
+    "quickAdd": {
+      "prompt": "Definir um orçamento para esta categoria?",
+      "setBudget": "Definir",
+      "skip": "Pular",
+      "success": "Orçamento criado!"
+    },
+    "report": {
+      "title": "Relatório Mensal de Orçamento",
+      "viewReport": "Ver Relatório",
+      "noData": "Sem metas para analisar. Crie algumas metas primeiro!",
+      "adherenceRate": "Aderência ao Orçamento",
+      "withinBudget": "Dentro do Limite",
+      "overBudget": "Acima do Limite",
+      "bestCategory": "Melhor Desempenho",
+      "worstCategory": "Precisa de Atenção",
+      "ofBudget": "do orçamento usado",
+      "comparison": "Orçamento vs Gasto",
+      "breakdown": "Detalhamento por Categoria",
+      "budget": "Orçamento",
+      "spent": "Gasto",
+      "total": "Total",
+      "excellent": "Excelente",
+      "good": "Bom",
+      "warning": "Alerta",
+      "over": "Acima"
+    }
   },
   "categories": {
     "title": "Categorias",

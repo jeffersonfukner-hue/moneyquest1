@@ -15,6 +15,7 @@ import {
 import { toast } from '@/hooks/use-toast';
 import { useSound } from '@/contexts/SoundContext';
 import { useNarrativeEngine } from './useNarrativeEngine';
+import { useBudgetAlerts } from './useBudgetAlerts';
 
 import { Quest, Badge } from '@/types/database';
 
@@ -30,6 +31,7 @@ export const useTransactions = () => {
   const { profile, refetch: refetchProfile } = useProfile();
   const { playSound } = useSound();
   const { generateNarrative } = useNarrativeEngine();
+  const { checkBudgetAlert, showBudgetAlert } = useBudgetAlerts();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [celebrationData, setCelebrationData] = useState<{
@@ -182,6 +184,17 @@ export const useTransactions = () => {
 
     await fetchTransactions();
     await refetchProfile();
+
+    // Check budget alerts for expense transactions (non-blocking)
+    if (transaction.type === 'EXPENSE') {
+      checkBudgetAlert(user.id, transaction.category, transaction.amount)
+        .then((alert) => {
+          if (alert) {
+            showBudgetAlert(alert);
+          }
+        })
+        .catch(console.error);
+    }
 
     // Generate narrative in background (non-blocking)
     generateNarrative(transaction.amount, transaction.category, transaction.type)
