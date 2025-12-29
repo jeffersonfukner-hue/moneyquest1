@@ -97,6 +97,7 @@ export type Database = {
         Row: {
           avatar_icon: string
           created_at: string
+          financial_mood: string
           id: string
           last_active_date: string | null
           level: number
@@ -110,6 +111,7 @@ export type Database = {
         Insert: {
           avatar_icon?: string
           created_at?: string
+          financial_mood?: string
           id: string
           last_active_date?: string | null
           level?: number
@@ -123,6 +125,7 @@ export type Database = {
         Update: {
           avatar_icon?: string
           created_at?: string
+          financial_mood?: string
           id?: string
           last_active_date?: string | null
           level?: number

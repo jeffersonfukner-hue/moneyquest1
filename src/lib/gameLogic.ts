@@ -1,7 +1,18 @@
 import { supabase } from '@/integrations/supabase/client';
-import { Profile, Transaction, Quest, Badge, QuestType } from '@/types/database';
+import { Profile, Transaction, Quest, Badge, QuestType, FinancialMood } from '@/types/database';
 
 export const XP_PER_LEVEL = 1000;
+
+// Calculate financial mood based on balance
+export const calculateFinancialMood = (totalIncome: number, totalExpenses: number): FinancialMood => {
+  const balance = totalIncome - totalExpenses;
+  
+  if (balance > 5000) return 'VERY_POSITIVE';
+  if (balance >= 1000) return 'POSITIVE';
+  if (balance >= 0) return 'NEUTRAL';
+  if (balance >= -999) return 'NEGATIVE';
+  return 'CRITICAL';
+};
 
 export const calculateXP = (amount: number, type: 'INCOME' | 'EXPENSE'): number => {
   if (type === 'INCOME') {

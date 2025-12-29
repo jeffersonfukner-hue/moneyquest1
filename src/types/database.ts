@@ -1,3 +1,5 @@
+export type FinancialMood = 'VERY_POSITIVE' | 'POSITIVE' | 'NEUTRAL' | 'NEGATIVE' | 'CRITICAL';
+
 export interface Profile {
   id: string;
   xp: number;
@@ -8,6 +10,7 @@ export interface Profile {
   total_income: number;
   total_expenses: number;
   last_active_date: string | null;
+  financial_mood: FinancialMood;
   created_at: string;
   updated_at: string;
 }

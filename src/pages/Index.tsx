@@ -11,6 +11,7 @@ import { QuestsPanel } from '@/components/game/QuestsPanel';
 import { BadgesGrid } from '@/components/game/BadgesGrid';
 import { TransactionsList } from '@/components/game/TransactionsList';
 import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
+import { MoodIndicator } from '@/components/game/MoodIndicator';
 import { Button } from '@/components/ui/button';
 import { LogOut, Gamepad2 } from 'lucide-react';
 
@@ -51,9 +52,12 @@ const Index = () => {
             </div>
             <h1 className="font-display text-xl font-bold text-gradient-primary">MoneyQuest</h1>
           </div>
-          <Button variant="ghost" size="icon" onClick={signOut}>
-            <LogOut className="w-5 h-5" />
-          </Button>
+          <div className="flex items-center gap-3">
+            <MoodIndicator />
+            <Button variant="ghost" size="icon" onClick={signOut}>
+              <LogOut className="w-5 h-5" />
+            </Button>
+          </div>
         </div>
       </header>
 
