@@ -2,6 +2,7 @@ export type FinancialMood = 'VERY_POSITIVE' | 'POSITIVE' | 'NEUTRAL' | 'NEGATIVE
 
 export type SupportedLanguage = 'pt-BR' | 'en-US' | 'es-ES';
 export type SupportedCurrency = 'BRL' | 'USD' | 'EUR';
+export type SubscriptionPlan = 'FREE' | 'PREMIUM';
 
 export interface Profile {
   id: string;
@@ -18,6 +19,11 @@ export interface Profile {
   language: SupportedLanguage;
   locale: string;
   currency: SupportedCurrency;
+  subscription_plan: SubscriptionPlan;
+  subscription_started_at: string | null;
+  subscription_expires_at: string | null;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
   created_at: string;
   updated_at: string;
 }

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Globe, Coins, Volume2, LogOut } from 'lucide-react';
+import { ChevronLeft, Globe, Coins, Volume2, LogOut, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -10,7 +10,9 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useSound } from '@/contexts/SoundContext';
 import { useAuth } from '@/hooks/useAuth';
+import { useSubscription, PREMIUM_PRICING } from '@/contexts/SubscriptionContext';
 import { SUPPORTED_LANGUAGES, SUPPORTED_CURRENCIES, type SupportedLanguage, type SupportedCurrency } from '@/i18n';
+import { PremiumBadge } from '@/components/subscription/PremiumBadge';
 
 const Settings = () => {
   const { t } = useTranslation();
@@ -19,6 +21,9 @@ const Settings = () => {
   const { currency, setCurrency } = useCurrency();
   const { isMuted, toggleMute } = useSound();
   const { signOut } = useAuth();
+  const { isPremium, canAccessMultiLanguage, canAccessMultiCurrency, plan } = useSubscription();
+
+  const pricing = PREMIUM_PRICING[currency] || PREMIUM_PRICING.USD;
 
   const handleLanguageChange = async (value: string) => {
     await setLanguage(value as SupportedLanguage);
@@ -52,57 +57,113 @@ const Settings = () => {
       </header>
 
       <main className="px-4 py-6 max-w-md mx-auto space-y-4">
+        {/* Subscription Status */}
+        <Card 
+          className={`cursor-pointer transition-all ${isPremium ? 'border-amber-400/50 bg-gradient-to-br from-amber-400/10 to-amber-500/5' : 'hover:border-amber-400/30'}`}
+          onClick={() => navigate('/upgrade')}
+        >
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isPremium ? 'bg-gradient-to-br from-amber-400 to-amber-500' : 'bg-muted'}`}>
+              <Crown className={`w-5 h-5 ${isPremium ? 'text-amber-950' : 'text-muted-foreground'}`} />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <p className="font-semibold text-foreground">
+                  {isPremium ? t('subscription.premiumPlan') : t('subscription.freePlan')}
+                </p>
+                {isPremium && <PremiumBadge size="sm" />}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {isPremium ? t('subscription.enjoyAllFeatures') : t('subscription.unlockAllFeatures')}
+              </p>
+            </div>
+            {!isPremium && (
+              <Button size="sm" className="bg-gradient-to-r from-amber-400 to-amber-500 text-amber-950 hover:from-amber-500 hover:to-amber-600">
+                {t('subscription.upgrade')}
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Language */}
-        <Card>
+        <Card className={!canAccessMultiLanguage ? 'opacity-60' : ''}>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
               <Globe className="w-5 h-5 text-primary" />
               {t('settings.language')}
+              {!canAccessMultiLanguage && <PremiumBadge size="sm" />}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Select value={language} onValueChange={handleLanguageChange}>
-              <SelectTrigger className="min-h-[48px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.entries(SUPPORTED_LANGUAGES).map(([code, { name, flag }]) => (
-                  <SelectItem key={code} value={code} className="min-h-[44px]">
-                    <span className="flex items-center gap-2">
-                      <span>{flag}</span>
-                      <span>{name}</span>
-                    </span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {canAccessMultiLanguage ? (
+              <Select value={language} onValueChange={handleLanguageChange}>
+                <SelectTrigger className="min-h-[48px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(SUPPORTED_LANGUAGES).map(([code, { name, flag }]) => (
+                    <SelectItem key={code} value={code} className="min-h-[44px]">
+                      <span className="flex items-center gap-2">
+                        <span>{flag}</span>
+                        <span>{name}</span>
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <div 
+                className="flex items-center justify-between min-h-[48px] cursor-pointer"
+                onClick={() => navigate('/upgrade')}
+              >
+                <span className="flex items-center gap-2 text-muted-foreground">
+                  <span>{SUPPORTED_LANGUAGES[language]?.flag}</span>
+                  <span>{SUPPORTED_LANGUAGES[language]?.name}</span>
+                </span>
+                <Crown className="w-4 h-4 text-amber-500" />
+              </div>
+            )}
           </CardContent>
         </Card>
 
         {/* Currency */}
-        <Card>
+        <Card className={!canAccessMultiCurrency ? 'opacity-60' : ''}>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
               <Coins className="w-5 h-5 text-primary" />
               {t('settings.currency')}
+              {!canAccessMultiCurrency && <PremiumBadge size="sm" />}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Select value={currency} onValueChange={handleCurrencyChange}>
-              <SelectTrigger className="min-h-[48px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.entries(SUPPORTED_CURRENCIES).map(([code, { symbol, name }]) => (
-                  <SelectItem key={code} value={code} className="min-h-[44px]">
-                    <span className="flex items-center gap-2">
-                      <span className="font-mono">{symbol}</span>
-                      <span>{name}</span>
-                    </span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {canAccessMultiCurrency ? (
+              <Select value={currency} onValueChange={handleCurrencyChange}>
+                <SelectTrigger className="min-h-[48px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(SUPPORTED_CURRENCIES).map(([code, { symbol, name }]) => (
+                    <SelectItem key={code} value={code} className="min-h-[44px]">
+                      <span className="flex items-center gap-2">
+                        <span className="font-mono">{symbol}</span>
+                        <span>{name}</span>
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <div 
+                className="flex items-center justify-between min-h-[48px] cursor-pointer"
+                onClick={() => navigate('/upgrade')}
+              >
+                <span className="flex items-center gap-2 text-muted-foreground">
+                  <span className="font-mono">{SUPPORTED_CURRENCIES[currency]?.symbol}</span>
+                  <span>{SUPPORTED_CURRENCIES[currency]?.name}</span>
+                </span>
+                <Crown className="w-4 h-4 text-amber-500" />
+              </div>
+            )}
           </CardContent>
         </Card>
 

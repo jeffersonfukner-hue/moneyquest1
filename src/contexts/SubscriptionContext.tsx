@@ -1,0 +1,115 @@
+import React, { createContext, useContext, useMemo, useCallback } from 'react';
+import { useProfile } from '@/hooks/useProfile';
+
+export type SubscriptionPlan = 'FREE' | 'PREMIUM';
+
+export interface PremiumFeature {
+  key: string;
+  available: boolean;
+}
+
+interface SubscriptionContextType {
+  plan: SubscriptionPlan;
+  isPremium: boolean;
+  loading: boolean;
+  // Feature checks
+  canAccessWeeklyQuests: boolean;
+  canAccessMonthlyQuests: boolean;
+  canAccessSpecialQuests: boolean;
+  canAccessRareBadges: boolean;
+  canAccessCategoryGoals: boolean;
+  canAccessAIInsights: boolean;
+  canAccessMultiLanguage: boolean;
+  canAccessMultiCurrency: boolean;
+  canAccessAdvancedThemes: boolean;
+  canAccessDataExport: boolean;
+  canAccessUnlimitedHistory: boolean;
+  // Utility
+  checkFeature: (feature: string) => boolean;
+  subscriptionExpiresAt: string | null;
+}
+
+const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
+
+// Features available only to Premium users
+const PREMIUM_FEATURES = [
+  'weekly_quests',
+  'monthly_quests', 
+  'special_quests',
+  'rare_badges',
+  'category_goals',
+  'ai_insights',
+  'multi_language',
+  'multi_currency',
+  'advanced_themes',
+  'data_export',
+  'unlimited_history',
+] as const;
+
+export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { profile, loading } = useProfile();
+
+  const plan: SubscriptionPlan = (profile?.subscription_plan as SubscriptionPlan) || 'FREE';
+  const isPremium = plan === 'PREMIUM';
+
+  const checkFeature = useCallback((feature: string): boolean => {
+    if (isPremium) return true;
+    // Free users only get: unlimited transactions, daily quests, basic XP, basic mood UI, 30-day history
+    const freeFeatures = ['transactions', 'daily_quests', 'xp_system', 'basic_mood'];
+    return freeFeatures.includes(feature);
+  }, [isPremium]);
+
+  const value = useMemo(() => ({
+    plan,
+    isPremium,
+    loading,
+    // Premium feature checks
+    canAccessWeeklyQuests: isPremium,
+    canAccessMonthlyQuests: isPremium,
+    canAccessSpecialQuests: isPremium,
+    canAccessRareBadges: isPremium,
+    canAccessCategoryGoals: isPremium,
+    canAccessAIInsights: isPremium,
+    canAccessMultiLanguage: isPremium,
+    canAccessMultiCurrency: isPremium,
+    canAccessAdvancedThemes: isPremium,
+    canAccessDataExport: isPremium,
+    canAccessUnlimitedHistory: isPremium,
+    checkFeature,
+    subscriptionExpiresAt: profile?.subscription_expires_at || null,
+  }), [plan, isPremium, loading, checkFeature, profile?.subscription_expires_at]);
+
+  return (
+    <SubscriptionContext.Provider value={value}>
+      {children}
+    </SubscriptionContext.Provider>
+  );
+};
+
+export const useSubscription = (): SubscriptionContextType => {
+  const context = useContext(SubscriptionContext);
+  if (context === undefined) {
+    throw new Error('useSubscription must be used within a SubscriptionProvider');
+  }
+  return context;
+};
+
+// Pricing by currency
+export const PREMIUM_PRICING = {
+  BRL: { amount: 14.90, symbol: 'R$', formatted: 'R$14,90' },
+  USD: { amount: 4.99, symbol: '$', formatted: '$4.99' },
+  EUR: { amount: 4.99, symbol: '€', formatted: '€4.99' },
+} as const;
+
+// Premium benefits for display
+export const PREMIUM_BENEFITS = [
+  { key: 'unlimited_history', icon: '📊' },
+  { key: 'advanced_quests', icon: '🎯' },
+  { key: 'rare_badges', icon: '🏆' },
+  { key: 'category_goals', icon: '💰' },
+  { key: 'ai_insights', icon: '🤖' },
+  { key: 'multi_language', icon: '🌍' },
+  { key: 'multi_currency', icon: '💱' },
+  { key: 'advanced_themes', icon: '🎨' },
+  { key: 'data_export', icon: '📥' },
+] as const;

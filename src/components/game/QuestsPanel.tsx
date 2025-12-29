@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Quest, QuestType } from '@/types/database';
-import { Target } from 'lucide-react';
+import { Target, Crown } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { QuestCard } from './QuestCard';
 import { QuestTimer } from './QuestTimer';
 import { QUEST_TYPE_CONFIG } from '@/lib/gameLogic';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { UpgradePrompt } from '@/components/subscription/UpgradePrompt';
+import { PremiumBadge } from '@/components/subscription/PremiumBadge';
 
 interface QuestsPanelProps {
   quests: Quest[];
@@ -16,13 +19,24 @@ type TabType = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'SPECIAL';
 export const QuestsPanel = ({ quests }: QuestsPanelProps) => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('DAILY');
+  const { canAccessWeeklyQuests, canAccessMonthlyQuests, canAccessSpecialQuests, isPremium } = useSubscription();
 
-  const QUEST_TABS: { type: TabType; labelKey: string }[] = [
-    { type: 'DAILY', labelKey: 'quests.daily' },
-    { type: 'WEEKLY', labelKey: 'quests.weekly' },
-    { type: 'MONTHLY', labelKey: 'quests.monthly' },
-    { type: 'SPECIAL', labelKey: 'quests.special' },
+  const QUEST_TABS: { type: TabType; labelKey: string; isPremium: boolean }[] = [
+    { type: 'DAILY', labelKey: 'quests.daily', isPremium: false },
+    { type: 'WEEKLY', labelKey: 'quests.weekly', isPremium: true },
+    { type: 'MONTHLY', labelKey: 'quests.monthly', isPremium: true },
+    { type: 'SPECIAL', labelKey: 'quests.special', isPremium: true },
   ];
+
+  const canAccessQuestType = (type: TabType): boolean => {
+    switch (type) {
+      case 'DAILY': return true;
+      case 'WEEKLY': return canAccessWeeklyQuests;
+      case 'MONTHLY': return canAccessMonthlyQuests;
+      case 'SPECIAL': return canAccessSpecialQuests;
+      default: return false;
+    }
+  };
 
   const getQuestsByType = (type: QuestType): Quest[] => {
     return quests.filter(q => q.type === type);
@@ -56,19 +70,22 @@ export const QuestsPanel = ({ quests }: QuestsPanelProps) => {
           {QUEST_TABS.map(tab => {
             const stats = getCompletionCount(tab.type);
             const config = QUEST_TYPE_CONFIG[tab.type];
+            const locked = tab.isPremium && !isPremium;
             return (
               <TabsTrigger 
                 key={tab.type} 
                 value={tab.type}
-                className="text-xs py-2 flex flex-col sm:flex-row items-center gap-0.5 sm:gap-1 min-h-[44px]"
+                className="text-xs py-2 flex flex-col sm:flex-row items-center gap-0.5 sm:gap-1 min-h-[44px] relative"
               >
                 <span>{config.icon}</span>
                 <span className="hidden sm:inline">{t(tab.labelKey)}</span>
-                {stats.total > 0 && (
+                {locked ? (
+                  <Crown className="w-3 h-3 text-amber-500" />
+                ) : stats.total > 0 ? (
                   <span className="text-[10px] opacity-70">
                     {stats.completed}/{stats.total}
                   </span>
-                )}
+                ) : null}
               </TabsTrigger>
             );
           })}
@@ -77,32 +94,44 @@ export const QuestsPanel = ({ quests }: QuestsPanelProps) => {
         {QUEST_TABS.map(tab => {
           const typeQuests = getQuestsByType(tab.type);
           const timerQuest = getFirstQuestForTimer(tab.type);
+          const hasAccess = canAccessQuestType(tab.type);
           
           return (
             <TabsContent key={tab.type} value={tab.type} className="mt-0">
-              {timerQuest && (
-                <div className="mb-3">
-                  <QuestTimer 
-                    periodEndDate={timerQuest.period_end_date} 
-                    questType={tab.type}
+              {!hasAccess ? (
+                <div className="py-6">
+                  <UpgradePrompt 
+                    feature={tab.type === 'WEEKLY' ? 'weekly_quests' : tab.type === 'MONTHLY' ? 'monthly_quests' : 'special_quests'} 
+                    context="modal" 
                   />
                 </div>
-              )}
-              
-              {typeQuests.length > 0 ? (
-                <div className="space-y-2">
-                  {typeQuests.map(quest => (
-                    <QuestCard 
-                      key={quest.id} 
-                      quest={quest} 
-                      showTimer={false}
-                    />
-                  ))}
-                </div>
               ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <p className="text-sm">{t('common.noData')}</p>
-                </div>
+                <>
+                  {timerQuest && (
+                    <div className="mb-3">
+                      <QuestTimer 
+                        periodEndDate={timerQuest.period_end_date} 
+                        questType={tab.type}
+                      />
+                    </div>
+                  )}
+                  
+                  {typeQuests.length > 0 ? (
+                    <div className="space-y-2">
+                      {typeQuests.map(quest => (
+                        <QuestCard 
+                          key={quest.id} 
+                          quest={quest} 
+                          showTimer={false}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <p className="text-sm">{t('common.noData')}</p>
+                    </div>
+                  )}
+                </>
               )}
             </TabsContent>
           );

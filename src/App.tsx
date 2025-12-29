@@ -9,11 +9,13 @@ import { SeasonalThemeProvider } from "@/contexts/SeasonalThemeContext";
 import { SoundProvider } from "@/contexts/SoundContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
+import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import '@/i18n';
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
+import Upgrade from "./pages/Upgrade";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,21 +27,24 @@ const App = () => (
         <SoundProvider>
           <LanguageProvider>
             <CurrencyProvider>
-              <FinancialMoodProvider>
-                <SeasonalThemeProvider>
-                  <Toaster />
-                  <Sonner />
-                  <BrowserRouter>
-                    <Routes>
-                      <Route path="/" element={<Index />} />
-                      <Route path="/auth" element={<Auth />} />
-                      <Route path="/settings" element={<Settings />} />
-                      <Route path="/profile" element={<Profile />} />
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </BrowserRouter>
-                </SeasonalThemeProvider>
-              </FinancialMoodProvider>
+              <SubscriptionProvider>
+                <FinancialMoodProvider>
+                  <SeasonalThemeProvider>
+                    <Toaster />
+                    <Sonner />
+                    <BrowserRouter>
+                      <Routes>
+                        <Route path="/" element={<Index />} />
+                        <Route path="/auth" element={<Auth />} />
+                        <Route path="/settings" element={<Settings />} />
+                        <Route path="/profile" element={<Profile />} />
+                        <Route path="/upgrade" element={<Upgrade />} />
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </BrowserRouter>
+                  </SeasonalThemeProvider>
+                </FinancialMoodProvider>
+              </SubscriptionProvider>
             </CurrencyProvider>
           </LanguageProvider>
         </SoundProvider>
