@@ -97,6 +97,12 @@
       "other_expense": "Otros Gastos"
     }
   },
+  "dashboard": {
+    "spendingByCategory": "Gastos por Categoría",
+    "monthlySavings": "Ahorro Mensual",
+    "saved": "Ahorrado",
+    "target": "Meta"
+  },
   "stats": {
     "dayStreak": "Racha de Días",
     "streak": "Racha",
