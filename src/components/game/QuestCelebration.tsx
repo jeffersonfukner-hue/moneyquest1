@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import confetti from 'canvas-confetti';
 import { Quest, Badge } from '@/types/database';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
@@ -11,6 +12,7 @@ interface QuestCelebrationProps {
 }
 
 export const QuestCelebration = ({ completedQuest, unlockedBadge, onClose }: QuestCelebrationProps) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -78,7 +80,9 @@ export const QuestCelebration = ({ completedQuest, unlockedBadge, onClose }: Que
   const questConfig = completedQuest ? QUEST_TYPE_CONFIG[completedQuest.type] : null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      if (!open) handleClose();
+    }}>
       <DialogContent className="sm:max-w-md border-0 bg-gradient-to-br from-card via-card to-primary/5 overflow-hidden">
         <div className="relative flex flex-col items-center justify-center py-8 px-4">
           {/* Animated background glow */}
@@ -91,7 +95,7 @@ export const QuestCelebration = ({ completedQuest, unlockedBadge, onClose }: Que
                 {questConfig?.icon || '🎉'}
               </div>
               <h2 className="text-2xl font-display font-bold text-foreground mb-2">
-                Quest Complete!
+                {t('celebration.questCompleted')}
               </h2>
               <p className="text-lg text-muted-foreground mb-4">
                 {completedQuest.title}
@@ -112,7 +116,7 @@ export const QuestCelebration = ({ completedQuest, unlockedBadge, onClose }: Que
                 </div>
               </div>
               <h3 className="text-xl font-display font-bold text-foreground mb-1">
-                Badge Unlocked!
+                {t('celebration.badgeUnlocked')}
               </h3>
               <p className="text-lg font-semibold text-primary mb-2">
                 {unlockedBadge.name}
@@ -125,10 +129,15 @@ export const QuestCelebration = ({ completedQuest, unlockedBadge, onClose }: Que
 
           {/* Continue button */}
           <button
-            onClick={handleClose}
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleClose();
+            }}
             className="mt-8 px-8 py-3 bg-primary text-primary-foreground rounded-full font-semibold hover:bg-primary/90 transition-all hover:scale-105 active:scale-95"
           >
-            Continue
+            {t('common.continue')}
           </button>
         </div>
       </DialogContent>
