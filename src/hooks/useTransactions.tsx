@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Transaction } from '@/types/database';
+import { Transaction, SupportedCurrency } from '@/types/database';
 import { useAuth } from './useAuth';
 import { useProfile } from './useProfile';
 import { 
@@ -12,10 +12,12 @@ import {
   checkAndUpdateQuests,
   calculateFinancialMood
 } from '@/lib/gameLogic';
+import { getTodayString } from '@/lib/dateUtils';
 import { toast } from '@/hooks/use-toast';
 import { useSound } from '@/contexts/SoundContext';
 import { useNarrativeEngine } from './useNarrativeEngine';
 import { useBudgetAlerts } from './useBudgetAlerts';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 import { Quest, Badge } from '@/types/database';
 
@@ -33,6 +35,7 @@ export const useTransactions = () => {
   const { playSound } = useSound();
   const { generateNarrative } = useNarrativeEngine();
   const { checkBudgetAlert, showBudgetAlert } = useBudgetAlerts();
+  const { convertCurrency, currency: userCurrency } = useCurrency();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [celebrationData, setCelebrationData] = useState<{
@@ -93,7 +96,7 @@ export const useTransactions = () => {
     const newLevel = getLevelFromXP(newXP);
     const newLevelTitle = getLevelTitle(newLevel);
     const { newStreak, isNewDay } = calculateStreak(profile.last_active_date);
-    const today = new Date().toISOString().split('T')[0];
+    const today = getTodayString();
 
     const profileUpdates: Record<string, unknown> = {
       xp: newXP,
@@ -104,16 +107,23 @@ export const useTransactions = () => {
     if (isNewDay) {
       profileUpdates.streak = newStreak === -1 ? profile.streak : 
         (newStreak === 1 && profile.last_active_date && 
-         new Date(today).getTime() - new Date(profile.last_active_date).getTime() === 86400000)
+         new Date(today + 'T00:00:00').getTime() - new Date(profile.last_active_date + 'T00:00:00').getTime() === 86400000)
           ? profile.streak + 1 
           : newStreak;
       profileUpdates.last_active_date = today;
     }
 
+    // Convert transaction amount to profile's currency for consistent totals
+    const txCurrency = transaction.currency as SupportedCurrency;
+    const profileCurrency = (profile.currency || 'BRL') as SupportedCurrency;
+    const convertedAmount = txCurrency !== profileCurrency 
+      ? convertCurrency(transaction.amount, txCurrency, profileCurrency)
+      : transaction.amount;
+
     if (transaction.type === 'INCOME') {
-      profileUpdates.total_income = profile.total_income + transaction.amount;
+      profileUpdates.total_income = profile.total_income + convertedAmount;
     } else {
-      profileUpdates.total_expenses = profile.total_expenses + transaction.amount;
+      profileUpdates.total_expenses = profile.total_expenses + convertedAmount;
     }
 
     // Calculate new financial mood

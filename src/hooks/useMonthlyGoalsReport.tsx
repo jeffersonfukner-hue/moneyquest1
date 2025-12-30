@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useCurrency } from '@/contexts/CurrencyContext';
+import { SupportedCurrency } from '@/types/database';
 
 export interface CategoryPerformance {
   category: string;
@@ -27,6 +29,7 @@ export interface MonthlyReportData {
 
 export const useMonthlyGoalsReport = () => {
   const { user } = useAuth();
+  const { convertToUserCurrency } = useCurrency();
   const [report, setReport] = useState<MonthlyReportData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -58,33 +61,37 @@ export const useMonthlyGoalsReport = () => {
       const prevMonthStartStr = prevMonthStart.toISOString().split('T')[0];
       const prevMonthEndStr = prevMonthEnd.toISOString().split('T')[0];
 
-      // Fetch current month transactions
+      // Fetch current month transactions with currency
       const { data: currentTx } = await supabase
         .from('transactions')
-        .select('category, amount')
+        .select('category, amount, currency')
         .eq('user_id', user.id)
         .eq('type', 'EXPENSE')
         .gte('date', currentMonthStartStr);
 
-      // Fetch previous month transactions
+      // Fetch previous month transactions with currency
       const { data: prevTx } = await supabase
         .from('transactions')
-        .select('category, amount')
+        .select('category, amount, currency')
         .eq('user_id', user.id)
         .eq('type', 'EXPENSE')
         .gte('date', prevMonthStartStr)
         .lte('date', prevMonthEndStr);
 
-      // Calculate spending by category
+      // Calculate spending by category with currency conversion
       const currentSpending: Record<string, number> = {};
       const prevSpending: Record<string, number> = {};
 
       currentTx?.forEach(tx => {
-        currentSpending[tx.category] = (currentSpending[tx.category] || 0) + Number(tx.amount);
+        const txCurrency = (tx.currency || 'BRL') as SupportedCurrency;
+        const convertedAmount = convertToUserCurrency(Number(tx.amount), txCurrency);
+        currentSpending[tx.category] = (currentSpending[tx.category] || 0) + convertedAmount;
       });
 
       prevTx?.forEach(tx => {
-        prevSpending[tx.category] = (prevSpending[tx.category] || 0) + Number(tx.amount);
+        const txCurrency = (tx.currency || 'BRL') as SupportedCurrency;
+        const convertedAmount = convertToUserCurrency(Number(tx.amount), txCurrency);
+        prevSpending[tx.category] = (prevSpending[tx.category] || 0) + convertedAmount;
       });
 
       // Build category performances
@@ -148,7 +155,7 @@ export const useMonthlyGoalsReport = () => {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, convertToUserCurrency]);
 
   useEffect(() => {
     fetchReport();
