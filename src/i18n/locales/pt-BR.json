@@ -730,6 +730,16 @@
       "threshold": "Limite",
       "settingsSaved": "Configurações salvas com sucesso!",
       "settingsError": "Erro ao salvar configurações"
+    },
+    "modal": {
+      "title": "Conversão do Modal Premium",
+      "description": "Acompanhe como os usuários interagem com o modal de upgrade para Premium",
+      "impressions": "Impressões",
+      "goPremium": "Virar Premium",
+      "stayFree": "Continuar Gratuito",
+      "conversionRate": "Taxa de Conversão",
+      "dismissRate": "Taxa de Dismissão",
+      "events": "eventos"
     }
   },
   "dailyReward": {

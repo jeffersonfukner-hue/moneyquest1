@@ -730,6 +730,16 @@
       "threshold": "Umbral",
       "settingsSaved": "¡Configuración guardada con éxito!",
       "settingsError": "Error al guardar configuración"
+    },
+    "modal": {
+      "title": "Conversión del Modal Premium",
+      "description": "Rastrea cómo los usuarios interactúan con el modal de actualización a Premium",
+      "impressions": "Impresiones",
+      "goPremium": "Cambiar a Premium",
+      "stayFree": "Seguir Gratis",
+      "conversionRate": "Tasa de Conversión",
+      "dismissRate": "Tasa de Rechazo",
+      "events": "eventos"
     }
   },
   "dailyReward": {

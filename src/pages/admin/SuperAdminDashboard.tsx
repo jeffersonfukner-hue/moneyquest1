@@ -4,6 +4,7 @@ import { Users, UserCheck, Crown, TrendingUp, Activity, AlertTriangle, Filter, C
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { StatsCard } from '@/components/admin/StatsCard';
 import { RetentionAlerts } from '@/components/admin/RetentionAlerts';
+import { ModalConversionWidget } from '@/components/admin/ModalConversionWidget';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useAdminData } from '@/hooks/useAdminData';
 import { 
@@ -760,6 +761,9 @@ const SuperAdminDashboard = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Modal Conversion Widget */}
+        <ModalConversionWidget />
       </div>
     </AdminLayout>
   );
