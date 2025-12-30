@@ -17,10 +17,13 @@ import { GoalCard } from '@/components/goals/GoalCard';
 import { AddGoalDialog } from '@/components/goals/AddGoalDialog';
 import { GoalsMonthlyReport } from '@/components/goals/GoalsMonthlyReport';
 import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
+import { AdBanner } from '@/components/ads/AdBanner';
+import { useAdBanner } from '@/hooks/useAdBanner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { ArrowLeft, Target, Plus, Loader2, Lock, PiggyBank, BarChart3, Lightbulb, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const CategoryGoals = () => {
   const { t } = useTranslation();
@@ -38,6 +41,7 @@ const CategoryGoals = () => {
   const [editingGoal, setEditingGoal] = useState<CategoryGoal | null>(null);
   const [showReport, setShowReport] = useState(false);
   const [showAddTransactionDialog, setShowAddTransactionDialog] = useState(false);
+  const { shouldShowBanner } = useAdBanner();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -97,14 +101,17 @@ const CategoryGoals = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className={cn(
+      "min-h-screen flex flex-col bg-background",
+      shouldShowBanner ? "pb-[130px]" : "pb-20"
+    )}>
       <SeasonalDecorations />
       <MobileHeader 
         onSettingsClick={() => navigate('/settings')} 
         onProfileClick={() => navigate('/profile')} 
       />
       
-      <main className="flex-1 container max-w-2xl mx-auto px-4 py-6 pb-24">
+      <main className="flex-1 container max-w-2xl mx-auto px-4 py-6">
         <Button
           variant="ghost"
           size="sm"
@@ -286,6 +293,8 @@ const CategoryGoals = () => {
           </Card>
         )}
       </main>
+
+      <AdBanner />
 
       <BottomNavigation 
         activeTab="home" 

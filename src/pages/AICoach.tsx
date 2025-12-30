@@ -11,9 +11,12 @@ import { MobileHeader } from '@/components/navigation/MobileHeader';
 import { BottomNavigation } from '@/components/navigation/BottomNavigation';
 import { SeasonalDecorations } from '@/components/game/SeasonalDecorations';
 import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
+import { AdBanner } from '@/components/ads/AdBanner';
+import { useAdBanner } from '@/hooks/useAdBanner';
 import { ArrowLeft, Bot, Loader2, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 const AICoach = () => {
   const { t } = useTranslation();
@@ -23,6 +26,7 @@ const AICoach = () => {
   const { transactions, addTransaction } = useTransactions();
   const [showAddTransactionDialog, setShowAddTransactionDialog] = useState(false);
   const { canAccessAIInsights } = useSubscription();
+  const { shouldShowBanner } = useAdBanner();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -62,14 +66,17 @@ const AICoach = () => {
   }));
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className={cn(
+      "min-h-screen flex flex-col bg-background",
+      shouldShowBanner ? "pb-[130px]" : "pb-20"
+    )}>
       <SeasonalDecorations />
       <MobileHeader 
         onSettingsClick={() => navigate('/settings')} 
         onProfileClick={() => navigate('/profile')} 
       />
       
-      <main className="flex-1 container max-w-2xl mx-auto px-4 py-6 pb-24">
+      <main className="flex-1 container max-w-2xl mx-auto px-4 py-6">
         <Button
           variant="ghost"
           size="sm"
@@ -110,6 +117,8 @@ const AICoach = () => {
           </Card>
         )}
       </main>
+
+      <AdBanner />
 
       <BottomNavigation 
         activeTab="home" 

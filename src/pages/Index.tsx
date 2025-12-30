@@ -34,9 +34,12 @@ import { BottomNavigation, type TabId } from '@/components/navigation/BottomNavi
 import { MobileHeader } from '@/components/navigation/MobileHeader';
 import { AICoachCard } from '@/components/ai/AICoachCard';
 import { CategoryGoalsCard } from '@/components/goals/CategoryGoalsCard';
+import { AdBanner } from '@/components/ads/AdBanner';
+import { useAdBanner } from '@/hooks/useAdBanner';
 import { getFeedbackMessage } from '@/lib/feedbackMessages';
 import { TransactionTemplate } from '@/hooks/useTransactionTemplates';
 import { Gamepad2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const Index = () => {
   const { t } = useTranslation();
@@ -48,6 +51,7 @@ const Index = () => {
   const { badges, refetch: refetchBadges } = useBadges();
   const { goals } = useCategoryGoals();
   const { status: rewardStatus } = useDailyReward();
+  const { shouldShowBanner } = useAdBanner();
   
   const [activeTab, setActiveTab] = useState<TabId>('home');
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -191,7 +195,10 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20 relative">
+    <div className={cn(
+      "min-h-screen bg-background relative",
+      shouldShowBanner ? "pb-[130px]" : "pb-20"
+    )}>
       <SeasonalDecorations />
       
       <MobileHeader onSettingsClick={() => navigate('/settings')} onProfileClick={() => navigate('/profile')} />
@@ -199,6 +206,8 @@ const Index = () => {
       <main className="px-4 py-4 max-w-md mx-auto relative z-10">
         {renderTabContent()}
       </main>
+
+      <AdBanner />
 
       <BottomNavigation 
         activeTab={activeTab}

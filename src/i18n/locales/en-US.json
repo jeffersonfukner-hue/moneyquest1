@@ -1,4 +1,8 @@
 {
+  "ads": {
+    "goPremiumRemoveAds": "Go Premium and remove ads",
+    "enjoyAdFree": "Enjoy ad-free experience"
+  },
   "templates": {
     "quickAdd": "Quick Add",
     "createFirst": "Create your first quick template",
