@@ -10,6 +10,11 @@ export const AB_TESTS = {
     variants: ['internal_promo', 'adsense'] as const,
     weights: [0.5, 0.5], // 50/50 split
   },
+  premiumBannerModal: {
+    name: 'premium_banner_modal_v1',
+    variants: ['default'] as const,
+    weights: [1.0], // Single variant for tracking only
+  },
 } as const;
 
 export type ABTestName = keyof typeof AB_TESTS;

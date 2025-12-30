@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useABTest } from '@/hooks/useABTest';
 import {
   Dialog,
   DialogContent,
@@ -17,13 +19,23 @@ interface PremiumBannerModalProps {
 export const PremiumBannerModal = ({ open, onOpenChange }: PremiumBannerModalProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { trackImpression, trackClick } = useABTest('premiumBannerModal');
+
+  // Track modal impression when opened
+  useEffect(() => {
+    if (open) {
+      trackImpression();
+    }
+  }, [open, trackImpression]);
 
   const handleGoPremium = () => {
+    trackClick({ action: 'go_premium' });
     onOpenChange(false);
     navigate('/premium');
   };
 
   const handleStayFree = () => {
+    trackClick({ action: 'stay_free' });
     onOpenChange(false);
   };
 
