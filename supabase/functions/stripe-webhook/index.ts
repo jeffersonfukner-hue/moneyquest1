@@ -7,6 +7,23 @@ const logStep = (step: string, details?: any) => {
   console.log(`[STRIPE-WEBHOOK] ${step}${detailsStr}`);
 };
 
+// Safe timestamp to ISO conversion - handles various formats from Stripe API
+const safeTimestampToISO = (timestamp: unknown): string | null => {
+  try {
+    if (timestamp === null || timestamp === undefined) return null;
+    if (typeof timestamp === 'number') {
+      return new Date(timestamp * 1000).toISOString();
+    }
+    if (typeof timestamp === 'string') {
+      const date = new Date(timestamp);
+      return isNaN(date.getTime()) ? null : date.toISOString();
+    }
+    return null;
+  } catch {
+    return null;
+  }
+};
+
 serve(async (req) => {
   const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
   const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
@@ -112,8 +129,8 @@ serve(async (req) => {
           await updateUserSubscription(session.customer_email, true, {
             stripeCustomerId: session.customer as string,
             stripeSubscriptionId: subscription.id,
-            subscriptionStartedAt: new Date(subscription.current_period_start * 1000).toISOString(),
-            subscriptionExpiresAt: new Date(subscription.current_period_end * 1000).toISOString(),
+            subscriptionStartedAt: safeTimestampToISO(subscription.current_period_start) ?? undefined,
+            subscriptionExpiresAt: safeTimestampToISO(subscription.current_period_end) ?? undefined,
           });
         }
         break;
@@ -129,8 +146,8 @@ serve(async (req) => {
           await updateUserSubscription(customer.email, true, {
             stripeCustomerId: subscription.customer as string,
             stripeSubscriptionId: subscription.id,
-            subscriptionStartedAt: new Date(subscription.current_period_start * 1000).toISOString(),
-            subscriptionExpiresAt: new Date(subscription.current_period_end * 1000).toISOString(),
+            subscriptionStartedAt: safeTimestampToISO(subscription.current_period_start) ?? undefined,
+            subscriptionExpiresAt: safeTimestampToISO(subscription.current_period_end) ?? undefined,
           });
         }
         break;
@@ -150,8 +167,8 @@ serve(async (req) => {
           await updateUserSubscription(customer.email, isActive, isActive ? {
             stripeCustomerId: subscription.customer as string,
             stripeSubscriptionId: subscription.id,
-            subscriptionStartedAt: new Date(subscription.current_period_start * 1000).toISOString(),
-            subscriptionExpiresAt: new Date(subscription.current_period_end * 1000).toISOString(),
+            subscriptionStartedAt: safeTimestampToISO(subscription.current_period_start) ?? undefined,
+            subscriptionExpiresAt: safeTimestampToISO(subscription.current_period_end) ?? undefined,
           } : undefined);
         }
         break;
