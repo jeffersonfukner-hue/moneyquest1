@@ -460,10 +460,19 @@ export const checkAndUpdateQuests = async (
         })
         .eq('id', quest.id);
 
-      // Add XP reward to profile
+      // Fetch current XP from database to avoid race condition
+      const { data: currentProfile } = await supabase
+        .from('profiles')
+        .select('xp')
+        .eq('id', userId)
+        .single();
+      
+      const currentXP = currentProfile?.xp ?? profile.xp;
+
+      // Add XP reward to profile using current DB value
       await supabase
         .from('profiles')
-        .update({ xp: profile.xp + quest.xp_reward })
+        .update({ xp: currentXP + quest.xp_reward })
         .eq('id', userId);
 
       completedQuests.push({ 
