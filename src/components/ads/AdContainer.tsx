@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface AdContainerProps {
   adSlot?: string;
@@ -16,33 +16,45 @@ declare global {
 export const AdContainer = ({ adSlot, adClient, onLoad, onError }: AdContainerProps) => {
   const adRef = useRef<HTMLModElement>(null);
   const initialized = useRef(false);
+  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
 
+  // Check if AdSense script is loaded
   useEffect(() => {
-    // Only initialize once
-    if (initialized.current) return;
-    initialized.current = true;
+    const checkScript = () => {
+      if (typeof window !== 'undefined' && window.adsbygoogle !== undefined) {
+        setIsScriptLoaded(true);
+      } else {
+        // Retry after short delay (script may still be loading)
+        setTimeout(checkScript, 100);
+      }
+    };
+    checkScript();
+  }, []);
+
+  // Initialize ad only when script is loaded and element is mounted
+  useEffect(() => {
+    if (!isScriptLoaded || initialized.current) return;
 
     // Check if AdSense is configured
     if (!adSlot || !adClient) {
-      // No AdSense configured, trigger fallback
       onError?.();
       return;
     }
 
-    // Try to initialize AdSense
-    try {
-      if (window.adsbygoogle) {
+    // Small delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      try {
         (window.adsbygoogle = window.adsbygoogle || []).push({});
+        initialized.current = true;
         onLoad?.();
-      } else {
-        // AdSense script not loaded
+      } catch (e) {
+        console.warn('AdSense initialization failed:', e);
         onError?.();
       }
-    } catch (e) {
-      console.warn('AdSense initialization failed:', e);
-      onError?.();
-    }
-  }, [adSlot, adClient, onLoad, onError]);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [isScriptLoaded, adSlot, adClient, onLoad, onError]);
 
   // If no ad config, return null (will use fallback)
   if (!adSlot || !adClient) {

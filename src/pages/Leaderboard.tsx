@@ -16,6 +16,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { cn } from '@/lib/utils';
 import { AvatarDisplay } from '@/components/profile/AvatarDisplay';
+import { AdBanner } from '@/components/ads/AdBanner';
+import { useAdBanner } from '@/hooks/useAdBanner';
 
 const getRankIcon = (rank: number) => {
   if (rank === 1) return <Crown className="w-5 h-5 text-yellow-500" />;
@@ -59,6 +61,7 @@ export default function Leaderboard() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { profile } = useProfile();
+  const { shouldShowBanner } = useAdBanner();
   const {
     isOnLeaderboard,
     myEntry,
@@ -110,7 +113,7 @@ export default function Leaderboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
+      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border safe-area-top">
         <div className="flex items-center gap-3 p-4">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
             <ArrowLeft className="w-5 h-5" />
@@ -122,7 +125,7 @@ export default function Leaderboard() {
         </div>
       </header>
 
-      <main className="p-4 space-y-4 pb-24">
+      <main className={cn("p-4 space-y-4", shouldShowBanner ? "pb-[130px]" : "pb-24")}>
         {/* Join/Status Card */}
         <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
           <CardContent className="p-4">
@@ -345,6 +348,8 @@ export default function Leaderboard() {
           </TabsContent>
         </Tabs>
       </main>
+
+      <AdBanner />
     </div>
   );
 }

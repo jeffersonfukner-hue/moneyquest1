@@ -19,6 +19,9 @@ import { useExchangeRates } from '@/hooks/useExchangeRates';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import { AdBanner } from '@/components/ads/AdBanner';
+import { useAdBanner } from '@/hooks/useAdBanner';
+import { cn } from '@/lib/utils';
 
 const TIMEZONES = [
   { value: 'America/Sao_Paulo', label: 'Brasília (BRT)' },
@@ -53,6 +56,7 @@ const Settings = () => {
   const { isPremium, canAccessMultiLanguage, canAccessMultiCurrency, plan } = useSubscription();
   const { rates, lastUpdate, loading: ratesLoading, refreshRates, getRate } = useExchangeRates();
   const { isSuperAdmin } = useAdminAuth();
+  const { shouldShowBanner } = useAdBanner();
 
   const pricing = PREMIUM_PRICING[currency] || PREMIUM_PRICING.USD;
   const currentTimezone = profile?.timezone || 'America/Sao_Paulo';
@@ -91,7 +95,7 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className={cn("min-h-screen bg-background", shouldShowBanner ? "pb-[130px]" : "pb-20")}>
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border safe-area-top">
         <div className="flex items-center h-14 px-4 max-w-md mx-auto">
           <Button 
@@ -426,6 +430,8 @@ const Settings = () => {
           {t('auth.logout')}
         </Button>
       </main>
+
+      <AdBanner />
     </div>
   );
 };
