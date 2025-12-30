@@ -172,7 +172,7 @@
     "displayName": "Display Name",
     "displayNameLabel": "Your name",
     "displayNamePlaceholder": "Enter your name",
-    "displayNameHint": "This is how you'll appear in the app",
+    "displayNameHint": "This is how you'll appear in the app and on the leaderboard",
     "yourStats": "Your Stats",
     "saveChanges": "Save Changes",
     "saveSuccess": "Profile updated successfully!",
@@ -730,6 +730,9 @@
     "noFriends": "No friends on leaderboard",
     "addFriends": "Add friends to compete!",
     "pendingRequests": "Pending Requests",
+    "displayNameLabel": "Your Public Name",
+    "displayNamePlaceholder": "Enter your display name",
+    "displayNameHint": "This is the name other players will see on the leaderboard",
     "friendRequest": {
       "send": "Send Friend Request",
       "accept": "Accept",

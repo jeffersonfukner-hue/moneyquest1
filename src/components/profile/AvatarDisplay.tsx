@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 
 interface AvatarDisplayProps {
-  avatarUrl: string | null | undefined;
+  avatarUrl?: string | null;
   avatarIcon: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;

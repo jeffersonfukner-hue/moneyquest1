@@ -21,6 +21,8 @@ export interface FriendConnection {
   friend_id: string;
   status: 'pending' | 'accepted' | 'rejected';
   created_at: string;
+  requester_display_name?: string;
+  requester_avatar_icon?: string;
 }
 
 export const useLeaderboard = () => {
@@ -109,7 +111,7 @@ export const useLeaderboard = () => {
     }
   }, [user]);
 
-  // Fetch pending friend requests
+  // Fetch pending friend requests with requester info
   const fetchFriendRequests = useCallback(async () => {
     if (!user) return;
 
@@ -119,20 +121,49 @@ export const useLeaderboard = () => {
       .eq('friend_id', user.id)
       .eq('status', 'pending');
 
-    if (data) {
-      setFriendRequests(data as FriendConnection[]);
+    if (data && data.length > 0) {
+      // Fetch requester display names from leaderboard_participants
+      const requesterIds = data.map(req => req.user_id);
+      const { data: requesterData } = await supabase
+        .from('leaderboard_participants')
+        .select('user_id, display_name, avatar_icon')
+        .in('user_id', requesterIds);
+
+      const requesterMap = new Map(
+        requesterData?.map(r => [r.user_id, { display_name: r.display_name, avatar_icon: r.avatar_icon }]) || []
+      );
+
+      const enrichedRequests = data.map(req => ({
+        ...req,
+        requester_display_name: requesterMap.get(req.user_id)?.display_name || `Player ${req.user_id.slice(0, 4)}`,
+        requester_avatar_icon: requesterMap.get(req.user_id)?.avatar_icon || '🎮'
+      })) as FriendConnection[];
+
+      setFriendRequests(enrichedRequests);
+    } else {
+      setFriendRequests([]);
     }
   }, [user]);
 
-  // Join leaderboard
-  const joinLeaderboard = async (isPublic: boolean = true) => {
+  // Join leaderboard with optional custom display name
+  const joinLeaderboard = async (isPublic: boolean = true, customDisplayName?: string) => {
     if (!user || !profile) return;
+
+    const displayName = customDisplayName?.trim() || profile.display_name || `Player ${user.id.slice(0, 4)}`;
+
+    // If a custom display name is provided, update the profile first
+    if (customDisplayName?.trim() && customDisplayName.trim() !== profile.display_name) {
+      await supabase
+        .from('profiles')
+        .update({ display_name: customDisplayName.trim() })
+        .eq('id', user.id);
+    }
 
     const { error } = await supabase
       .from('leaderboard_participants')
       .insert({
         user_id: user.id,
-        display_name: profile.display_name || `Player ${user.id.slice(0, 4)}`,
+        display_name: displayName,
         avatar_icon: profile.avatar_icon,
         xp: profile.xp,
         level: profile.level,

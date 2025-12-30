@@ -9,8 +9,11 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useLeaderboard, LeaderboardEntry } from '@/hooks/useLeaderboard';
 import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/useProfile';
 import { cn } from '@/lib/utils';
 import { AvatarDisplay } from '@/components/profile/AvatarDisplay';
 
@@ -55,6 +58,7 @@ export default function Leaderboard() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { profile } = useProfile();
   const {
     isOnLeaderboard,
     myEntry,
@@ -72,10 +76,11 @@ export default function Leaderboard() {
 
   const [isPublic, setIsPublic] = useState(myEntry?.is_public ?? true);
   const [joining, setJoining] = useState(false);
+  const [displayName, setDisplayName] = useState(profile?.display_name || '');
 
   const handleJoin = async () => {
     setJoining(true);
-    await joinLeaderboard(isPublic);
+    await joinLeaderboard(isPublic, displayName || undefined);
     setJoining(false);
   };
 
@@ -128,6 +133,22 @@ export default function Leaderboard() {
                   <h2 className="font-bold text-lg">{t('leaderboard.joinTitle', 'Join the Competition!')}</h2>
                   <p className="text-sm text-muted-foreground">
                     {t('leaderboard.joinDescription', 'Compete with other players and climb the ranks.')}
+                  </p>
+                </div>
+
+                {/* Display Name Input */}
+                <div className="space-y-2">
+                  <Label htmlFor="displayName">{t('leaderboard.displayNameLabel', 'Your Public Name')}</Label>
+                  <Input
+                    id="displayName"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    placeholder={t('leaderboard.displayNamePlaceholder', 'Enter your display name')}
+                    maxLength={30}
+                    className="bg-background/50"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {t('leaderboard.displayNameHint', 'This is the name other players will see on the leaderboard')}
                   </p>
                 </div>
 
@@ -211,8 +232,16 @@ export default function Leaderboard() {
             <CardContent className="space-y-2">
               {friendRequests.map(req => (
                 <div key={req.id} className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
-                  <span className="text-sm truncate">{req.user_id.slice(0, 8)}...</span>
-                  <div className="flex gap-1">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <AvatarDisplay
+                      avatarIcon={req.requester_avatar_icon || '🎮'}
+                      size="sm"
+                    />
+                    <span className="text-sm font-medium truncate">
+                      {req.requester_display_name || `Player ${req.user_id.slice(0, 4)}`}
+                    </span>
+                  </div>
+                  <div className="flex gap-1 shrink-0">
                     <Button 
                       size="icon" 
                       variant="ghost" 
