@@ -94,11 +94,25 @@ export const useSubscription = (): SubscriptionContextType => {
   return context;
 };
 
-// Pricing by currency
+// Pricing is now centralized in src/lib/pricingConfig.ts
+// This is kept for backward compatibility with components that still use it
 export const PREMIUM_PRICING = {
-  BRL: { amount: 14.90, symbol: 'R$', formatted: 'R$14,90' },
-  USD: { amount: 4.99, symbol: '$', formatted: '$4.99' },
-  EUR: { amount: 4.99, symbol: '€', formatted: '€4.99' },
+  BRL: { 
+    monthly: { amount: 14.99, formatted: 'R$ 14,99' },
+    yearly: { amount: 149.00, formatted: 'R$ 149,00' },
+    // Legacy fields for backward compatibility
+    amount: 14.99, symbol: 'R$', formatted: 'R$14,90'
+  },
+  USD: { 
+    monthly: { amount: 4.99, formatted: '$4.99' },
+    yearly: { amount: 49.99, formatted: '$49.99' },
+    amount: 4.99, symbol: '$', formatted: '$4.99'
+  },
+  EUR: { 
+    monthly: { amount: 4.99, formatted: '€4.99' },
+    yearly: { amount: 49.99, formatted: '€49.99' },
+    amount: 4.99, symbol: '€', formatted: '€4.99'
+  },
 } as const;
 
 // Premium benefits for display
