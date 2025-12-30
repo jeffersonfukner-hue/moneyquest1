@@ -30,14 +30,30 @@ export const getXPProgress = (xp: number): number => {
   return (xp % XP_PER_LEVEL) / XP_PER_LEVEL * 100;
 };
 
+// Returns the translation key for level title (use with i18n: t(`levels.${key}`))
+export const getLevelTitleKey = (level: number): string => {
+  if (level <= 2) return 'novice_saver';
+  if (level <= 5) return 'budget_apprentice';
+  if (level <= 10) return 'money_manager';
+  if (level <= 20) return 'finance_wizard';
+  if (level <= 35) return 'wealth_warrior';
+  if (level <= 50) return 'economy_expert';
+  return 'legendary_investor';
+};
+
+// Returns the English title (for database storage - will be translated in UI)
 export const getLevelTitle = (level: number): string => {
-  if (level <= 2) return 'Novice Saver';
-  if (level <= 5) return 'Budget Apprentice';
-  if (level <= 10) return 'Money Manager';
-  if (level <= 20) return 'Finance Wizard';
-  if (level <= 35) return 'Wealth Warrior';
-  if (level <= 50) return 'Economy Expert';
-  return 'Legendary Investor';
+  const key = getLevelTitleKey(level);
+  const titles: Record<string, string> = {
+    'novice_saver': 'Novice Saver',
+    'budget_apprentice': 'Budget Apprentice',
+    'money_manager': 'Money Manager',
+    'finance_wizard': 'Finance Wizard',
+    'wealth_warrior': 'Wealth Warrior',
+    'economy_expert': 'Economy Expert',
+    'legendary_investor': 'Legendary Investor',
+  };
+  return titles[key] || 'Novice Saver';
 };
 
 export const calculateStreak = (lastActiveDate: string | null): { newStreak: number; isNewDay: boolean } => {

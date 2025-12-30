@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Progress } from '@/components/ui/progress';
-import { getXPProgress, XP_PER_LEVEL } from '@/lib/gameLogic';
+import { getXPProgress, XP_PER_LEVEL, getLevelTitleKey } from '@/lib/gameLogic';
 import { Profile } from '@/types/database';
 import { AvatarDisplay } from '@/components/profile/AvatarDisplay';
 
@@ -12,6 +12,8 @@ export const LevelProgress = ({ profile }: LevelProgressProps) => {
   const { t } = useTranslation();
   const progress = getXPProgress(profile.xp);
   const xpToNextLevel = XP_PER_LEVEL - (profile.xp % XP_PER_LEVEL);
+  const levelTitleKey = getLevelTitleKey(profile.level);
+  const translatedTitle = t(`levels.${levelTitleKey}`);
 
   return (
     <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-md animate-slide-up">
@@ -31,7 +33,7 @@ export const LevelProgress = ({ profile }: LevelProgressProps) => {
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-display text-base sm:text-lg font-semibold text-foreground truncate">
-            {profile.level_title}
+            {translatedTitle}
           </h3>
           <p className="text-sm text-muted-foreground">
             {profile.xp.toLocaleString()} {t('stats.xp')}
