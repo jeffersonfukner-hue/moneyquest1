@@ -5,11 +5,17 @@ import { Button } from '@/components/ui/button';
 
 interface FallbackPromoProps {
   onDismiss?: () => void;
+  onUpgradeClick?: () => void;
 }
 
-export const FallbackPromo = ({ onDismiss }: FallbackPromoProps) => {
+export const FallbackPromo = ({ onDismiss, onUpgradeClick }: FallbackPromoProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const handleUpgrade = () => {
+    onUpgradeClick?.();
+    navigate('/upgrade');
+  };
 
   return (
     <div className="flex items-center justify-between w-full px-4 py-2 bg-gradient-to-r from-amber-500/20 via-amber-400/15 to-amber-500/20 dark:from-amber-500/10 dark:via-amber-400/5 dark:to-amber-500/10">
@@ -22,7 +28,7 @@ export const FallbackPromo = ({ onDismiss }: FallbackPromoProps) => {
       <div className="flex items-center gap-2 shrink-0">
         <Button
           size="sm"
-          onClick={() => navigate('/upgrade')}
+          onClick={handleUpgrade}
           className="h-8 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-amber-950 border-0"
         >
           <Sparkles className="w-3 h-3 mr-1" />
