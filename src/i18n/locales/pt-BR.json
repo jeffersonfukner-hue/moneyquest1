@@ -94,7 +94,10 @@
     "noData": "Nenhum dado encontrado",
     "success": "Sucesso",
     "error": "Erro",
-    "refresh": "Atualizar"
+    "refresh": "Atualizar",
+    "skip": "Pular",
+    "continue": "Continuar",
+    "close": "Fechar"
   },
   "auth": {
     "login": "Entrar",
@@ -122,6 +125,8 @@
     "tagline": "Suba de nível nas suas finanças",
     "error": "Erro",
     "signInWith": "Entrar com",
+    "orContinueWith": "ou continue com",
+    "continueWithGoogle": "Continuar com Google",
     "errors": {
       "invalidCredentials": "E-mail ou senha incorretos",
       "userExists": "Este e-mail já está cadastrado",

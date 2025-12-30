@@ -94,7 +94,10 @@
     "noData": "No se encontraron datos",
     "success": "Éxito",
     "error": "Error",
-    "refresh": "Actualizar"
+    "refresh": "Actualizar",
+    "skip": "Omitir",
+    "continue": "Continuar",
+    "close": "Cerrar"
   },
   "auth": {
     "login": "Iniciar Sesión",
@@ -122,6 +125,8 @@
     "tagline": "Sube de nivel en tus finanzas",
     "error": "Error",
     "signInWith": "Iniciar sesión con",
+    "orContinueWith": "o continúa con",
+    "continueWithGoogle": "Continuar con Google",
     "errors": {
       "invalidCredentials": "Correo o contraseña incorrectos",
       "userExists": "Este correo ya está registrado",
