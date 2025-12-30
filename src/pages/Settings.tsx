@@ -307,7 +307,29 @@ const Settings = () => {
           </CardContent>
         </Card>
 
-        {/* Categories */}
+        {/* Timezone */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Clock className="w-5 h-5 text-primary" />
+              {t('settings.timezone')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Select value={currentTimezone} onValueChange={handleTimezoneChange}>
+              <SelectTrigger className="min-h-[48px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {TIMEZONES.map((tz) => (
+                  <SelectItem key={tz.value} value={tz.value} className="min-h-[44px]">
+                    <span>{tz.label}</span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </CardContent>
+        </Card>
         <Card 
           className="cursor-pointer hover:border-primary/30 transition-colors"
           onClick={() => navigate('/categories')}

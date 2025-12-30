@@ -194,7 +194,10 @@
     "notifications": "Notificações",
     "exchangeRates": "Taxas de Câmbio",
     "lastUpdated": "Atualizado",
-    "ratesNotLoaded": "Taxas não carregadas"
+    "ratesNotLoaded": "Taxas não carregadas",
+    "timezone": "Fuso Horário",
+    "timezoneError": "Falha ao atualizar fuso horário",
+    "timezoneSuccess": "Fuso horário atualizado com sucesso"
   },
   "mood": {
     "veryPositive": "Muito Positivo",
@@ -442,6 +445,23 @@
     "engagement": "Engajamento",
     "logs": "Logs",
     "analytics": "Analytics",
+    "nav": {
+      "dashboard": "Dashboard",
+      "users": "Usuários",
+      "engagement": "Engajamento",
+      "analytics": "Analytics",
+      "logs": "Logs de Atividade"
+    },
+    "backToApp": "Voltar ao App",
+    "searchUsers": "Buscar usuários...",
+    "noUsersFound": "Nenhum usuário encontrado",
+    "table": {
+      "user": "Usuário",
+      "status": "Status",
+      "plan": "Plano",
+      "lastActive": "Último Acesso",
+      "registered": "Cadastro"
+    },
     "totalUsers": "Total de Usuários",
     "activeToday": "Ativos Hoje",
     "active7Days": "Ativos 7 Dias",

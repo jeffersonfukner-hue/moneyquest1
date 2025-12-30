@@ -194,7 +194,10 @@
     "notifications": "Notifications",
     "exchangeRates": "Exchange Rates",
     "lastUpdated": "Last updated",
-    "ratesNotLoaded": "Rates not loaded"
+    "ratesNotLoaded": "Rates not loaded",
+    "timezone": "Timezone",
+    "timezoneError": "Failed to update timezone",
+    "timezoneSuccess": "Timezone updated successfully"
   },
   "mood": {
     "veryPositive": "Very Positive",
@@ -442,6 +445,23 @@
     "engagement": "Engagement",
     "logs": "Logs",
     "analytics": "Analytics",
+    "nav": {
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "engagement": "Engagement",
+      "analytics": "Analytics",
+      "logs": "Activity Logs"
+    },
+    "backToApp": "Back to App",
+    "searchUsers": "Search users...",
+    "noUsersFound": "No users found",
+    "table": {
+      "user": "User",
+      "status": "Status",
+      "plan": "Plan",
+      "lastActive": "Last Active",
+      "registered": "Registered"
+    },
     "totalUsers": "Total Users",
     "activeToday": "Active Today",
     "active7Days": "Active 7 Days",
