@@ -26,6 +26,9 @@
     "startAdventure": "Start Adventure"
   },
   "ads": {
+    "bannerTitle": "Tired of seeing this notice?",
+    "bannerDescription": "Switch to Premium and use MoneyQuest ad-free while supporting the app's development.",
+    "bannerCta": "Switch to Premium",
     "goPremiumRemoveAds": "Go Premium and remove ads",
     "enjoyAdFree": "Enjoy ad-free experience",
     "removeAdTitle": "Want to remove this ad?",

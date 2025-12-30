@@ -38,7 +38,7 @@ export const AdBanner = () => {
         className="fixed left-0 right-0 z-40 bg-card border-t border-border safe-area-inset-bottom animate-slide-up-fade"
         style={{ bottom: 'calc(64px + env(safe-area-inset-bottom, 0px))' }}
       >
-        <div className="max-w-md mx-auto h-[50px] flex items-center">
+        <div className="max-w-md mx-auto h-[60px] flex items-center">
           {showInternalPromo ? (
             <FallbackPromo onDismiss={handleDismissAttempt} onUpgradeClick={handlePromoClick} />
           ) : (
