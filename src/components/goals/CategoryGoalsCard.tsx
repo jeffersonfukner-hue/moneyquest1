@@ -83,9 +83,9 @@ export const CategoryGoalsCard = () => {
           <Button 
             size="sm" 
             variant="ghost"
-            className="shrink-0"
+            className="shrink-0 min-w-[44px] min-h-[44px] touch-manipulation"
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-5 w-5" />
           </Button>
         </div>
       </CardContent>

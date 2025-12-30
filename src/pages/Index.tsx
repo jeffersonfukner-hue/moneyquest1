@@ -140,14 +140,17 @@ const Index = () => {
     switch (activeTab) {
       case 'home':
         return (
-          <div className="space-y-4">
+          <div className="space-y-4 pb-4">
+            {/* Mood indicator at top for visibility */}
+            <div className="flex justify-center sm:justify-start">
+              <MoodIndicator />
+            </div>
+            
             <DailyRewardBanner onClaimClick={() => setShowRewardDialog(true)} />
-            <QuickTemplates onUseTemplate={handleUseTemplate} />
             <LevelProgress profile={profile} />
             <StatsCards profile={profile} />
-            <ResourceBars transactions={transactions} categoryGoals={goals} />
-            <LeaderboardCard />
-            {/* Inline feedback above recent transactions */}
+            
+            {/* Inline feedback */}
             {inlineFeedback && (
               <TransactionFeedback
                 message={inlineFeedback.message}
@@ -158,13 +161,24 @@ const Index = () => {
                 onDismiss={() => setInlineFeedback(null)}
               />
             )}
+            
+            {/* Recent transactions directly after status */}
+            <RecentTransactionsCard transactions={transactions} onViewMore={setActiveTab} />
+            
+            {/* Quick templates for fast transaction entry */}
+            <QuickTemplates onUseTemplate={handleUseTemplate} />
+            
+            <ResourceBars transactions={transactions} categoryGoals={goals} />
+            <CategoryGoalsCard />
+            
+            {/* Analytics widgets */}
             <MonthlySavingsWidget transactions={transactions} />
             <MonthlyComparisonWidget transactions={transactions} />
             <SpendingByCategoryChart transactions={transactions} />
-            <RecentTransactionsCard transactions={transactions} onViewMore={setActiveTab} />
+            
+            {/* Social & AI at bottom */}
+            <LeaderboardCard />
             <AICoachCard />
-            <CategoryGoalsCard />
-            <MoodIndicator />
           </div>
         );
       case 'transactions':

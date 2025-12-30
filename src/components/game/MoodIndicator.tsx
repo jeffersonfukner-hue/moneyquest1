@@ -16,7 +16,7 @@ export const MoodIndicator = () => {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-card/80 backdrop-blur-sm border border-border/50 rounded-full cursor-default transition-all duration-300 hover:bg-card hover:border-border">
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-card/80 backdrop-blur-sm border border-border/50 rounded-full cursor-default transition-all duration-300 hover:bg-card hover:border-border shadow-sm">
           <span className="text-lg" role="img" aria-label={moodConfig.label}>
             {moodConfig.emoji}
           </span>
