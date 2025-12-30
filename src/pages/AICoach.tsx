@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
@@ -10,6 +10,7 @@ import { UpgradePrompt } from '@/components/subscription/UpgradePrompt';
 import { MobileHeader } from '@/components/navigation/MobileHeader';
 import { BottomNavigation } from '@/components/navigation/BottomNavigation';
 import { SeasonalDecorations } from '@/components/game/SeasonalDecorations';
+import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
 import { ArrowLeft, Bot, Loader2, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -19,7 +20,8 @@ const AICoach = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { profile, loading: profileLoading } = useProfile();
-  const { transactions } = useTransactions();
+  const { transactions, addTransaction } = useTransactions();
+  const [showAddTransactionDialog, setShowAddTransactionDialog] = useState(false);
   const { canAccessAIInsights } = useSubscription();
 
   useEffect(() => {
@@ -114,7 +116,13 @@ const AICoach = () => {
         onTabChange={(tab) => {
           if (tab !== 'add') navigate('/');
         }} 
-        onAddClick={() => {}} 
+        onAddClick={() => setShowAddTransactionDialog(true)} 
+      />
+
+      <AddTransactionDialog 
+        open={showAddTransactionDialog}
+        onOpenChange={setShowAddTransactionDialog}
+        onAdd={addTransaction}
       />
     </div>
   );

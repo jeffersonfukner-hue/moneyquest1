@@ -8,6 +8,7 @@ import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useSpendingSuggestions } from '@/hooks/useSpendingSuggestions';
 import { useCategories } from '@/hooks/useCategories';
+import { useTransactions } from '@/hooks/useTransactions';
 import { MobileHeader } from '@/components/navigation/MobileHeader';
 import { BottomNavigation } from '@/components/navigation/BottomNavigation';
 import { SeasonalDecorations } from '@/components/game/SeasonalDecorations';
@@ -15,6 +16,7 @@ import { UpgradePrompt } from '@/components/subscription/UpgradePrompt';
 import { GoalCard } from '@/components/goals/GoalCard';
 import { AddGoalDialog } from '@/components/goals/AddGoalDialog';
 import { GoalsMonthlyReport } from '@/components/goals/GoalsMonthlyReport';
+import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -30,10 +32,12 @@ const CategoryGoals = () => {
   const { formatCurrency } = useCurrency();
   const { getCategoriesWithoutGoals, loading: suggestionsLoading } = useSpendingSuggestions();
   const { getCategoriesByType } = useCategories();
+  const { addTransaction } = useTransactions();
   
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingGoal, setEditingGoal] = useState<CategoryGoal | null>(null);
   const [showReport, setShowReport] = useState(false);
+  const [showAddTransactionDialog, setShowAddTransactionDialog] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -288,7 +292,13 @@ const CategoryGoals = () => {
         onTabChange={(tab) => {
           if (tab !== 'add') navigate('/');
         }} 
-        onAddClick={() => {}} 
+        onAddClick={() => setShowAddTransactionDialog(true)} 
+      />
+
+      <AddTransactionDialog 
+        open={showAddTransactionDialog}
+        onOpenChange={setShowAddTransactionDialog}
+        onAdd={addTransaction}
       />
     </div>
   );
