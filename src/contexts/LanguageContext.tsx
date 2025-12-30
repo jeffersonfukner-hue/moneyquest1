@@ -5,12 +5,8 @@ import { SUPPORTED_LANGUAGES, SUPPORTED_CURRENCIES, type SupportedLanguage, type
 import type { Locale } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-// Map languages to default currencies
-const LANGUAGE_CURRENCY_MAP: Record<SupportedLanguage, SupportedCurrency> = {
-  'en-US': 'USD',
-  'es-ES': 'EUR',
-  'pt-BR': 'BRL',
-};
+// NOTE: Currency is now determined by REGION (timezone), not language
+// See src/lib/regionDetection.ts for billing currency logic
 
 interface LanguageContextType {
   language: SupportedLanguage;
@@ -47,14 +43,13 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const setLanguage = useCallback(async (newLanguage: SupportedLanguage) => {
     await i18n.changeLanguage(newLanguage);
     
-    // Get the default currency for the selected language
-    const defaultCurrency = LANGUAGE_CURRENCY_MAP[newLanguage];
-    
-    // Update both language and currency in the profile
+    // NOTE: We do NOT change currency when language changes
+    // Currency is determined by REGION (timezone), not language
+    // See src/lib/regionDetection.ts for billing currency logic
     await updateProfile({ 
       language: newLanguage, 
       locale: newLanguage,
-      currency: defaultCurrency 
+      // currency is NOT updated here - it's region-based, not language-based
     });
   }, [i18n, updateProfile]);
 
