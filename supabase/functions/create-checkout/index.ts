@@ -68,7 +68,7 @@ serve(async (req) => {
         },
       ],
       mode: "subscription",
-      success_url: `${origin}/premium?success=true`,
+      success_url: `${origin}/premium-success`,
       cancel_url: `${origin}/premium?canceled=true`,
       metadata: {
         user_id: user.id,
