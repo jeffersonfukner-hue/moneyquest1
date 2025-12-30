@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { format } from 'date-fns';
+import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { useTransactions } from '@/hooks/useTransactions';
@@ -27,11 +29,13 @@ import { QuestCelebration } from '@/components/game/QuestCelebration';
 import { SeasonalDecorations } from '@/components/game/SeasonalDecorations';
 import { NarrativeEvent } from '@/components/game/NarrativeEvent';
 import { TransactionFeedback } from '@/components/game/TransactionFeedback';
+import { QuickTemplates } from '@/components/game/QuickTemplates';
 import { BottomNavigation, type TabId } from '@/components/navigation/BottomNavigation';
 import { MobileHeader } from '@/components/navigation/MobileHeader';
 import { AICoachCard } from '@/components/ai/AICoachCard';
 import { CategoryGoalsCard } from '@/components/goals/CategoryGoalsCard';
 import { getFeedbackMessage } from '@/lib/feedbackMessages';
+import { TransactionTemplate } from '@/hooks/useTransactionTemplates';
 import { Gamepad2 } from 'lucide-react';
 
 const Index = () => {
@@ -116,12 +120,29 @@ const Index = () => {
     );
   }
 
+  // Handle using a quick template
+  const handleUseTemplate = async (template: TransactionTemplate) => {
+    const { error } = await addTransaction({
+      description: template.description,
+      amount: template.amount,
+      category: template.category,
+      type: template.type,
+      date: format(new Date(), 'yyyy-MM-dd'),
+      currency: template.currency,
+    });
+    
+    if (!error) {
+      toast.success(t('templates.used'));
+    }
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'home':
         return (
           <div className="space-y-4">
             <DailyRewardBanner onClaimClick={() => setShowRewardDialog(true)} />
+            <QuickTemplates onUseTemplate={handleUseTemplate} />
             <LevelProgress profile={profile} />
             <StatsCards profile={profile} />
             <ResourceBars transactions={transactions} categoryGoals={goals} />

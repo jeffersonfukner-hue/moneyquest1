@@ -637,6 +637,45 @@ export type Database = {
           },
         ]
       }
+      transaction_templates: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          currency: string
+          description: string
+          icon: string
+          id: string
+          name: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          currency?: string
+          description: string
+          icon?: string
+          id?: string
+          name: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          currency?: string
+          description?: string
+          icon?: string
+          id?: string
+          name?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           amount: number

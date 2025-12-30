@@ -1,4 +1,19 @@
 {
+  "templates": {
+    "quickAdd": "Añadir Rápido",
+    "createFirst": "Crea tu primer atajo",
+    "createTemplate": "Crear Atajo",
+    "name": "Nombre del Atajo",
+    "namePlaceholder": "ej: Café",
+    "descriptionPlaceholder": "ej: Café de la mañana",
+    "icon": "Elige un Icono",
+    "save": "Guardar Atajo",
+    "created": "¡Atajo creado!",
+    "deleted": "Atajo eliminado",
+    "createError": "Error al crear atajo",
+    "deleteError": "Error al eliminar atajo",
+    "used": "¡Transacción añadida desde atajo!"
+  },
   "feedback": {
     "addAnother": "Añadir Otra",
     "done": "Listo",
