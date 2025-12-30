@@ -86,7 +86,7 @@ export const QuestCelebration = ({ completedQuest, unlockedBadge, onClose }: Que
       <DialogContent className="sm:max-w-md border-0 bg-gradient-to-br from-card via-card to-primary/5 overflow-hidden">
         <div className="relative flex flex-col items-center justify-center py-8 px-4">
           {/* Animated background glow */}
-          <div className="absolute inset-0 bg-gradient-radial from-primary/20 via-transparent to-transparent animate-pulse" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-radial from-primary/20 via-transparent to-transparent animate-pulse" />
           
           {/* Quest completion */}
           {completedQuest && (
@@ -135,7 +135,7 @@ export const QuestCelebration = ({ completedQuest, unlockedBadge, onClose }: Que
               e.stopPropagation();
               handleClose();
             }}
-            className="mt-8 px-8 py-3 bg-primary text-primary-foreground rounded-full font-semibold hover:bg-primary/90 transition-all hover:scale-105 active:scale-95"
+            className="relative z-10 mt-8 px-8 py-3 bg-primary text-primary-foreground rounded-full font-semibold hover:bg-primary/90 transition-all hover:scale-105 active:scale-95"
           >
             {t('common.continue')}
           </button>
