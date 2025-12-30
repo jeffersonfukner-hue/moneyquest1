@@ -11,6 +11,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { OnboardingGuard } from "@/components/auth/OnboardingGuard";
 import '@/i18n';
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -49,7 +50,7 @@ const App = () => (
                       <Sonner />
                       <BrowserRouter>
                         <Routes>
-                          <Route path="/" element={<Index />} />
+                          <Route path="/" element={<OnboardingGuard><Index /></OnboardingGuard>} />
                           <Route path="/login" element={<Login />} />
                           <Route path="/signup" element={<Signup />} />
                           <Route path="/onboarding" element={<Onboarding />} />

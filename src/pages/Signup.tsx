@@ -86,6 +86,7 @@ const Signup = () => {
         title: t('auth.accountCreated'), 
         description: t('auth.questBegin')
       });
+      // New users go to onboarding - the flag is false by default
       navigate('/onboarding');
     }
     setLoading(false);
