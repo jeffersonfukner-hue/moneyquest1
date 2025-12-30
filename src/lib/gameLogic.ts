@@ -468,11 +468,18 @@ export const checkAndUpdateQuests = async (
         .single();
       
       const currentXP = currentProfile?.xp ?? profile.xp;
+      const newXP = currentXP + quest.xp_reward;
+      const newLevel = getLevelFromXP(newXP);
+      const newLevelTitle = getLevelTitle(newLevel);
 
-      // Add XP reward to profile using current DB value
+      // Add XP reward to profile and update level/title
       await supabase
         .from('profiles')
-        .update({ xp: currentXP + quest.xp_reward })
+        .update({ 
+          xp: newXP, 
+          level: newLevel, 
+          level_title: newLevelTitle 
+        })
         .eq('id', userId);
 
       completedQuests.push({ 
