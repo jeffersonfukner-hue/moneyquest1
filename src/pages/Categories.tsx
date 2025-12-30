@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Plus, Pencil, Trash2, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -11,13 +11,16 @@ import { Category, TransactionType } from '@/types/database';
 import { AddCategoryDialog } from '@/components/categories/AddCategoryDialog';
 import { EditCategoryDialog } from '@/components/categories/EditCategoryDialog';
 import { DeleteCategoryDialog } from '@/components/categories/DeleteCategoryDialog';
-import { Navigate } from 'react-router-dom';
+import { AdBanner } from '@/components/ads/AdBanner';
+import { useAdBanner } from '@/hooks/useAdBanner';
+import { cn } from '@/lib/utils';
 
 const Categories = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user, loading: authLoading } = useAuth();
   const { categories, loading, getCategoriesByType, deleteCategory, updateCategory, addCategory } = useCategories();
+  const { shouldShowBanner } = useAdBanner();
   
   const [activeTab, setActiveTab] = useState<TransactionType>('EXPENSE');
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -101,7 +104,7 @@ const Categories = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-background/95 p-4 pb-24">
+    <div className={cn("min-h-screen bg-gradient-to-b from-background to-background/95 p-4", shouldShowBanner ? "pb-[130px]" : "pb-24")}>
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
@@ -179,6 +182,8 @@ const Categories = () => {
         onClose={() => setDeleteConfirmCategory(null)}
         onConfirm={handleDelete}
       />
+
+      <AdBanner />
     </div>
   );
 };
