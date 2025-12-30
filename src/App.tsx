@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { FinancialMoodProvider } from "@/contexts/FinancialMoodContext";
 import { SeasonalThemeProvider } from "@/contexts/SeasonalThemeContext";
@@ -50,7 +50,8 @@ const App = () => (
                           <Route path="/auth" element={<Auth />} />
                           <Route path="/settings" element={<Settings />} />
                           <Route path="/profile" element={<Profile />} />
-                          <Route path="/upgrade" element={<Upgrade />} />
+                          <Route path="/premium" element={<Upgrade />} />
+                          <Route path="/upgrade" element={<Navigate to="/premium" replace />} />
                           <Route path="/ai-coach" element={<AICoach />} />
                           <Route path="/category-goals" element={<CategoryGoals />} />
                           <Route path="/categories" element={<Categories />} />

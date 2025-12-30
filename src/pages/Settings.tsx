@@ -116,7 +116,7 @@ const Settings = () => {
         {/* Subscription Status */}
         <Card 
           className={`cursor-pointer transition-all ${isPremium ? 'border-amber-400/50 bg-gradient-to-br from-amber-400/10 to-amber-500/5' : 'hover:border-amber-400/30'}`}
-          onClick={() => navigate('/upgrade')}
+          onClick={() => navigate('/premium')}
         >
           <CardContent className="p-4 flex items-center gap-3">
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isPremium ? 'bg-gradient-to-br from-amber-400 to-amber-500' : 'bg-muted'}`}>
@@ -207,7 +207,7 @@ const Settings = () => {
             ) : (
               <div 
                 className="flex items-center justify-between min-h-[48px] cursor-pointer"
-                onClick={() => navigate('/upgrade')}
+                onClick={() => navigate('/premium')}
               >
                 <span className="flex items-center gap-2 text-muted-foreground">
                   <span>{SUPPORTED_LANGUAGES[language]?.flag}</span>
@@ -248,7 +248,7 @@ const Settings = () => {
             ) : (
               <div 
                 className="flex items-center justify-between min-h-[48px] cursor-pointer"
-                onClick={() => navigate('/upgrade')}
+                onClick={() => navigate('/premium')}
               >
                 <span className="flex items-center gap-2 text-muted-foreground">
                   <span className="font-mono">{SUPPORTED_CURRENCIES[currency]?.symbol}</span>

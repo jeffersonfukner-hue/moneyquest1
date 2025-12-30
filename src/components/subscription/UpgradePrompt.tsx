@@ -22,7 +22,7 @@ export const UpgradePrompt = ({
   const navigate = useNavigate();
 
   const handleUpgrade = () => {
-    navigate('/upgrade');
+    navigate('/premium');
   };
 
   if (context === 'banner') {
