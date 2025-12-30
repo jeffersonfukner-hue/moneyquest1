@@ -1,4 +1,19 @@
 {
+  "templates": {
+    "quickAdd": "Quick Add",
+    "createFirst": "Create your first quick template",
+    "createTemplate": "Create Template",
+    "name": "Template Name",
+    "namePlaceholder": "e.g., Coffee",
+    "descriptionPlaceholder": "e.g., Morning coffee at cafe",
+    "icon": "Choose Icon",
+    "save": "Save Template",
+    "created": "Template created!",
+    "deleted": "Template deleted",
+    "createError": "Failed to create template",
+    "deleteError": "Failed to delete template",
+    "used": "Transaction added from template!"
+  },
   "feedback": {
     "addAnother": "Add Another",
     "done": "Done",

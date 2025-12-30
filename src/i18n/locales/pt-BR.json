@@ -1,4 +1,19 @@
 {
+  "templates": {
+    "quickAdd": "Adicionar Rápido",
+    "createFirst": "Crie seu primeiro atalho",
+    "createTemplate": "Criar Atalho",
+    "name": "Nome do Atalho",
+    "namePlaceholder": "ex: Café",
+    "descriptionPlaceholder": "ex: Café da manhã na padaria",
+    "icon": "Escolha um Ícone",
+    "save": "Salvar Atalho",
+    "created": "Atalho criado!",
+    "deleted": "Atalho excluído",
+    "createError": "Falha ao criar atalho",
+    "deleteError": "Falha ao excluir atalho",
+    "used": "Transação adicionada do atalho!"
+  },
   "feedback": {
     "addAnother": "Adicionar Outra",
     "done": "Concluir",
