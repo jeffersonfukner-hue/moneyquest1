@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Sparkles, TrendingUp, Crown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { XPChange } from '@/hooks/useRealtimeXP';
+import { getLevelTitleKey } from '@/lib/gameLogic';
 
 interface XPNotificationProps {
   xpChange: XPChange | null;
@@ -97,7 +98,7 @@ export const XPNotification = ({ xpChange, onDismiss }: XPNotificationProps) => 
                   </p>
                   <p className="text-white/90 text-sm">
                     {t('notification.nowLevel', { level: xpChange.currentLevel })}
-                    {xpChange.newLevelTitle && ` - ${xpChange.newLevelTitle}`}
+                    {xpChange.levelUp && ` - ${t(`levels.${getLevelTitleKey(xpChange.currentLevel)}`)}`}
                   </p>
                 </>
               ) : (
