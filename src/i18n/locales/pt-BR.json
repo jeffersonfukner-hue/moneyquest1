@@ -26,6 +26,9 @@
     "startAdventure": "Começar Aventura"
   },
   "ads": {
+    "bannerTitle": "Cansado de ver este aviso?",
+    "bannerDescription": "Ative o modo Premium e use o MoneyQuest sem anúncios, apoiando o desenvolvimento do app.",
+    "bannerCta": "Mudar para Premium",
     "goPremiumRemoveAds": "Vire Premium e remova anúncios",
     "enjoyAdFree": "Aproveite sem anúncios",
     "removeAdTitle": "Quer remover este anúncio?",
