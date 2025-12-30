@@ -1,4 +1,8 @@
 {
+  "ads": {
+    "goPremiumRemoveAds": "Seja Premium e remova os anúncios",
+    "enjoyAdFree": "Aproveite sem anúncios"
+  },
   "templates": {
     "quickAdd": "Adicionar Rápido",
     "createFirst": "Crie seu primeiro atalho",

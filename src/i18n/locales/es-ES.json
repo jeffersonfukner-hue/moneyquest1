@@ -1,4 +1,8 @@
 {
+  "ads": {
+    "goPremiumRemoveAds": "Hazte Premium y elimina los anuncios",
+    "enjoyAdFree": "Disfruta sin anuncios"
+  },
   "templates": {
     "quickAdd": "Añadir Rápido",
     "createFirst": "Crea tu primer atajo",
