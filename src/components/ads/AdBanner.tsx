@@ -8,7 +8,8 @@ import { ADSENSE_CONFIG } from '@/lib/adsenseConfig';
 
 export const AdBanner = () => {
   const { shouldShowBanner, showFallback, setAdLoaded, setAdError } = useAdBanner();
-  const { variant, trackImpression, trackClick } = useABTest('adBanner');
+  const { variant: adVariant, trackImpression, trackClick } = useABTest('adBanner');
+  const { variant: copyVariant } = useABTest('bannerCopy');
   const [showModal, setShowModal] = useState(false);
 
   // Track impression when banner is shown
@@ -21,7 +22,10 @@ export const AdBanner = () => {
   if (!shouldShowBanner) return null;
 
   // Determine what to show based on A/B test variant
-  const showInternalPromo = variant === 'internal_promo' || showFallback;
+  const showInternalPromo = adVariant === 'internal_promo' || showFallback;
+  
+  // Dynamic height based on copy variant
+  const bannerHeight = copyVariant === 'two_line' ? 'h-[60px]' : 'h-[50px]';
 
   const handlePromoClick = () => {
     trackClick({ action: 'upgrade_click' });
@@ -38,7 +42,7 @@ export const AdBanner = () => {
         className="fixed left-0 right-0 z-40 bg-card border-t border-border safe-area-inset-bottom animate-slide-up-fade"
         style={{ bottom: 'calc(64px + env(safe-area-inset-bottom, 0px))' }}
       >
-        <div className="max-w-md mx-auto h-[60px] flex items-center">
+        <div className={`max-w-md mx-auto ${bannerHeight} flex items-center`}>
           {showInternalPromo ? (
             <FallbackPromo onDismiss={handleDismissAttempt} onUpgradeClick={handlePromoClick} />
           ) : (

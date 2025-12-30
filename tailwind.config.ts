@@ -121,6 +121,10 @@ export default {
           "0%": { transform: "translateY(100%)", opacity: "0" },
           "100%": { transform: "translateY(0)", opacity: "1" },
         },
+        "shimmer": {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -128,6 +132,7 @@ export default {
         "level-up": "level-up 0.6s ease-out",
         "coin-spin": "coin-spin 1s ease-in-out",
         "slide-up-fade": "slide-up-fade 0.3s ease-out",
+        "shimmer": "shimmer 3s ease-in-out infinite",
       },
     },
   },
