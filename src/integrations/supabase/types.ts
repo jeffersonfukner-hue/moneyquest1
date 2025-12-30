@@ -459,10 +459,12 @@ export type Database = {
           level_title: string
           locale: string
           onboarding_completed: boolean
+          premium_override: Database["public"]["Enums"]["premium_override_type"]
           status: string | null
           streak: number
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
+          stripe_subscription_status: string | null
           subscription_expires_at: string | null
           subscription_plan: string
           subscription_started_at: string | null
@@ -487,10 +489,12 @@ export type Database = {
           level_title?: string
           locale?: string
           onboarding_completed?: boolean
+          premium_override?: Database["public"]["Enums"]["premium_override_type"]
           status?: string | null
           streak?: number
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
+          stripe_subscription_status?: string | null
           subscription_expires_at?: string | null
           subscription_plan?: string
           subscription_started_at?: string | null
@@ -515,10 +519,12 @@ export type Database = {
           level_title?: string
           locale?: string
           onboarding_completed?: boolean
+          premium_override?: Database["public"]["Enums"]["premium_override_type"]
           status?: string | null
           streak?: number
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
+          stripe_subscription_status?: string | null
           subscription_expires_at?: string | null
           subscription_plan?: string
           subscription_started_at?: string | null
@@ -862,10 +868,12 @@ export type Database = {
           level_title: string
           locale: string
           onboarding_completed: boolean
+          premium_override: Database["public"]["Enums"]["premium_override_type"]
           status: string | null
           streak: number
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
+          stripe_subscription_status: string | null
           subscription_expires_at: string | null
           subscription_plan: string
           subscription_started_at: string | null
@@ -903,6 +911,10 @@ export type Database = {
           _note?: string
           _target_user_id: string
         }
+        Returns: undefined
+      }
+      admin_reset_premium_override: {
+        Args: { _note?: string; _target_user_id: string }
         Returns: undefined
       }
       admin_update_retention_thresholds: {
@@ -946,9 +958,17 @@ export type Database = {
       }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
       reset_expired_quests: { Args: { p_user_id: string }; Returns: undefined }
+      resolve_premium_status: {
+        Args: {
+          p_override: Database["public"]["Enums"]["premium_override_type"]
+          p_stripe_status: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "super_admin" | "admin" | "user"
+      premium_override_type: "none" | "force_on" | "force_off"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1077,6 +1097,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["super_admin", "admin", "user"],
+      premium_override_type: ["none", "force_on", "force_off"],
     },
   },
 } as const

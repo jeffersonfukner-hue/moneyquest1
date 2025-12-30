@@ -58,26 +58,51 @@ serve(async (req) => {
     if (!user?.email) throw new Error("User not authenticated or email not available");
     logStep("User authenticated", { userId: user.id, email: user.email });
 
+    // Fetch current profile to check premium_override
+    const { data: profile, error: profileError } = await supabaseClient
+      .from("profiles")
+      .select("premium_override")
+      .eq("id", user.id)
+      .single();
+
+    if (profileError) {
+      logStep("WARNING", { message: "Failed to fetch profile override", error: profileError.message });
+    }
+
+    const premiumOverride = profile?.premium_override || 'none';
+    logStep("Current override status", { premiumOverride });
+
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     
     if (customers.data.length === 0) {
-      logStep("No customer found, returning unsubscribed state");
+      logStep("No customer found, updating stripe status only");
       
-      // Update profile to FREE if not subscribed
+      // Build update data - always update stripe_subscription_status
+      const updateData: Record<string, any> = { 
+        stripe_subscription_status: 'inactive',
+        subscription_expires_at: null,
+        stripe_customer_id: null,
+        stripe_subscription_id: null
+      };
+
+      // Only update subscription_plan if no admin override
+      if (premiumOverride === 'none') {
+        updateData.subscription_plan = "FREE";
+        logStep("No override - setting plan to FREE");
+      } else {
+        logStep("Override active - preserving current subscription_plan", { premiumOverride });
+      }
+
       await supabaseClient
         .from("profiles")
-        .update({ 
-          subscription_plan: "FREE",
-          subscription_expires_at: null,
-          stripe_customer_id: null,
-          stripe_subscription_id: null
-        })
+        .update(updateData)
         .eq("id", user.id);
       
       return new Response(JSON.stringify({ 
         subscribed: false,
-        plan: "FREE"
+        plan: premiumOverride === 'force_on' ? "PREMIUM" : "FREE",
+        override: premiumOverride
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
@@ -96,6 +121,7 @@ serve(async (req) => {
     const hasActiveSub = subscriptions.data.length > 0;
     let subscriptionEnd = null;
     let stripeSubscriptionId = null;
+    let subscriptionStart = null;
 
     if (hasActiveSub) {
       const subscription = subscriptions.data[0];
@@ -107,42 +133,47 @@ serve(async (req) => {
       });
       
       subscriptionEnd = safeTimestampToISO(subscription.current_period_end);
-      const subscriptionStart = safeTimestampToISO(subscription.current_period_start);
+      subscriptionStart = safeTimestampToISO(subscription.current_period_start);
       stripeSubscriptionId = subscription.id;
       logStep("Active subscription found", { subscriptionId: subscription.id, endDate: subscriptionEnd });
-      
-      // Update profile to PREMIUM
-      await supabaseClient
-        .from("profiles")
-        .update({ 
-          subscription_plan: "PREMIUM",
-          subscription_started_at: subscriptionStart,
-          subscription_expires_at: subscriptionEnd,
-          stripe_customer_id: customerId,
-          stripe_subscription_id: stripeSubscriptionId
-        })
-        .eq("id", user.id);
     } else {
       logStep("No active subscription found");
-      
-      // Update profile to FREE
-      await supabaseClient
-        .from("profiles")
-        .update({ 
-          subscription_plan: "FREE",
-          subscription_expires_at: null,
-          stripe_subscription_id: null,
-          stripe_customer_id: customerId
-        })
-        .eq("id", user.id);
     }
+
+    // Build update data - always update stripe_subscription_status
+    const updateData: Record<string, any> = {
+      stripe_subscription_status: hasActiveSub ? 'active' : 'inactive',
+      stripe_customer_id: customerId,
+      stripe_subscription_id: stripeSubscriptionId,
+      subscription_started_at: subscriptionStart,
+      subscription_expires_at: subscriptionEnd,
+    };
+
+    // Only update subscription_plan if no admin override
+    if (premiumOverride === 'none') {
+      updateData.subscription_plan = hasActiveSub ? "PREMIUM" : "FREE";
+      logStep("No override - updating subscription_plan", { plan: updateData.subscription_plan });
+    } else {
+      logStep("Override active - preserving current subscription_plan", { premiumOverride });
+    }
+
+    await supabaseClient
+      .from("profiles")
+      .update(updateData)
+      .eq("id", user.id);
+
+    // Determine effective plan based on override
+    let effectivePlan = hasActiveSub ? "PREMIUM" : "FREE";
+    if (premiumOverride === 'force_on') effectivePlan = "PREMIUM";
+    if (premiumOverride === 'force_off') effectivePlan = "FREE";
 
     return new Response(JSON.stringify({
       subscribed: hasActiveSub,
-      plan: hasActiveSub ? "PREMIUM" : "FREE",
+      plan: effectivePlan,
       subscription_end: subscriptionEnd,
       customer_id: customerId,
-      subscription_id: stripeSubscriptionId
+      subscription_id: stripeSubscriptionId,
+      override: premiumOverride
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,

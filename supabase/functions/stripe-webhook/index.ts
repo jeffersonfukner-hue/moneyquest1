@@ -62,10 +62,10 @@ serve(async (req) => {
 
     logStep("Event received", { type: event.type, id: event.id });
 
-    // Helper function to update user subscription status
+    // Helper function to update user subscription status - respects admin override
     const updateUserSubscription = async (
       customerEmail: string,
-      isPremium: boolean,
+      stripeIsActive: boolean,
       subscriptionData?: {
         stripeCustomerId?: string;
         stripeSubscriptionId?: string;
@@ -86,19 +86,42 @@ serve(async (req) => {
         return;
       }
 
+      // Fetch current profile to check premium_override
+      const { data: profile, error: profileError } = await supabaseClient
+        .from("profiles")
+        .select("premium_override")
+        .eq("id", user.id)
+        .single();
+
+      if (profileError) {
+        logStep("WARNING", { message: "Failed to fetch profile override", error: profileError.message });
+      }
+
+      const premiumOverride = profile?.premium_override || 'none';
+      logStep("Current override status", { userId: user.id, premiumOverride });
+
+      // Always update stripe_subscription_status
       const updateData: Record<string, any> = {
-        subscription_plan: isPremium ? "PREMIUM" : "FREE",
+        stripe_subscription_status: stripeIsActive ? 'active' : 'inactive',
         updated_at: new Date().toISOString(),
       };
 
-      if (isPremium && subscriptionData) {
+      if (stripeIsActive && subscriptionData) {
         updateData.stripe_customer_id = subscriptionData.stripeCustomerId;
         updateData.stripe_subscription_id = subscriptionData.stripeSubscriptionId;
         updateData.subscription_started_at = subscriptionData.subscriptionStartedAt;
         updateData.subscription_expires_at = subscriptionData.subscriptionExpiresAt;
-      } else if (!isPremium) {
+      } else if (!stripeIsActive) {
         updateData.subscription_expires_at = null;
         updateData.stripe_subscription_id = null;
+      }
+
+      // Only update subscription_plan if no admin override
+      if (premiumOverride === 'none') {
+        updateData.subscription_plan = stripeIsActive ? "PREMIUM" : "FREE";
+        logStep("No override - updating subscription_plan", { plan: updateData.subscription_plan });
+      } else {
+        logStep("Override active - preserving current subscription_plan", { premiumOverride });
       }
 
       const { error: updateError } = await supabaseClient
@@ -110,9 +133,10 @@ serve(async (req) => {
         logStep("ERROR", { message: "Failed to update profile", error: updateError.message });
       } else {
         logStep("SUCCESS", { 
-          message: isPremium ? "User upgraded to PREMIUM" : "User downgraded to FREE",
+          message: `Stripe status updated to ${stripeIsActive ? 'active' : 'inactive'}`,
           userId: user.id,
-          email: customerEmail
+          email: customerEmail,
+          overrideActive: premiumOverride !== 'none'
         });
       }
     };
