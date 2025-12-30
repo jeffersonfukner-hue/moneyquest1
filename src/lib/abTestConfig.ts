@@ -15,6 +15,11 @@ export const AB_TESTS = {
     variants: ['default'] as const,
     weights: [1.0], // Single variant for tracking only
   },
+  bannerCopy: {
+    name: 'banner_copy_v1',
+    variants: ['single_line', 'two_line'] as const,
+    weights: [0.5, 0.5], // 50/50 split
+  },
 } as const;
 
 export type ABTestName = keyof typeof AB_TESTS;
