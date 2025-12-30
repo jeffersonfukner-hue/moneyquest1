@@ -27,6 +27,7 @@ interface NarrativeData {
   eventType: 'INCOME' | 'EXPENSE';
   category: string;
   amount?: number;
+  currency?: string;
 }
 
 export const useTransactions = () => {
@@ -239,6 +240,7 @@ export const useTransactions = () => {
             eventType: transaction.type,
             category: transaction.category,
             amount: transaction.amount,
+            currency: transaction.currency,
           });
         }
       })

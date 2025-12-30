@@ -1,4 +1,28 @@
 {
+  "feedback": {
+    "addAnother": "Añadir Otra",
+    "done": "Listo",
+    "transactionSaved": "¡Transacción guardada!",
+    "addAnotherQuestion": "¿Deseas añadir otra?",
+    "income": {
+      "default": "¡Oro recibido! Tu tesoro crece más fuerte.",
+      "large": "¡Gran botín! Una adición digna a tus arcas.",
+      "salary": "¡Tu gremio recompensa tu lealtad! Bien merecido.",
+      "freelance": "¡Recompensa de misión exitosa! Tus habilidades valen.",
+      "investment": "¡Tus inversiones dan frutos! Sabias decisiones."
+    },
+    "expense": {
+      "default": "Recursos gastados sabiamente en tu aventura.",
+      "food": "¡Tu grupo está bien alimentado para el viaje!",
+      "entertainment": "Un héroe también necesita descansar. ¡Disfruta la taberna!",
+      "shopping": "¡Nuevo equipo adquirido! Listo para la aventura.",
+      "health": "Pociones de curación aseguradas. ¡Mantente sano, aventurero!",
+      "transport": "¡Viajes rápidos, valiente viajero!",
+      "education": "El conocimiento es poder. ¡Una inversión sabia!",
+      "bills": "Manteniendo tu fortaleza. Un gasto necesario.",
+      "housing": "Un refugio seguro asegurado. Descansa bien, héroe."
+    }
+  },
   "common": {
     "loading": "Cargando...",
     "save": "Guardar",

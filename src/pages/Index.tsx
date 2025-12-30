@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
@@ -26,10 +26,12 @@ import { MoodIndicator } from '@/components/game/MoodIndicator';
 import { QuestCelebration } from '@/components/game/QuestCelebration';
 import { SeasonalDecorations } from '@/components/game/SeasonalDecorations';
 import { NarrativeEvent } from '@/components/game/NarrativeEvent';
+import { TransactionFeedback } from '@/components/game/TransactionFeedback';
 import { BottomNavigation, type TabId } from '@/components/navigation/BottomNavigation';
 import { MobileHeader } from '@/components/navigation/MobileHeader';
 import { AICoachCard } from '@/components/ai/AICoachCard';
 import { CategoryGoalsCard } from '@/components/goals/CategoryGoalsCard';
+import { getFeedbackMessage } from '@/lib/feedbackMessages';
 import { Gamepad2 } from 'lucide-react';
 
 const Index = () => {
@@ -46,6 +48,16 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState<TabId>('home');
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showRewardDialog, setShowRewardDialog] = useState(false);
+  
+  // Inline feedback state
+  const [inlineFeedback, setInlineFeedback] = useState<{
+    message: string;
+    type: 'INCOME' | 'EXPENSE';
+    category: string;
+    amount: number;
+    currency: string;
+  } | null>(null);
+  const lastFeedbackRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -61,6 +73,35 @@ const Index = () => {
       return () => clearTimeout(timer);
     }
   }, [rewardStatus?.can_claim]);
+
+  // Show inline feedback when narrative data changes
+  useEffect(() => {
+    if (narrativeData) {
+      // Create unique ID for this feedback to prevent duplicates
+      const feedbackId = `${narrativeData.category}-${narrativeData.amount}-${Date.now()}`;
+      
+      // Only show if it's a new feedback
+      if (lastFeedbackRef.current !== feedbackId) {
+        lastFeedbackRef.current = feedbackId;
+        
+        // Use the generated narrative or create a contextual message
+        const message = narrativeData.narrative || getFeedbackMessage(
+          narrativeData.eventType as 'INCOME' | 'EXPENSE',
+          narrativeData.category || '',
+          narrativeData.amount || 0,
+          t
+        );
+        
+        setInlineFeedback({
+          message,
+          type: narrativeData.eventType as 'INCOME' | 'EXPENSE',
+          category: narrativeData.category || '',
+          amount: narrativeData.amount || 0,
+          currency: narrativeData.currency || profile?.currency || 'BRL',
+        });
+      }
+    }
+  }, [narrativeData, t, profile?.currency]);
 
   if (authLoading || profileLoading || !profile) {
     return (
@@ -85,6 +126,17 @@ const Index = () => {
             <StatsCards profile={profile} />
             <ResourceBars transactions={transactions} categoryGoals={goals} />
             <LeaderboardCard />
+            {/* Inline feedback above recent transactions */}
+            {inlineFeedback && (
+              <TransactionFeedback
+                message={inlineFeedback.message}
+                type={inlineFeedback.type}
+                category={inlineFeedback.category}
+                amount={inlineFeedback.amount}
+                currency={inlineFeedback.currency}
+                onDismiss={() => setInlineFeedback(null)}
+              />
+            )}
             <MonthlySavingsWidget transactions={transactions} />
             <MonthlyComparisonWidget transactions={transactions} />
             <SpendingByCategoryChart transactions={transactions} />
