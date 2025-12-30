@@ -21,6 +21,7 @@ import Onboarding from "./pages/Onboarding";
 import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import Upgrade from "./pages/Upgrade";
+import PremiumSuccess from "./pages/PremiumSuccess";
 import AICoach from "./pages/AICoach";
 import CategoryGoals from "./pages/CategoryGoals";
 import Categories from "./pages/Categories";
@@ -58,6 +59,7 @@ const App = () => (
                           <Route path="/settings" element={<Settings />} />
                           <Route path="/profile" element={<Profile />} />
                           <Route path="/premium" element={<Upgrade />} />
+                          <Route path="/premium-success" element={<PremiumSuccess />} />
                           <Route path="/upgrade" element={<Navigate to="/premium" replace />} />
                           <Route path="/ai-coach" element={<AICoach />} />
                           <Route path="/category-goals" element={<CategoryGoals />} />

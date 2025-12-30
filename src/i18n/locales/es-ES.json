@@ -359,7 +359,13 @@
       "multi_currency": "Monedas",
       "advanced_themes": "Temas",
       "data_export": "Exportar"
-    }
+    },
+    "successTitle": "Premium activado con éxito",
+    "successMessage": "Gracias por apoyar MoneyQuest. Tu acceso Premium ya está activo y todas las funciones han sido desbloqueadas.",
+    "goToApp": "Ir a la app ahora",
+    "redirectingIn": "Serás redirigido automáticamente en {{seconds}} segundos.",
+    "confirmingPayment": "Confirmando pago...",
+    "paymentConfirmationNote": "Esto puede tardar unos segundos."
   },
   "aiCoach": {
     "title": "Coach IA",
