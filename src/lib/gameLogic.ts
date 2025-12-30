@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Profile, Transaction, Quest, Badge, QuestType, FinancialMood } from '@/types/database';
+import { getTodayString, getWeekStartString, getMonthStartString, parseDateString, formatDateForDB } from './dateUtils';
 
 export const XP_PER_LEVEL = 1000;
 
@@ -40,14 +41,15 @@ export const getLevelTitle = (level: number): string => {
 };
 
 export const calculateStreak = (lastActiveDate: string | null): { newStreak: number; isNewDay: boolean } => {
-  const today = new Date().toISOString().split('T')[0];
+  const today = getTodayString();
   
   if (!lastActiveDate) {
     return { newStreak: 1, isNewDay: true };
   }
   
-  const lastDate = new Date(lastActiveDate);
-  const todayDate = new Date(today);
+  // Parse the date as local time to avoid timezone issues
+  const lastDate = parseDateString(lastActiveDate);
+  const todayDate = parseDateString(today);
   const diffTime = todayDate.getTime() - lastDate.getTime();
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
   
@@ -120,9 +122,9 @@ export const calculateQuestProgress = async (
   questKey: string,
   questType: QuestType
 ): Promise<number> => {
-  const today = new Date().toISOString().split('T')[0];
-  const weekStart = getWeekStart();
-  const monthStart = getMonthStart();
+  const today = getTodayString();
+  const weekStart = getWeekStartString();
+  const monthStart = getMonthStartString();
 
   switch (questKey) {
     case 'daily_checkin':
@@ -240,14 +242,14 @@ export const calculateQuestProgress = async (
     // New weekly challenge quests
     case 'frugal_friday': {
       // Check if any Friday in the current week had zero expenses
-      const weekStartDate = new Date(weekStart);
-      const todayDate = new Date(today);
+      const weekStartDate = parseDateString(weekStart);
+      const todayDate = parseDateString(today);
       let frugalFridayCount = 0;
       
       // Find Fridays in this week
       for (let d = new Date(weekStartDate); d <= todayDate; d.setDate(d.getDate() + 1)) {
         if (d.getDay() === 5) { // Friday
-          const fridayStr = d.toISOString().split('T')[0];
+          const fridayStr = formatDateForDB(d);
           const { count } = await supabase
             .from('transactions')
             .select('*', { count: 'exact', head: true })
@@ -285,12 +287,12 @@ export const calculateQuestProgress = async (
         .lte('date', today);
       
       const expenseDays = new Set(expenses?.map(t => t.date) || []);
-      const weekStartDate = new Date(weekStart);
-      const todayDate = new Date(today);
+      const weekStartDate = parseDateString(weekStart);
+      const todayDate = parseDateString(today);
       let noSpendDays = 0;
       
       for (let d = new Date(weekStartDate); d <= todayDate; d.setDate(d.getDate() + 1)) {
-        const dateStr = d.toISOString().split('T')[0];
+        const dateStr = formatDateForDB(d);
         if (!expenseDays.has(dateStr)) noSpendDays++;
       }
       return noSpendDays;
@@ -418,7 +420,7 @@ export const checkAndUpdateQuests = async (
   if (!quests) return [];
 
   const completedQuests: Quest[] = [];
-  const today = new Date().toISOString().split('T')[0];
+  const today = getTodayString();
   const totalSaved = profile.total_income - profile.total_expenses;
 
   for (const quest of quests) {
@@ -491,19 +493,10 @@ export const checkAndUpdateQuests = async (
   return completedQuests;
 };
 
-// Helper functions
-export const getWeekStart = (): string => {
-  const now = new Date();
-  const dayOfWeek = now.getDay();
-  const diff = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
-  const weekStart = new Date(now.setDate(diff));
-  return weekStart.toISOString().split('T')[0];
-};
+// Helper functions - re-export from dateUtils for backwards compatibility
+export const getWeekStart = (): string => getWeekStartString();
 
-export const getMonthStart = (): string => {
-  const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-};
+export const getMonthStart = (): string => getMonthStartString();
 
 export const getWeekNumber = (date: Date): number => {
   const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
