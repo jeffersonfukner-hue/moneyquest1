@@ -94,7 +94,10 @@
     "noData": "No data found",
     "success": "Success",
     "error": "Error",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "skip": "Skip",
+    "continue": "Continue",
+    "close": "Close"
   },
   "auth": {
     "login": "Sign In",
@@ -122,6 +125,8 @@
     "tagline": "Level up your finances",
     "error": "Error",
     "signInWith": "Sign in with",
+    "orContinueWith": "or continue with",
+    "continueWithGoogle": "Continue with Google",
     "errors": {
       "invalidCredentials": "Invalid email or password",
       "userExists": "This email is already registered",
