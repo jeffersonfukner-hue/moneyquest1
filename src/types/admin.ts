@@ -1,3 +1,5 @@
+export type PremiumOverrideType = 'none' | 'force_on' | 'force_off';
+
 export interface AdminUser {
   id: string;
   email: string;
@@ -11,6 +13,8 @@ export interface AdminUser {
   xp: number;
   level: number;
   streak: number;
+  premium_override: PremiumOverrideType;
+  stripe_subscription_status: string | null;
 }
 
 export interface AdminAnalytics {

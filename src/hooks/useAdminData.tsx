@@ -15,6 +15,8 @@ interface ProfileRow {
   xp: number;
   level: number;
   streak: number;
+  premium_override: 'none' | 'force_on' | 'force_off';
+  stripe_subscription_status: string | null;
 }
 
 export const useAdminData = () => {
@@ -48,7 +50,9 @@ export const useAdminData = () => {
             ...profile, 
             email: (email as string) || 'N/A',
             status: (profile.status || 'active') as 'active' | 'inactive' | 'blocked',
-            subscription_plan: profile.subscription_plan as 'FREE' | 'PREMIUM'
+            subscription_plan: profile.subscription_plan as 'FREE' | 'PREMIUM',
+            premium_override: profile.premium_override || 'none',
+            stripe_subscription_status: profile.stripe_subscription_status
           } as AdminUser;
         })
       );
@@ -251,6 +255,31 @@ export const useAdminData = () => {
     },
   });
 
+  // Reset premium override mutation
+  const resetPremiumOverride = useMutation({
+    mutationFn: async ({ 
+      targetUserId, 
+      note 
+    }: { 
+      targetUserId: string; 
+      note?: string;
+    }) => {
+      const { error } = await supabase.rpc('admin_reset_premium_override', {
+        _target_user_id: targetUserId,
+        _note: note || null
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-logs'] });
+      toast({ title: 'Premium override reset successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error resetting override', description: String(error), variant: 'destructive' });
+    },
+  });
+
   return {
     analytics,
     users,
@@ -268,6 +297,7 @@ export const useAdminData = () => {
     grantBonus,
     sendMessage,
     createTemplate,
+    resetPremiumOverride,
     refetchUsers,
   };
 };

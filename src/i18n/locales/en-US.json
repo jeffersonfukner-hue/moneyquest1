@@ -588,7 +588,17 @@
       "unblockUser": "Unblock User",
       "grantBonus": "Grant Bonus",
       "sendMessage": "Send Message",
-      "viewDetails": "View Details"
+      "viewDetails": "View Details",
+      "resetOverride": "Reset Override",
+      "block": "Block User",
+      "unblock": "Unblock User"
+    },
+    "override": {
+      "forceOn": "Admin granted (Stripe ignored)",
+      "forceOff": "Admin revoked (Stripe ignored)",
+      "resetTitle": "Reset Premium Override",
+      "resetDescription": "This will remove the admin override for {{user}} and let Stripe control the premium status. The user's plan will be determined by their actual Stripe subscription.",
+      "resetConfirm": "Reset Override"
     },
     "premium": {
       "title": "Manage Premium",
