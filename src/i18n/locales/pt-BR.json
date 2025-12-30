@@ -1,4 +1,30 @@
 {
+  "onboarding": {
+    "steps": {
+      "welcome": {
+        "title": "Bem-vindo ao MoneyQuest!",
+        "description": "Transforme suas finanças em uma aventura épica. Ganhe XP, desbloqueie conquistas e domine seu dinheiro!"
+      },
+      "track": {
+        "title": "Registre Suas Transações",
+        "description": "Adicione receitas e despesas facilmente. Cada registro te aproxima do controle financeiro total."
+      },
+      "goals": {
+        "title": "Defina Metas por Categoria",
+        "description": "Crie orçamentos para cada categoria e acompanhe seu progresso em tempo real."
+      },
+      "rewards": {
+        "title": "Ganhe Recompensas",
+        "description": "Complete missões, ganhe XP e suba de nível enquanto melhora suas finanças!"
+      }
+    },
+    "features": {
+      "xp": "Ganhe XP a cada transação registrada",
+      "badges": "Desbloqueie emblemas por conquistas",
+      "quests": "Complete missões diárias e semanais"
+    },
+    "startAdventure": "Começar Aventura"
+  },
   "ads": {
     "goPremiumRemoveAds": "Vire Premium e remova anúncios",
     "enjoyAdFree": "Aproveite sem anúncios"

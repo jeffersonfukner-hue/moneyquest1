@@ -1,4 +1,30 @@
 {
+  "onboarding": {
+    "steps": {
+      "welcome": {
+        "title": "Welcome to MoneyQuest!",
+        "description": "Transform your finances into an epic adventure. Earn XP, unlock achievements, and master your money!"
+      },
+      "track": {
+        "title": "Track Your Transactions",
+        "description": "Add income and expenses easily. Each entry brings you closer to total financial control."
+      },
+      "goals": {
+        "title": "Set Category Goals",
+        "description": "Create budgets for each category and track your progress in real-time."
+      },
+      "rewards": {
+        "title": "Earn Rewards",
+        "description": "Complete quests, earn XP, and level up while improving your finances!"
+      }
+    },
+    "features": {
+      "xp": "Earn XP for every transaction logged",
+      "badges": "Unlock badges for achievements",
+      "quests": "Complete daily and weekly quests"
+    },
+    "startAdventure": "Start Adventure"
+  },
   "ads": {
     "goPremiumRemoveAds": "Go Premium and remove ads",
     "enjoyAdFree": "Enjoy ad-free experience"
