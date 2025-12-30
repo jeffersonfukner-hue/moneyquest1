@@ -11,12 +11,11 @@ import { useProfile } from '@/hooks/useProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-// Stripe Price IDs - These need to be created in your Stripe Dashboard
-// Create a product "MoneyQuest Premium" with prices for each currency
+// Stripe Price IDs for MoneyQuest Premium
 const STRIPE_PRICES = {
-  BRL: '', // Add your BRL price ID: price_xxx
-  USD: '', // Add your USD price ID: price_xxx
-  EUR: '', // Add your EUR price ID: price_xxx
+  BRL: 'price_1Sk8DPDesRSWXdgx5ZQozoeM',
+  USD: 'price_1Sk8ckDesRSWXdgxWIGkAlYw',
+  EUR: 'price_1Sk8cFDesRSWXdgxLMMUmZz6',
 } as const;
 
 const Upgrade = () => {
@@ -32,19 +31,24 @@ const Upgrade = () => {
   const pricing = PREMIUM_PRICING[currency] || PREMIUM_PRICING.USD;
   const priceId = STRIPE_PRICES[currency] || STRIPE_PRICES.USD;
 
-  // Check for success/cancel from Stripe redirect
+  // Check subscription status on mount and after Stripe redirect
   useEffect(() => {
     const success = searchParams.get('success');
     const canceled = searchParams.get('canceled');
 
     if (success === 'true') {
       toast.success(t('subscription.welcomePremium') || 'Welcome to Premium!');
-      // Check subscription status
       checkSubscription();
+      // Clean URL
+      navigate('/premium', { replace: true });
     } else if (canceled === 'true') {
       toast.info(t('subscription.checkoutCanceled') || 'Checkout was canceled');
+      navigate('/premium', { replace: true });
+    } else {
+      // Check subscription on page load
+      checkSubscription();
     }
-  }, [searchParams, t]);
+  }, [searchParams, t, navigate]);
 
   const checkSubscription = async () => {
     setIsCheckingSubscription(true);
