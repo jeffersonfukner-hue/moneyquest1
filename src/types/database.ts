@@ -4,6 +4,7 @@ export type SupportedLanguage = 'pt-BR' | 'en-US' | 'es-ES';
 export type SupportedCurrency = 'BRL' | 'USD' | 'EUR';
 export type SubscriptionPlan = 'FREE' | 'PREMIUM';
 export type ThemePreference = 'light' | 'dark' | 'system';
+export type PremiumOverride = 'none' | 'force_on' | 'force_off';
 
 export interface Profile {
   id: string;
@@ -26,6 +27,8 @@ export interface Profile {
   subscription_expires_at: string | null;
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
+  stripe_subscription_status: string | null;
+  premium_override: PremiumOverride;
   theme_preference: ThemePreference;
   timezone: string;
   onboarding_completed: boolean;
