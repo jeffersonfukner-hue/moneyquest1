@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Crown, Sparkles, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { X } from 'lucide-react';
 
 interface FallbackPromoProps {
   onDismiss?: () => void;
@@ -12,38 +11,33 @@ export const FallbackPromo = ({ onDismiss, onUpgradeClick }: FallbackPromoProps)
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const handleUpgrade = () => {
+  const handleBannerClick = () => {
     onUpgradeClick?.();
-    navigate('/upgrade');
+    navigate('/premium');
+  };
+
+  const handleDismissClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDismiss?.();
   };
 
   return (
-    <div className="flex items-center justify-between w-full px-4 py-2 bg-gradient-to-r from-amber-500/20 via-amber-400/15 to-amber-500/20 dark:from-amber-500/10 dark:via-amber-400/5 dark:to-amber-500/10">
-      <div className="flex items-center gap-2 min-w-0">
-        <Crown className="w-5 h-5 text-amber-500 shrink-0" />
-        <span className="text-sm font-medium truncate">
-          {t('ads.goPremiumRemoveAds')}
-        </span>
-      </div>
-      <div className="flex items-center gap-2 shrink-0">
-        <Button
-          size="sm"
-          onClick={handleUpgrade}
-          className="h-8 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-amber-950 border-0"
+    <div 
+      onClick={handleBannerClick}
+      className="flex items-center justify-between w-full h-full px-4 cursor-pointer bg-gradient-to-r from-amber-500/20 via-amber-400/15 to-amber-500/20 dark:from-amber-500/10 dark:via-amber-400/5 dark:to-amber-500/10 hover:from-amber-500/30 hover:via-amber-400/25 hover:to-amber-500/30 dark:hover:from-amber-500/20 dark:hover:via-amber-400/15 dark:hover:to-amber-500/20 transition-colors"
+    >
+      <span className="text-sm font-medium">
+        ✨ {t('ads.goPremiumRemoveAds')}
+      </span>
+      {onDismiss && (
+        <button 
+          onClick={handleDismissClick} 
+          className="p-1.5 hover:bg-foreground/10 rounded-full transition-colors shrink-0"
+          aria-label={t('common.close')}
         >
-          <Sparkles className="w-3 h-3 mr-1" />
-          {t('subscription.upgrade')}
-        </Button>
-        {onDismiss && (
-          <button 
-            onClick={onDismiss} 
-            className="p-1.5 hover:bg-foreground/10 rounded-full transition-colors"
-            aria-label={t('common.close')}
-          >
-            <X className="w-4 h-4 text-muted-foreground" />
-          </button>
-        )}
-      </div>
+          <X className="w-4 h-4 text-muted-foreground" />
+        </button>
+      )}
     </div>
   );
 };

@@ -117,12 +117,17 @@ export default {
           "0%": { transform: "rotateY(0deg)" },
           "100%": { transform: "rotateY(360deg)" },
         },
+        "slide-up-fade": {
+          "0%": { transform: "translateY(100%)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "level-up": "level-up 0.6s ease-out",
         "coin-spin": "coin-spin 1s ease-in-out",
+        "slide-up-fade": "slide-up-fade 0.3s ease-out",
       },
     },
   },

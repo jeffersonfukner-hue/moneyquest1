@@ -5,8 +5,11 @@ export const ADSENSE_CONFIG = {
   },
   // Pages where ads should NEVER appear
   restrictedRoutes: [
-    '/auth',
-    '/upgrade',
+    '/login',
+    '/signup',
+    '/onboarding',
+    '/checkout',
+    '/premium',
     '/super-admin',
   ],
 } as const;
