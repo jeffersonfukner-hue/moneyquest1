@@ -231,6 +231,7 @@ const Index = () => {
           clearCelebration();
           refetchQuests();
           refetchBadges();
+          refetchProfile();
         }}
       />
 
