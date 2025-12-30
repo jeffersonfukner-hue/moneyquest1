@@ -27,7 +27,11 @@
   },
   "ads": {
     "goPremiumRemoveAds": "Go Premium and remove ads",
-    "enjoyAdFree": "Enjoy ad-free experience"
+    "enjoyAdFree": "Enjoy ad-free experience",
+    "removeAdTitle": "Want to remove this ad?",
+    "removeAdDescription": "To stop seeing this banner and support MoneyQuest, just switch to Premium mode.",
+    "goPremium": "Switch to Premium",
+    "stayFree": "Stay free"
   },
   "templates": {
     "quickAdd": "Quick Add",
