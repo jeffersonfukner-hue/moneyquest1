@@ -72,7 +72,7 @@ const Signup = () => {
         title: t('auth.accountCreated'), 
         description: t('auth.questBegin')
       });
-      navigate('/');
+      navigate('/onboarding');
     }
     setLoading(false);
   };
