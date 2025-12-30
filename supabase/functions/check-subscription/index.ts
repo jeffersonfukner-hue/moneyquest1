@@ -12,6 +12,23 @@ const logStep = (step: string, details?: any) => {
   console.log(`[CHECK-SUBSCRIPTION] ${step}${detailsStr}`);
 };
 
+// Safe timestamp to ISO conversion - handles various formats from Stripe API
+const safeTimestampToISO = (timestamp: unknown): string | null => {
+  try {
+    if (timestamp === null || timestamp === undefined) return null;
+    if (typeof timestamp === 'number') {
+      return new Date(timestamp * 1000).toISOString();
+    }
+    if (typeof timestamp === 'string') {
+      const date = new Date(timestamp);
+      return isNaN(date.getTime()) ? null : date.toISOString();
+    }
+    return null;
+  } catch {
+    return null;
+  }
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -82,7 +99,15 @@ serve(async (req) => {
 
     if (hasActiveSub) {
       const subscription = subscriptions.data[0];
-      subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
+      logStep("Raw subscription data", { 
+        current_period_start: subscription.current_period_start,
+        current_period_end: subscription.current_period_end,
+        start_type: typeof subscription.current_period_start,
+        end_type: typeof subscription.current_period_end
+      });
+      
+      subscriptionEnd = safeTimestampToISO(subscription.current_period_end);
+      const subscriptionStart = safeTimestampToISO(subscription.current_period_start);
       stripeSubscriptionId = subscription.id;
       logStep("Active subscription found", { subscriptionId: subscription.id, endDate: subscriptionEnd });
       
@@ -91,7 +116,7 @@ serve(async (req) => {
         .from("profiles")
         .update({ 
           subscription_plan: "PREMIUM",
-          subscription_started_at: new Date(subscription.current_period_start * 1000).toISOString(),
+          subscription_started_at: subscriptionStart,
           subscription_expires_at: subscriptionEnd,
           stripe_customer_id: customerId,
           stripe_subscription_id: stripeSubscriptionId
