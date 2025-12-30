@@ -28,6 +28,7 @@ export interface Profile {
   stripe_subscription_id: string | null;
   theme_preference: ThemePreference;
   timezone: string;
+  onboarding_completed: boolean;
   created_at: string;
   updated_at: string;
 }

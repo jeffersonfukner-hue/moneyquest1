@@ -458,6 +458,7 @@ export type Database = {
           level: number
           level_title: string
           locale: string
+          onboarding_completed: boolean
           status: string | null
           streak: number
           stripe_customer_id: string | null
@@ -485,6 +486,7 @@ export type Database = {
           level?: number
           level_title?: string
           locale?: string
+          onboarding_completed?: boolean
           status?: string | null
           streak?: number
           stripe_customer_id?: string | null
@@ -512,6 +514,7 @@ export type Database = {
           level?: number
           level_title?: string
           locale?: string
+          onboarding_completed?: boolean
           status?: string | null
           streak?: number
           stripe_customer_id?: string | null
@@ -858,6 +861,7 @@ export type Database = {
           level: number
           level_title: string
           locale: string
+          onboarding_completed: boolean
           status: string | null
           streak: number
           stripe_customer_id: string | null

@@ -13,7 +13,7 @@ import {
   Check
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
+import { useProfile } from '@/hooks/useProfile';
 interface OnboardingStep {
   icon: React.ReactNode;
   titleKey: string;
@@ -51,22 +51,28 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
 const Onboarding = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { updateProfile } = useProfile();
   const [currentStep, setCurrentStep] = useState(0);
 
   const progress = ((currentStep + 1) / ONBOARDING_STEPS.length) * 100;
   const isLastStep = currentStep === ONBOARDING_STEPS.length - 1;
   const step = ONBOARDING_STEPS[currentStep];
 
+  const completeOnboarding = async () => {
+    await updateProfile({ onboarding_completed: true });
+    navigate('/');
+  };
+
   const handleNext = () => {
     if (isLastStep) {
-      navigate('/');
+      completeOnboarding();
     } else {
       setCurrentStep((prev) => prev + 1);
     }
   };
 
   const handleSkip = () => {
-    navigate('/');
+    completeOnboarding();
   };
 
   return (
