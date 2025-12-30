@@ -8,15 +8,15 @@ export const useAdBanner = () => {
   const location = useLocation();
   const [adLoaded, setAdLoaded] = useState(false);
   const [adError, setAdError] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
 
   // Check if current route is restricted
   const isRestrictedRoute = ADSENSE_CONFIG.restrictedRoutes.some(
     route => location.pathname.startsWith(route)
   );
 
-  // Show banner only for free users, not loading, not dismissed, not on restricted pages
-  const shouldShowBanner = !loading && !isPremium && !dismissed && !isRestrictedRoute;
+  // Show banner only for free users, not loading, not on restricted pages
+  // Banner cannot be permanently dismissed for free users
+  const shouldShowBanner = !loading && !isPremium && !isRestrictedRoute;
   
   // Use fallback if AdSense fails to load or not configured
   const showFallback = shouldShowBanner && (adError || !adLoaded);
@@ -27,6 +27,5 @@ export const useAdBanner = () => {
     adLoaded,
     setAdLoaded,
     setAdError,
-    dismiss: () => setDismissed(true),
   };
 };
