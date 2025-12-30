@@ -10,6 +10,7 @@ import { useQuests } from '@/hooks/useQuests';
 import { useBadges } from '@/hooks/useBadges';
 import { useCategoryGoals } from '@/hooks/useCategoryGoals';
 import { useDailyReward } from '@/hooks/useDailyReward';
+import { useRealtimeXP } from '@/hooks/useRealtimeXP';
 import { LevelProgress } from '@/components/game/LevelProgress';
 import { StatsCards } from '@/components/game/StatsCards';
 import { ResourceBars } from '@/components/game/ResourceBars';
@@ -30,6 +31,7 @@ import { SeasonalDecorations } from '@/components/game/SeasonalDecorations';
 import { NarrativeEvent } from '@/components/game/NarrativeEvent';
 import { TransactionFeedback } from '@/components/game/TransactionFeedback';
 import { QuickTemplates } from '@/components/game/QuickTemplates';
+import { XPNotification } from '@/components/game/XPNotification';
 import { BottomNavigation, type TabId } from '@/components/navigation/BottomNavigation';
 import { MobileHeader } from '@/components/navigation/MobileHeader';
 import { AICoachCard } from '@/components/ai/AICoachCard';
@@ -52,6 +54,7 @@ const Index = () => {
   const { goals } = useCategoryGoals();
   const { status: rewardStatus } = useDailyReward();
   const { shouldShowBanner } = useAdBanner();
+  const { xpChange, clearXPChange } = useRealtimeXP();
   
   const [activeTab, setActiveTab] = useState<TabId>('home');
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -248,6 +251,14 @@ const Index = () => {
           setShowRewardDialog(open);
           if (!open) refetchProfile();
         }}
+      />
+
+      <XPNotification 
+        xpChange={xpChange} 
+        onDismiss={() => {
+          clearXPChange();
+          refetchProfile();
+        }} 
       />
     </div>
   );

@@ -884,5 +884,10 @@
     "loadMore": "Cargar Más Entradas",
     "emptyTitle": "¡Tu aventura comienza ahora!",
     "emptyDescription": "Empieza a registrar transacciones para construir tu crónica de misiones. Cada transacción se convierte en una historia épica en tu aventura financiera."
+  },
+  "notification": {
+    "levelUp": "¡Subiste de Nivel!",
+    "nowLevel": "Ahora eres Nivel {{level}}",
+    "totalXP": "Total: {{total}} XP"
   }
 }
