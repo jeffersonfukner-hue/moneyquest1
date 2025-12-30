@@ -31,7 +31,39 @@ export const useCategories = () => {
 
       if (fetchError) throw fetchError;
 
-      setCategories((data || []) as Category[]);
+      const fetchedCategories = (data || []) as Category[];
+      
+      // Check if user has default categories - if not, trigger provisioning
+      const hasDefaultCategories = fetchedCategories.some(c => c.is_default);
+      if (fetchedCategories.length === 0 || !hasDefaultCategories) {
+        console.warn('User missing default categories, triggering provisioning...');
+        
+        try {
+          const { error: provisionError } = await supabase.functions.invoke('provision-categories', {
+            body: { user_id: user.id }
+          });
+          
+          if (provisionError) {
+            console.error('Failed to provision categories:', provisionError);
+          } else {
+            // Re-fetch after provisioning
+            const { data: refreshedData } = await supabase
+              .from('categories')
+              .select('*')
+              .eq('user_id', user.id)
+              .order('is_default', { ascending: false })
+              .order('name');
+            setCategories((refreshedData || []) as Category[]);
+            setError(null);
+            setLoading(false);
+            return;
+          }
+        } catch (provisionErr) {
+          console.error('Error calling provision-categories:', provisionErr);
+        }
+      }
+      
+      setCategories(fetchedCategories);
       setError(null);
     } catch (err) {
       console.error('Error fetching categories:', err);
