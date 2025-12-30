@@ -884,5 +884,10 @@
     "loadMore": "Load More Entries",
     "emptyTitle": "Your adventure begins now!",
     "emptyDescription": "Start logging transactions to build your quest chronicle. Each transaction becomes an epic tale in your financial adventure."
+  },
+  "notification": {
+    "levelUp": "Level Up!",
+    "nowLevel": "You are now Level {{level}}",
+    "totalXP": "Total: {{total}} XP"
   }
 }
