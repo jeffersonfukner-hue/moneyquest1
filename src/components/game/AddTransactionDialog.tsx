@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Plus, ArrowUpCircle, ArrowDownCircle, CalendarIcon, Coins, CheckCircle2 } from 'lucide-react';
+import { Plus, ArrowUpCircle, ArrowDownCircle, CalendarIcon, Coins, CheckCircle2, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
@@ -52,6 +52,22 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [showGoalPrompt, setShowGoalPrompt] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  
+  // Validation state
+  const [touched, setTouched] = useState<{
+    description: boolean;
+    amount: boolean;
+    category: boolean;
+  }>({ description: false, amount: false, category: false });
+  const [attemptedSubmit, setAttemptedSubmit] = useState(false);
+
+  // Validation helpers
+  const errors = {
+    description: !description.trim(),
+    amount: !amount || parseFloat(amount) <= 0,
+    category: !category,
+  };
+  const hasErrors = errors.description || errors.amount || errors.category;
 
   // Check if selected category has a goal
   const categoryHasGoal = useMemo(() => {
@@ -80,7 +96,12 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!description || !amount || !category) return;
+    setAttemptedSubmit(true);
+    
+    if (hasErrors) {
+      setTouched({ description: true, amount: true, category: true });
+      return;
+    }
 
     setLoading(true);
     const { error } = await onAdd({
@@ -107,6 +128,8 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
     setCategory('');
     setSelectedCurrency(currency);
     setDate(new Date());
+    setTouched({ description: false, amount: false, category: false });
+    setAttemptedSubmit(false);
   };
 
   const handleDone = () => {
@@ -117,7 +140,20 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
     setCategory('');
     setSelectedCurrency(currency);
     setDate(new Date());
+    setTouched({ description: false, amount: false, category: false });
+    setAttemptedSubmit(false);
     setOpen(false);
+  };
+
+  // Validation message component
+  const ValidationMessage = ({ show, message }: { show: boolean; message: string }) => {
+    if (!show) return null;
+    return (
+      <p className="text-xs text-destructive flex items-center gap-1 mt-1">
+        <AlertCircle className="w-3 h-3" />
+        {message}
+      </p>
+    );
   };
 
   const categories = getCategoriesByType(type);
@@ -217,19 +253,34 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">{t('transactions.description')}</Label>
+            <Label htmlFor="description" className="flex items-center gap-1">
+              {t('transactions.description')}
+              <span className="text-destructive">*</span>
+            </Label>
             <Input
               id="description"
               placeholder={t('transactions.description')}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              required
-              className="min-h-[48px]"
+              onBlur={() => setTouched(prev => ({ ...prev, description: true }))}
+              className={cn(
+                "min-h-[48px]",
+                (touched.description || attemptedSubmit) && errors.description && 
+                  "border-destructive focus-visible:ring-destructive"
+              )}
+              aria-invalid={(touched.description || attemptedSubmit) && errors.description}
+            />
+            <ValidationMessage 
+              show={(touched.description || attemptedSubmit) && errors.description}
+              message={t('validation.descriptionRequired')}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="amount">{t('transactions.amount')}</Label>
+            <Label htmlFor="amount" className="flex items-center gap-1">
+              {t('transactions.amount')}
+              <span className="text-destructive">*</span>
+            </Label>
             <div className="flex gap-2">
               <Select value={selectedCurrency} onValueChange={(v) => setSelectedCurrency(v as SupportedCurrency)}>
                 <SelectTrigger className="w-24 min-h-[48px] flex-shrink-0">
@@ -254,16 +305,38 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
                 placeholder="0.00"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                required
-                className="min-h-[48px] flex-1"
+                onBlur={() => setTouched(prev => ({ ...prev, amount: true }))}
+                className={cn(
+                  "min-h-[48px] flex-1",
+                  (touched.amount || attemptedSubmit) && errors.amount && 
+                    "border-destructive focus-visible:ring-destructive"
+                )}
+                aria-invalid={(touched.amount || attemptedSubmit) && errors.amount}
               />
             </div>
+            <ValidationMessage 
+              show={(touched.amount || attemptedSubmit) && errors.amount}
+              message={t('validation.amountRequired')}
+            />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="category">{t('transactions.category')}</Label>
-            <Select value={category} onValueChange={handleCategoryChange} required>
-              <SelectTrigger className="min-h-[48px]">
+            <Label htmlFor="category" className="flex items-center gap-1">
+              {t('transactions.category')}
+              <span className="text-destructive">*</span>
+            </Label>
+            <Select 
+              value={category} 
+              onValueChange={(v) => {
+                handleCategoryChange(v);
+                setTouched(prev => ({ ...prev, category: true }));
+              }}
+            >
+              <SelectTrigger className={cn(
+                "min-h-[48px]",
+                (touched.category || attemptedSubmit) && errors.category && 
+                  "border-destructive focus-visible:ring-destructive"
+              )}>
                 <SelectValue placeholder={t('transactions.selectCategory')} />
               </SelectTrigger>
               <SelectContent>
@@ -283,6 +356,10 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
                 </SelectItem>
               </SelectContent>
             </Select>
+            <ValidationMessage 
+              show={(touched.category || attemptedSubmit) && errors.category}
+              message={t('validation.categoryRequired')}
+            />
             
             {showGoalPrompt && (
               <QuickAddGoalPrompt
@@ -327,7 +404,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
           <Button
             type="submit" 
             className="w-full min-h-[48px] bg-gradient-hero hover:opacity-90"
-            disabled={loading || !description || !amount || !category}
+            disabled={loading}
           >
             {loading ? t('common.loading') : `${t('common.add')} 🎮`}
           </Button>

@@ -38,6 +38,12 @@
       "housing": "A safe haven secured. Rest well, hero."
     }
   },
+  "validation": {
+    "descriptionRequired": "Please enter a description",
+    "amountRequired": "Please enter a valid amount",
+    "categoryRequired": "Please select a category",
+    "fillRequiredFields": "Please fill in all required fields"
+  },
   "common": {
     "loading": "Loading...",
     "save": "Save",

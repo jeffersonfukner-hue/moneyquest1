@@ -38,6 +38,12 @@
       "housing": "Um refúgio seguro garantido. Descanse bem, herói."
     }
   },
+  "validation": {
+    "descriptionRequired": "Por favor, insira uma descrição",
+    "amountRequired": "Por favor, insira um valor válido",
+    "categoryRequired": "Por favor, selecione uma categoria",
+    "fillRequiredFields": "Por favor, preencha todos os campos obrigatórios"
+  },
   "common": {
     "loading": "Carregando...",
     "save": "Salvar",

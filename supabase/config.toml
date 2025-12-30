@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.admin-send-email]
 verify_jwt = false
+
+[functions.provision-categories]
+verify_jwt = false
