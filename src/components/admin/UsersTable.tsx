@@ -10,7 +10,10 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  Search
+  Search,
+  ShieldAlert,
+  ShieldCheck,
+  RotateCcw
 } from 'lucide-react';
 import {
   Table,
@@ -30,6 +33,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import type { AdminUser } from '@/types/admin';
 import { AvatarDisplay } from '@/components/profile/AvatarDisplay';
@@ -42,6 +46,7 @@ interface UsersTableProps {
   onUnblockUser: (user: AdminUser) => void;
   onSendMessage: (user: AdminUser) => void;
   onGrantBonus: (user: AdminUser) => void;
+  onResetOverride: (user: AdminUser) => void;
 }
 
 export const UsersTable = ({
@@ -52,6 +57,7 @@ export const UsersTable = ({
   onUnblockUser,
   onSendMessage,
   onGrantBonus,
+  onResetOverride,
 }: UsersTableProps) => {
   const { t } = useTranslation();
   const [search, setSearch] = useState('');
@@ -72,11 +78,52 @@ export const UsersTable = ({
     }
   };
 
-  const getPlanBadge = (plan: string) => {
-    if (plan === 'PREMIUM') {
-      return <Badge className="bg-gradient-to-r from-yellow-500 to-amber-500 text-white"><Crown className="w-3 h-3 mr-1" /> Premium</Badge>;
+  const getPlanBadge = (user: AdminUser) => {
+    const hasOverride = user.premium_override !== 'none';
+    
+    if (user.subscription_plan === 'PREMIUM') {
+      return (
+        <div className="flex items-center gap-1.5">
+          <Badge className="bg-gradient-to-r from-yellow-500 to-amber-500 text-white">
+            <Crown className="w-3 h-3 mr-1" /> Premium
+          </Badge>
+          {hasOverride && user.premium_override === 'force_on' && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Badge variant="outline" className="bg-blue-500/10 text-blue-600 border-blue-500/30 px-1.5">
+                    <ShieldCheck className="w-3 h-3" />
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{t('admin.override.forceOn')}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </div>
+      );
     }
-    return <Badge variant="secondary">Free</Badge>;
+    
+    return (
+      <div className="flex items-center gap-1.5">
+        <Badge variant="secondary">Free</Badge>
+        {hasOverride && user.premium_override === 'force_off' && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <Badge variant="outline" className="bg-orange-500/10 text-orange-600 border-orange-500/30 px-1.5">
+                  <ShieldAlert className="w-3 h-3" />
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{t('admin.override.forceOff')}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -120,7 +167,7 @@ export const UsersTable = ({
                   </div>
                 </TableCell>
                 <TableCell>{getStatusBadge(user.status || 'active')}</TableCell>
-                <TableCell>{getPlanBadge(user.subscription_plan)}</TableCell>
+                <TableCell>{getPlanBadge(user)}</TableCell>
                 <TableCell className="hidden md:table-cell text-muted-foreground">
                   {user.last_active_date 
                     ? format(new Date(user.last_active_date), 'dd/MM/yyyy')
@@ -147,6 +194,12 @@ export const UsersTable = ({
                         <DropdownMenuItem onClick={() => onRevokePremium(user)}>
                           <Crown className="w-4 h-4 mr-2 text-muted-foreground" />
                           {t('admin.actions.revokePremium')}
+                        </DropdownMenuItem>
+                      )}
+                      {user.premium_override !== 'none' && (
+                        <DropdownMenuItem onClick={() => onResetOverride(user)}>
+                          <RotateCcw className="w-4 h-4 mr-2 text-purple-500" />
+                          {t('admin.actions.resetOverride')}
                         </DropdownMenuItem>
                       )}
                       <DropdownMenuItem onClick={() => onGrantBonus(user)}>

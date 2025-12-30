@@ -10,11 +10,12 @@ import type { AdminUser } from '@/types/admin';
 
 const UsersManagement = () => {
   const { t } = useTranslation();
-  const { users, usersLoading, updateSubscription, updateUserStatus, grantBonus, sendMessage } = useAdminData();
+  const { users, usersLoading, updateSubscription, updateUserStatus, grantBonus, sendMessage, resetPremiumOverride } = useAdminData();
   
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [premiumOpen, setPremiumOpen] = useState(false);
   const [blockOpen, setBlockOpen] = useState(false);
+  const [resetOverrideOpen, setResetOverrideOpen] = useState(false);
 
   const handleGrantPremium = (user: AdminUser) => {
     setSelectedUser(user);
@@ -49,6 +50,18 @@ const UsersManagement = () => {
     grantBonus.mutate({ targetUserId: user.id, bonusType: 'XP', amount: 100, note: 'Bonus from admin' });
   };
 
+  const handleResetOverride = (user: AdminUser) => {
+    setSelectedUser(user);
+    setResetOverrideOpen(true);
+  };
+
+  const handleConfirmResetOverride = () => {
+    if (selectedUser) {
+      resetPremiumOverride.mutate({ targetUserId: selectedUser.id, note: 'Override reset by admin' });
+    }
+    setResetOverrideOpen(false);
+  };
+
   const handlePremiumConfirm = (userId: string, expiresAt: string | null, note: string) => {
     updateSubscription.mutate({ targetUserId: userId, plan: 'PREMIUM', expiresAt, note });
     setPremiumOpen(false);
@@ -81,6 +94,7 @@ const UsersManagement = () => {
           onUnblockUser={handleUnblockUser}
           onSendMessage={handleSendMessage}
           onGrantBonus={handleGrantBonus}
+          onResetOverride={handleResetOverride}
         />
       </div>
 
@@ -103,6 +117,23 @@ const UsersManagement = () => {
             <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={handleConfirmBlock} className="bg-destructive text-destructive-foreground">
               {t('admin.block.confirm')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={resetOverrideOpen} onOpenChange={setResetOverrideOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('admin.override.resetTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('admin.override.resetDescription', { user: selectedUser?.email })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmResetOverride}>
+              {t('admin.override.resetConfirm')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

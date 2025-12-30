@@ -588,7 +588,17 @@
       "unblockUser": "Desbloquear Usuário",
       "grantBonus": "Conceder Bônus",
       "sendMessage": "Enviar Mensagem",
-      "viewDetails": "Ver Detalhes"
+      "viewDetails": "Ver Detalhes",
+      "resetOverride": "Resetar Override",
+      "block": "Bloquear",
+      "unblock": "Desbloquear"
+    },
+    "override": {
+      "forceOn": "Concedido pelo Admin (Stripe ignorado)",
+      "forceOff": "Revogado pelo Admin (Stripe ignorado)",
+      "resetTitle": "Resetar Override de Premium",
+      "resetDescription": "Isso removerá o override do admin para {{user}} e permitirá que o Stripe controle o status premium. O plano do usuário será determinado pela assinatura real do Stripe.",
+      "resetConfirm": "Resetar Override"
     },
     "premium": {
       "title": "Gerenciar Premium",
