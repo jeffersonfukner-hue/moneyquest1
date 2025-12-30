@@ -172,7 +172,7 @@
     "displayName": "Nombre para Mostrar",
     "displayNameLabel": "Tu nombre",
     "displayNamePlaceholder": "Ingresa tu nombre",
-    "displayNameHint": "Así aparecerás en la app",
+    "displayNameHint": "Así aparecerás en la app y en la clasificación",
     "yourStats": "Tus Estadísticas",
     "saveChanges": "Guardar Cambios",
     "saveSuccess": "¡Perfil actualizado con éxito!",
@@ -730,6 +730,9 @@
     "noFriends": "Sin amigos en la clasificación",
     "addFriends": "¡Añade amigos para competir!",
     "pendingRequests": "Solicitudes Pendientes",
+    "displayNameLabel": "Tu Nombre Público",
+    "displayNamePlaceholder": "Ingresa tu nombre de exhibición",
+    "displayNameHint": "Este es el nombre que otros jugadores verán en la clasificación",
     "friendRequest": {
       "send": "Enviar Solicitud",
       "accept": "Aceptar",

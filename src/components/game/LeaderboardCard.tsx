@@ -57,11 +57,14 @@ export const LeaderboardCard = () => {
         ) : (
           <>
             {/* Top 3 Mini Display */}
-            <div className="flex items-end justify-center gap-2">
+            <div className="flex items-end justify-center gap-3">
               {topThree.length > 1 && (
                 <div className="flex flex-col items-center">
                   <AvatarDisplay avatarUrl={(topThree[1] as any)?.avatar_url} avatarIcon={topThree[1]?.avatar_icon || '🎮'} size="sm" />
-                  <div className="w-10 h-8 bg-slate-400/20 rounded-t-sm flex items-center justify-center">
+                  <p className="text-[10px] font-medium truncate max-w-[50px] text-center mt-1 text-muted-foreground">
+                    {topThree[1]?.display_name}
+                  </p>
+                  <div className="w-10 h-8 bg-slate-400/20 rounded-t-sm flex items-center justify-center mt-1">
                     <span className="text-xs font-bold text-slate-400">2</span>
                   </div>
                 </div>
@@ -70,7 +73,10 @@ export const LeaderboardCard = () => {
                 <div className="flex flex-col items-center -mb-1">
                   <Crown className="w-4 h-4 text-yellow-500 -mb-1" />
                   <AvatarDisplay avatarUrl={(topThree[0] as any)?.avatar_url} avatarIcon={topThree[0]?.avatar_icon || '🎮'} size="md" />
-                  <div className="w-12 h-10 bg-yellow-500/20 rounded-t-sm flex items-center justify-center">
+                  <p className="text-[10px] font-medium truncate max-w-[60px] text-center mt-1">
+                    {topThree[0]?.display_name}
+                  </p>
+                  <div className="w-12 h-10 bg-yellow-500/20 rounded-t-sm flex items-center justify-center mt-1">
                     <span className="text-sm font-bold text-yellow-500">1</span>
                   </div>
                 </div>
@@ -78,7 +84,10 @@ export const LeaderboardCard = () => {
               {topThree.length > 2 && (
                 <div className="flex flex-col items-center">
                   <AvatarDisplay avatarUrl={(topThree[2] as any)?.avatar_url} avatarIcon={topThree[2]?.avatar_icon || '🎮'} size="sm" />
-                  <div className="w-10 h-6 bg-amber-600/20 rounded-t-sm flex items-center justify-center">
+                  <p className="text-[10px] font-medium truncate max-w-[50px] text-center mt-1 text-muted-foreground">
+                    {topThree[2]?.display_name}
+                  </p>
+                  <div className="w-10 h-6 bg-amber-600/20 rounded-t-sm flex items-center justify-center mt-1">
                     <span className="text-xs font-bold text-amber-600">3</span>
                   </div>
                 </div>
