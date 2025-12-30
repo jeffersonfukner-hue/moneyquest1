@@ -14,6 +14,8 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import '@/i18n';
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import Upgrade from "./pages/Upgrade";
@@ -47,7 +49,9 @@ const App = () => (
                       <BrowserRouter>
                         <Routes>
                           <Route path="/" element={<Index />} />
-                          <Route path="/auth" element={<Auth />} />
+                          <Route path="/login" element={<Login />} />
+                          <Route path="/signup" element={<Signup />} />
+                          <Route path="/auth" element={<Navigate to="/login" replace />} />
                           <Route path="/settings" element={<Settings />} />
                           <Route path="/profile" element={<Profile />} />
                           <Route path="/premium" element={<Upgrade />} />
