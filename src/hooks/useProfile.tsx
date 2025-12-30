@@ -3,6 +3,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { Profile } from '@/types/database';
 import { useAuth } from './useAuth';
 
+const getBrowserTimezone = (): string => {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo';
+  } catch {
+    return 'America/Sao_Paulo';
+  }
+};
+
 export const useProfile = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -22,7 +30,21 @@ export const useProfile = () => {
       .maybeSingle();
 
     if (!error && data) {
-      setProfile(data as Profile);
+      const profileData = data as Profile;
+      
+      // Auto-detect and set timezone on first login (when still using default)
+      if (profileData.timezone === 'America/Sao_Paulo') {
+        const browserTimezone = getBrowserTimezone();
+        if (browserTimezone !== 'America/Sao_Paulo') {
+          await supabase
+            .from('profiles')
+            .update({ timezone: browserTimezone })
+            .eq('id', user.id);
+          profileData.timezone = browserTimezone;
+        }
+      }
+      
+      setProfile(profileData);
     }
     setLoading(false);
   };
