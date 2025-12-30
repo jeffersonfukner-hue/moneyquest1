@@ -730,6 +730,16 @@
       "threshold": "Threshold",
       "settingsSaved": "Settings saved successfully!",
       "settingsError": "Error saving settings"
+    },
+    "modal": {
+      "title": "Premium Modal Conversion",
+      "description": "Track how users interact with the premium upgrade modal",
+      "impressions": "Impressions",
+      "goPremium": "Go Premium",
+      "stayFree": "Stay Free",
+      "conversionRate": "Conversion Rate",
+      "dismissRate": "Dismiss Rate",
+      "events": "events"
     }
   },
   "dailyReward": {
