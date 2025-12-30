@@ -740,6 +740,21 @@
       "conversionRate": "Taxa de Conversão",
       "dismissRate": "Taxa de Dismissão",
       "events": "eventos"
+    },
+    "abTest": {
+      "comparisonTitle": "Comparação de Testes A/B",
+      "comparisonDescription": "Compare o desempenho de todos os testes de banner e modal premium",
+      "adsense": "AdSense",
+      "internalPromo": "Promo Interno",
+      "premiumModal": "Modal Premium",
+      "totalImpressions": "Total de Impressões",
+      "totalClicks": "Total de Cliques",
+      "overallCTR": "CTR Geral",
+      "bestPerformer": "Melhor Desempenho",
+      "impressionsVsClicks": "Impressões vs Cliques",
+      "ctrComparison": "Comparação de Taxa de Cliques",
+      "impressions": "Impressões",
+      "clicks": "Cliques"
     }
   },
   "dailyReward": {

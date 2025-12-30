@@ -5,6 +5,7 @@ import { AdminLayout } from '@/components/admin/AdminLayout';
 import { StatsCard } from '@/components/admin/StatsCard';
 import { RetentionAlerts } from '@/components/admin/RetentionAlerts';
 import { ModalConversionWidget } from '@/components/admin/ModalConversionWidget';
+import { ABTestComparisonWidget } from '@/components/admin/ABTestComparisonWidget';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useAdminData } from '@/hooks/useAdminData';
 import { 
@@ -761,6 +762,9 @@ const SuperAdminDashboard = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* A/B Test Comparison Widget */}
+        <ABTestComparisonWidget />
 
         {/* Modal Conversion Widget */}
         <ModalConversionWidget />

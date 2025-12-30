@@ -740,6 +740,21 @@
       "conversionRate": "Conversion Rate",
       "dismissRate": "Dismiss Rate",
       "events": "events"
+    },
+    "abTest": {
+      "comparisonTitle": "A/B Test Comparison",
+      "comparisonDescription": "Compare performance across all ad banner tests and premium modal",
+      "adsense": "AdSense",
+      "internalPromo": "Internal Promo",
+      "premiumModal": "Premium Modal",
+      "totalImpressions": "Total Impressions",
+      "totalClicks": "Total Clicks",
+      "overallCTR": "Overall CTR",
+      "bestPerformer": "Best Performer",
+      "impressionsVsClicks": "Impressions vs Clicks",
+      "ctrComparison": "Click-Through Rate Comparison",
+      "impressions": "Impressions",
+      "clicks": "Clicks"
     }
   },
   "dailyReward": {
