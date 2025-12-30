@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Plus, ArrowUpCircle, ArrowDownCircle, CalendarIcon, Coins } from 'lucide-react';
+import { Plus, ArrowUpCircle, ArrowDownCircle, CalendarIcon, Coins, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
@@ -51,6 +51,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   const [loading, setLoading] = useState(false);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [showGoalPrompt, setShowGoalPrompt] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   // Check if selected category has a goal
   const categoryHasGoal = useMemo(() => {
@@ -92,14 +93,31 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
     });
 
     if (!error) {
-      setDescription('');
-      setAmount('');
-      setCategory('');
-      setSelectedCurrency(currency);
-      setDate(new Date());
-      setOpen(false);
+      // Show confirmation instead of closing immediately
+      setShowConfirmation(true);
     }
     setLoading(false);
+  };
+
+  const handleAddAnother = () => {
+    // Reset form but keep dialog open
+    setShowConfirmation(false);
+    setDescription('');
+    setAmount('');
+    setCategory('');
+    setSelectedCurrency(currency);
+    setDate(new Date());
+  };
+
+  const handleDone = () => {
+    // Reset and close
+    setShowConfirmation(false);
+    setDescription('');
+    setAmount('');
+    setCategory('');
+    setSelectedCurrency(currency);
+    setDate(new Date());
+    setOpen(false);
   };
 
   const categories = getCategoriesByType(type);
@@ -136,6 +154,34 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
           <DialogTitle className="font-display text-xl">{t('transactions.addTransaction')}</DialogTitle>
         </DialogHeader>
         
+        {showConfirmation ? (
+          // Confirmation state after successful save
+          <div className="py-8 space-y-6">
+            <div className="text-center space-y-3">
+              <div className="mx-auto w-16 h-16 rounded-full bg-income/20 flex items-center justify-center">
+                <CheckCircle2 className="w-8 h-8 text-income" />
+              </div>
+              <h3 className="text-lg font-semibold">{t('feedback.transactionSaved')}</h3>
+              <p className="text-muted-foreground">{t('feedback.addAnotherQuestion')}</p>
+            </div>
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1 min-h-[48px]"
+                onClick={handleDone}
+              >
+                {t('feedback.done')}
+              </Button>
+              <Button
+                className="flex-1 min-h-[48px] bg-gradient-hero hover:opacity-90"
+                onClick={handleAddAnother}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                {t('feedback.addAnother')}
+              </Button>
+            </div>
+          </div>
+        ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex gap-2">
             <Button
@@ -286,6 +332,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
             {loading ? t('common.loading') : `${t('common.add')} 🎮`}
           </Button>
         </form>
+        )}
 
         <QuickAddCategoryDialog
           open={quickAddOpen}

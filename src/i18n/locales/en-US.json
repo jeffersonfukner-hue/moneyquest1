@@ -1,4 +1,28 @@
 {
+  "feedback": {
+    "addAnother": "Add Another",
+    "done": "Done",
+    "transactionSaved": "Transaction saved!",
+    "addAnotherQuestion": "Would you like to add another?",
+    "income": {
+      "default": "Gold received! Your treasury grows stronger.",
+      "large": "Impressive haul! A worthy addition to your coffers.",
+      "salary": "Your guild rewards your loyalty! Well earned.",
+      "freelance": "A successful quest reward! Your skills pay off.",
+      "investment": "Your investments bear fruit! Wise choices."
+    },
+    "expense": {
+      "default": "Resources spent wisely on your quest.",
+      "food": "Your party is well fed for the journey ahead!",
+      "entertainment": "A hero needs rest too. Enjoy the tavern!",
+      "shopping": "New gear acquired! Ready for adventure.",
+      "health": "Healing potions secured. Stay healthy, adventurer!",
+      "transport": "Swift travels, brave traveler!",
+      "education": "Knowledge is power. A wise investment!",
+      "bills": "Maintaining your stronghold. A necessary expense.",
+      "housing": "A safe haven secured. Rest well, hero."
+    }
+  },
   "common": {
     "loading": "Loading...",
     "save": "Save",
