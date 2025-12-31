@@ -1060,5 +1060,36 @@
     "negativeTrend": "Watch your flow",
     "projectionNote": "Based on last 3 months",
     "noData": "No data to display"
+  },
+  "periodComparison": {
+    "title": "Period Comparison",
+    "widgetTitle": "Compare Periods",
+    "widgetDescription": "This month vs last year",
+    "selectPeriods": "Select Periods",
+    "vsLastYear": "vs Last Year",
+    "vsPreviousMonth": "vs Previous Month",
+    "custom": "Custom",
+    "expenses": "Expenses",
+    "income": "Income",
+    "byCategory": "Comparison by Category",
+    "insights": "Insights",
+    "insightSaved": "You saved {{amount}} in expenses compared to {{period}}!",
+    "insightSpentMore": "You spent {{amount}} more than in {{period}}.",
+    "insightEarnedMore": "Your income increased by {{amount}} compared to {{period}}!",
+    "noData": "Not enough data for comparison in these periods.",
+    "monthNames": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    }
   }
 }

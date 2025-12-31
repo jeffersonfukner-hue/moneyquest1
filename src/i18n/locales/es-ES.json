@@ -1060,5 +1060,36 @@
     "negativeTrend": "Atención al flujo",
     "projectionNote": "Basado en los últimos 3 meses",
     "noData": "Sin datos para mostrar"
+  },
+  "periodComparison": {
+    "title": "Comparación de Períodos",
+    "widgetTitle": "Comparar Períodos",
+    "widgetDescription": "Este mes vs año pasado",
+    "selectPeriods": "Seleccionar Períodos",
+    "vsLastYear": "vs Año Pasado",
+    "vsPreviousMonth": "vs Mes Anterior",
+    "custom": "Personalizado",
+    "expenses": "Gastos",
+    "income": "Ingresos",
+    "byCategory": "Comparación por Categoría",
+    "insights": "Insights",
+    "insightSaved": "¡Ahorraste {{amount}} en gastos comparado con {{period}}!",
+    "insightSpentMore": "Gastaste {{amount}} más que en {{period}}.",
+    "insightEarnedMore": "¡Tus ingresos aumentaron {{amount}} comparado con {{period}}!",
+    "noData": "No hay datos suficientes para comparar en estos períodos.",
+    "monthNames": {
+      "january": "Enero",
+      "february": "Febrero",
+      "march": "Marzo",
+      "april": "Abril",
+      "may": "Mayo",
+      "june": "Junio",
+      "july": "Julio",
+      "august": "Agosto",
+      "september": "Septiembre",
+      "october": "Octubre",
+      "november": "Noviembre",
+      "december": "Diciembre"
+    }
   }
 }
