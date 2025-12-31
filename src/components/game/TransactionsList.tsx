@@ -12,6 +12,7 @@ import { parseDateString } from '@/lib/dateUtils';
 import { formatMoney } from '@/lib/formatters';
 import { getCategoryTranslationKey } from '@/lib/gameLogic';
 import { EditTransactionDialog } from './EditTransactionDialog';
+import { useWallets } from '@/hooks/useWallets';
 
 interface TransactionsListProps {
   transactions: Transaction[];
@@ -25,8 +26,17 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate }: Transacti
   const { t } = useTranslation();
   const { dateLocale } = useLanguage();
   const { formatCurrency, currency: userCurrency, formatConverted } = useCurrency();
+  const { wallets } = useWallets();
   const [filter, setFilter] = useState<FilterPeriod>('all');
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+
+  // Create wallet lookup map
+  const walletMap = useMemo(() => {
+    return wallets.reduce((acc, w) => {
+      acc[w.id] = w;
+      return acc;
+    }, {} as Record<string, typeof wallets[0]>);
+  }, [wallets]);
 
   const filteredTransactions = useMemo(() => {
     const now = new Date();
@@ -119,6 +129,8 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate }: Transacti
                     formatCurrency={formatCurrency}
                     userCurrency={userCurrency}
                     formatConverted={formatConverted}
+                    walletName={transaction.wallet_id ? walletMap[transaction.wallet_id]?.name : undefined}
+                    walletIcon={transaction.wallet_id ? walletMap[transaction.wallet_id]?.icon : undefined}
                     t={t}
                   />
                 ))}
@@ -148,6 +160,8 @@ const TransactionItem = ({
   formatCurrency,
   userCurrency,
   formatConverted,
+  walletName,
+  walletIcon,
   t
 }: { 
   transaction: Transaction; 
@@ -157,6 +171,8 @@ const TransactionItem = ({
   formatCurrency: (amount: number) => string;
   userCurrency: SupportedCurrency;
   formatConverted: (amount: number, from: SupportedCurrency) => string;
+  walletName?: string;
+  walletIcon?: string;
   t: (key: string) => string;
 }) => {
   const transactionCurrency = transaction.currency || 'BRL';
@@ -186,6 +202,9 @@ const TransactionItem = ({
         </p>
         <p className="text-xs text-muted-foreground">
           {format(parseDateString(transaction.date), "d MMM yyyy", { locale: dateLocale })}
+          {walletName && (
+            <span> • {walletIcon} {walletName}</span>
+          )}
         </p>
         <p className="text-xs text-muted-foreground">
           {displayCategory} • +{transaction.xp_earned} XP

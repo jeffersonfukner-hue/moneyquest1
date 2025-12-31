@@ -29,6 +29,8 @@ import { useCurrency } from '@/contexts/CurrencyContext';
 import { parseDateString, formatDateForDB } from '@/lib/dateUtils';
 import { QuickAddCategoryDialog } from '@/components/categories/QuickAddCategoryDialog';
 import { getCategoryTranslationKey } from '@/lib/gameLogic';
+import { WalletSelector } from '@/components/wallets/WalletSelector';
+import { useWallets } from '@/hooks/useWallets';
 
 interface EditTransactionDialogProps {
   transaction: Transaction;
@@ -53,11 +55,13 @@ export const EditTransactionDialog = ({
   const { t } = useTranslation();
   const { dateLocale } = useLanguage();
   const { currency: userCurrency } = useCurrency();
+  const { activeWallets, refetch: refetchWallets } = useWallets();
   const [type, setType] = useState<TransactionType>(transaction.type);
   const [description, setDescription] = useState(transaction.description);
   const [amount, setAmount] = useState(transaction.amount.toString());
   const [category, setCategory] = useState(transaction.category);
   const [currency, setCurrency] = useState<SupportedCurrency>(transaction.currency || 'BRL');
+  const [walletId, setWalletId] = useState<string | null>(transaction.wallet_id);
   const [date, setDate] = useState<Date>(parseDateString(transaction.date));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
@@ -72,6 +76,7 @@ export const EditTransactionDialog = ({
     setAmount(transaction.amount.toString());
     setCategory(transaction.category);
     setCurrency(transaction.currency || 'BRL');
+    setWalletId(transaction.wallet_id);
     setDate(parseDateString(transaction.date));
     setAttemptedSubmit(false);
   }, [transaction]);
@@ -90,11 +95,12 @@ export const EditTransactionDialog = ({
   const isDescriptionValid = description.trim().length > 0;
   const isAmountValid = parseFloat(amount) > 0;
   const isCategoryValid = category.length > 0;
+  const isWalletValid = !!walletId;
 
   const handleSubmit = async () => {
     setAttemptedSubmit(true);
 
-    if (!isDescriptionValid || !isAmountValid || !isCategoryValid) {
+    if (!isDescriptionValid || !isAmountValid || !isCategoryValid || !isWalletValid) {
       return;
     }
 
@@ -106,6 +112,7 @@ export const EditTransactionDialog = ({
       amount: parseFloat(amount),
       category,
       currency,
+      wallet_id: walletId,
       date: formatDateForDB(date),
     };
 
@@ -263,6 +270,27 @@ export const EditTransactionDialog = ({
               )}
               {attemptedSubmit && !isCategoryValid && (
                 <ValidationMessage message={t('validation.categoryRequired')} />
+              )}
+            </div>
+
+            {/* Wallet */}
+            <div className="space-y-2">
+              <Label className="flex items-center gap-1">
+                {t('wallets.wallet')}
+                <span className="text-destructive">*</span>
+              </Label>
+              <WalletSelector
+                wallets={activeWallets}
+                selectedWalletId={walletId}
+                onSelect={setWalletId}
+                onWalletCreated={(wallet) => {
+                  refetchWallets();
+                  setWalletId(wallet.id);
+                }}
+                required
+              />
+              {attemptedSubmit && !isWalletValid && (
+                <ValidationMessage message={t('validation.walletRequired')} />
               )}
             </div>
 

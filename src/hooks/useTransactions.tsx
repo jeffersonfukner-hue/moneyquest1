@@ -20,6 +20,7 @@ import { useSound } from '@/contexts/SoundContext';
 import { useNarrativeEngine } from './useNarrativeEngine';
 import { useBudgetAlerts } from './useBudgetAlerts';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useWallets } from './useWallets';
 
 import { Quest, Badge } from '@/types/database';
 
@@ -40,6 +41,7 @@ export const useTransactions = () => {
   const { generateNarrative } = useNarrativeEngine();
   const { checkBudgetAlert, showBudgetAlert } = useBudgetAlerts();
   const { convertCurrency, currency: userCurrency } = useCurrency();
+  const { updateWalletBalance, recalculateBalance } = useWallets();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [celebrationData, setCelebrationData] = useState<{
@@ -78,7 +80,7 @@ export const useTransactions = () => {
   }, [user]);
 
   const addTransaction = async (
-    transaction: Omit<Transaction, 'id' | 'user_id' | 'xp_earned' | 'created_at' | 'currency'> & { currency: string }
+    transaction: Omit<Transaction, 'id' | 'user_id' | 'xp_earned' | 'created_at' | 'currency'> & { currency: string; wallet_id: string }
   ) => {
     if (!user || !profile) return { error: new Error('Not authenticated') };
 
@@ -94,6 +96,11 @@ export const useTransactions = () => {
       });
 
     if (txError) return { error: txError };
+
+    // Update wallet balance
+    if (transaction.wallet_id) {
+      await updateWalletBalance(transaction.wallet_id, transaction.amount, transaction.type);
+    }
 
     // Calculate new profile values
     const newXP = profile.xp + xpEarned;
@@ -337,6 +344,18 @@ export const useTransactions = () => {
       })
       .eq('id', user.id);
 
+    // Handle wallet balance changes
+    const oldWalletId = originalTx.wallet_id;
+    const newWalletId = updates.wallet_id ?? originalTx.wallet_id;
+
+    // Recalculate balances for affected wallets
+    if (oldWalletId) {
+      await recalculateBalance(oldWalletId);
+    }
+    if (newWalletId && newWalletId !== oldWalletId) {
+      await recalculateBalance(newWalletId);
+    }
+
     toast({
       title: t('transactions.updated'),
       description: updates.description ?? originalTx.description,
@@ -351,12 +370,19 @@ export const useTransactions = () => {
   const deleteTransaction = async (id: string) => {
     if (!user) return { error: new Error('Not authenticated') };
 
+    // Find the transaction to get wallet_id before deleting
+    const txToDelete = transactions.find(t => t.id === id);
+
     const { error } = await supabase
       .from('transactions')
       .delete()
       .eq('id', id);
 
     if (!error) {
+      // Recalculate wallet balance if transaction had a wallet
+      if (txToDelete?.wallet_id) {
+        await recalculateBalance(txToDelete.wallet_id);
+      }
       await fetchTransactions();
     }
 
