@@ -1,4 +1,15 @@
 {
+  "setup": {
+    "title": "Initial Setup",
+    "subtitle": "Choose your preferences to get started",
+    "description": "Select your language and currency before creating your account",
+    "selectLanguage": "Select your language",
+    "selectCurrency": "Select your primary currency",
+    "continue": "Continue",
+    "languageLabel": "Language",
+    "currencyLabel": "Currency",
+    "currencyHint": "This will be the default currency for your wallets and transactions"
+  },
   "onboarding": {
     "steps": {
       "welcome": {

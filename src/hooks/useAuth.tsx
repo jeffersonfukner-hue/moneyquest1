@@ -40,11 +40,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signUp = async (email: string, password: string) => {
     const redirectUrl = `${window.location.origin}/`;
+    
+    // Get setup preferences from localStorage
+    const setupLanguage = localStorage.getItem('moneyquest_setup_language') || 'pt-BR';
+    const setupCurrency = localStorage.getItem('moneyquest_setup_currency') || 'BRL';
+    
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: redirectUrl,
+        data: {
+          language: setupLanguage,
+          currency: setupCurrency,
+        }
       },
     });
     return { error };
