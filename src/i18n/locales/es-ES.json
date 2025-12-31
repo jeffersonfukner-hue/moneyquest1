@@ -1181,5 +1181,15 @@
       "november": "Noviembre",
       "december": "Diciembre"
     }
+  },
+  "sessionSummary": {
+    "title": "Resumen de Lanzamientos",
+    "missionComplete": "¡Misión Completada!",
+    "transactionsLaunched": "{{count}} transacciones lanzadas",
+    "transactionLaunched": "1 transacción lanzada",
+    "totalSpent": "Total gastado",
+    "totalReceived": "Total recibido",
+    "congratsMessage": "¡Felicidades! Tu mana financiera aumentó {{xp}} puntos.",
+    "closeSummary": "Cerrar resumen"
   }
 }

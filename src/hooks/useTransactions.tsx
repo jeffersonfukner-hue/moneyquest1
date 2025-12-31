@@ -268,7 +268,7 @@ export const useTransactions = () => {
       })
       .catch(console.error);
 
-    return { error: null };
+    return { error: null, xpEarned };
   };
 
   const updateTransaction = async (

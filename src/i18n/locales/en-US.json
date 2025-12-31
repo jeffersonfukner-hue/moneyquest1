@@ -1181,5 +1181,15 @@
       "november": "November",
       "december": "December"
     }
+  },
+  "sessionSummary": {
+    "title": "Transaction Summary",
+    "missionComplete": "Mission Complete!",
+    "transactionsLaunched": "{{count}} transactions launched",
+    "transactionLaunched": "1 transaction launched",
+    "totalSpent": "Total spent",
+    "totalReceived": "Total received",
+    "congratsMessage": "Congratulations! Your financial mana increased by {{xp}} points.",
+    "closeSummary": "Close summary"
   }
 }
