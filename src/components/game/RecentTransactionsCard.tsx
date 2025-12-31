@@ -1,12 +1,14 @@
 import { useTranslation } from 'react-i18next';
+import { format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowUpCircle, ArrowDownCircle, Receipt, ChevronRight } from 'lucide-react';
 import { Transaction, SupportedCurrency } from '@/types/database';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { type TabId } from '@/components/navigation/BottomNavigation';
 import { formatMoney } from '@/lib/formatters';
-import { getCategoryTranslationKey } from '@/lib/gameLogic';
+import { parseDateString } from '@/lib/dateUtils';
 
 interface RecentTransactionsCardProps {
   transactions: Transaction[];
@@ -16,8 +18,12 @@ interface RecentTransactionsCardProps {
 export const RecentTransactionsCard = ({ transactions, onViewMore }: RecentTransactionsCardProps) => {
   const { t } = useTranslation();
   const { formatCurrency, currency: userCurrency, formatConverted } = useCurrency();
+  const { dateLocale } = useLanguage();
 
-  const recentTransactions = transactions.slice(0, 5);
+  // Sort by date DESC and take first 5
+  const recentTransactions = [...transactions]
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 5);
 
   if (recentTransactions.length === 0) {
     return null;
@@ -36,10 +42,6 @@ export const RecentTransactionsCard = ({ transactions, onViewMore }: RecentTrans
           const transactionCurrency = transaction.currency || 'BRL';
           const isDifferentCurrency = transactionCurrency !== userCurrency;
           
-          // Translate category name if it's a default category
-          const translationKey = getCategoryTranslationKey(transaction.category, transaction.type);
-          const displayCategory = translationKey ? t(`transactions.categories.${translationKey}`) : transaction.category;
-          
           return (
             <div
               key={transaction.id}
@@ -47,18 +49,23 @@ export const RecentTransactionsCard = ({ transactions, onViewMore }: RecentTrans
             >
               <div className="flex items-center gap-2 min-w-0 flex-1">
                 {transaction.type === 'INCOME' ? (
-                  <ArrowUpCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                  <ArrowUpCircle className="w-4 h-4 text-income flex-shrink-0" />
                 ) : (
-                  <ArrowDownCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
+                  <ArrowDownCircle className="w-4 h-4 text-expense flex-shrink-0" />
                 )}
-                <span className="text-sm truncate text-foreground">
-                  {transaction.description}
-                </span>
+                <div className="min-w-0 flex-1">
+                  <span className="text-sm truncate text-foreground block">
+                    {transaction.description}
+                  </span>
+                  <span className="text-xs text-muted-foreground block">
+                    {format(parseDateString(transaction.date), "d MMM", { locale: dateLocale })}
+                  </span>
+                </div>
               </div>
               <div className="text-right flex-shrink-0 ml-2">
                 <span
-                  className={`text-sm font-medium ${
-                    transaction.type === 'INCOME' ? 'text-green-500' : 'text-red-500'
+                  className={`text-sm font-bold ${
+                    transaction.type === 'INCOME' ? 'text-income' : 'text-expense'
                   }`}
                 >
                   {transaction.type === 'INCOME' ? '+' : '-'}
