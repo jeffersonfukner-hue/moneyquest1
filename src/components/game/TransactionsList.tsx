@@ -137,7 +137,7 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate }: Transacti
                     formatCurrency={formatCurrency}
                     userCurrency={userCurrency}
                     formatConverted={formatConverted}
-                    walletName={transaction.wallet_id ? walletMap[transaction.wallet_id]?.name : undefined}
+                    walletName={transaction.wallet_id ? (walletMap[transaction.wallet_id]?.institution || walletMap[transaction.wallet_id]?.name) : undefined}
                     walletIcon={transaction.wallet_id ? walletMap[transaction.wallet_id]?.icon : undefined}
                     t={t}
                   />
