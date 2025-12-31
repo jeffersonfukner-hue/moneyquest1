@@ -29,6 +29,7 @@ import Leaderboard from "./pages/Leaderboard";
 import AdventureJournal from "./pages/AdventureJournal";
 import Wallets from "./pages/Wallets";
 import CashFlow from "./pages/CashFlow";
+import PeriodComparison from "./pages/PeriodComparison";
 import NotFound from "./pages/NotFound";
 import SuperAdminDashboard from "./pages/admin/SuperAdminDashboard";
 import UsersManagement from "./pages/admin/UsersManagement";
@@ -70,6 +71,7 @@ const App = () => (
                           <Route path="/journal" element={<AdventureJournal />} />
                           <Route path="/wallets" element={<Wallets />} />
                           <Route path="/cash-flow" element={<CashFlow />} />
+                          <Route path="/period-comparison" element={<PeriodComparison />} />
                           {/* Admin Routes */}
                           <Route path="/super-admin" element={<AdminRoute><SuperAdminDashboard /></AdminRoute>} />
                           <Route path="/super-admin/users" element={<AdminRoute><UsersManagement /></AdminRoute>} />

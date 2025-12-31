@@ -38,6 +38,7 @@ import { AICoachCard } from '@/components/ai/AICoachCard';
 import { CategoryGoalsCard } from '@/components/goals/CategoryGoalsCard';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { CashFlowWidget } from '@/components/reports/CashFlowWidget';
+import { PeriodComparisonWidget } from '@/components/reports/PeriodComparisonWidget';
 import { useAdBanner } from '@/hooks/useAdBanner';
 import { getFeedbackMessage } from '@/lib/feedbackMessages';
 import { TransactionTemplate } from '@/hooks/useTransactionTemplates';
@@ -182,6 +183,7 @@ const Index = () => {
             
             {/* Analytics widgets */}
             <CashFlowWidget />
+            <PeriodComparisonWidget />
             <MonthlySavingsWidget transactions={transactions} />
             <MonthlyComparisonWidget transactions={transactions} />
             <SpendingByCategoryChart transactions={transactions} />
