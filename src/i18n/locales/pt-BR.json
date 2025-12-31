@@ -1041,5 +1041,24 @@
       "badge": "Conquista",
       "bonus": "Bônus"
     }
+  },
+  "cashFlow": {
+    "title": "Fluxo de Caixa",
+    "weekly": "Semanal",
+    "monthly": "Mensal",
+    "history": "Histórico",
+    "projection": "Projeção",
+    "projected": "Projetado",
+    "netFlow": "Fluxo Líquido",
+    "balance": "Saldo",
+    "cumulativeBalance": "Saldo Acumulado",
+    "avgIncome": "Receita Média",
+    "avgExpenses": "Despesas Média",
+    "avgNetFlow": "Fluxo Médio",
+    "projectedBalance": "Saldo Projetado",
+    "positiveTrend": "Tendência positiva",
+    "negativeTrend": "Atenção ao fluxo",
+    "projectionNote": "Baseado nos últimos 3 meses",
+    "noData": "Sem dados para exibir"
   }
 }

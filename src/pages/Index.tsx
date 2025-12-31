@@ -37,6 +37,7 @@ import { MobileHeader } from '@/components/navigation/MobileHeader';
 import { AICoachCard } from '@/components/ai/AICoachCard';
 import { CategoryGoalsCard } from '@/components/goals/CategoryGoalsCard';
 import { AdBanner } from '@/components/ads/AdBanner';
+import { CashFlowWidget } from '@/components/reports/CashFlowWidget';
 import { useAdBanner } from '@/hooks/useAdBanner';
 import { getFeedbackMessage } from '@/lib/feedbackMessages';
 import { TransactionTemplate } from '@/hooks/useTransactionTemplates';
@@ -136,6 +137,7 @@ const Index = () => {
       type: template.type,
       date: format(new Date(), 'yyyy-MM-dd'),
       currency: template.currency,
+      wallet_id: null,
     });
     
     if (!error) {
@@ -179,6 +181,7 @@ const Index = () => {
             <CategoryGoalsCard />
             
             {/* Analytics widgets */}
+            <CashFlowWidget />
             <MonthlySavingsWidget transactions={transactions} />
             <MonthlyComparisonWidget transactions={transactions} />
             <SpendingByCategoryChart transactions={transactions} />
