@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from '@/hooks/use-toast';
 import { Gamepad2, Sparkles, Eye, EyeOff, ArrowLeft, Check, Globe, Coins } from 'lucide-react';
 import i18n from '@/i18n';
+import { detectBrowserLanguage } from '@/lib/browserLanguageDetection';
 
 type SignupStep = 'preferences' | 'account';
 
@@ -28,8 +29,10 @@ const Signup = () => {
   // Step state
   const [step, setStep] = useState<SignupStep>('preferences');
   
-  // Preferences state
-  const [selectedLanguage, setSelectedLanguage] = useState<SupportedLanguage | null>(null);
+  // Preferences state - pre-select detected browser language
+  const [selectedLanguage, setSelectedLanguage] = useState<SupportedLanguage | null>(() => {
+    return detectBrowserLanguage();
+  });
   const [selectedCurrency, setSelectedCurrency] = useState<SupportedCurrency | null>(null);
   
   // Account state
@@ -43,6 +46,17 @@ const Signup = () => {
 
   const isPreferencesValid = selectedLanguage !== null && selectedCurrency !== null;
 
+  // Apply detected language immediately on mount
+  useEffect(() => {
+    const storedLang = localStorage.getItem('i18nextLng');
+    if (!storedLang) {
+      const detectedLang = detectBrowserLanguage();
+      if (detectedLang !== i18n.language) {
+        i18n.changeLanguage(detectedLang);
+      }
+    }
+  }, []);
+
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
@@ -50,7 +64,7 @@ const Signup = () => {
     }
   }, [user, navigate]);
 
-  // Apply language when selected
+  // Apply language when manually selected
   useEffect(() => {
     if (selectedLanguage && selectedLanguage !== i18n.language) {
       i18n.changeLanguage(selectedLanguage);
