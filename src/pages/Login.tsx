@@ -7,11 +7,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import { Gamepad2, Sparkles, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { detectBrowserLanguage } from '@/lib/browserLanguageDetection';
 
 type LoginMode = 'login' | 'forgot';
 
 const Login = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [mode, setMode] = useState<LoginMode>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,6 +21,15 @@ const Login = () => {
   const [googleLoading, setGoogleLoading] = useState(false);
   const { signIn, signInWithGoogle, resetPassword, user } = useAuth();
   const navigate = useNavigate();
+
+  // Apply browser language on first load (no stored preference)
+  useEffect(() => {
+    const storedLang = localStorage.getItem('i18nextLng');
+    if (!storedLang) {
+      const detectedLang = detectBrowserLanguage();
+      i18n.changeLanguage(detectedLang);
+    }
+  }, [i18n]);
 
   // Redirect if already logged in
   useEffect(() => {

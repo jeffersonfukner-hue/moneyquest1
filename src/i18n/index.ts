@@ -28,12 +28,26 @@ const resources = {
   'es-ES': { translation: esES },
 };
 
+/**
+ * Mapeia idioma do navegador para idioma suportado.
+ * pt* → pt-BR, es* → es-ES, en* → en-US, outros → en-US
+ */
+const mapBrowserLanguage = (browserLang: string): SupportedLanguage => {
+  const lang = browserLang.toLowerCase();
+  
+  if (lang.startsWith('pt')) return 'pt-BR';
+  if (lang.startsWith('es')) return 'es-ES';
+  if (lang.startsWith('en')) return 'en-US';
+  
+  return 'en-US'; // Fallback para inglês
+};
+
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: 'pt-BR',
+    fallbackLng: 'en-US',
     supportedLngs: ['pt-BR', 'en-US', 'es-ES'],
     interpolation: {
       escapeValue: false,
@@ -42,6 +56,7 @@ i18n
       order: ['localStorage', 'navigator', 'htmlTag'],
       caches: ['localStorage'],
       lookupLocalStorage: 'i18nextLng',
+      convertDetectedLanguage: mapBrowserLanguage,
     },
   });
 

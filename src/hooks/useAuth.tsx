@@ -1,6 +1,7 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { detectBrowserLanguage } from '@/lib/browserLanguageDetection';
 
 interface AuthContextType {
   user: User | null;
@@ -41,8 +42,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signUp = async (email: string, password: string) => {
     const redirectUrl = `${window.location.origin}/`;
     
-    // Get setup preferences from localStorage
-    const setupLanguage = localStorage.getItem('moneyquest_setup_language') || 'pt-BR';
+    // Priority: localStorage (user selected) > browser detection > fallback
+    const setupLanguage = localStorage.getItem('moneyquest_setup_language') || detectBrowserLanguage();
     const setupCurrency = localStorage.getItem('moneyquest_setup_currency') || 'BRL';
     
     const { error } = await supabase.auth.signUp({
