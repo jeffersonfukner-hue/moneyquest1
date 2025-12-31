@@ -2,13 +2,11 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
-import { useSetupGuard } from '@/hooks/useSetupGuard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import { Gamepad2, Sparkles, Eye, EyeOff, ArrowLeft } from 'lucide-react';
-import i18n from '@/i18n';
 
 type LoginMode = 'login' | 'forgot';
 
@@ -21,22 +19,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const { signIn, signInWithGoogle, resetPassword, user } = useAuth();
-  const { hasCompletedSetup, getSetupPreferences } = useSetupGuard();
   const navigate = useNavigate();
-
-  // Redirect if setup not completed
-  useEffect(() => {
-    if (!hasCompletedSetup()) {
-      navigate('/setup');
-      return;
-    }
-    
-    // Apply saved language from setup
-    const { language } = getSetupPreferences();
-    if (language && language !== i18n.language) {
-      i18n.changeLanguage(language);
-    }
-  }, [hasCompletedSetup, navigate, getSetupPreferences]);
 
   // Redirect if already logged in
   useEffect(() => {
