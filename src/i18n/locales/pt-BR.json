@@ -246,7 +246,93 @@
     "reward": "Recompensa",
     "timeLeft": "Tempo restante",
     "progress": "Progresso",
-    "expires": "Expira em"
+    "expires": "Expira em",
+    "items": {
+      "daily_checkin": {
+        "title": "Check-in Diário",
+        "description": "Registre pelo menos uma transação hoje"
+      },
+      "daily_categorized": {
+        "title": "Gasto Consciente",
+        "description": "Registre uma despesa com categoria"
+      },
+      "daily_expense": {
+        "title": "Rastreador de Despesas",
+        "description": "Registre uma despesa do dia"
+      },
+      "daily_logger": {
+        "title": "Registro Diário",
+        "description": "Registre uma transação hoje"
+      },
+      "weekly_balance": {
+        "title": "Equilíbrio Semanal",
+        "description": "Registre transações em pelo menos 5 dias diferentes esta semana"
+      },
+      "weekly_categories": {
+        "title": "Mestre das Categorias",
+        "description": "Use pelo menos 3 categorias de despesas diferentes esta semana"
+      },
+      "frugal_friday": {
+        "title": "Sexta Econômica",
+        "description": "Não gaste nada em pelo menos uma sexta-feira desta semana"
+      },
+      "income_hunter": {
+        "title": "Caçador de Renda",
+        "description": "Registre receita de 2 fontes diferentes esta semana"
+      },
+      "spending_freeze": {
+        "title": "Congelamento de Gastos",
+        "description": "Tenha pelo menos 2 dias sem gastos esta semana"
+      },
+      "category_focus": {
+        "title": "Foco na Categoria",
+        "description": "Mantenha sua categoria de maior gasto sob controle esta semana"
+      },
+      "savings_sprint": {
+        "title": "Sprint de Economia",
+        "description": "Economize pelo menos 20% da sua renda esta semana"
+      },
+      "monthly_discipline": {
+        "title": "Disciplina Financeira",
+        "description": "Registre transações toda semana do mês"
+      },
+      "monthly_savings": {
+        "title": "Herói da Economia",
+        "description": "Mantenha as despesas totais abaixo do limite da sua meta"
+      },
+      "special_christmas": {
+        "title": "Orçamento do Papai Noel",
+        "description": "Registre 5 despesas de fim de ano para ganhar a medalha Planejador de Natal!"
+      },
+      "special_halloween": {
+        "title": "Poupador de Abóbora",
+        "description": "Registre 5 economias assustadoras em outubro para ganhar a medalha Poupador de Abóbora!"
+      },
+      "special_easter": {
+        "title": "Caça ao Ovo de Ouro",
+        "description": "Economize em 7 dias diferentes em abril para encontrar o Ovo de Ouro!"
+      },
+      "special_carnival": {
+        "title": "Folião Esperto",
+        "description": "Registre 10 despesas de festa ou entretenimento durante o Carnaval!"
+      },
+      "achievement_first": {
+        "title": "Primeiros Passos",
+        "description": "Registre sua primeira transação"
+      },
+      "achievement_budget": {
+        "title": "Mestre do Orçamento",
+        "description": "Defina sua primeira meta de categoria"
+      },
+      "achievement_streak7": {
+        "title": "Guerreiro da Semana",
+        "description": "Mantenha uma sequência de 7 dias"
+      },
+      "achievement_save1000": {
+        "title": "Poupador Supremo",
+        "description": "Economize $1000 no total"
+      }
+    }
   },
   "badges": {
     "title": "Conquistas",

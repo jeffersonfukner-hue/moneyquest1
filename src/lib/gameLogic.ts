@@ -60,6 +60,26 @@ export const getBadgeKey = (badgeName: string): string => {
   return nameToKey[badgeName] || badgeName.toLowerCase().replace(/\s+/g, '_');
 };
 
+// Returns translation key for quest based on quest_key
+export const getQuestKey = (questKey: string | null): string | null => {
+  if (!questKey) return null;
+  
+  // Remove UUID suffixes from dynamic quest keys like "achievement_48cad8f4-..."
+  const uuidPattern = /^(.+?)_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const match = questKey.match(uuidPattern);
+  if (match) {
+    // For dynamic quests, map to their base type
+    const baseKey = match[1];
+    const mappings: Record<string, string> = {
+      'achievement': 'achievement_first',
+      'daily': 'daily_checkin'
+    };
+    return mappings[baseKey] || baseKey;
+  }
+  
+  return questKey;
+};
+
 // Returns the English title (for database storage - will be translated in UI)
 export const getLevelTitle = (level: number): string => {
   const key = getLevelTitleKey(level);

@@ -246,7 +246,93 @@
     "reward": "Recompensa",
     "timeLeft": "Tiempo restante",
     "progress": "Progreso",
-    "expires": "Expira en"
+    "expires": "Expira en",
+    "items": {
+      "daily_checkin": {
+        "title": "Check-in Diario",
+        "description": "Registra al menos una transacción hoy"
+      },
+      "daily_categorized": {
+        "title": "Gasto Consciente",
+        "description": "Registra un gasto con categoría"
+      },
+      "daily_expense": {
+        "title": "Rastreador de Gastos",
+        "description": "Registra un gasto del día"
+      },
+      "daily_logger": {
+        "title": "Registro Diario",
+        "description": "Registra una transacción hoy"
+      },
+      "weekly_balance": {
+        "title": "Equilibrio Semanal",
+        "description": "Registra transacciones en al menos 5 días diferentes esta semana"
+      },
+      "weekly_categories": {
+        "title": "Maestro de Categorías",
+        "description": "Usa al menos 3 categorías de gastos diferentes esta semana"
+      },
+      "frugal_friday": {
+        "title": "Viernes Frugal",
+        "description": "No gastes nada en al menos un viernes de esta semana"
+      },
+      "income_hunter": {
+        "title": "Cazador de Ingresos",
+        "description": "Registra ingresos de 2 fuentes diferentes esta semana"
+      },
+      "spending_freeze": {
+        "title": "Congelación de Gastos",
+        "description": "Ten al menos 2 días sin gastos esta semana"
+      },
+      "category_focus": {
+        "title": "Foco en Categoría",
+        "description": "Mantén tu categoría de mayor gasto bajo control esta semana"
+      },
+      "savings_sprint": {
+        "title": "Sprint de Ahorro",
+        "description": "Ahorra al menos el 20% de tus ingresos esta semana"
+      },
+      "monthly_discipline": {
+        "title": "Disciplina Financiera",
+        "description": "Registra transacciones cada semana del mes"
+      },
+      "monthly_savings": {
+        "title": "Héroe del Ahorro",
+        "description": "Mantén los gastos totales por debajo del límite de tu meta"
+      },
+      "special_christmas": {
+        "title": "Presupuesto de Santa",
+        "description": "¡Registra 5 gastos navideños para ganar la insignia Planificador Navideño!"
+      },
+      "special_halloween": {
+        "title": "Ahorrador de Calabaza",
+        "description": "¡Registra 5 ahorros espeluznantes en octubre para ganar la insignia Ahorrador de Calabaza!"
+      },
+      "special_easter": {
+        "title": "Caza del Huevo de Oro",
+        "description": "¡Ahorra en 7 días diferentes en abril para encontrar el Huevo de Oro!"
+      },
+      "special_carnival": {
+        "title": "Festejante Inteligente",
+        "description": "¡Registra 10 gastos de fiesta o entretenimiento durante la temporada de Carnaval!"
+      },
+      "achievement_first": {
+        "title": "Primeros Pasos",
+        "description": "Registra tu primera transacción"
+      },
+      "achievement_budget": {
+        "title": "Maestro del Presupuesto",
+        "description": "Establece tu primera meta de categoría"
+      },
+      "achievement_streak7": {
+        "title": "Guerrero de la Semana",
+        "description": "Mantén una racha de 7 días"
+      },
+      "achievement_save1000": {
+        "title": "Súper Ahorrador",
+        "description": "Ahorra $1000 en total"
+      }
+    }
   },
   "badges": {
     "title": "Logros",
