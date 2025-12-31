@@ -20,6 +20,8 @@ import { QuickAddCategoryDialog } from '@/components/categories/QuickAddCategory
 import { QuickAddGoalPrompt } from '@/components/goals/QuickAddGoalPrompt';
 import { SUPPORTED_CURRENCIES } from '@/i18n';
 import { getCategoryTranslationKey } from '@/lib/gameLogic';
+import { WalletSelector } from '@/components/wallets/WalletSelector';
+import { useWallets } from '@/hooks/useWallets';
 
 interface AddTransactionDialogProps {
   onAdd: (transaction: {
@@ -29,6 +31,7 @@ interface AddTransactionDialogProps {
     type: TransactionType;
     date: string;
     currency: string;
+    wallet_id: string;
   }) => Promise<{ error: Error | null }>;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -41,6 +44,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   const { getCategoriesByType, addCategory } = useCategories();
   const { goals, refetch: refetchGoals } = useCategoryGoals();
   const { canAccessCategoryGoals } = useSubscription();
+  const { activeWallets, refetch: refetchWallets } = useWallets();
   
   const [internalOpen, setInternalOpen] = useState(false);
   const [type, setType] = useState<TransactionType>('EXPENSE');
@@ -48,6 +52,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
   const [selectedCurrency, setSelectedCurrency] = useState<SupportedCurrency>(currency);
+  const [walletId, setWalletId] = useState<string | null>(null);
   const [date, setDate] = useState<Date>(new Date());
   const [loading, setLoading] = useState(false);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
@@ -59,7 +64,8 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
     description: boolean;
     amount: boolean;
     category: boolean;
-  }>({ description: false, amount: false, category: false });
+    wallet: boolean;
+  }>({ description: false, amount: false, category: false, wallet: false });
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
 
   // Validation helpers
@@ -67,8 +73,9 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
     description: !description.trim(),
     amount: !amount || parseFloat(amount) <= 0,
     category: !category,
+    wallet: !walletId,
   };
-  const hasErrors = errors.description || errors.amount || errors.category;
+  const hasErrors = errors.description || errors.amount || errors.category || errors.wallet;
 
   // Check if selected category has a goal
   const categoryHasGoal = useMemo(() => {
@@ -100,7 +107,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
     setAttemptedSubmit(true);
     
     if (hasErrors) {
-      setTouched({ description: true, amount: true, category: true });
+      setTouched({ description: true, amount: true, category: true, wallet: true });
       return;
     }
 
@@ -112,6 +119,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
       type,
       date: format(date, 'yyyy-MM-dd'),
       currency: selectedCurrency,
+      wallet_id: walletId!,
     });
 
     if (!error) {
@@ -128,8 +136,9 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
     setAmount('');
     setCategory('');
     setSelectedCurrency(currency);
+    setWalletId(null);
     setDate(new Date());
-    setTouched({ description: false, amount: false, category: false });
+    setTouched({ description: false, amount: false, category: false, wallet: false });
     setAttemptedSubmit(false);
   };
 
@@ -140,8 +149,9 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
     setAmount('');
     setCategory('');
     setSelectedCurrency(currency);
+    setWalletId(null);
     setDate(new Date());
-    setTouched({ description: false, amount: false, category: false });
+    setTouched({ description: false, amount: false, category: false, wallet: false });
     setAttemptedSubmit(false);
     setOpen(false);
   };
@@ -376,6 +386,30 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
                 onDismiss={() => setShowGoalPrompt(false)}
               />
             )}
+          </div>
+
+          <div className="space-y-2">
+            <Label className="flex items-center gap-1">
+              {t('wallets.wallet')}
+              <span className="text-destructive">*</span>
+            </Label>
+            <WalletSelector
+              wallets={activeWallets}
+              selectedWalletId={walletId}
+              onSelect={(id) => {
+                setWalletId(id);
+                setTouched(prev => ({ ...prev, wallet: true }));
+              }}
+              onWalletCreated={(wallet) => {
+                refetchWallets();
+                setWalletId(wallet.id);
+              }}
+              required
+            />
+            <ValidationMessage 
+              show={(touched.wallet || attemptedSubmit) && errors.wallet}
+              message={t('validation.walletRequired')}
+            />
           </div>
 
           <div className="space-y-2">
