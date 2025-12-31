@@ -252,7 +252,57 @@
     "title": "Logros",
     "unlocked": "Desbloqueado",
     "locked": "Bloqueado",
-    "unlockedAt": "Desbloqueado el"
+    "unlockedAt": "Desbloqueado el",
+    "items": {
+      "first_steps": {
+        "name": "Primeros Pasos",
+        "description": "Registraste tu primera transacción"
+      },
+      "getting_started": {
+        "name": "Comenzando",
+        "description": "Alcanzaste 100 XP"
+      },
+      "rising_star": {
+        "name": "Estrella en Ascenso",
+        "description": "Alcanzaste 500 XP"
+      },
+      "xp_champion": {
+        "name": "Campeón de XP",
+        "description": "Alcanzaste 1000 XP"
+      },
+      "streak_starter": {
+        "name": "Iniciando Racha",
+        "description": "Racha de 3 días"
+      },
+      "streak_master": {
+        "name": "Maestro de la Racha",
+        "description": "Racha de 7 días"
+      },
+      "penny_pincher": {
+        "name": "Ahorrador",
+        "description": "Ahorraste $100"
+      },
+      "savings_pro": {
+        "name": "Profesional del Ahorro",
+        "description": "Ahorraste $1000"
+      },
+      "pumpkin_saver": {
+        "name": "Ahorrador de Halloween",
+        "description": "Completaste la misión de Halloween"
+      },
+      "christmas_planner": {
+        "name": "Planificador Navideño",
+        "description": "Completaste la misión de Navidad"
+      },
+      "smart_reveler": {
+        "name": "Fiestero Inteligente",
+        "description": "Completaste la misión de Carnaval"
+      },
+      "golden_egg": {
+        "name": "Huevo de Oro",
+        "description": "Completaste la misión de Pascua"
+      }
+    }
   },
   "levels": {
     "novice_saver": "Ahorrador Novato",

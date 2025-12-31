@@ -252,7 +252,57 @@
     "title": "Badges",
     "unlocked": "Unlocked",
     "locked": "Locked",
-    "unlockedAt": "Unlocked at"
+    "unlockedAt": "Unlocked at",
+    "items": {
+      "first_steps": {
+        "name": "First Steps",
+        "description": "Logged your first transaction"
+      },
+      "getting_started": {
+        "name": "Getting Started",
+        "description": "Reached 100 XP"
+      },
+      "rising_star": {
+        "name": "Rising Star",
+        "description": "Reached 500 XP"
+      },
+      "xp_champion": {
+        "name": "XP Champion",
+        "description": "Reached 1000 XP"
+      },
+      "streak_starter": {
+        "name": "Streak Starter",
+        "description": "3-day streak"
+      },
+      "streak_master": {
+        "name": "Streak Master",
+        "description": "7-day streak"
+      },
+      "penny_pincher": {
+        "name": "Penny Pincher",
+        "description": "Saved $100"
+      },
+      "savings_pro": {
+        "name": "Savings Pro",
+        "description": "Saved $1000"
+      },
+      "pumpkin_saver": {
+        "name": "Pumpkin Saver",
+        "description": "Completed Halloween quest"
+      },
+      "christmas_planner": {
+        "name": "Christmas Planner",
+        "description": "Completed Christmas quest"
+      },
+      "smart_reveler": {
+        "name": "Smart Reveler",
+        "description": "Completed Carnival quest"
+      },
+      "golden_egg": {
+        "name": "Golden Egg",
+        "description": "Completed Easter quest"
+      }
+    }
   },
   "levels": {
     "novice_saver": "Novice Saver",

@@ -41,6 +41,25 @@ export const getLevelTitleKey = (level: number): string => {
   return 'legendary_investor';
 };
 
+// Returns the translation key for badge name (use with i18n: t(`badges.items.${key}.name`))
+export const getBadgeKey = (badgeName: string): string => {
+  const nameToKey: Record<string, string> = {
+    'First Steps': 'first_steps',
+    'Getting Started': 'getting_started',
+    'Rising Star': 'rising_star',
+    'XP Champion': 'xp_champion',
+    'Streak Starter': 'streak_starter',
+    'Streak Master': 'streak_master',
+    'Penny Pincher': 'penny_pincher',
+    'Savings Pro': 'savings_pro',
+    'Pumpkin Saver': 'pumpkin_saver',
+    'Christmas Planner': 'christmas_planner',
+    'Smart Reveler': 'smart_reveler',
+    'Golden Egg': 'golden_egg',
+  };
+  return nameToKey[badgeName] || badgeName.toLowerCase().replace(/\s+/g, '_');
+};
+
 // Returns the English title (for database storage - will be translated in UI)
 export const getLevelTitle = (level: number): string => {
   const key = getLevelTitleKey(level);
