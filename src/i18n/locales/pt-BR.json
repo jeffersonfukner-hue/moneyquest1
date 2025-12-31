@@ -289,7 +289,12 @@
       "confirm": "Confirmar",
       "success": "{{count}} transações atualizadas!",
       "error": "Erro ao atualizar transações",
-      "premiumOnly": "Edição em Lote"
+      "premiumOnly": "Edição em Lote",
+      "delete": "Excluir",
+      "deleteTitle": "Excluir Transações",
+      "deleteDescription": "Tem certeza que deseja excluir {{count}} transações? Esta ação não pode ser desfeita.",
+      "deleteSuccess": "{{count}} transações excluídas!",
+      "deleteError": "Erro ao excluir transações"
     }
   },
   "dashboard": {

@@ -289,7 +289,12 @@
       "confirm": "Confirm",
       "success": "{{count}} transactions updated!",
       "error": "Failed to update transactions",
-      "premiumOnly": "Batch Editing"
+      "premiumOnly": "Batch Editing",
+      "delete": "Delete",
+      "deleteTitle": "Delete Transactions",
+      "deleteDescription": "Are you sure you want to delete {{count}} transactions? This action cannot be undone.",
+      "deleteSuccess": "{{count}} transactions deleted!",
+      "deleteError": "Failed to delete transactions"
     }
   },
   "dashboard": {

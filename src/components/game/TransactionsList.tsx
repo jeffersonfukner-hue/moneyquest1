@@ -37,11 +37,12 @@ interface TransactionsListProps {
   onDelete: (id: string) => void;
   onUpdate: (id: string, updates: Partial<Omit<Transaction, 'id' | 'user_id' | 'xp_earned' | 'created_at'>>) => Promise<{ error: Error | null }>;
   onBatchUpdateWallet?: (transactionIds: string[], walletId: string) => Promise<{ error: Error | null; updatedCount: number }>;
+  onBatchDelete?: (transactionIds: string[]) => Promise<{ error: Error | null; deletedCount: number }>;
 }
 
 type FilterPeriod = 'all' | 'week' | 'month' | 'year';
 
-export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpdateWallet }: TransactionsListProps) => {
+export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpdateWallet, onBatchDelete }: TransactionsListProps) => {
   const { t } = useTranslation();
   const { dateLocale } = useLanguage();
   const { formatCurrency, currency: userCurrency, formatConverted } = useCurrency();
@@ -55,6 +56,8 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showBatchDialog, setShowBatchDialog] = useState(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const canBatchEdit = checkFeature('batch_edit') || isPremium;
 
@@ -132,6 +135,19 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
       exitSelectionMode();
     }
     return result;
+  };
+
+  const handleBatchDelete = async () => {
+    if (!onBatchDelete) return;
+    
+    setIsDeleting(true);
+    const result = await onBatchDelete(Array.from(selectedIds));
+    setIsDeleting(false);
+    
+    if (!result.error) {
+      setShowDeleteDialog(false);
+      exitSelectionMode();
+    }
   };
 
   if (transactions.length === 0) {
@@ -220,7 +236,17 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
               className="gap-2"
             >
               <Wallet className="w-4 h-4" />
-              {t('transactions.batchActions.assignWallet')}
+              <span className="hidden sm:inline">{t('transactions.batchActions.assignWallet')}</span>
+            </Button>
+            <Button
+              size="sm"
+              variant="destructive"
+              onClick={() => setShowDeleteDialog(true)}
+              disabled={selectedIds.size === 0}
+              className="gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span className="hidden sm:inline">{t('transactions.batchActions.delete')}</span>
             </Button>
             <Button
               size="sm"
@@ -286,6 +312,29 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
         selectedCount={selectedIds.size}
         onConfirm={handleBatchConfirm}
       />
+
+      {/* Delete confirmation dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-destructive">
+              <Trash2 className="w-5 h-5" />
+              {t('transactions.batchActions.deleteTitle')}
+            </DialogTitle>
+            <DialogDescription>
+              {t('transactions.batchActions.deleteDescription', { count: selectedIds.size })}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-2 pt-4">
+            <Button variant="outline" onClick={() => setShowDeleteDialog(false)} disabled={isDeleting}>
+              {t('common.cancel')}
+            </Button>
+            <Button variant="destructive" onClick={handleBatchDelete} disabled={isDeleting}>
+              {isDeleting ? t('common.loading') : t('transactions.batchActions.delete')}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Upgrade dialog for non-premium users */}
       <Dialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
