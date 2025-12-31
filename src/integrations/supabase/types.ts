@@ -726,6 +726,7 @@ export type Database = {
           id: string
           type: string
           user_id: string
+          wallet_id: string | null
           xp_earned: number
         }
         Insert: {
@@ -738,6 +739,7 @@ export type Database = {
           id?: string
           type: string
           user_id: string
+          wallet_id?: string | null
           xp_earned?: number
         }
         Update: {
@@ -750,6 +752,7 @@ export type Database = {
           id?: string
           type?: string
           user_id?: string
+          wallet_id?: string | null
           xp_earned?: number
         }
         Relationships: [
@@ -758,6 +761,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_wallet_id_fkey"
+            columns: ["wallet_id"]
+            isOneToOne: false
+            referencedRelation: "wallets"
             referencedColumns: ["id"]
           },
         ]
@@ -842,6 +852,54 @@ export type Database = {
           created_at?: string | null
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wallets: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          currency: string
+          current_balance: number
+          icon: string | null
+          id: string
+          initial_balance: number
+          institution: string | null
+          is_active: boolean
+          name: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          currency?: string
+          current_balance?: number
+          icon?: string | null
+          id?: string
+          initial_balance?: number
+          institution?: string | null
+          is_active?: boolean
+          name: string
+          type?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          currency?: string
+          current_balance?: number
+          icon?: string | null
+          id?: string
+          initial_balance?: number
+          institution?: string | null
+          is_active?: boolean
+          name?: string
+          type?: string
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
