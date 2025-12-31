@@ -14,6 +14,7 @@ import { toast } from '@/hooks/use-toast';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { useAdBanner } from '@/hooks/useAdBanner';
+import { XPHistoryCard } from '@/components/game/XPHistoryCard';
 import { cn } from '@/lib/utils';
 
 const AVATAR_OPTIONS = [
@@ -240,6 +241,9 @@ const Profile = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* XP History Section */}
+        <XPHistoryCard />
 
         {/* Save Button */}
         <Button 

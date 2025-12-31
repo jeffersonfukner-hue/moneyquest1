@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Profile } from '@/types/database';
 import { useAuth } from './useAuth';
+import { RealtimePostgresUpdatePayload } from '@supabase/supabase-js';
 
 const getBrowserTimezone = (): string => {
   try {
@@ -74,6 +75,33 @@ export const useProfile = () => {
 
   useEffect(() => {
     fetchProfile();
+  }, [user]);
+
+  // Realtime subscription for profile updates
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel(`profile-realtime-${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${user.id}`
+        },
+        (payload: RealtimePostgresUpdatePayload<Profile>) => {
+          if (payload.new) {
+            setProfile(payload.new as Profile);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
   const updateProfile = async (updates: Partial<Profile>) => {

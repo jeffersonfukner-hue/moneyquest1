@@ -58,6 +58,15 @@ export const useDailyReward = () => {
 
     setClaiming(true);
     try {
+      // Get current XP before claiming
+      const { data: currentProfile } = await supabase
+        .from('profiles')
+        .select('xp')
+        .eq('id', user.id)
+        .single();
+
+      const xpBefore = currentProfile?.xp || 0;
+
       const { data, error } = await supabase.rpc('claim_daily_reward', {
         p_user_id: user.id
       });
@@ -67,10 +76,24 @@ export const useDailyReward = () => {
         return null;
       }
 
+      const result = data as unknown as ClaimResult;
+
+      // Record XP change in history if reward was claimed
+      if (result?.claimed && result?.total_xp) {
+        await supabase.from('xp_history').insert({
+          user_id: user.id,
+          xp_before: xpBefore,
+          xp_after: xpBefore + result.total_xp,
+          xp_change: result.total_xp,
+          source: 'daily_reward',
+          description: `Day ${result.streak_day} - ${result.multiplier}x multiplier`
+        });
+      }
+
       // Refresh status after claiming
       await fetchStatus();
       
-      return data as unknown as ClaimResult;
+      return result;
     } catch (err) {
       console.error('Error claiming reward:', err);
       return null;

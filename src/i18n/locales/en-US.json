@@ -1025,5 +1025,17 @@
     "levelUp": "Level Up!",
     "nowLevel": "You are now Level {{level}}",
     "totalXP": "Total: {{total}} XP"
+  },
+  "xpHistory": {
+    "title": "XP History",
+    "empty": "No activity yet. Start by logging transactions!",
+    "currentXP": "Current XP",
+    "sources": {
+      "transaction": "Transaction",
+      "quest": "Quest",
+      "dailyReward": "Daily Reward",
+      "badge": "Achievement",
+      "bonus": "Bonus"
+    }
   }
 }

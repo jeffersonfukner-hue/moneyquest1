@@ -846,6 +846,42 @@ export type Database = {
         }
         Relationships: []
       }
+      xp_history: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          source: string
+          source_id: string | null
+          user_id: string
+          xp_after: number
+          xp_before: number
+          xp_change: number
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          source: string
+          source_id?: string | null
+          user_id: string
+          xp_after: number
+          xp_before: number
+          xp_change: number
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          source?: string
+          source_id?: string | null
+          user_id?: string
+          xp_after?: number
+          xp_before?: number
+          xp_change?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

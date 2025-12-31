@@ -141,6 +141,16 @@ export const useTransactions = () => {
       .update(profileUpdates)
       .eq('id', user.id);
 
+    // Record XP change in history
+    await supabase.from('xp_history').insert({
+      user_id: user.id,
+      xp_before: profile.xp,
+      xp_after: newXP,
+      xp_change: xpEarned,
+      source: 'transaction',
+      description: `${transaction.type}: ${transaction.description}`
+    });
+
     // Check for level up
     const didLevelUp = newLevel > profile.level;
     if (didLevelUp) {
