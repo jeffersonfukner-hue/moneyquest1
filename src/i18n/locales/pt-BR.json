@@ -278,6 +278,18 @@
       "health": "Saúde",
       "education": "Educação",
       "other_expense": "Outras Despesas"
+    },
+    "batchActions": {
+      "select": "Selecionar",
+      "cancel": "Cancelar",
+      "selected": "{{count}} selecionada(s)",
+      "assignWallet": "Atribuir Carteira",
+      "assignWalletTitle": "Atribuir Carteira em Lote",
+      "assignWalletDescription": "Selecione a carteira para atribuir às {{count}} transações selecionadas:",
+      "confirm": "Confirmar",
+      "success": "{{count}} transações atualizadas!",
+      "error": "Erro ao atualizar transações",
+      "premiumOnly": "Edição em Lote"
     }
   },
   "dashboard": {

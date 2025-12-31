@@ -400,6 +400,27 @@ export const useTransactions = () => {
     return { error };
   };
 
+  const batchUpdateWallet = async (transactionIds: string[], walletId: string): Promise<{ error: Error | null; updatedCount: number }> => {
+    try {
+      const { error } = await supabase
+        .from('transactions')
+        .update({ wallet_id: walletId })
+        .in('id', transactionIds);
+
+      if (error) throw error;
+
+      // Update local state
+      setTransactions(prev => prev.map(t => 
+        transactionIds.includes(t.id) ? { ...t, wallet_id: walletId } : t
+      ));
+
+      return { error: null, updatedCount: transactionIds.length };
+    } catch (error) {
+      console.error('Error batch updating wallet:', error);
+      return { error: error as Error, updatedCount: 0 };
+    }
+  };
+
   const clearCelebration = () => setCelebrationData(null);
   const clearNarrative = () => setNarrativeData(null);
 
@@ -408,7 +429,8 @@ export const useTransactions = () => {
     loading, 
     addTransaction, 
     updateTransaction,
-    deleteTransaction, 
+    deleteTransaction,
+    batchUpdateWallet,
     refetch: fetchTransactions,
     celebrationData,
     clearCelebration,
