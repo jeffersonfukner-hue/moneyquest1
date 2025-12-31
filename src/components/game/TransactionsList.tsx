@@ -10,6 +10,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { parseDateString } from '@/lib/dateUtils';
 import { formatMoney } from '@/lib/formatters';
+import { getCategoryTranslationKey } from '@/lib/gameLogic';
 
 interface TransactionsListProps {
   transactions: Transaction[];
@@ -114,6 +115,7 @@ export const TransactionsList = ({ transactions, onDelete }: TransactionsListPro
                     formatCurrency={formatCurrency}
                     userCurrency={userCurrency}
                     formatConverted={formatConverted}
+                    t={t}
                   />
                 ))}
               </div>
@@ -131,7 +133,8 @@ const TransactionItem = ({
   dateLocale,
   formatCurrency,
   userCurrency,
-  formatConverted
+  formatConverted,
+  t
 }: { 
   transaction: Transaction; 
   onDelete: (id: string) => void;
@@ -139,9 +142,14 @@ const TransactionItem = ({
   formatCurrency: (amount: number) => string;
   userCurrency: SupportedCurrency;
   formatConverted: (amount: number, from: SupportedCurrency) => string;
+  t: (key: string) => string;
 }) => {
   const transactionCurrency = transaction.currency || 'BRL';
   const isDifferentCurrency = transactionCurrency !== userCurrency;
+  
+  // Translate category name if it's a default category
+  const categoryKey = getCategoryTranslationKey(transaction.category, transaction.type);
+  const displayCategory = categoryKey ? t(`transactions.categories.${categoryKey}`) : transaction.category;
   
   return (
     <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-xl hover:bg-muted/50 transition-colors group">
@@ -162,7 +170,7 @@ const TransactionItem = ({
           {transaction.description}
         </p>
         <p className="text-xs text-muted-foreground">
-          {format(parseDateString(transaction.date), "d MMM", { locale: dateLocale })} • {transaction.category} • +{transaction.xp_earned} XP
+          {format(parseDateString(transaction.date), "d MMM", { locale: dateLocale })} • {displayCategory} • +{transaction.xp_earned} XP
         </p>
       </div>
 

@@ -19,6 +19,7 @@ import { useSubscription } from '@/contexts/SubscriptionContext';
 import { QuickAddCategoryDialog } from '@/components/categories/QuickAddCategoryDialog';
 import { QuickAddGoalPrompt } from '@/components/goals/QuickAddGoalPrompt';
 import { SUPPORTED_CURRENCIES } from '@/i18n';
+import { getCategoryTranslationKey } from '@/lib/gameLogic';
 
 interface AddTransactionDialogProps {
   onAdd: (transaction: {
@@ -340,14 +341,18 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
                 <SelectValue placeholder={t('transactions.selectCategory')} />
               </SelectTrigger>
               <SelectContent>
-                {categories.map(cat => (
-                  <SelectItem key={cat.id} value={cat.name} className="min-h-[44px]">
-                    <span className="flex items-center gap-2">
-                      <span>{cat.icon}</span>
-                      <span>{cat.name}</span>
-                    </span>
-                  </SelectItem>
-                ))}
+                {categories.map(cat => {
+                  const translationKey = cat.is_default ? getCategoryTranslationKey(cat.name, type) : null;
+                  const displayName = translationKey ? t(`transactions.categories.${translationKey}`) : cat.name;
+                  return (
+                    <SelectItem key={cat.id} value={cat.name} className="min-h-[44px]">
+                      <span className="flex items-center gap-2">
+                        <span>{cat.icon}</span>
+                        <span>{displayName}</span>
+                      </span>
+                    </SelectItem>
+                  );
+                })}
                 <SelectItem value="__new__" className="min-h-[44px] text-primary">
                   <span className="flex items-center gap-2">
                     <Plus className="h-4 w-4" />

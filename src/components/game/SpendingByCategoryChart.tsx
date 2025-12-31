@@ -5,6 +5,7 @@ import { PieChart as PieChartIcon } from 'lucide-react';
 import { Transaction, SupportedCurrency } from '@/types/database';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { parseDateString } from '@/lib/dateUtils';
+import { getCategoryTranslationKey } from '@/lib/gameLogic';
 
 interface SpendingByCategoryChartProps {
   transactions: Transaction[];
@@ -48,7 +49,12 @@ export const SpendingByCategoryChart = ({ transactions }: SpendingByCategoryChar
   }, {} as Record<string, number>);
 
   const chartData = Object.entries(categoryTotals)
-    .map(([name, value]) => ({ name, value }))
+    .map(([name, value]) => {
+      // Translate category name if it's a default category
+      const translationKey = getCategoryTranslationKey(name, 'EXPENSE');
+      const displayName = translationKey ? t(`transactions.categories.${translationKey}`) : name;
+      return { name: displayName, originalName: name, value };
+    })
     .sort((a, b) => b.value - a.value)
     .slice(0, 6); // Max 6 categories for readability
 

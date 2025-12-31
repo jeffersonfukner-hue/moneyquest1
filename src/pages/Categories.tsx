@@ -14,6 +14,7 @@ import { DeleteCategoryDialog } from '@/components/categories/DeleteCategoryDial
 import { AdBanner } from '@/components/ads/AdBanner';
 import { useAdBanner } from '@/hooks/useAdBanner';
 import { cn } from '@/lib/utils';
+import { getCategoryTranslationKey } from '@/lib/gameLogic';
 
 const Categories = () => {
   const navigate = useNavigate();
@@ -61,24 +62,29 @@ const Categories = () => {
     setAddDialogOpen(false);
   };
 
-  const CategoryCard = ({ category }: { category: Category }) => (
-    <div 
-      className="flex items-center justify-between p-3 rounded-lg bg-card/50 border border-border/50 hover:border-border transition-colors"
-    >
-      <div className="flex items-center gap-3">
-        <div 
-          className="w-10 h-10 rounded-full flex items-center justify-center text-lg"
-          style={{ backgroundColor: `${category.color}20` }}
-        >
-          {category.icon}
+  const CategoryCard = ({ category }: { category: Category }) => {
+    // Translate category name if it's a default category
+    const translationKey = category.is_default ? getCategoryTranslationKey(category.name, category.type as 'INCOME' | 'EXPENSE') : null;
+    const displayName = translationKey ? t(`transactions.categories.${translationKey}`) : category.name;
+    
+    return (
+      <div 
+        className="flex items-center justify-between p-3 rounded-lg bg-card/50 border border-border/50 hover:border-border transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <div 
+            className="w-10 h-10 rounded-full flex items-center justify-center text-lg"
+            style={{ backgroundColor: `${category.color}20` }}
+          >
+            {category.icon}
+          </div>
+          <div>
+            <p className="font-medium text-foreground">{displayName}</p>
+            {category.is_default && (
+              <span className="text-xs text-muted-foreground">{t('categories.defaultCategory')}</span>
+            )}
+          </div>
         </div>
-        <div>
-          <p className="font-medium text-foreground">{category.name}</p>
-          {category.is_default && (
-            <span className="text-xs text-muted-foreground">{t('categories.defaultCategory')}</span>
-          )}
-        </div>
-      </div>
       
       {!category.is_default && (
         <div className="flex items-center gap-1">
@@ -101,7 +107,8 @@ const Categories = () => {
         </div>
       )}
     </div>
-  );
+    );
+  };
 
   return (
     <div className={cn("min-h-screen bg-gradient-to-b from-background to-background/95 p-4", shouldShowBanner ? "pb-[130px]" : "pb-24")}>

@@ -60,6 +60,31 @@ export const getBadgeKey = (badgeName: string): string => {
   return nameToKey[badgeName] || badgeName.toLowerCase().replace(/\s+/g, '_');
 };
 
+// Returns translation key for category name (use with i18n: t(`transactions.categories.${key}`))
+export const getCategoryTranslationKey = (name: string, type: 'INCOME' | 'EXPENSE'): string | null => {
+  const expenseCategories: Record<string, string> = {
+    'Food': 'food',
+    'Transport': 'transport',
+    'Entertainment': 'entertainment',
+    'Shopping': 'shopping',
+    'Bills': 'bills',
+    'Health': 'health',
+    'Education': 'education',
+    'Other': 'other_expense',
+  };
+  
+  const incomeCategories: Record<string, string> = {
+    'Salary': 'salary',
+    'Freelance': 'freelance',
+    'Investment': 'investment',
+    'Gift': 'gift',
+    'Other': 'other_income',
+  };
+  
+  const map = type === 'INCOME' ? incomeCategories : expenseCategories;
+  return map[name] || null;
+};
+
 // Returns translation key for quest based on quest_key
 export const getQuestKey = (questKey: string | null): string | null => {
   if (!questKey) return null;
