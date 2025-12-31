@@ -282,6 +282,16 @@ export const useTransactions = () => {
     if (!originalTx) return { error: new Error('Transaction not found') };
 
     // Prepare update data
+    // Validate wallet_id is not being cleared
+    if (updates.wallet_id === null || updates.wallet_id === '') {
+      toast({
+        title: t('validation.error'),
+        description: t('validation.walletRequired'),
+        variant: 'destructive'
+      });
+      return { error: new Error('Wallet is required') };
+    }
+
     const updateData: Record<string, unknown> = {};
     if (updates.description !== undefined) updateData.description = updates.description;
     if (updates.amount !== undefined) updateData.amount = updates.amount;
@@ -289,6 +299,7 @@ export const useTransactions = () => {
     if (updates.type !== undefined) updateData.type = updates.type;
     if (updates.date !== undefined) updateData.date = updates.date;
     if (updates.currency !== undefined) updateData.currency = updates.currency;
+    if (updates.wallet_id !== undefined) updateData.wallet_id = updates.wallet_id;
 
     // Update the transaction in DB
     const { error: txError } = await supabase
