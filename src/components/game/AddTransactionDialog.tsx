@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Plus, ArrowUpCircle, ArrowDownCircle, CalendarIcon, Coins, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Plus, ArrowUpCircle, ArrowDownCircle, CalendarIcon, Coins, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
@@ -23,6 +23,13 @@ import { getCategoryTranslationKey } from '@/lib/gameLogic';
 import { WalletSelector } from '@/components/wallets/WalletSelector';
 import { useWallets } from '@/hooks/useWallets';
 
+export interface SessionSummary {
+  transactionCount: number;
+  totalExpense: number;
+  totalIncome: number;
+  xpGained: number;
+}
+
 interface AddTransactionDialogProps {
   onAdd: (transaction: {
     description: string;
@@ -32,12 +39,13 @@ interface AddTransactionDialogProps {
     date: string;
     currency: string;
     wallet_id: string;
-  }) => Promise<{ error: Error | null }>;
+  }) => Promise<{ error: Error | null; xpEarned?: number }>;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  onSessionComplete?: (summary: SessionSummary) => void;
 }
 
-export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange }: AddTransactionDialogProps) => {
+export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange, onSessionComplete }: AddTransactionDialogProps) => {
   const { t } = useTranslation();
   const { dateLocale } = useLanguage();
   const { currencySymbol, currency } = useCurrency();
@@ -57,7 +65,14 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   const [loading, setLoading] = useState(false);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [showGoalPrompt, setShowGoalPrompt] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
+  
+  // Session tracking
+  const [sessionData, setSessionData] = useState<SessionSummary>({
+    transactionCount: 0,
+    totalExpense: 0,
+    totalIncome: 0,
+    xpGained: 0,
+  });
   
   // Validation state
   const [touched, setTouched] = useState<{
@@ -100,7 +115,26 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   // Use controlled or internal state
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;
-  const setOpen = isControlled ? (onOpenChange || (() => {})) : setInternalOpen;
+  
+  // Handle dialog close and session complete
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!newOpen && sessionData.transactionCount > 0) {
+      // Dialog is closing and we have transactions in session
+      onSessionComplete?.(sessionData);
+      // Reset session data
+      setSessionData({
+        transactionCount: 0,
+        totalExpense: 0,
+        totalIncome: 0,
+        xpGained: 0,
+      });
+    }
+    if (isControlled) {
+      onOpenChange?.(newOpen);
+    } else {
+      setInternalOpen(newOpen);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,9 +146,10 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
     }
 
     setLoading(true);
-    const { error } = await onAdd({
+    const parsedAmount = parseFloat(amount);
+    const result = await onAdd({
       description,
-      amount: parseFloat(amount),
+      amount: parsedAmount,
       category,
       type,
       date: format(date, 'yyyy-MM-dd'),
@@ -122,38 +157,26 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
       wallet_id: walletId!,
     });
 
-    if (!error) {
-      // Show confirmation instead of closing immediately
-      setShowConfirmation(true);
+    if (!result.error) {
+      // Update session data
+      setSessionData(prev => ({
+        transactionCount: prev.transactionCount + 1,
+        totalExpense: prev.totalExpense + (type === 'EXPENSE' ? parsedAmount : 0),
+        totalIncome: prev.totalIncome + (type === 'INCOME' ? parsedAmount : 0),
+        xpGained: prev.xpGained + (result.xpEarned || 10),
+      }));
+      
+      // Reset form for next transaction
+      setDescription('');
+      setAmount('');
+      setCategory('');
+      setSelectedCurrency(currency);
+      setWalletId(null);
+      setDate(new Date());
+      setTouched({ description: false, amount: false, category: false, wallet: false });
+      setAttemptedSubmit(false);
     }
     setLoading(false);
-  };
-
-  const handleAddAnother = () => {
-    // Reset form but keep dialog open
-    setShowConfirmation(false);
-    setDescription('');
-    setAmount('');
-    setCategory('');
-    setSelectedCurrency(currency);
-    setWalletId(null);
-    setDate(new Date());
-    setTouched({ description: false, amount: false, category: false, wallet: false });
-    setAttemptedSubmit(false);
-  };
-
-  const handleDone = () => {
-    // Reset and close
-    setShowConfirmation(false);
-    setDescription('');
-    setAmount('');
-    setCategory('');
-    setSelectedCurrency(currency);
-    setWalletId(null);
-    setDate(new Date());
-    setTouched({ description: false, amount: false, category: false, wallet: false });
-    setAttemptedSubmit(false);
-    setOpen(false);
   };
 
   // Validation message component
@@ -185,7 +208,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       {!isControlled && (
         <DialogTrigger asChild>
           <Button 
@@ -201,34 +224,6 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
           <DialogTitle className="font-display text-xl">{t('transactions.addTransaction')}</DialogTitle>
         </DialogHeader>
         
-        {showConfirmation ? (
-          // Confirmation state after successful save
-          <div className="py-8 space-y-6">
-            <div className="text-center space-y-3">
-              <div className="mx-auto w-16 h-16 rounded-full bg-income/20 flex items-center justify-center">
-                <CheckCircle2 className="w-8 h-8 text-income" />
-              </div>
-              <h3 className="text-lg font-semibold">{t('feedback.transactionSaved')}</h3>
-              <p className="text-muted-foreground">{t('feedback.addAnotherQuestion')}</p>
-            </div>
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                className="flex-1 min-h-[48px]"
-                onClick={handleDone}
-              >
-                {t('feedback.done')}
-              </Button>
-              <Button
-                className="flex-1 min-h-[48px] bg-gradient-hero hover:opacity-90"
-                onClick={handleAddAnother}
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                {t('feedback.addAnother')}
-              </Button>
-            </div>
-          </div>
-        ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex gap-2">
             <Button
@@ -448,7 +443,6 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
             {loading ? t('common.loading') : `${t('common.add')} 🎮`}
           </Button>
         </form>
-        )}
 
         <QuickAddCategoryDialog
           open={quickAddOpen}

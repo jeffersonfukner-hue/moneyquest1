@@ -24,7 +24,7 @@ import { RecentTransactionsCard } from '@/components/game/RecentTransactionsCard
 import { SpendingByCategoryChart } from '@/components/game/SpendingByCategoryChart';
 import { MonthlySavingsWidget } from '@/components/game/MonthlySavingsWidget';
 import { MonthlyComparisonWidget } from '@/components/game/MonthlyComparisonWidget';
-import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
+import { AddTransactionDialog, SessionSummary } from '@/components/game/AddTransactionDialog';
 import { MoodIndicator } from '@/components/game/MoodIndicator';
 import { QuestCelebration } from '@/components/game/QuestCelebration';
 import { SeasonalDecorations } from '@/components/game/SeasonalDecorations';
@@ -32,6 +32,7 @@ import { NarrativeEvent } from '@/components/game/NarrativeEvent';
 import { TransactionFeedback } from '@/components/game/TransactionFeedback';
 import { QuickTemplates } from '@/components/game/QuickTemplates';
 import { XPNotification } from '@/components/game/XPNotification';
+import { SessionSummaryCard } from '@/components/game/SessionSummaryCard';
 import { BottomNavigation, type TabId } from '@/components/navigation/BottomNavigation';
 import { MobileHeader } from '@/components/navigation/MobileHeader';
 import { AICoachCard } from '@/components/ai/AICoachCard';
@@ -61,6 +62,7 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState<TabId>('home');
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showRewardDialog, setShowRewardDialog] = useState(false);
+  const [sessionSummary, setSessionSummary] = useState<SessionSummary | null>(null);
   
   // Inline feedback state
   const [inlineFeedback, setInlineFeedback] = useState<{
@@ -160,6 +162,14 @@ const Index = () => {
             <LevelProgress profile={profile} />
             <StatsCards profile={profile} />
             
+            {/* Session summary - appears after finishing transaction session */}
+            {sessionSummary && (
+              <SessionSummaryCard
+                {...sessionSummary}
+                onDismiss={() => setSessionSummary(null)}
+              />
+            )}
+            
             {/* Inline feedback */}
             {inlineFeedback && (
               <TransactionFeedback
@@ -227,6 +237,11 @@ const Index = () => {
         onAdd={addTransaction}
         open={showAddDialog}
         onOpenChange={setShowAddDialog}
+        onSessionComplete={(summary) => {
+          if (summary.transactionCount > 0) {
+            setSessionSummary(summary);
+          }
+        }}
       />
       
       <QuestCelebration 
