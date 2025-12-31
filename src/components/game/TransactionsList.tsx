@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Locale } from 'date-fns';
 import { Transaction, SupportedCurrency } from '@/types/database';
-import { ArrowUpCircle, ArrowDownCircle, Trash2, Pencil } from 'lucide-react';
+import { ArrowUpCircle, ArrowDownCircle, Trash2, Pencil, MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { format, subDays } from 'date-fns';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -13,6 +13,14 @@ import { formatMoney } from '@/lib/formatters';
 import { getCategoryTranslationKey } from '@/lib/gameLogic';
 import { EditTransactionDialog } from './EditTransactionDialog';
 import { useWallets } from '@/hooks/useWallets';
+import { useIsMobile } from '@/hooks/use-mobile';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface TransactionsListProps {
   transactions: Transaction[];
@@ -175,77 +183,166 @@ const TransactionItem = ({
   walletIcon?: string;
   t: (key: string) => string;
 }) => {
+  const isMobile = useIsMobile();
   const transactionCurrency = transaction.currency || 'BRL';
   const isDifferentCurrency = transactionCurrency !== userCurrency;
   
   // Translate category name if it's a default category
   const categoryKey = getCategoryTranslationKey(transaction.category, transaction.type);
   const displayCategory = categoryKey ? t(`transactions.categories.${categoryKey}`) : transaction.category;
-  
-  return (
-    <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-xl hover:bg-muted/50 transition-colors group">
-      <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-        transaction.type === 'INCOME' 
-          ? 'bg-income/20' 
-          : 'bg-expense/20'
-      }`}>
-        {transaction.type === 'INCOME' ? (
-          <ArrowUpCircle className="w-5 h-5 text-income" />
-        ) : (
-          <ArrowDownCircle className="w-5 h-5 text-expense" />
-        )}
-      </div>
-      
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-foreground truncate">
-          {transaction.description}
-        </p>
-        <p className="text-xs text-muted-foreground">
-          {format(parseDateString(transaction.date), "d MMM yyyy", { locale: dateLocale })}
-          {walletName && (
-            <span> • {walletIcon} {walletName}</span>
-          )}
-        </p>
-        <p className="text-xs text-muted-foreground">
-          {displayCategory} • +{transaction.xp_earned} XP
-        </p>
-      </div>
 
-      <div className="text-right flex-shrink-0">
-        <p className={`text-sm font-bold ${
-          transaction.type === 'INCOME' ? 'text-income' : 'text-expense'
-        }`}>
-          {transaction.type === 'INCOME' ? '+' : '-'}
-          {isDifferentCurrency 
-            ? formatConverted(transaction.amount, transactionCurrency as SupportedCurrency)
-            : formatCurrency(transaction.amount)
-          }
-        </p>
-        {isDifferentCurrency && (
-          <p className="text-xs text-muted-foreground">
-            ({formatMoney(transaction.amount, transactionCurrency as SupportedCurrency)})
-          </p>
-        )}
-      </div>
+  const formattedAmount = isDifferentCurrency 
+    ? formatConverted(transaction.amount, transactionCurrency as SupportedCurrency)
+    : formatCurrency(transaction.amount);
 
-      <div className="flex gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="w-8 h-8 text-muted-foreground hover:text-foreground"
+  const ActionsMenu = () => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="min-w-[44px] min-h-[44px] flex-shrink-0 text-muted-foreground"
+        >
+          <MoreVertical className="w-5 h-5" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent 
+        align="end" 
+        className="w-48 bg-popover z-50"
+      >
+        <DropdownMenuItem 
           onClick={onEdit}
+          className="min-h-[44px] gap-3 cursor-pointer"
         >
           <Pencil className="w-4 h-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="w-8 h-8 text-muted-foreground hover:text-destructive"
+          {t('common.edit')}
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem 
           onClick={() => onDelete(transaction.id)}
+          className="min-h-[44px] gap-3 text-destructive focus:text-destructive cursor-pointer"
         >
           <Trash2 className="w-4 h-4" />
-        </Button>
-      </div>
+          {t('common.delete')}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+  
+  return (
+    <div className="p-3 sm:p-4 bg-muted/30 rounded-xl hover:bg-muted/50 transition-colors group overflow-hidden">
+      {/* Mobile Layout - Stacked */}
+      {isMobile ? (
+        <div className="flex flex-col gap-2">
+          {/* Header row: Icon, Description, Menu */}
+          <div className="flex items-start gap-3">
+            <div className={`min-w-[44px] min-h-[44px] w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0 ${
+              transaction.type === 'INCOME' 
+                ? 'bg-income/20' 
+                : 'bg-expense/20'
+            }`}>
+              {transaction.type === 'INCOME' ? (
+                <ArrowUpCircle className="w-5 h-5 text-income" />
+              ) : (
+                <ArrowDownCircle className="w-5 h-5 text-expense" />
+              )}
+            </div>
+            
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-foreground truncate">
+                {transaction.description}
+              </p>
+              <p className="text-xs text-muted-foreground truncate">
+                {format(parseDateString(transaction.date), "d MMM yyyy", { locale: dateLocale })}
+                {walletName && (
+                  <span> • {walletIcon} {walletName}</span>
+                )}
+              </p>
+              <p className="text-xs text-muted-foreground truncate">
+                {displayCategory} • +{transaction.xp_earned} XP
+              </p>
+            </div>
+
+            <ActionsMenu />
+          </div>
+
+          {/* Amount row */}
+          <div className="ml-[56px]">
+            <p className={`text-sm font-bold ${
+              transaction.type === 'INCOME' ? 'text-income' : 'text-expense'
+            }`}>
+              {transaction.type === 'INCOME' ? '+' : '-'}{formattedAmount}
+            </p>
+            {isDifferentCurrency && (
+              <p className="text-xs text-muted-foreground">
+                ({formatMoney(transaction.amount, transactionCurrency as SupportedCurrency)})
+              </p>
+            )}
+          </div>
+        </div>
+      ) : (
+        /* Desktop Layout - Horizontal */
+        <div className="flex items-center gap-3">
+          <div className={`min-w-[44px] min-h-[44px] w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0 ${
+            transaction.type === 'INCOME' 
+              ? 'bg-income/20' 
+              : 'bg-expense/20'
+          }`}>
+            {transaction.type === 'INCOME' ? (
+              <ArrowUpCircle className="w-5 h-5 text-income" />
+            ) : (
+              <ArrowDownCircle className="w-5 h-5 text-expense" />
+            )}
+          </div>
+          
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-foreground truncate">
+              {transaction.description}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {format(parseDateString(transaction.date), "d MMM yyyy", { locale: dateLocale })}
+              {walletName && (
+                <span> • {walletIcon} {walletName}</span>
+              )}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {displayCategory} • +{transaction.xp_earned} XP
+            </p>
+          </div>
+
+          <div className="text-right flex-shrink-0">
+            <p className={`text-sm font-bold ${
+              transaction.type === 'INCOME' ? 'text-income' : 'text-expense'
+            }`}>
+              {transaction.type === 'INCOME' ? '+' : '-'}{formattedAmount}
+            </p>
+            {isDifferentCurrency && (
+              <p className="text-xs text-muted-foreground">
+                ({formatMoney(transaction.amount, transactionCurrency as SupportedCurrency)})
+              </p>
+            )}
+          </div>
+
+          <div className="flex gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="min-w-[44px] min-h-[44px] text-muted-foreground hover:text-foreground"
+              onClick={onEdit}
+            >
+              <Pencil className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="min-w-[44px] min-h-[44px] text-muted-foreground hover:text-destructive"
+              onClick={() => onDelete(transaction.id)}
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
