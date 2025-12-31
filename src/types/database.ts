@@ -46,6 +46,7 @@ export interface Transaction {
   date: string;
   xp_earned: number;
   currency: SupportedCurrency;
+  wallet_id: string | null;
   created_at: string;
 }
 

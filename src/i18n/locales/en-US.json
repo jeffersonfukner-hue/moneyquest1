@@ -1041,5 +1041,24 @@
       "badge": "Achievement",
       "bonus": "Bonus"
     }
+  },
+  "cashFlow": {
+    "title": "Cash Flow",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "history": "History",
+    "projection": "Projection",
+    "projected": "Projected",
+    "netFlow": "Net Flow",
+    "balance": "Balance",
+    "cumulativeBalance": "Cumulative Balance",
+    "avgIncome": "Avg Income",
+    "avgExpenses": "Avg Expenses",
+    "avgNetFlow": "Avg Net Flow",
+    "projectedBalance": "Projected Balance",
+    "positiveTrend": "Positive trend",
+    "negativeTrend": "Watch your flow",
+    "projectionNote": "Based on last 3 months",
+    "noData": "No data to display"
   }
 }

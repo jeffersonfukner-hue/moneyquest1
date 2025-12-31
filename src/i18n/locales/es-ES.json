@@ -1041,5 +1041,24 @@
       "badge": "Logro",
       "bonus": "Bono"
     }
+  },
+  "cashFlow": {
+    "title": "Flujo de Caja",
+    "weekly": "Semanal",
+    "monthly": "Mensual",
+    "history": "Historial",
+    "projection": "Proyección",
+    "projected": "Proyectado",
+    "netFlow": "Flujo Neto",
+    "balance": "Saldo",
+    "cumulativeBalance": "Saldo Acumulado",
+    "avgIncome": "Ingreso Promedio",
+    "avgExpenses": "Gastos Promedio",
+    "avgNetFlow": "Flujo Promedio",
+    "projectedBalance": "Saldo Proyectado",
+    "positiveTrend": "Tendencia positiva",
+    "negativeTrend": "Atención al flujo",
+    "projectionNote": "Basado en los últimos 3 meses",
+    "noData": "Sin datos para mostrar"
   }
 }
