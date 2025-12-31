@@ -264,6 +264,90 @@ export const useTransactions = () => {
     return { error: null };
   };
 
+  const updateTransaction = async (
+    id: string,
+    updates: Partial<Omit<Transaction, 'id' | 'user_id' | 'xp_earned' | 'created_at'>>
+  ) => {
+    if (!user || !profile) return { error: new Error('Not authenticated') };
+
+    // Find original transaction
+    const originalTx = transactions.find(t => t.id === id);
+    if (!originalTx) return { error: new Error('Transaction not found') };
+
+    // Prepare update data
+    const updateData: Record<string, unknown> = {};
+    if (updates.description !== undefined) updateData.description = updates.description;
+    if (updates.amount !== undefined) updateData.amount = updates.amount;
+    if (updates.category !== undefined) updateData.category = updates.category;
+    if (updates.type !== undefined) updateData.type = updates.type;
+    if (updates.date !== undefined) updateData.date = updates.date;
+    if (updates.currency !== undefined) updateData.currency = updates.currency;
+
+    // Update the transaction in DB
+    const { error: txError } = await supabase
+      .from('transactions')
+      .update(updateData)
+      .eq('id', id);
+
+    if (txError) return { error: txError };
+
+    // Calculate profile adjustments
+    const oldAmount = originalTx.amount;
+    const newAmount = updates.amount ?? originalTx.amount;
+    const oldType = originalTx.type;
+    const newType = updates.type ?? originalTx.type;
+    const oldCurrency = (originalTx.currency || 'BRL') as SupportedCurrency;
+    const newCurrency = ((updates.currency ?? originalTx.currency) || 'BRL') as SupportedCurrency;
+    const profileCurrency = (profile.currency || 'BRL') as SupportedCurrency;
+
+    // Convert to profile currency
+    const oldConverted = oldCurrency !== profileCurrency 
+      ? convertCurrency(oldAmount, oldCurrency, profileCurrency) 
+      : oldAmount;
+    const newConverted = newCurrency !== profileCurrency 
+      ? convertCurrency(newAmount, newCurrency, profileCurrency) 
+      : newAmount;
+
+    // Calculate new totals
+    let newTotalIncome = profile.total_income;
+    let newTotalExpenses = profile.total_expenses;
+
+    // Revert old values
+    if (oldType === 'INCOME') {
+      newTotalIncome -= oldConverted;
+    } else {
+      newTotalExpenses -= oldConverted;
+    }
+
+    // Apply new values
+    if (newType === 'INCOME') {
+      newTotalIncome += newConverted;
+    } else {
+      newTotalExpenses += newConverted;
+    }
+
+    // Update profile
+    const newMood = calculateFinancialMood(newTotalIncome, newTotalExpenses);
+    await supabase
+      .from('profiles')
+      .update({
+        total_income: newTotalIncome,
+        total_expenses: newTotalExpenses,
+        financial_mood: newMood
+      })
+      .eq('id', user.id);
+
+    toast({
+      title: t('transactions.updated'),
+      description: updates.description ?? originalTx.description,
+    });
+
+    await fetchTransactions();
+    await refetchProfile();
+
+    return { error: null };
+  };
+
   const deleteTransaction = async (id: string) => {
     if (!user) return { error: new Error('Not authenticated') };
 
@@ -286,6 +370,7 @@ export const useTransactions = () => {
     transactions, 
     loading, 
     addTransaction, 
+    updateTransaction,
     deleteTransaction, 
     refetch: fetchTransactions,
     celebrationData,

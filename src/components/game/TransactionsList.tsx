@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Locale } from 'date-fns';
 import { Transaction, SupportedCurrency } from '@/types/database';
-import { ArrowUpCircle, ArrowDownCircle, Trash2 } from 'lucide-react';
+import { ArrowUpCircle, ArrowDownCircle, Trash2, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { format, subDays } from 'date-fns';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -11,19 +11,22 @@ import { useCurrency } from '@/contexts/CurrencyContext';
 import { parseDateString } from '@/lib/dateUtils';
 import { formatMoney } from '@/lib/formatters';
 import { getCategoryTranslationKey } from '@/lib/gameLogic';
+import { EditTransactionDialog } from './EditTransactionDialog';
 
 interface TransactionsListProps {
   transactions: Transaction[];
   onDelete: (id: string) => void;
+  onUpdate: (id: string, updates: Partial<Omit<Transaction, 'id' | 'user_id' | 'xp_earned' | 'created_at'>>) => Promise<{ error: Error | null }>;
 }
 
 type FilterPeriod = 'all' | 'week' | 'month' | 'year';
 
-export const TransactionsList = ({ transactions, onDelete }: TransactionsListProps) => {
+export const TransactionsList = ({ transactions, onDelete, onUpdate }: TransactionsListProps) => {
   const { t } = useTranslation();
   const { dateLocale } = useLanguage();
   const { formatCurrency, currency: userCurrency, formatConverted } = useCurrency();
   const [filter, setFilter] = useState<FilterPeriod>('all');
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
 
   const filteredTransactions = useMemo(() => {
     const now = new Date();
@@ -111,6 +114,7 @@ export const TransactionsList = ({ transactions, onDelete }: TransactionsListPro
                     key={transaction.id} 
                     transaction={transaction} 
                     onDelete={onDelete}
+                    onEdit={() => setEditingTransaction(transaction)}
                     dateLocale={dateLocale}
                     formatCurrency={formatCurrency}
                     userCurrency={userCurrency}
@@ -123,6 +127,15 @@ export const TransactionsList = ({ transactions, onDelete }: TransactionsListPro
           ))}
         </div>
       )}
+
+      {editingTransaction && (
+        <EditTransactionDialog
+          transaction={editingTransaction}
+          open={!!editingTransaction}
+          onOpenChange={(open) => !open && setEditingTransaction(null)}
+          onUpdate={onUpdate}
+        />
+      )}
     </div>
   );
 };
@@ -130,6 +143,7 @@ export const TransactionsList = ({ transactions, onDelete }: TransactionsListPro
 const TransactionItem = ({ 
   transaction, 
   onDelete,
+  onEdit,
   dateLocale,
   formatCurrency,
   userCurrency,
@@ -138,6 +152,7 @@ const TransactionItem = ({
 }: { 
   transaction: Transaction; 
   onDelete: (id: string) => void;
+  onEdit: () => void;
   dateLocale: Locale;
   formatCurrency: (amount: number) => string;
   userCurrency: SupportedCurrency;
@@ -170,7 +185,10 @@ const TransactionItem = ({
           {transaction.description}
         </p>
         <p className="text-xs text-muted-foreground">
-          {format(parseDateString(transaction.date), "d MMM", { locale: dateLocale })} • {displayCategory} • +{transaction.xp_earned} XP
+          {format(parseDateString(transaction.date), "d MMM yyyy", { locale: dateLocale })}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          {displayCategory} • +{transaction.xp_earned} XP
         </p>
       </div>
 
@@ -191,14 +209,24 @@ const TransactionItem = ({
         )}
       </div>
 
-      <Button
-        variant="ghost"
-        size="icon"
-        className="w-8 h-8 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-        onClick={() => onDelete(transaction.id)}
-      >
-        <Trash2 className="w-4 h-4" />
-      </Button>
+      <div className="flex gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="w-8 h-8 text-muted-foreground hover:text-foreground"
+          onClick={onEdit}
+        >
+          <Pencil className="w-4 h-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="w-8 h-8 text-muted-foreground hover:text-destructive"
+          onClick={() => onDelete(transaction.id)}
+        >
+          <Trash2 className="w-4 h-4" />
+        </Button>
+      </div>
     </div>
   );
 };

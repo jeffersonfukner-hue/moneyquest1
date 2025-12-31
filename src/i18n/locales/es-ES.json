@@ -170,6 +170,10 @@
     "noTransactionsForPeriod": "Sin transacciones en este período",
     "startTracking": "¡Empieza a registrar tus transacciones!",
     "deleteConfirm": "¿Estás seguro de que quieres eliminar esta transacción?",
+    "editTitle": "Editar Transacción",
+    "saveChanges": "Guardar Cambios",
+    "updated": "¡Transacción actualizada!",
+    "deleteConfirm": "¿Estás seguro de que quieres eliminar esta transacción?",
     "categories": {
       "salary": "Salario",
       "freelance": "Freelance",
