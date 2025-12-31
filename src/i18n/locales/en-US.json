@@ -118,6 +118,59 @@
       "other": "Other"
     }
   },
+  "premiumCashFlow": {
+    "title": "Premium Cash Flow Report",
+    "subtitle": "Detailed financial analysis",
+    "period": {
+      "week": "Week",
+      "month": "Month",
+      "quarter": "Quarter",
+      "year": "Year"
+    },
+    "filters": {
+      "title": "Filters",
+      "wallets": "Wallets",
+      "categories": "Categories",
+      "transactionType": "Type",
+      "allTypes": "All",
+      "allCategories": "All Categories",
+      "selectCategories": "Search categories...",
+      "clearFilters": "Clear"
+    },
+    "summary": {
+      "totalIncome": "Total Income",
+      "totalExpenses": "Total Expenses",
+      "netFlow": "Net Flow",
+      "savingsRate": "Savings Rate"
+    },
+    "comparison": {
+      "title": "Period Comparison",
+      "previous": "Previous",
+      "current": "Current"
+    },
+    "table": {
+      "title": "Transaction Details",
+      "date": "Date",
+      "description": "Description",
+      "category": "Category",
+      "wallet": "Wallet",
+      "income": "Income",
+      "expense": "Expense",
+      "balance": "Balance",
+      "noTransactions": "No transactions in this period"
+    },
+    "teaser": {
+      "title": "Premium Cash Flow",
+      "description": "Unlock advanced analytics",
+      "features": {
+        "advancedFilters": "Filter by wallet & category",
+        "periodComparison": "Compare periods",
+        "detailedTable": "Table with balance",
+        "narratives": "RPG-style summaries"
+      },
+      "unlock": "Unlock Premium"
+    }
+  },
   "common": {
     "loading": "Loading...",
     "save": "Save",

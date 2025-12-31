@@ -44,6 +44,7 @@ const PREMIUM_FEATURES = [
   'advanced_themes',
   'data_export',
   'unlimited_history',
+  'premium_cash_flow',
 ] as const;
 
 export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
