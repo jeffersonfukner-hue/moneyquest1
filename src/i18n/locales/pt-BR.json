@@ -252,7 +252,57 @@
     "title": "Conquistas",
     "unlocked": "Desbloqueada",
     "locked": "Bloqueada",
-    "unlockedAt": "Desbloqueada em"
+    "unlockedAt": "Desbloqueada em",
+    "items": {
+      "first_steps": {
+        "name": "Primeiros Passos",
+        "description": "Registrou sua primeira transação"
+      },
+      "getting_started": {
+        "name": "Iniciando a Jornada",
+        "description": "Alcançou 100 XP"
+      },
+      "rising_star": {
+        "name": "Estrela em Ascensão",
+        "description": "Alcançou 500 XP"
+      },
+      "xp_champion": {
+        "name": "Campeão de XP",
+        "description": "Alcançou 1000 XP"
+      },
+      "streak_starter": {
+        "name": "Iniciando Sequência",
+        "description": "Sequência de 3 dias"
+      },
+      "streak_master": {
+        "name": "Mestre da Sequência",
+        "description": "Sequência de 7 dias"
+      },
+      "penny_pincher": {
+        "name": "Economizador",
+        "description": "Economizou R$100"
+      },
+      "savings_pro": {
+        "name": "Profissional em Economias",
+        "description": "Economizou R$1000"
+      },
+      "pumpkin_saver": {
+        "name": "Poupador de Halloween",
+        "description": "Completou a missão de Halloween"
+      },
+      "christmas_planner": {
+        "name": "Planejador de Natal",
+        "description": "Completou a missão de Natal"
+      },
+      "smart_reveler": {
+        "name": "Folião Esperto",
+        "description": "Completou a missão de Carnaval"
+      },
+      "golden_egg": {
+        "name": "Ovo de Ouro",
+        "description": "Completou a missão de Páscoa"
+      }
+    }
   },
   "levels": {
     "novice_saver": "Poupador Novato",

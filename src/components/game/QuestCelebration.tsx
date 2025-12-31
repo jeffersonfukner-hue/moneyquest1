@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import confetti from 'canvas-confetti';
 import { Quest, Badge } from '@/types/database';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { QUEST_TYPE_CONFIG } from '@/lib/gameLogic';
+import { QUEST_TYPE_CONFIG, getBadgeKey } from '@/lib/gameLogic';
 
 interface QuestCelebrationProps {
   completedQuest: Quest | null;
@@ -119,10 +119,10 @@ export const QuestCelebration = ({ completedQuest, unlockedBadge, onClose }: Que
                 {t('celebration.badgeUnlocked')}
               </h3>
               <p className="text-lg font-semibold text-primary mb-2">
-                {unlockedBadge.name}
+                {t(`badges.items.${getBadgeKey(unlockedBadge.name)}.name`, { defaultValue: unlockedBadge.name })}
               </p>
               <p className="text-sm text-muted-foreground">
-                {unlockedBadge.description}
+                {t(`badges.items.${getBadgeKey(unlockedBadge.name)}.description`, { defaultValue: unlockedBadge.description })}
               </p>
             </div>
           )}

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { Transaction, SupportedCurrency } from '@/types/database';
 import { useAuth } from './useAuth';
@@ -10,7 +11,8 @@ import {
   calculateStreak,
   checkAndUpdateBadges,
   checkAndUpdateQuests,
-  calculateFinancialMood
+  calculateFinancialMood,
+  getBadgeKey
 } from '@/lib/gameLogic';
 import { getTodayString } from '@/lib/dateUtils';
 import { toast } from '@/hooks/use-toast';
@@ -31,6 +33,7 @@ interface NarrativeData {
 }
 
 export const useTransactions = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { profile, refetch: refetchProfile } = useProfile();
   const { playSound } = useSound();
@@ -188,9 +191,11 @@ export const useTransactions = () => {
     });
 
     unlockedBadges.slice(1).forEach(badge => {
+      const badgeKey = getBadgeKey(badge.name);
+      const translatedName = t(`badges.items.${badgeKey}.name`, { defaultValue: badge.name });
       toast({
-        title: `${badge.icon} Badge Unlocked!`,
-        description: badge.name,
+        title: `${badge.icon} ${t('celebration.badgeUnlocked')}`,
+        description: translatedName,
       });
     });
 

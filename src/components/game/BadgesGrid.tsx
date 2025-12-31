@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/types/database';
 import { Award, Lock } from 'lucide-react';
+import { getBadgeKey } from '@/lib/gameLogic';
 
 interface BadgesGridProps {
   badges: Badge[];
@@ -33,6 +34,11 @@ export const BadgesGrid = ({ badges }: BadgesGridProps) => {
 
 const BadgeItem = ({ badge }: { badge: Badge }) => {
   const { t } = useTranslation();
+  const badgeKey = getBadgeKey(badge.name);
+  
+  // Try to get translated name/description, fallback to database values
+  const translatedName = t(`badges.items.${badgeKey}.name`, { defaultValue: badge.name });
+  const translatedDescription = t(`badges.items.${badgeKey}.description`, { defaultValue: badge.description });
   
   return (
     <div 
@@ -41,13 +47,13 @@ const BadgeItem = ({ badge }: { badge: Badge }) => {
           ? 'bg-gradient-xp shadow-glow-accent animate-bounce-in' 
           : 'bg-muted/50'
       }`}
-      title={`${badge.name}: ${badge.description}`}
+      title={`${translatedName}: ${translatedDescription}`}
     >
       {badge.is_unlocked ? (
         <>
           <span className="text-xl sm:text-2xl">{badge.icon}</span>
           <span className="text-[9px] sm:text-[10px] font-medium text-accent-foreground text-center leading-tight mt-1 truncate w-full">
-            {badge.name}
+            {translatedName}
           </span>
         </>
       ) : (
