@@ -45,6 +45,7 @@ const PREMIUM_FEATURES = [
   'data_export',
   'unlimited_history',
   'premium_cash_flow',
+  'batch_edit',
 ] as const;
 
 export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

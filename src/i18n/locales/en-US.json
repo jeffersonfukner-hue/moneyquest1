@@ -278,6 +278,18 @@
       "health": "Health",
       "education": "Education",
       "other_expense": "Other Expenses"
+    },
+    "batchActions": {
+      "select": "Select",
+      "cancel": "Cancel",
+      "selected": "{{count}} selected",
+      "assignWallet": "Assign Wallet",
+      "assignWalletTitle": "Batch Wallet Assignment",
+      "assignWalletDescription": "Select the wallet to assign to the {{count}} selected transactions:",
+      "confirm": "Confirm",
+      "success": "{{count}} transactions updated!",
+      "error": "Failed to update transactions",
+      "premiumOnly": "Batch Editing"
     }
   },
   "dashboard": {
