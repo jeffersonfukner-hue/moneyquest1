@@ -51,7 +51,7 @@ const Index = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { profile, loading: profileLoading, refetch: refetchProfile } = useProfile();
-  const { transactions, addTransaction, updateTransaction, deleteTransaction, batchUpdateWallet, celebrationData, clearCelebration, narrativeData, clearNarrative } = useTransactions();
+  const { transactions, addTransaction, updateTransaction, deleteTransaction, batchUpdateWallet, batchDeleteTransactions, celebrationData, clearCelebration, narrativeData, clearNarrative } = useTransactions();
   const { quests, refetch: refetchQuests } = useQuests();
   const { badges, refetch: refetchBadges } = useBadges();
   const { goals } = useCategoryGoals();
@@ -204,7 +204,7 @@ const Index = () => {
           </div>
         );
       case 'transactions':
-        return <TransactionsList transactions={transactions} onDelete={deleteTransaction} onUpdate={updateTransaction} onBatchUpdateWallet={batchUpdateWallet} />;
+        return <TransactionsList transactions={transactions} onDelete={deleteTransaction} onUpdate={updateTransaction} onBatchUpdateWallet={batchUpdateWallet} onBatchDelete={batchDeleteTransactions} />;
       case 'quests':
         return <QuestsPanel quests={quests} />;
       default:

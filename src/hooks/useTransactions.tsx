@@ -421,6 +421,36 @@ export const useTransactions = () => {
     }
   };
 
+  const batchDeleteTransactions = async (transactionIds: string[]): Promise<{ error: Error | null; deletedCount: number }> => {
+    if (!user) return { error: new Error('Not authenticated'), deletedCount: 0 };
+
+    try {
+      // Get transactions to delete for wallet recalculation
+      const txsToDelete = transactions.filter(t => transactionIds.includes(t.id));
+      const affectedWalletIds = [...new Set(txsToDelete.map(t => t.wallet_id).filter(Boolean))] as string[];
+
+      const { error } = await supabase
+        .from('transactions')
+        .delete()
+        .in('id', transactionIds);
+
+      if (error) throw error;
+
+      // Update local state
+      setTransactions(prev => prev.filter(t => !transactionIds.includes(t.id)));
+
+      // Recalculate wallet balances
+      for (const walletId of affectedWalletIds) {
+        await recalculateBalance(walletId);
+      }
+
+      return { error: null, deletedCount: transactionIds.length };
+    } catch (error) {
+      console.error('Error batch deleting transactions:', error);
+      return { error: error as Error, deletedCount: 0 };
+    }
+  };
+
   const clearCelebration = () => setCelebrationData(null);
   const clearNarrative = () => setNarrativeData(null);
 
@@ -431,6 +461,7 @@ export const useTransactions = () => {
     updateTransaction,
     deleteTransaction,
     batchUpdateWallet,
+    batchDeleteTransactions,
     refetch: fetchTransactions,
     celebrationData,
     clearCelebration,
