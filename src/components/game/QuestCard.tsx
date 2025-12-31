@@ -1,8 +1,9 @@
 import { Quest } from '@/types/database';
 import { CheckCircle2, Circle, Clock, Award } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
-import { getTimeUntilReset, QUEST_TYPE_CONFIG, getSeasonalBadgeName } from '@/lib/gameLogic';
+import { getTimeUntilReset, QUEST_TYPE_CONFIG, getSeasonalBadgeName, getQuestKey } from '@/lib/gameLogic';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useTranslation } from 'react-i18next';
 
 // Badge icon mapping for rewards preview
 const SEASONAL_BADGE_ICONS: Record<string, { icon: string; name: string }> = {
@@ -18,6 +19,7 @@ interface QuestCardProps {
 }
 
 export const QuestCard = ({ quest, showTimer = false }: QuestCardProps) => {
+  const { t } = useTranslation();
   const config = QUEST_TYPE_CONFIG[quest.type];
   const progressPercent = quest.progress_target > 0 
     ? (quest.progress_current / quest.progress_target) * 100 
@@ -27,6 +29,11 @@ export const QuestCard = ({ quest, showTimer = false }: QuestCardProps) => {
   
   // Get badge reward for special quests
   const badgeReward = quest.season ? SEASONAL_BADGE_ICONS[quest.season.toLowerCase()] : null;
+
+  // Get translated quest title and description
+  const questKey = getQuestKey(quest.quest_key);
+  const translatedTitle = questKey ? t(`quests.items.${questKey}.title`, { defaultValue: quest.title }) : quest.title;
+  const translatedDescription = questKey ? t(`quests.items.${questKey}.description`, { defaultValue: quest.description }) : quest.description;
 
   return (
     <div 
@@ -48,7 +55,7 @@ export const QuestCard = ({ quest, showTimer = false }: QuestCardProps) => {
             <p className={`text-sm font-medium ${
               quest.is_completed ? 'line-through text-muted-foreground' : 'text-foreground'
             }`}>
-              {quest.title}
+              {translatedTitle}
             </p>
             {quest.season && (
               <span className={`text-xs px-2 py-0.5 rounded-full ${config.bgColor} ${config.color}`}>
@@ -56,7 +63,7 @@ export const QuestCard = ({ quest, showTimer = false }: QuestCardProps) => {
               </span>
             )}
           </div>
-          <p className="text-xs text-muted-foreground">{quest.description}</p>
+          <p className="text-xs text-muted-foreground">{translatedDescription}</p>
         </div>
         
         <div className="flex flex-col items-end gap-1">

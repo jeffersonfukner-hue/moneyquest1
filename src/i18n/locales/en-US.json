@@ -246,7 +246,93 @@
     "reward": "Reward",
     "timeLeft": "Time left",
     "progress": "Progress",
-    "expires": "Expires in"
+    "expires": "Expires in",
+    "items": {
+      "daily_checkin": {
+        "title": "Daily Check-in",
+        "description": "Log at least one transaction today"
+      },
+      "daily_categorized": {
+        "title": "Mindful Spending",
+        "description": "Log an expense with a category"
+      },
+      "daily_expense": {
+        "title": "Expense Tracker",
+        "description": "Register an expense for the day"
+      },
+      "daily_logger": {
+        "title": "Daily Logger",
+        "description": "Log a transaction today"
+      },
+      "weekly_balance": {
+        "title": "Weekly Balance",
+        "description": "Log transactions on at least 5 different days this week"
+      },
+      "weekly_categories": {
+        "title": "Category Master",
+        "description": "Use at least 3 different expense categories this week"
+      },
+      "frugal_friday": {
+        "title": "Frugal Friday",
+        "description": "Don't spend anything on at least one Friday this week"
+      },
+      "income_hunter": {
+        "title": "Income Hunter",
+        "description": "Log income from 2 different sources this week"
+      },
+      "spending_freeze": {
+        "title": "Spending Freeze",
+        "description": "Have at least 2 no-spend days this week"
+      },
+      "category_focus": {
+        "title": "Category Focus",
+        "description": "Keep your highest spending category under control this week"
+      },
+      "savings_sprint": {
+        "title": "Savings Sprint",
+        "description": "Save at least 20% of your income this week"
+      },
+      "monthly_discipline": {
+        "title": "Financial Discipline",
+        "description": "Log transactions every week of the month"
+      },
+      "monthly_savings": {
+        "title": "Savings Hero",
+        "description": "Keep total expenses below your goal limit"
+      },
+      "special_christmas": {
+        "title": "Santa's Budget",
+        "description": "Track 5 holiday expenses to earn the Christmas Planner badge!"
+      },
+      "special_halloween": {
+        "title": "Pumpkin Saver",
+        "description": "Log 5 spooky savings during October to earn the Pumpkin Saver badge!"
+      },
+      "special_easter": {
+        "title": "Golden Egg Hunt",
+        "description": "Save money on 7 different days in April to find the Golden Egg!"
+      },
+      "special_carnival": {
+        "title": "Smart Reveler",
+        "description": "Track 10 entertainment or party expenses during Carnival season!"
+      },
+      "achievement_first": {
+        "title": "First Steps",
+        "description": "Log your first transaction"
+      },
+      "achievement_budget": {
+        "title": "Budget Master",
+        "description": "Set your first category goal"
+      },
+      "achievement_streak7": {
+        "title": "Week Warrior",
+        "description": "Maintain a 7-day streak"
+      },
+      "achievement_save1000": {
+        "title": "Saver Supreme",
+        "description": "Save $1000 total"
+      }
+    }
   },
   "badges": {
     "title": "Badges",
