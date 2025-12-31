@@ -118,6 +118,59 @@
       "other": "Outro"
     }
   },
+  "premiumCashFlow": {
+    "title": "Relatório de Fluxo de Caixa Premium",
+    "subtitle": "Análise detalhada das suas finanças",
+    "period": {
+      "week": "Semana",
+      "month": "Mês",
+      "quarter": "Trimestre",
+      "year": "Ano"
+    },
+    "filters": {
+      "title": "Filtros",
+      "wallets": "Carteiras",
+      "categories": "Categorias",
+      "transactionType": "Tipo",
+      "allTypes": "Todos",
+      "allCategories": "Todas as Categorias",
+      "selectCategories": "Buscar categorias...",
+      "clearFilters": "Limpar"
+    },
+    "summary": {
+      "totalIncome": "Receita Total",
+      "totalExpenses": "Despesas Totais",
+      "netFlow": "Fluxo Líquido",
+      "savingsRate": "Taxa de Economia"
+    },
+    "comparison": {
+      "title": "Comparação de Períodos",
+      "previous": "Anterior",
+      "current": "Atual"
+    },
+    "table": {
+      "title": "Detalhamento",
+      "date": "Data",
+      "description": "Descrição",
+      "category": "Categoria",
+      "wallet": "Carteira",
+      "income": "Receita",
+      "expense": "Despesa",
+      "balance": "Saldo",
+      "noTransactions": "Nenhuma transação no período"
+    },
+    "teaser": {
+      "title": "Fluxo de Caixa Premium",
+      "description": "Desbloqueie análises avançadas",
+      "features": {
+        "advancedFilters": "Filtros por carteira e categoria",
+        "periodComparison": "Compare períodos",
+        "detailedTable": "Tabela com saldo",
+        "narratives": "Resumos em estilo RPG"
+      },
+      "unlock": "Desbloquear Premium"
+    }
+  },
   "common": {
     "loading": "Carregando...",
     "save": "Salvar",
