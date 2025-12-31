@@ -17,6 +17,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Setup from "./pages/Setup";
 import Onboarding from "./pages/Onboarding";
 import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
@@ -55,6 +56,7 @@ const App = () => (
                       <BrowserRouter>
                         <Routes>
                           <Route path="/" element={<OnboardingGuard><Index /></OnboardingGuard>} />
+                          <Route path="/setup" element={<Setup />} />
                           <Route path="/login" element={<Login />} />
                           <Route path="/signup" element={<Signup />} />
                           <Route path="/onboarding" element={<Onboarding />} />

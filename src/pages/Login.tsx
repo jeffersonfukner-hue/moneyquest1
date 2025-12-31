@@ -1,19 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
+import { useSetupGuard } from '@/hooks/useSetupGuard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from '@/components/ui/dropdown-menu';
-import { Gamepad2, Sparkles, Eye, EyeOff, Globe, ChevronDown, ArrowLeft } from 'lucide-react';
-import { SUPPORTED_LANGUAGES, type SupportedLanguage } from '@/i18n';
+import { Gamepad2, Sparkles, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import i18n from '@/i18n';
 
 type LoginMode = 'login' | 'forgot';
@@ -25,17 +19,31 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [currentLanguage, setCurrentLanguage] = useState<SupportedLanguage>(
-    (i18n.language as SupportedLanguage) || 'pt-BR'
-  );
-  const { signIn, signInWithGoogle, resetPassword } = useAuth();
-  const navigate = useNavigate();
   const [googleLoading, setGoogleLoading] = useState(false);
+  const { signIn, signInWithGoogle, resetPassword, user } = useAuth();
+  const { hasCompletedSetup, getSetupPreferences } = useSetupGuard();
+  const navigate = useNavigate();
 
-  const handleLanguageChange = (lang: SupportedLanguage) => {
-    setCurrentLanguage(lang);
-    i18n.changeLanguage(lang);
-  };
+  // Redirect if setup not completed
+  useEffect(() => {
+    if (!hasCompletedSetup()) {
+      navigate('/setup');
+      return;
+    }
+    
+    // Apply saved language from setup
+    const { language } = getSetupPreferences();
+    if (language && language !== i18n.language) {
+      i18n.changeLanguage(language);
+    }
+  }, [hasCompletedSetup, navigate, getSetupPreferences]);
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const getTranslatedError = (message: string): string => {
     if (message.includes('Invalid login credentials')) {
@@ -232,32 +240,6 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Language Selector */}
-        <div className="flex justify-end mb-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="min-h-[44px] gap-2">
-                <Globe className="w-4 h-4" />
-                <span>{SUPPORTED_LANGUAGES[currentLanguage].flag}</span>
-                <span className="hidden sm:inline">{SUPPORTED_LANGUAGES[currentLanguage].name}</span>
-                <ChevronDown className="w-3 h-3" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-popover z-50">
-              {Object.entries(SUPPORTED_LANGUAGES).map(([code, { name, flag }]) => (
-                <DropdownMenuItem 
-                  key={code}
-                  onClick={() => handleLanguageChange(code as SupportedLanguage)}
-                  className="min-h-[44px] cursor-pointer"
-                >
-                  <span className="mr-2">{flag}</span>
-                  <span>{name}</span>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-
         <div className="text-center mb-8 animate-slide-up">
           <div className="w-20 h-20 bg-gradient-hero rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-glow-primary animate-float">
             <Gamepad2 className="w-10 h-10 text-primary-foreground" />

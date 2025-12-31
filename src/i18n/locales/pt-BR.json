@@ -1,4 +1,15 @@
 {
+  "setup": {
+    "title": "Configuração Inicial",
+    "subtitle": "Escolha suas preferências para começar",
+    "description": "Selecione seu idioma e moeda antes de criar sua conta",
+    "selectLanguage": "Selecione seu idioma",
+    "selectCurrency": "Selecione sua moeda principal",
+    "continue": "Continuar",
+    "languageLabel": "Idioma",
+    "currencyLabel": "Moeda",
+    "currencyHint": "Esta será a moeda padrão para suas carteiras e transações"
+  },
   "onboarding": {
     "steps": {
       "welcome": {
