@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { Swords, Coins, Shield, Flame, Zap, Heart, Sparkles } from 'lucide-react';
 import { JournalEntry as JournalEntryType } from '@/hooks/useAdventureJournal';
@@ -5,6 +6,7 @@ import { IMPACT_COLORS, IMPACT_ICONS, INCOME_ICONS } from '@/lib/narrativeConfig
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { cn } from '@/lib/utils';
 import { parseDateString } from '@/lib/dateUtils';
+import { getCategoryTranslationKey } from '@/lib/gameLogic';
 
 interface JournalEntryProps {
   entry: JournalEntryType;
@@ -25,10 +27,15 @@ const impactIcons: Record<string, React.ReactNode> = {
 };
 
 export const JournalEntry = ({ entry }: JournalEntryProps) => {
+  const { t } = useTranslation();
   const { formatCurrency } = useCurrency();
   
   const isIncome = entry.eventType === 'INCOME';
   const formattedDate = format(parseDateString(entry.createdAt), 'MMM d, yyyy • h:mm a');
+  
+  // Translate category name if it's a default category
+  const translationKey = getCategoryTranslationKey(entry.category, entry.eventType as 'INCOME' | 'EXPENSE');
+  const displayCategory = translationKey ? t(`transactions.categories.${translationKey}`) : entry.category;
   
   // Get the appropriate icon
   const icon = isIncome 
@@ -51,7 +58,7 @@ export const JournalEntry = ({ entry }: JournalEntryProps) => {
           </span>
           <div>
             <span className="text-xs text-muted-foreground capitalize">
-              {entry.category.replace('_', ' ')}
+              {displayCategory.replace('_', ' ')}
             </span>
             <div className="flex items-center gap-1.5">
               {isIncome ? (

@@ -6,6 +6,7 @@ import { Transaction, SupportedCurrency } from '@/types/database';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { type TabId } from '@/components/navigation/BottomNavigation';
 import { formatMoney } from '@/lib/formatters';
+import { getCategoryTranslationKey } from '@/lib/gameLogic';
 
 interface RecentTransactionsCardProps {
   transactions: Transaction[];
@@ -34,6 +35,10 @@ export const RecentTransactionsCard = ({ transactions, onViewMore }: RecentTrans
         {recentTransactions.map((transaction) => {
           const transactionCurrency = transaction.currency || 'BRL';
           const isDifferentCurrency = transactionCurrency !== userCurrency;
+          
+          // Translate category name if it's a default category
+          const translationKey = getCategoryTranslationKey(transaction.category, transaction.type);
+          const displayCategory = translationKey ? t(`transactions.categories.${translationKey}`) : transaction.category;
           
           return (
             <div

@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, TrendingUp, TrendingDown } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import type { SupportedCurrency } from '@/i18n';
+import { getCategoryTranslationKey } from '@/lib/gameLogic';
 
 interface TransactionFeedbackProps {
   message: string;
@@ -22,8 +24,13 @@ export const TransactionFeedback = ({
   currency,
   onDismiss,
 }: TransactionFeedbackProps) => {
+  const { t } = useTranslation();
   const { formatConverted } = useCurrency();
   const [isVisible, setIsVisible] = useState(false);
+  
+  // Translate category name if it's a default category
+  const translationKey = getCategoryTranslationKey(category, type);
+  const displayCategory = translationKey ? t(`transactions.categories.${translationKey}`) : category;
 
   useEffect(() => {
     // Trigger entrance animation
@@ -83,7 +90,7 @@ export const TransactionFeedback = ({
                 {isIncome ? '+' : '-'}{formatConverted(amount, currency as SupportedCurrency)}
               </span>
               <span className="text-xs text-muted-foreground px-2 py-0.5 bg-muted/50 rounded-full">
-                {category}
+                {displayCategory}
               </span>
             </div>
             <p className="text-sm text-foreground/90 leading-relaxed">
