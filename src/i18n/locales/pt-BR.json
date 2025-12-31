@@ -1025,5 +1025,17 @@
     "levelUp": "Subiu de Nível!",
     "nowLevel": "Agora você é Nível {{level}}",
     "totalXP": "Total: {{total}} XP"
+  },
+  "xpHistory": {
+    "title": "Histórico de XP",
+    "empty": "Nenhuma atividade ainda. Comece registrando transações!",
+    "currentXP": "XP Atual",
+    "sources": {
+      "transaction": "Transação",
+      "quest": "Missão",
+      "dailyReward": "Recompensa Diária",
+      "badge": "Conquista",
+      "bonus": "Bônus"
+    }
   }
 }
