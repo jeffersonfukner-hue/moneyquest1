@@ -22,10 +22,18 @@ import { detectBrowserLanguage } from '@/lib/browserLanguageDetection';
 
 type SignupStep = 'landing' | 'preferences' | 'account';
 
+const STEPS: SignupStep[] = ['landing', 'preferences', 'account'];
+
 const languageFlags: Record<I18nLanguage, { flag: string; label: string }> = {
   'pt-BR': { flag: '🇧🇷', label: 'Português' },
   'en-US': { flag: '🇺🇸', label: 'English' },
   'es-ES': { flag: '🇪🇸', label: 'Español' },
+};
+
+const stepLabels: Record<SignupStep, string> = {
+  'landing': 'welcome',
+  'preferences': 'preferences', 
+  'account': 'account',
 };
 
 const Signup = () => {
@@ -39,7 +47,10 @@ const Signup = () => {
   
   // Step state
   const [step, setStep] = useState<SignupStep>('landing');
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionDirection, setTransitionDirection] = useState<'forward' | 'backward'>('forward');
   
+  const currentStepIndex = STEPS.indexOf(step);
   // Preferences state - pre-select detected browser language
   const [selectedLanguage, setSelectedLanguage] = useState<SupportedLanguage | null>(() => {
     return detectBrowserLanguage();
@@ -71,16 +82,33 @@ const Signup = () => {
     }
   }, [selectedLanguage]);
 
+  const navigateToStep = (newStep: SignupStep, direction: 'forward' | 'backward') => {
+    setTransitionDirection(direction);
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setStep(newStep);
+      setIsTransitioning(false);
+    }, 150);
+  };
+
   const handleContinueToAccount = () => {
     if (selectedLanguage && selectedCurrency) {
       localStorage.setItem(LANGUAGE_PREFERENCE_KEY, 'true');
       saveSetupPreferences(selectedLanguage, selectedCurrency);
-      setStep('account');
+      navigateToStep('account', 'forward');
     }
   };
 
   const handleBackToPreferences = () => {
-    setStep('preferences');
+    navigateToStep('preferences', 'backward');
+  };
+
+  const handleBackToLanding = () => {
+    navigateToStep('landing', 'backward');
+  };
+
+  const handleContinueToPreferences = () => {
+    navigateToStep('preferences', 'forward');
   };
 
   const getTranslatedError = (message: string): string => {
@@ -172,7 +200,7 @@ const Signup = () => {
       {/* Primary CTA */}
       <section className="space-y-3 animate-fade-in" style={{ animationDelay: '200ms' }}>
         <Button 
-          onClick={() => setStep('preferences')}
+          onClick={handleContinueToPreferences}
           className="w-full h-14 text-lg font-semibold bg-gradient-hero hover:opacity-90 shadow-lg transition-all duration-300"
         >
           {t('landing.cta.startFree')}
@@ -232,7 +260,7 @@ const Signup = () => {
           type="button"
           variant="ghost"
           size="sm"
-          onClick={() => setStep('landing')}
+          onClick={handleBackToLanding}
           className="text-muted-foreground"
         >
           <ArrowLeft className="w-4 h-4 mr-1" />
@@ -507,6 +535,57 @@ const Signup = () => {
     }
   };
 
+  const renderStepper = () => {
+    if (step === 'landing') return null;
+    
+    return (
+      <div className="flex items-center justify-center gap-2 mb-2">
+        {STEPS.filter(s => s !== 'landing').map((s, index) => {
+          const stepIndex = STEPS.indexOf(s);
+          const isActive = stepIndex === currentStepIndex;
+          const isCompleted = stepIndex < currentStepIndex;
+          
+          return (
+            <div key={s} className="flex items-center gap-2">
+              <div 
+                className={`
+                  w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
+                  transition-all duration-300
+                  ${isActive 
+                    ? 'bg-primary text-primary-foreground scale-110' 
+                    : isCompleted 
+                      ? 'bg-primary/20 text-primary' 
+                      : 'bg-muted text-muted-foreground'
+                  }
+                `}
+              >
+                {isCompleted ? (
+                  <Check className="w-4 h-4" />
+                ) : (
+                  index + 1
+                )}
+              </div>
+              {index < STEPS.filter(s => s !== 'landing').length - 1 && (
+                <div 
+                  className={`
+                    w-8 h-0.5 transition-all duration-300
+                    ${isCompleted ? 'bg-primary' : 'bg-muted'}
+                  `}
+                />
+              )}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const transitionClasses = isTransitioning
+    ? transitionDirection === 'forward'
+      ? 'opacity-0 translate-x-4'
+      : 'opacity-0 -translate-x-4'
+    : 'opacity-100 translate-x-0';
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20 flex flex-col">
       {/* Header */}
@@ -527,9 +606,16 @@ const Signup = () => {
         )}
       </header>
 
+      {/* Stepper */}
+      <div className="px-6">
+        {renderStepper()}
+      </div>
+
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center px-6 pb-8">
-        <div className="w-full max-w-sm">
+        <div 
+          className={`w-full max-w-sm transition-all duration-200 ease-out ${transitionClasses}`}
+        >
           {renderStep()}
         </div>
       </div>
