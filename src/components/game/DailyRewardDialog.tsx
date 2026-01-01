@@ -55,7 +55,7 @@ export const DailyRewardDialog = ({ open, onOpenChange }: DailyRewardDialogProps
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm p-0 overflow-hidden bg-gradient-to-b from-card to-background border-border/50">
+      <DialogContent className="max-w-sm p-0 overflow-hidden bg-gradient-to-b from-card to-background border-border">
         <DialogTitle className="sr-only">
           {t('dailyReward.title', 'Daily Reward')}
         </DialogTitle>
@@ -63,7 +63,7 @@ export const DailyRewardDialog = ({ open, onOpenChange }: DailyRewardDialogProps
         {!showResult ? (
           <>
             {/* Header */}
-            <div className="relative bg-gradient-to-br from-primary/20 to-primary/5 p-6 text-center">
+            <div className="relative bg-gradient-to-br from-accent/20 to-accent/5 p-6 text-center">
               <Button 
                 variant="ghost" 
                 size="icon" 
@@ -73,10 +73,10 @@ export const DailyRewardDialog = ({ open, onOpenChange }: DailyRewardDialogProps
                 <X className="w-4 h-4" />
               </Button>
               
-              <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-primary/30">
-                <Gift className="w-8 h-8 text-primary-foreground" />
+              <div className="w-16 h-16 bg-gradient-to-br from-accent to-xp-gold-glow rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-accent/30">
+                <Gift className="w-8 h-8 text-accent-foreground" />
               </div>
-              <h2 className="text-xl font-bold">{t('dailyReward.title', 'Daily Reward')}</h2>
+              <h2 className="text-xl font-bold text-primary">{t('dailyReward.title', 'Daily Reward')}</h2>
               <p className="text-sm text-muted-foreground mt-1">
                 {status.can_claim 
                   ? t('dailyReward.claimNow', 'Claim your reward!')
@@ -106,8 +106,8 @@ export const DailyRewardDialog = ({ open, onOpenChange }: DailyRewardDialogProps
                       key={day.day}
                       className={cn(
                         "flex flex-col items-center p-2 rounded-lg transition-all",
-                        isPast && "bg-primary/20",
-                        isCurrent && "bg-primary/30 ring-2 ring-primary animate-pulse",
+                        isPast && "bg-accent/20",
+                        isCurrent && "bg-accent/30 ring-2 ring-accent animate-pulse",
                         isFuture && "bg-muted/30 opacity-50"
                       )}
                     >
@@ -124,18 +124,18 @@ export const DailyRewardDialog = ({ open, onOpenChange }: DailyRewardDialogProps
               </div>
 
               {/* Current Reward Info */}
-              <div className="bg-muted/30 rounded-lg p-3 text-center mb-4">
+              <div className="bg-accent/10 rounded-lg p-3 text-center mb-4 border border-accent/20">
                 <p className="text-sm text-muted-foreground mb-1">
                   {t('dailyReward.todayReward', "Today's Reward")}
                 </p>
                 <div className="flex items-center justify-center gap-2">
-                  <Sparkles className="w-5 h-5 text-primary" />
-                  <span className="text-2xl font-bold text-primary">
+                  <Sparkles className="w-5 h-5 text-accent" />
+                  <span className="text-2xl font-bold text-accent">
                     +{Math.floor(25 * status.multiplier)} XP
                   </span>
                 </div>
                 {status.multiplier > 1 && (
-                  <p className="text-xs text-primary mt-1">
+                  <p className="text-xs text-accent mt-1">
                     ({status.multiplier}x {t('dailyReward.streakBonus', 'Streak Bonus!')})
                   </p>
                 )}
@@ -145,6 +145,7 @@ export const DailyRewardDialog = ({ open, onOpenChange }: DailyRewardDialogProps
             {/* Claim Button */}
             <div className="p-4 pt-0">
               <Button 
+                variant="gold"
                 className="w-full h-12 text-lg gap-2"
                 onClick={handleClaim}
                 disabled={!status.can_claim || claiming}
@@ -166,24 +167,24 @@ export const DailyRewardDialog = ({ open, onOpenChange }: DailyRewardDialogProps
           <>
             {/* Claim Result */}
             <div className="p-6 text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
-                <Sparkles className="w-10 h-10 text-primary-foreground" />
+              <div className="w-20 h-20 bg-gradient-to-br from-accent to-xp-gold-glow rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce shadow-lg shadow-accent/30">
+                <Sparkles className="w-10 h-10 text-accent-foreground" />
               </div>
               
-              <h2 className="text-2xl font-bold mb-2">
+              <h2 className="text-2xl font-bold text-primary mb-2">
                 {t('dailyReward.congratulations', 'Congratulations!')}
               </h2>
               
               <div className="space-y-3 my-6">
-                <div className="bg-primary/10 rounded-lg p-4">
+                <div className="bg-accent/10 rounded-lg p-4 border border-accent/20">
                   <p className="text-sm text-muted-foreground">
                     {t('dailyReward.youEarned', 'You earned')}
                   </p>
-                  <p className="text-3xl font-bold text-primary">
+                  <p className="text-3xl font-bold text-accent">
                     +{claimResult?.total_xp} XP
                   </p>
                   {claimResult?.bonus_xp && claimResult.bonus_xp > 0 && (
-                    <p className="text-sm text-primary mt-1">
+                    <p className="text-sm text-accent mt-1">
                       (+{claimResult.bonus_xp} {t('dailyReward.bonusXP', 'bonus XP')})
                     </p>
                   )}
@@ -199,7 +200,7 @@ export const DailyRewardDialog = ({ open, onOpenChange }: DailyRewardDialogProps
                 {claimResult?.next_multiplier && claimResult.next_multiplier > (claimResult.multiplier || 1) && (
                   <p className="text-sm text-muted-foreground flex items-center justify-center gap-1">
                     {t('dailyReward.tomorrowMultiplier', 'Tomorrow:')} 
-                    <span className="font-bold text-primary">{claimResult.next_multiplier}x XP</span>
+                    <span className="font-bold text-accent">{claimResult.next_multiplier}x XP</span>
                     <ChevronRight className="w-4 h-4" />
                   </p>
                 )}
@@ -211,7 +212,7 @@ export const DailyRewardDialog = ({ open, onOpenChange }: DailyRewardDialogProps
                 )}
               </div>
 
-              <Button className="w-full" onClick={handleClose}>
+              <Button variant="gold" className="w-full" onClick={handleClose}>
                 {t('common.awesome', 'Awesome!')}
               </Button>
             </div>
