@@ -38,31 +38,29 @@ export const LevelProgress = ({ profile }: LevelProgressProps) => {
           <h3 className="font-display text-sm font-semibold text-primary leading-tight">
             {translatedTitle}
           </h3>
-          <div className="flex items-center gap-1.5 flex-wrap">
+          <div className="flex items-center gap-1.5">
             {/* Streak badge */}
             <div className="flex items-center gap-0.5 bg-accent/20 text-accent px-1 py-0.5 rounded-full">
               <Flame className="w-3 h-3" />
-              <span className="text-[10px] font-bold">{profile.streak}</span>
+              <span className="text-xs font-bold">{profile.streak}</span>
             </div>
             <span className="text-xs text-muted-foreground">
               {profile.xp.toLocaleString()} XP
             </span>
             <span className="text-muted-foreground/50">|</span>
             {/* Barra de progresso inline */}
-            <div className="flex items-center gap-1">
-              <span className="text-[10px] text-muted-foreground">
-                Lv{profile.level + 1}
-              </span>
-              <div className="relative h-1.5 w-12 sm:w-14 overflow-hidden rounded-full bg-level-progress-bg">
-                <div 
-                  className="h-full bg-gradient-to-r from-accent to-xp-gold-glow rounded-full transition-all duration-500"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-              <span className="text-[10px] font-semibold text-accent whitespace-nowrap">
-                {xpToNextLevel}
-              </span>
+            <span className="text-xs text-muted-foreground">
+              Lv{profile.level + 1}
+            </span>
+            <div className="relative h-1.5 flex-1 min-w-8 overflow-hidden rounded-full bg-level-progress-bg">
+              <div 
+                className="h-full bg-gradient-to-r from-accent to-xp-gold-glow rounded-full transition-all duration-500"
+                style={{ width: `${progress}%` }}
+              />
             </div>
+            <span className="text-xs font-semibold text-accent whitespace-nowrap">
+              {xpToNextLevel}
+            </span>
           </div>
         </div>
       </div>
