@@ -205,7 +205,8 @@
     "refresh": "Refresh",
     "skip": "Skip",
     "continue": "Continue",
-    "close": "Close"
+    "close": "Close",
+    "halfway": "Halfway there!"
   },
   "auth": {
     "login": "Sign In",

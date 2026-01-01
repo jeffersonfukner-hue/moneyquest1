@@ -205,7 +205,8 @@
     "refresh": "Actualizar",
     "skip": "Omitir",
     "continue": "Continuar",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "halfway": "¡A mitad de camino!"
   },
   "auth": {
     "login": "Iniciar Sesión",
