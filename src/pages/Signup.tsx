@@ -15,13 +15,22 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
 import { Gamepad2, Sparkles, Eye, EyeOff, ArrowLeft, Check, Globe, Coins } from 'lucide-react';
-import i18n from '@/i18n';
+import i18n, { SupportedLanguage as I18nLanguage } from '@/i18n';
 import { detectBrowserLanguage } from '@/lib/browserLanguageDetection';
 
 type SignupStep = 'preferences' | 'account';
 
+const languageFlags: Record<I18nLanguage, { flag: string; label: string }> = {
+  'pt-BR': { flag: '🇧🇷', label: 'Português' },
+  'en-US': { flag: '🇺🇸', label: 'English' },
+  'es-ES': { flag: '🇪🇸', label: 'Español' },
+};
+
 const Signup = () => {
-  const { t } = useTranslation();
+  const { t, i18n: i18nInstance } = useTranslation();
+  
+  const currentLanguage = i18nInstance.language as I18nLanguage;
+  const currentFlag = languageFlags[currentLanguage] || languageFlags['en-US'];
   const navigate = useNavigate();
   const { signUp, signInWithGoogle, user } = useAuth();
   const { saveSetupPreferences } = useSetupGuard();
@@ -391,7 +400,17 @@ const Signup = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative">
+      {/* Language indicator */}
+      <div className="absolute top-4 right-4 flex items-center gap-2 px-3 py-1.5 bg-card/80 backdrop-blur-sm rounded-full border border-border/50 shadow-sm">
+        <span className="text-lg" role="img" aria-label={currentFlag.label}>
+          {currentFlag.flag}
+        </span>
+        <span className="text-xs text-muted-foreground font-medium">
+          {currentFlag.label}
+        </span>
+      </div>
+
       <div className="w-full max-w-md">
         <div className="text-center mb-8 animate-slide-up">
           <div className="w-20 h-20 bg-gradient-hero rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-glow-primary animate-float">
