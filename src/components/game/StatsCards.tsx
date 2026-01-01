@@ -14,10 +14,10 @@ export const StatsCards = ({ profile }: StatsCardsProps) => {
 
   return (
     <div className="grid grid-cols-2 gap-3">
-      <div className="bg-card rounded-xl p-4 shadow-md animate-slide-up" style={{ animationDelay: '0.1s' }}>
+      <div className="bg-card rounded-xl p-4 shadow-md border border-border animate-slide-up" style={{ animationDelay: '0.1s' }}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-streak rounded-lg flex items-center justify-center shadow-glow-streak">
-            <Flame className="w-5 h-5 text-primary-foreground" />
+          <div className="w-10 h-10 bg-gradient-to-br from-accent to-xp-gold-glow rounded-lg flex items-center justify-center shadow-md">
+            <Flame className="w-5 h-5 text-accent-foreground" />
           </div>
           <div>
             <p className="text-xl font-display font-bold text-foreground">{profile.streak}</p>
@@ -26,13 +26,13 @@ export const StatsCards = ({ profile }: StatsCardsProps) => {
         </div>
       </div>
 
-      <div className="bg-card rounded-xl p-4 shadow-md animate-slide-up" style={{ animationDelay: '0.15s' }}>
+      <div className="bg-card rounded-xl p-4 shadow-md border border-border animate-slide-up" style={{ animationDelay: '0.15s' }}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-level rounded-lg flex items-center justify-center">
-            <TrendingUp className="w-5 h-5 text-primary-foreground" />
+          <div className="w-10 h-10 bg-success/20 rounded-lg flex items-center justify-center">
+            <TrendingUp className="w-5 h-5 text-success" />
           </div>
           <div>
-            <p className="text-lg font-display font-bold text-income truncate">
+            <p className="text-lg font-display font-bold text-success truncate">
               {formatCurrency(profile.total_income)}
             </p>
             <p className="text-xs text-muted-foreground">{t('stats.totalIncome')}</p>
@@ -40,13 +40,13 @@ export const StatsCards = ({ profile }: StatsCardsProps) => {
         </div>
       </div>
 
-      <div className="bg-card rounded-xl p-4 shadow-md animate-slide-up" style={{ animationDelay: '0.2s' }}>
+      <div className="bg-card rounded-xl p-4 shadow-md border border-border animate-slide-up" style={{ animationDelay: '0.2s' }}>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-destructive/20 rounded-lg flex items-center justify-center">
-            <TrendingDown className="w-5 h-5 text-expense" />
+            <TrendingDown className="w-5 h-5 text-destructive" />
           </div>
           <div>
-            <p className="text-lg font-display font-bold text-expense truncate">
+            <p className="text-lg font-display font-bold text-destructive truncate">
               {formatCurrency(profile.total_expenses)}
             </p>
             <p className="text-xs text-muted-foreground">{t('stats.totalExpenses')}</p>
@@ -54,13 +54,13 @@ export const StatsCards = ({ profile }: StatsCardsProps) => {
         </div>
       </div>
 
-      <div className="bg-card rounded-xl p-4 shadow-md animate-slide-up" style={{ animationDelay: '0.25s' }}>
+      <div className="bg-card rounded-xl p-4 shadow-md border border-border animate-slide-up" style={{ animationDelay: '0.25s' }}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-xp rounded-lg flex items-center justify-center shadow-glow-accent">
+          <div className="w-10 h-10 bg-gradient-to-br from-accent to-xp-gold-glow rounded-lg flex items-center justify-center shadow-md">
             <Coins className="w-5 h-5 text-accent-foreground" />
           </div>
           <div>
-            <p className={`text-lg font-display font-bold truncate ${totalSaved >= 0 ? 'text-income' : 'text-expense'}`}>
+            <p className={`text-lg font-display font-bold truncate ${totalSaved >= 0 ? 'text-success' : 'text-destructive'}`}>
               {formatCurrency(Math.abs(totalSaved))}
             </p>
             <p className="text-xs text-muted-foreground">

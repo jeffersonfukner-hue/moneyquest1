@@ -200,8 +200,9 @@ const Signup = () => {
       {/* Primary CTA */}
       <section className="space-y-3 animate-fade-in" style={{ animationDelay: '200ms' }}>
         <Button 
+          variant="gold"
           onClick={handleContinueToPreferences}
-          className="w-full h-14 text-lg font-semibold bg-gradient-hero hover:opacity-90 shadow-lg transition-all duration-300"
+          className="w-full h-14 text-lg"
         >
           {t('landing.cta.startFree')}
         </Button>
@@ -346,9 +347,10 @@ const Signup = () => {
       </div>
 
       <Button 
+        variant="gold"
         onClick={handleContinueToAccount}
         disabled={!isPreferencesValid}
-        className="w-full min-h-[48px] bg-gradient-hero hover:opacity-90"
+        className="w-full min-h-[48px]"
       >
         {t('setup.continue')}
       </Button>
@@ -462,7 +464,7 @@ const Signup = () => {
           </div>
         </div>
 
-        <Button type="submit" className="w-full min-h-[48px] bg-gradient-hero hover:opacity-90" disabled={loading}>
+        <Button type="submit" variant="gold" className="w-full min-h-[48px]" disabled={loading}>
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('auth.createAccount')}
         </Button>
 
