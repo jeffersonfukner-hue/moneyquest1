@@ -22,10 +22,14 @@ export const LevelProgress = ({ profile }: LevelProgressProps) => {
   const levelTitleKey = getLevelTitleKey(profile.level);
   const translatedTitle = t(`levels.${levelTitleKey}`);
   
+  // Next level title preview
+  const nextLevel = profile.level + 1;
+  const nextLevelTitleKey = getLevelTitleKey(nextLevel);
+  const nextLevelTitle = t(`levels.${nextLevelTitleKey}`);
+  
   // Milestone detection
   const isNearLevelUp = progress >= 90;
   const isHalfway = progress >= 50 && progress < 90;
-  const nextLevel = profile.level + 1;
   
   // Special level milestones
   const isSpecialLevel = [5, 10, 25, 50, 100].includes(nextLevel);
@@ -93,7 +97,7 @@ export const LevelProgress = ({ profile }: LevelProgressProps) => {
                   {isNearLevelUp && (
                     <p className="text-[10px] text-accent flex items-center gap-1">
                       <Trophy className="w-3 h-3" />
-                      {t('notification.levelUp')} {nextLevel}!
+                      {t('notification.levelUp')} {nextLevel}: <span className="font-semibold text-primary">{nextLevelTitle}</span>
                     </p>
                   )}
                   {isSpecialLevel && isNearLevelUp && (
