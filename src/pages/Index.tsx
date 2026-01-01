@@ -152,7 +152,7 @@ const Index = () => {
     switch (activeTab) {
       case 'home':
         return (
-          <div className="space-y-3 pb-3">
+          <div className="space-y-2 pb-2">
             {/* Mood indicator at top for visibility */}
             <div className="flex justify-center sm:justify-start">
               <MoodIndicator />
