@@ -1033,6 +1033,33 @@
       "ctrComparison": "Comparación de Tasa de Clics",
       "impressions": "Impresiones",
       "clicks": "Clics"
+    },
+    "adMetrics": {
+      "title": "Métricas de Anuncios",
+      "description": "Impresiones, CTR e ingresos estimados de los últimos 30 días",
+      "totalImpressions": "Total de Impresiones",
+      "totalClicks": "Total de Clics",
+      "estimatedRevenue": "Ingresos Estimados",
+      "monthlyProjection": "Proyección Mensual",
+      "basedOnLast14Days": "Basado en los últimos 14 días",
+      "trendTab": "Tendencias",
+      "variantsTab": "Variantes",
+      "revenueTrend": "Tendencia de Ingresos",
+      "impressionsClicksTrend": "Tendencia de Impresiones y Clics",
+      "variantPerformance": "Rendimiento por Variante",
+      "revenue": "Ingresos",
+      "impressions": "Impresiones",
+      "clicks": "Clics",
+      "revenueBreakdown": "Desglose de Estimación",
+      "estimatedCPM": "CPM Estimado",
+      "estimatedCPC": "CPC Estimado",
+      "fillRate": "Tasa de Relleno",
+      "filledImpressions": "Impresiones Rellenadas",
+      "disclaimer": "* Valores estimados basados en promedios del sector. Los ingresos reales pueden variar.",
+      "internalPromo": "Promo Interno",
+      "singleLine": "Una Línea",
+      "twoLine": "Dos Líneas",
+      "noVariantData": "Aún no hay datos de variantes disponibles"
     }
   },
   "dailyReward": {

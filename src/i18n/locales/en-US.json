@@ -1033,6 +1033,33 @@
       "ctrComparison": "Click-Through Rate Comparison",
       "impressions": "Impressions",
       "clicks": "Clicks"
+    },
+    "adMetrics": {
+      "title": "Ad Metrics",
+      "description": "Impressions, CTR and estimated revenue for the last 30 days",
+      "totalImpressions": "Total Impressions",
+      "totalClicks": "Total Clicks",
+      "estimatedRevenue": "Estimated Revenue",
+      "monthlyProjection": "Monthly Projection",
+      "basedOnLast14Days": "Based on the last 14 days",
+      "trendTab": "Trends",
+      "variantsTab": "Variants",
+      "revenueTrend": "Revenue Trend",
+      "impressionsClicksTrend": "Impressions & Clicks Trend",
+      "variantPerformance": "Performance by Variant",
+      "revenue": "Revenue",
+      "impressions": "Impressions",
+      "clicks": "Clicks",
+      "revenueBreakdown": "Estimate Breakdown",
+      "estimatedCPM": "Estimated CPM",
+      "estimatedCPC": "Estimated CPC",
+      "fillRate": "Fill Rate",
+      "filledImpressions": "Filled Impressions",
+      "disclaimer": "* Estimated values based on industry averages. Actual revenue may vary.",
+      "internalPromo": "Internal Promo",
+      "singleLine": "Single Line",
+      "twoLine": "Two Line",
+      "noVariantData": "No variant data available yet"
     }
   },
   "dailyReward": {
