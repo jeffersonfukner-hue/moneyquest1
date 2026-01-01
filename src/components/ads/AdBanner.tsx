@@ -7,7 +7,13 @@ import { PremiumBannerModal } from './PremiumBannerModal';
 import { ADSENSE_CONFIG } from '@/lib/adsenseConfig';
 
 export const AdBanner = () => {
-  const { shouldShowBanner, showFallback, setAdLoaded, setAdError } = useAdBanner();
+  const { 
+    shouldShowBanner, 
+    showFallback, 
+    isAdSenseConfigured,
+    setAdLoaded, 
+    setAdError 
+  } = useAdBanner();
   const { variant: adVariant, trackImpression, trackClick } = useABTest('adBanner');
   const { variant: copyVariant } = useABTest('bannerCopy');
   const [showModal, setShowModal] = useState(false);
@@ -21,8 +27,10 @@ export const AdBanner = () => {
 
   if (!shouldShowBanner) return null;
 
-  // Determine what to show based on A/B test variant
-  const showInternalPromo = adVariant === 'internal_promo' || showFallback;
+  // Determine what to show based on A/B test variant and fallback status
+  // Priority: A/B test variant > AdSense (if configured) > Fallback promo
+  const forceInternalPromo = adVariant === 'internal_promo';
+  const showInternalPromo = forceInternalPromo || showFallback || !isAdSenseConfigured;
   
   // Dynamic height based on copy variant
   const bannerHeight = copyVariant === 'two_line' ? 'h-[60px]' : 'h-[50px]';
@@ -49,8 +57,8 @@ export const AdBanner = () => {
             <AdContainer 
               adSlot={ADSENSE_CONFIG.slots.bottomBanner}
               adClient={ADSENSE_CONFIG.client}
-              onLoad={() => setAdLoaded(true)}
-              onError={() => setAdError(true)}
+              onLoad={setAdLoaded}
+              onError={setAdError}
             />
           )}
         </div>
