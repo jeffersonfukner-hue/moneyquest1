@@ -34,11 +34,11 @@ export const LevelProgress = ({ profile }: LevelProgressProps) => {
         </div>
 
         {/* Título */}
-        <div className="flex-shrink-0 min-w-0">
+        <div className="flex-1 min-w-0">
           <h3 className="font-display text-sm font-semibold text-primary leading-tight">
             {translatedTitle}
           </h3>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 flex-wrap">
             {/* Streak badge */}
             <div className="flex items-center gap-0.5 bg-accent/20 text-accent px-1 py-0.5 rounded-full">
               <Flame className="w-3 h-3" />
@@ -47,23 +47,23 @@ export const LevelProgress = ({ profile }: LevelProgressProps) => {
             <span className="text-xs text-muted-foreground">
               {profile.xp.toLocaleString()} XP
             </span>
+            <span className="text-muted-foreground/50">|</span>
+            {/* Barra de progresso inline */}
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] text-muted-foreground">
+                Lv{profile.level + 1}
+              </span>
+              <div className="relative h-1.5 w-12 sm:w-14 overflow-hidden rounded-full bg-level-progress-bg">
+                <div 
+                  className="h-full bg-gradient-to-r from-accent to-xp-gold-glow rounded-full transition-all duration-500"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <span className="text-[10px] font-semibold text-accent whitespace-nowrap">
+                {xpToNextLevel}
+              </span>
+            </div>
           </div>
-        </div>
-
-        {/* Barra de progresso inline */}
-        <div className="flex items-center gap-1.5 ml-auto">
-          <span className="text-xs text-muted-foreground">
-            Lv{profile.level + 1}
-          </span>
-          <div className="relative h-2 w-16 sm:w-20 overflow-hidden rounded-full bg-level-progress-bg">
-            <div 
-              className="h-full bg-gradient-to-r from-accent to-xp-gold-glow rounded-full transition-all duration-500"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-          <span className="text-xs font-semibold text-accent whitespace-nowrap">
-            {xpToNextLevel} XP
-          </span>
         </div>
       </div>
     </div>
