@@ -38,8 +38,8 @@ export const BottomNavigation = ({ activeTab, onTabChange, onAddClick }: BottomN
                 className="flex flex-col items-center justify-center -mt-6"
                 aria-label={tab.label}
               >
-                <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-lg shadow-primary/30 active:scale-95 transition-transform">
-                  <Icon className="w-7 h-7 text-primary-foreground" />
+                <div className="w-14 h-14 bg-gradient-to-br from-accent to-xp-gold-glow rounded-full flex items-center justify-center shadow-lg shadow-accent/40 active:scale-95 transition-all hover:shadow-accent/60 hover:shadow-xl">
+                  <Icon className="w-7 h-7 text-accent-foreground" />
                 </div>
               </button>
             );
@@ -70,7 +70,7 @@ export const BottomNavigation = ({ activeTab, onTabChange, onAddClick }: BottomN
               className={cn(
                 "flex flex-col items-center justify-center gap-1 min-w-[64px] min-h-[48px] rounded-lg transition-colors",
                 isActive 
-                  ? "text-primary" 
+                  ? "text-accent" 
                   : "text-muted-foreground hover:text-foreground"
               )}
               aria-label={tab.label}
