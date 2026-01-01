@@ -502,19 +502,32 @@ const Signup = () => {
         return renderPreferencesStep();
       case 'account':
         return renderAccountStep();
+      default:
+        return renderLandingStep();
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20 flex flex-col">
-      {/* Language indicator */}
-      <div className="flex justify-end p-4">
+      {/* Header */}
+      <header className="flex items-center justify-between p-4">
         <div className="flex items-center gap-1.5 text-sm text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full">
           <span>{currentFlag.flag}</span>
           <span className="text-xs">{currentFlag.label}</span>
         </div>
-      </div>
+        {step === 'landing' && (
+          <Button 
+            variant="ghost" 
+            size="sm"
+            asChild
+            className="text-sm font-medium"
+          >
+            <Link to="/login">{t('auth.login')}</Link>
+          </Button>
+        )}
+      </header>
 
+      {/* Main Content */}
       <div className="flex-1 flex items-center justify-center px-6 pb-8">
         <div className="w-full max-w-sm">
           {renderStep()}
