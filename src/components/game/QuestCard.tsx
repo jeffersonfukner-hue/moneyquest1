@@ -1,6 +1,5 @@
 import { Quest } from '@/types/database';
 import { CheckCircle2, Circle, Clock, Award } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
 import { getTimeUntilReset, QUEST_TYPE_CONFIG, getSeasonalBadgeName, getQuestKey } from '@/lib/gameLogic';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useTranslation } from 'react-i18next';
@@ -37,17 +36,17 @@ export const QuestCard = ({ quest, showTimer = false }: QuestCardProps) => {
 
   return (
     <div 
-      className={`flex flex-col gap-2 p-4 rounded-xl transition-all ${
+      className={`flex flex-col gap-2 p-4 rounded-xl transition-all border-2 ${
         quest.is_completed 
-          ? 'bg-primary/10 opacity-70' 
-          : 'bg-muted/50 hover:bg-muted'
+          ? 'bg-primary/10 border-primary/30 opacity-70' 
+          : 'bg-card border-accent/50 hover:border-accent hover:shadow-md hover:shadow-accent/10'
       }`}
     >
       <div className="flex items-start gap-3">
         {quest.is_completed ? (
-          <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+          <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
         ) : (
-          <Circle className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+          <Circle className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
         )}
         
         <div className="flex-1 min-w-0">
@@ -68,7 +67,7 @@ export const QuestCard = ({ quest, showTimer = false }: QuestCardProps) => {
         
         <div className="flex flex-col items-end gap-1">
           <span className={`text-sm font-bold ${
-            quest.is_completed ? 'text-muted-foreground' : 'text-xp'
+            quest.is_completed ? 'text-muted-foreground' : 'text-accent'
           }`}>
             +{quest.xp_reward} XP
           </span>
@@ -86,11 +85,16 @@ export const QuestCard = ({ quest, showTimer = false }: QuestCardProps) => {
         <div className="mt-2 ml-8">
           <div className="flex items-center justify-between mb-1">
             <span className="text-xs text-muted-foreground">Progress</span>
-            <span className="text-xs font-medium text-foreground">
+            <span className="text-xs font-medium text-accent">
               {quest.progress_current}/{quest.progress_target}
             </span>
           </div>
-          <Progress value={progressPercent} className="h-2" />
+          <div className="h-2 w-full overflow-hidden rounded-full bg-level-progress-bg">
+            <div 
+              className="h-full bg-gradient-to-r from-accent to-xp-gold-glow rounded-full transition-all duration-500"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
         </div>
       )}
 
@@ -99,8 +103,8 @@ export const QuestCard = ({ quest, showTimer = false }: QuestCardProps) => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="mt-2 ml-8 flex items-center gap-2 p-2 rounded-lg bg-gradient-to-r from-yellow-500/10 to-amber-500/10 border border-yellow-500/20">
-                <Award className="w-4 h-4 text-yellow-500" />
+              <div className="mt-2 ml-8 flex items-center gap-2 p-2 rounded-lg bg-accent/10 border border-accent/30">
+                <Award className="w-4 h-4 text-accent" />
                 <span className="text-xs text-muted-foreground">Unlocks:</span>
                 <span className="text-lg">{badgeReward.icon}</span>
                 <span className="text-xs font-medium text-foreground">{badgeReward.name}</span>
@@ -115,9 +119,9 @@ export const QuestCard = ({ quest, showTimer = false }: QuestCardProps) => {
       
       {/* Show unlocked badge for completed special quests */}
       {badgeReward && quest.is_completed && (
-        <div className="mt-2 ml-8 flex items-center gap-2 p-2 rounded-lg bg-primary/10 border border-primary/20">
+        <div className="mt-2 ml-8 flex items-center gap-2 p-2 rounded-lg bg-success/10 border border-success/30">
           <span className="text-lg">{badgeReward.icon}</span>
-          <span className="text-xs font-medium text-primary">Badge Unlocked!</span>
+          <span className="text-xs font-medium text-success">Badge Unlocked!</span>
         </div>
       )}
     </div>
