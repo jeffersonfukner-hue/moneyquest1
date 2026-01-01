@@ -12,7 +12,8 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
-import { Gamepad2, Sparkles, Eye, EyeOff, Globe, ChevronDown, ArrowLeft } from 'lucide-react';
+import { Sparkles, Eye, EyeOff, Globe, ChevronDown, ArrowLeft } from 'lucide-react';
+import logoImage from '@/assets/logo.png';
 import { SUPPORTED_LANGUAGES, type SupportedLanguage } from '@/i18n';
 import i18n from '@/i18n';
 
@@ -262,8 +263,12 @@ const Auth = () => {
         </div>
 
         <div className="text-center mb-8 animate-slide-up">
-          <div className="w-20 h-20 bg-gradient-hero rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-glow-primary animate-float">
-            <Gamepad2 className="w-10 h-10 text-primary-foreground" />
+          <div className="mx-auto mb-4 animate-float">
+            <img 
+              src={logoImage} 
+              alt="MoneyQuest" 
+              className="w-24 h-24 object-contain mx-auto"
+            />
           </div>
           <h1 className="font-display text-4xl font-bold text-gradient-primary">MoneyQuest</h1>
           <p className="text-muted-foreground mt-2">{t('auth.tagline')}</p>
