@@ -12,7 +12,7 @@ export const CashFlowWidget = () => {
       className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20 cursor-pointer hover:shadow-md transition-all active:scale-[0.98]"
       onClick={() => navigate('/cash-flow')}
     >
-      <CardContent className="py-4 px-4">
+      <CardContent className="py-3 px-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">

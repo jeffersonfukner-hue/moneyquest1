@@ -15,8 +15,8 @@ export const LevelProgress = ({ profile }: LevelProgressProps) => {
   const translatedTitle = t(`levels.${levelTitleKey}`);
 
   return (
-    <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-md animate-slide-up border border-border">
-      <div className="flex items-center gap-4 mb-4">
+    <div className="bg-card rounded-2xl p-3 sm:p-4 shadow-md animate-slide-up border border-border">
+      <div className="flex items-center gap-3 mb-3">
         <div className="relative">
           <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-lg shadow-primary/30 animate-float overflow-hidden">
             <AvatarDisplay

@@ -152,7 +152,7 @@ const Index = () => {
     switch (activeTab) {
       case 'home':
         return (
-          <div className="space-y-4 pb-4">
+          <div className="space-y-3 pb-3">
             {/* Mood indicator at top for visibility */}
             <div className="flex justify-center sm:justify-start">
               <MoodIndicator />
@@ -221,7 +221,7 @@ const Index = () => {
       
       <MobileHeader onSettingsClick={() => navigate('/settings')} onProfileClick={() => navigate('/profile')} />
 
-      <main className="px-4 py-4 max-w-md mx-auto relative z-10">
+      <main className="px-4 py-3 max-w-md mx-auto relative z-10">
         {renderTabContent()}
       </main>
 

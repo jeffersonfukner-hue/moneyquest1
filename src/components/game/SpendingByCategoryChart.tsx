@@ -66,14 +66,14 @@ export const SpendingByCategoryChart = ({ transactions }: SpendingByCategoryChar
 
   return (
     <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-1">
         <CardTitle className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
           <PieChartIcon className="w-4 h-4" />
           {t('dashboard.spendingByCategory')}
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="h-48">
+      <CardContent className="pt-0">
+        <div className="h-44">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie

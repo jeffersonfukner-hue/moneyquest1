@@ -12,8 +12,8 @@ export const BadgesGrid = ({ badges }: BadgesGridProps) => {
   const unlockedBadges = badges.filter(b => b.is_unlocked);
 
   return (
-    <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-md animate-slide-up" style={{ animationDelay: '0.35s' }}>
-      <div className="flex items-center gap-2 mb-4">
+    <div className="bg-card rounded-2xl p-3 sm:p-4 shadow-md animate-slide-up" style={{ animationDelay: '0.35s' }}>
+      <div className="flex items-center gap-2 mb-3">
         <div className="w-8 h-8 bg-gradient-badge rounded-lg flex items-center justify-center">
           <Award className="w-4 h-4 text-primary-foreground" />
         </div>
@@ -23,7 +23,7 @@ export const BadgesGrid = ({ badges }: BadgesGridProps) => {
         </span>
       </div>
 
-      <div className="grid grid-cols-4 gap-2 sm:gap-3">
+      <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
         {badges.map(badge => (
           <BadgeItem key={badge.id} badge={badge} />
         ))}
