@@ -18,6 +18,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Features from "./pages/Features";
 
 import Onboarding from "./pages/Onboarding";
 import Settings from "./pages/Settings";
@@ -62,6 +63,7 @@ const App = () => (
                           <Route path="/setup" element={<Navigate to="/signup" replace />} />
                           <Route path="/login" element={<Login />} />
                           <Route path="/signup" element={<Signup />} />
+                          <Route path="/features" element={<Features />} />
                           <Route path="/onboarding" element={<Onboarding />} />
                           <Route path="/auth" element={<Navigate to="/login" replace />} />
                           <Route path="/settings" element={<Settings />} />

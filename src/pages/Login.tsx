@@ -5,8 +5,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { TrustBadge } from '@/components/ui/trust-badge';
 import { toast } from '@/hooks/use-toast';
-import { Eye, EyeOff, CircleCheck, CreditCard, Zap, Shield, Loader2, Mail, Lock } from 'lucide-react';
+import { Eye, EyeOff, CircleCheck, CreditCard, Zap, Shield, Loader2, Mail, Lock, ChevronRight } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 import { SupportedLanguage } from '@/i18n';
 
@@ -17,15 +18,6 @@ const languageFlags: Record<SupportedLanguage, { flag: string; label: string }> 
   'en-US': { flag: '🇺🇸', label: 'English' },
   'es-ES': { flag: '🇪🇸', label: 'Español' },
 };
-
-const TrustBadge = ({ icon: Icon, text }: { icon: typeof CircleCheck; text: string }) => (
-  <div className="flex items-center gap-3 text-left">
-    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-      <Icon className="w-4 h-4 text-primary" />
-    </div>
-    <span className="text-sm font-medium text-foreground">{text}</span>
-  </div>
-);
 
 const Login = () => {
   const { t, i18n } = useTranslation();
@@ -112,9 +104,9 @@ const Login = () => {
   };
 
   const renderLandingMode = () => (
-    <div className="space-y-8 animate-slide-up">
+    <div className="space-y-8">
       {/* Hero Section */}
-      <section className="text-center space-y-4">
+      <section className="text-center space-y-4 animate-fade-in">
         <Logo size="xl" animated className="justify-center" />
         <div className="space-y-2 pt-4">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
@@ -127,7 +119,7 @@ const Login = () => {
       </section>
 
       {/* Trust Badges */}
-      <section className="space-y-4 bg-card/50 rounded-2xl p-5 border border-border/50">
+      <section className="space-y-4 bg-card/50 rounded-2xl p-5 border border-border/50 animate-fade-in" style={{ animationDelay: '100ms' }}>
         <div className="space-y-3">
           <TrustBadge icon={CircleCheck} text={t('landing.trust.free')} />
           <TrustBadge icon={CreditCard} text={t('landing.trust.noCard')} />
@@ -139,7 +131,7 @@ const Login = () => {
       </section>
 
       {/* Primary CTA */}
-      <section className="space-y-3">
+      <section className="space-y-3 animate-fade-in" style={{ animationDelay: '200ms' }}>
         <Button 
           onClick={() => navigate('/signup')}
           className="w-full h-14 text-lg font-semibold bg-gradient-hero hover:opacity-90 shadow-lg transition-all duration-300"
@@ -151,8 +143,19 @@ const Login = () => {
         </p>
       </section>
 
+      {/* Learn More Link */}
+      <section className="text-center animate-fade-in" style={{ animationDelay: '250ms' }}>
+        <Link 
+          to="/features" 
+          className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+        >
+          {t('landing.learnMore')}
+          <ChevronRight className="w-4 h-4" />
+        </Link>
+      </section>
+
       {/* Secondary Actions */}
-      <section className="space-y-4">
+      <section className="space-y-4 animate-fade-in" style={{ animationDelay: '300ms' }}>
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
             <span className="w-full border-t border-border/50" />
@@ -174,7 +177,7 @@ const Login = () => {
       </section>
 
       {/* Security Footer */}
-      <footer className="text-center pt-4">
+      <footer className="text-center pt-4 animate-fade-in" style={{ animationDelay: '400ms' }}>
         <p className="text-xs text-muted-foreground flex items-center justify-center gap-1.5">
           <Shield className="w-3.5 h-3.5" />
           {t('landing.security.dataProtected')}
@@ -184,8 +187,8 @@ const Login = () => {
   );
 
   const renderLoginForm = () => (
-    <div className="space-y-6 animate-scale-in">
-      <div className="text-center space-y-2">
+    <div className="space-y-6">
+      <div className="text-center space-y-2 animate-fade-in">
         <Logo size="lg" animated className="justify-center" />
         <h1 className="text-2xl font-bold text-foreground pt-4">
           {mode === 'forgot' ? t('auth.resetPassword') : t('auth.welcomeBack')}

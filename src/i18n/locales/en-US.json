@@ -264,6 +264,56 @@
     },
     "security": {
       "dataProtected": "Your data is protected and will never be sold."
+    },
+    "learnMore": "Learn more about MoneyQuest"
+  },
+  "features": {
+    "badge": "100% Free",
+    "hero": {
+      "title": "Everything you need to manage your finances",
+      "subtitle": "Discover how MoneyQuest transforms money management into a fun and efficient experience."
+    },
+    "trust": {
+      "title": "Why choose MoneyQuest?",
+      "secure": "Encrypted and secure data"
+    },
+    "core": {
+      "title": "Core Features",
+      "wallets": {
+        "title": "Multiple Wallets",
+        "description": "Organize your money across different wallets: checking, savings, cash, and more."
+      },
+      "goals": {
+        "title": "Category Goals",
+        "description": "Set monthly budgets and track how much you've spent in each category."
+      },
+      "reports": {
+        "title": "Detailed Reports",
+        "description": "Visualize your cash flow, compare periods, and understand where your money goes."
+      },
+      "insights": {
+        "title": "Smart Insights",
+        "description": "Receive personalized tips based on your spending habits."
+      }
+    },
+    "game": {
+      "title": "Gamification that Motivates",
+      "xp": {
+        "title": "Earn XP",
+        "description": "Every transaction you log earns experience points to level up."
+      },
+      "quests": {
+        "title": "Complete Quests",
+        "description": "Daily and weekly quests to keep you engaged and in control."
+      },
+      "badges": {
+        "title": "Unlock Badges",
+        "description": "Collect special badges as you reach important milestones."
+      },
+      "levels": {
+        "title": "Level Up",
+        "description": "Evolve your financial profile and unlock new titles."
+      }
     }
   },
   "navigation": {
