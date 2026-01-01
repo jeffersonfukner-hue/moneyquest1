@@ -1,5 +1,5 @@
 # MoneyQuest - robots.txt
-# https://www.moneyquest.app.br
+# https://moneyquest.app.br
 
 # Google crawlers
 User-agent: Googlebot
@@ -42,4 +42,4 @@ Disallow: /_next/
 Disallow: /admin/
 
 # Sitemap
-Sitemap: https://www.moneyquest.app.br/sitemap.xml
+Sitemap: https://moneyquest.app.br/sitemap.xml
