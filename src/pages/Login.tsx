@@ -133,8 +133,9 @@ const Login = () => {
       {/* Primary CTA */}
       <section className="space-y-3 animate-fade-in" style={{ animationDelay: '200ms' }}>
         <Button 
+          variant="gold"
           onClick={() => navigate('/signup')}
-          className="w-full h-14 text-lg font-semibold bg-gradient-hero hover:opacity-90 shadow-lg transition-all duration-300"
+          className="w-full h-14 text-lg"
         >
           {t('landing.cta.startFree')}
         </Button>
@@ -253,7 +254,8 @@ const Login = () => {
 
         <Button 
           type="submit" 
-          className="w-full h-12 font-semibold bg-gradient-hero hover:opacity-90" 
+          variant="gold"
+          className="w-full h-12" 
           disabled={loading}
         >
           {loading ? (
