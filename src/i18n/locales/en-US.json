@@ -1,4 +1,8 @@
 {
+  "languageSelection": {
+    "title": "Choose your language",
+    "subtitle": "Select your language to continue"
+  },
   "setup": {
     "title": "Initial Setup",
     "subtitle": "Choose your preferences to get started",

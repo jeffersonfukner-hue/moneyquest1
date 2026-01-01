@@ -1,10 +1,10 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
 
 import ptBR from './locales/pt-BR.json';
 import enUS from './locales/en-US.json';
 import esES from './locales/es-ES.json';
+import { detectLanguageFromTimezone } from '@/lib/countryDetection';
 
 export const SUPPORTED_LANGUAGES = {
   'pt-BR': { name: 'Português (Brasil)', flag: '🇧🇷' },
@@ -33,44 +33,77 @@ const resources = {
 
 /**
  * Mapeia idioma do navegador para idioma suportado.
- * pt* → pt-BR, es* → es-ES, en* → en-US, outros → en-US
+ * pt* → pt-BR, es* → es-ES, en* → en-US
+ * IMPORTANTE: Não retorna fallback para en-US - retorna null se não reconhecer
  */
-export const mapBrowserLanguage = (browserLang: string): SupportedLanguage => {
+export const mapBrowserLanguage = (browserLang: string): SupportedLanguage | null => {
   const lang = browserLang.toLowerCase();
   
   if (lang.startsWith('pt')) return 'pt-BR';
   if (lang.startsWith('es')) return 'es-ES';
   if (lang.startsWith('en')) return 'en-US';
   
-  return 'en-US'; // Fallback para inglês
+  // Não usar fallback para inglês - retornar null para forçar seleção
+  return null;
 };
 
-// Verificar se usuário já fez uma escolha explícita de idioma
-const hasExplicitPreference = localStorage.getItem(LANGUAGE_PREFERENCE_KEY) === 'true';
+/**
+ * Determina o idioma inicial de forma segura.
+ * Prioridade:
+ * 1. Preferência explícita salva (localStorage)
+ * 2. Detecção por timezone
+ * 3. Detecção por navigator.language
+ * 4. null (forçará tela de seleção)
+ */
+const determineInitialLanguage = (): SupportedLanguage | null => {
+  // 1. Verificar preferência explícita
+  const hasExplicitPreference = localStorage.getItem(LANGUAGE_PREFERENCE_KEY) === 'true';
+  const savedLang = localStorage.getItem('i18nextLng') as SupportedLanguage | null;
+  
+  if (hasExplicitPreference && savedLang && SUPPORTED_LANGUAGES[savedLang]) {
+    return savedLang;
+  }
+  
+  // 2. Tentar detecção por timezone
+  const timezoneLanguage = detectLanguageFromTimezone();
+  if (timezoneLanguage) {
+    localStorage.setItem('i18nextLng', timezoneLanguage);
+    localStorage.setItem(LANGUAGE_PREFERENCE_KEY, 'true');
+    return timezoneLanguage;
+  }
+  
+  // 3. Tentar detecção por navigator.language
+  const browserLang = navigator.language || navigator.languages?.[0];
+  if (browserLang) {
+    const mappedLang = mapBrowserLanguage(browserLang);
+    if (mappedLang) {
+      localStorage.setItem('i18nextLng', mappedLang);
+      localStorage.setItem(LANGUAGE_PREFERENCE_KEY, 'true');
+      return mappedLang;
+    }
+  }
+  
+  // 4. Não conseguiu determinar - será tratado pelo LanguageGuard
+  return null;
+};
 
-// Se não há preferência explícita, detectar do navegador e aplicar ANTES do i18n inicializar
-if (!hasExplicitPreference) {
-  const browserLang = navigator.language || navigator.languages?.[0] || 'en';
-  const mappedLang = mapBrowserLanguage(browserLang);
-  localStorage.setItem('i18nextLng', mappedLang);
-}
+// Determinar idioma inicial
+const initialLanguage = determineInitialLanguage();
 
 i18n
-  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: 'en-US',
+    lng: initialLanguage || 'pt-BR', // pt-BR como fallback temporário para i18n funcionar
+    fallbackLng: 'pt-BR', // Fallback para pt-BR, não en-US
     supportedLngs: ['pt-BR', 'en-US', 'es-ES'],
     interpolation: {
       escapeValue: false,
     },
     detection: {
-      // Se há preferência explícita, respeitar localStorage; senão, navigator já foi aplicado acima
-      order: ['localStorage', 'navigator', 'htmlTag'],
+      order: ['localStorage'],
       caches: ['localStorage'],
       lookupLocalStorage: 'i18nextLng',
-      convertDetectedLanguage: mapBrowserLanguage,
     },
   });
 
