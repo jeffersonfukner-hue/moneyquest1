@@ -3,6 +3,12 @@ import { Flame } from 'lucide-react';
 import { getXPProgress, XP_PER_LEVEL, getLevelTitleKey } from '@/lib/gameLogic';
 import { Profile } from '@/types/database';
 import { AvatarDisplay } from '@/components/profile/AvatarDisplay';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface LevelProgressProps {
   profile: Profile;
@@ -52,12 +58,21 @@ export const LevelProgress = ({ profile }: LevelProgressProps) => {
             <span className="text-xs text-muted-foreground">
               Lv{profile.level + 1}
             </span>
-            <div className="relative h-1.5 flex-1 min-w-8 overflow-hidden rounded-full bg-level-progress-bg">
-              <div 
-                className="h-full bg-gradient-to-r from-accent to-xp-gold-glow rounded-full transition-all duration-500"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="relative h-1.5 flex-1 min-w-8 overflow-hidden rounded-full bg-level-progress-bg cursor-pointer">
+                    <div 
+                      className="h-full bg-gradient-to-r from-accent to-xp-gold-glow rounded-full transition-all duration-500"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs font-semibold">{progress.toFixed(1)}% {t('stats.xpToNextLevel')}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <span className="text-xs font-semibold text-accent whitespace-nowrap">
               {xpToNextLevel}
             </span>
