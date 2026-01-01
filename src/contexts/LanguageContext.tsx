@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useProfile } from '@/hooks/useProfile';
-import { SUPPORTED_LANGUAGES, SUPPORTED_CURRENCIES, type SupportedLanguage, type SupportedCurrency, getDateLocale } from '@/i18n';
+import { SUPPORTED_LANGUAGES, SUPPORTED_CURRENCIES, type SupportedLanguage, type SupportedCurrency, getDateLocale, LANGUAGE_PREFERENCE_KEY } from '@/i18n';
 import type { Locale } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -41,6 +41,9 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [language]);
 
   const setLanguage = useCallback(async (newLanguage: SupportedLanguage) => {
+    // Marcar que usuário fez escolha explícita de idioma
+    localStorage.setItem(LANGUAGE_PREFERENCE_KEY, 'true');
+    
     await i18n.changeLanguage(newLanguage);
     
     // NOTE: We do NOT change currency when language changes

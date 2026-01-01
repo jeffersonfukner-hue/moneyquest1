@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from '@/hooks/use-toast';
 import { Sparkles, Eye, EyeOff, ArrowLeft, Check, Globe, Coins } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
-import i18n, { SupportedLanguage as I18nLanguage } from '@/i18n';
+import i18n, { SupportedLanguage as I18nLanguage, LANGUAGE_PREFERENCE_KEY } from '@/i18n';
 import { detectBrowserLanguage } from '@/lib/browserLanguageDetection';
 
 type SignupStep = 'preferences' | 'account';
@@ -56,16 +56,8 @@ const Signup = () => {
 
   const isPreferencesValid = selectedLanguage !== null && selectedCurrency !== null;
 
-  // Apply detected language immediately on mount
-  useEffect(() => {
-    const storedLang = localStorage.getItem('i18nextLng');
-    if (!storedLang) {
-      const detectedLang = detectBrowserLanguage();
-      if (detectedLang !== i18n.language) {
-        i18n.changeLanguage(detectedLang);
-      }
-    }
-  }, []);
+  // Apply detected language immediately on mount (handled by i18n/index.ts now)
+  // We keep this only for re-applying if somehow missed
 
   // Redirect if already logged in
   useEffect(() => {
@@ -83,6 +75,8 @@ const Signup = () => {
 
   const handleContinueToAccount = () => {
     if (selectedLanguage && selectedCurrency) {
+      // Marcar preferência explícita de idioma
+      localStorage.setItem(LANGUAGE_PREFERENCE_KEY, 'true');
       saveSetupPreferences(selectedLanguage, selectedCurrency);
       setStep('account');
     }

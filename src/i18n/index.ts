@@ -22,6 +22,9 @@ export const SUPPORTED_CURRENCIES = {
 
 export type SupportedCurrency = keyof typeof SUPPORTED_CURRENCIES;
 
+// Chave para identificar se usuário fez escolha explícita de idioma
+export const LANGUAGE_PREFERENCE_KEY = 'moneyquest_language_set';
+
 const resources = {
   'pt-BR': { translation: ptBR },
   'en-US': { translation: enUS },
@@ -32,7 +35,7 @@ const resources = {
  * Mapeia idioma do navegador para idioma suportado.
  * pt* → pt-BR, es* → es-ES, en* → en-US, outros → en-US
  */
-const mapBrowserLanguage = (browserLang: string): SupportedLanguage => {
+export const mapBrowserLanguage = (browserLang: string): SupportedLanguage => {
   const lang = browserLang.toLowerCase();
   
   if (lang.startsWith('pt')) return 'pt-BR';
@@ -41,6 +44,16 @@ const mapBrowserLanguage = (browserLang: string): SupportedLanguage => {
   
   return 'en-US'; // Fallback para inglês
 };
+
+// Verificar se usuário já fez uma escolha explícita de idioma
+const hasExplicitPreference = localStorage.getItem(LANGUAGE_PREFERENCE_KEY) === 'true';
+
+// Se não há preferência explícita, detectar do navegador e aplicar ANTES do i18n inicializar
+if (!hasExplicitPreference) {
+  const browserLang = navigator.language || navigator.languages?.[0] || 'en';
+  const mappedLang = mapBrowserLanguage(browserLang);
+  localStorage.setItem('i18nextLng', mappedLang);
+}
 
 i18n
   .use(LanguageDetector)
@@ -53,6 +66,7 @@ i18n
       escapeValue: false,
     },
     detection: {
+      // Se há preferência explícita, respeitar localStorage; senão, navigator já foi aplicado acima
       order: ['localStorage', 'navigator', 'htmlTag'],
       caches: ['localStorage'],
       lookupLocalStorage: 'i18nextLng',

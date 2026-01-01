@@ -8,7 +8,6 @@ import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import { Sparkles, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
-import { detectBrowserLanguage } from '@/lib/browserLanguageDetection';
 import { SupportedLanguage } from '@/i18n';
 
 type LoginMode = 'login' | 'forgot';
@@ -33,14 +32,8 @@ const Login = () => {
   const currentLanguage = i18n.language as SupportedLanguage;
   const currentFlag = languageFlags[currentLanguage] || languageFlags['en-US'];
 
-  // Apply browser language on first load (no stored preference)
-  useEffect(() => {
-    const storedLang = localStorage.getItem('i18nextLng');
-    if (!storedLang) {
-      const detectedLang = detectBrowserLanguage();
-      i18n.changeLanguage(detectedLang);
-    }
-  }, [i18n]);
+  // Language detection is now handled by i18n/index.ts before React mounts
+  // No useEffect needed here - just redirect if logged in
 
   // Redirect if already logged in
   useEffect(() => {
