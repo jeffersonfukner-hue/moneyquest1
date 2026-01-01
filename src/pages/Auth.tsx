@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
 import { Sparkles, Eye, EyeOff, Globe, ChevronDown, ArrowLeft } from 'lucide-react';
-import logoImage from '@/assets/logo.png';
+import { Logo } from '@/components/ui/logo';
 import { SUPPORTED_LANGUAGES, type SupportedLanguage } from '@/i18n';
 import i18n from '@/i18n';
 
@@ -263,12 +263,8 @@ const Auth = () => {
         </div>
 
         <div className="text-center mb-8 animate-slide-up">
-          <div className="mx-auto mb-4 animate-float">
-            <img 
-              src={logoImage} 
-              alt="MoneyQuest" 
-              className="w-24 h-24 object-contain mx-auto"
-            />
+          <div className="mx-auto mb-4">
+            <Logo size="lg" animated className="justify-center" />
           </div>
           <h1 className="font-display text-4xl font-bold text-gradient-primary">MoneyQuest</h1>
           <p className="text-muted-foreground mt-2">{t('auth.tagline')}</p>
