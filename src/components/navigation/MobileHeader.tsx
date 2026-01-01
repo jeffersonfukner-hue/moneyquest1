@@ -23,18 +23,7 @@ export const MobileHeader = ({ onSettingsClick, onProfileClick }: MobileHeaderPr
   return (
     <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border safe-area-top">
       <div className="flex items-center justify-between h-14 px-4 max-w-md mx-auto">
-        <button 
-          onClick={onProfileClick}
-          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-          aria-label={t('settings.profile')}
-        >
-          <AvatarDisplay
-            avatarUrl={profile?.avatar_url}
-            avatarIcon={profile?.avatar_icon || '🎮'}
-            size="sm"
-          />
-          <Logo size="sm" showText textClassName="text-lg" />
-        </button>
+        <Logo size="sm" />
         
         <div className="flex items-center gap-1">
           <SeasonalThemeIndicator />
@@ -50,6 +39,17 @@ export const MobileHeader = ({ onSettingsClick, onProfileClick }: MobileHeaderPr
               <Shield className="w-5 h-5" />
             </Button>
           )}
+          <button 
+            onClick={onProfileClick}
+            className="flex items-center hover:opacity-80 transition-opacity min-h-[44px] min-w-[44px] justify-center"
+            aria-label={t('settings.profile')}
+          >
+            <AvatarDisplay
+              avatarUrl={profile?.avatar_url}
+              avatarIcon={profile?.avatar_icon || '🎮'}
+              size="sm"
+            />
+          </button>
           <Button 
             variant="ghost" 
             size="icon" 
