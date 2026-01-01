@@ -74,13 +74,13 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
 
   return (
     <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-1">
         <CardTitle className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
           <BarChart3 className="w-4 h-4" />
           {t('dashboard.monthlyComparison')}
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 pt-0">
         {/* Change indicator */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -99,7 +99,7 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
         </div>
 
         {/* Bar comparison */}
-        <div className="space-y-3">
+        <div className="space-y-2">
           {/* Current month */}
           <div className="space-y-1">
             <div className="flex justify-between text-xs">

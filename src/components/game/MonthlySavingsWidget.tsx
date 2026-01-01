@@ -46,13 +46,13 @@ export const MonthlySavingsWidget = ({ transactions }: MonthlySavingsWidgetProps
 
   return (
     <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-1">
         <CardTitle className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
           <Wallet className="w-4 h-4" />
           {t('dashboard.monthlySavings')}
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-2 pt-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {isPositive ? (

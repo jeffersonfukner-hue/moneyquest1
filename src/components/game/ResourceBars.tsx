@@ -116,13 +116,13 @@ export const ResourceBars = ({ transactions, categoryGoals = [] }: ResourceBarsP
 
   return (
     <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-1">
         <CardTitle className="text-sm font-medium flex items-center gap-2">
           <span className="text-lg">⚔️</span>
           {t('resourceBars.title', 'Resource Bars')}
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-2 pt-0">
         {activeCategories.map(category => {
           const config = RESOURCE_CONFIG[category];
           const spent = monthlySpending[category] || 0;

@@ -36,7 +36,7 @@ export const CategoryGoalsCard = () => {
       )}
       onClick={() => navigate('/category-goals')}
     >
-      <CardContent className="p-4">
+      <CardContent className="p-3">
         <div className="flex items-start gap-3">
           <div className={cn(
             "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 relative",

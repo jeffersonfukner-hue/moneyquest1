@@ -57,8 +57,8 @@ export const QuestsPanel = ({ quests }: QuestsPanelProps) => {
   const achievementQuests = getQuestsByType('ACHIEVEMENT');
 
   return (
-    <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-md animate-slide-up" style={{ animationDelay: '0.3s' }}>
-      <div className="flex items-center gap-2 mb-4">
+    <div className="bg-card rounded-2xl p-3 sm:p-4 shadow-md animate-slide-up" style={{ animationDelay: '0.3s' }}>
+      <div className="flex items-center gap-2 mb-3">
         <div className="w-8 h-8 bg-gradient-quest rounded-lg flex items-center justify-center">
           <Target className="w-4 h-4 text-primary-foreground" />
         </div>
@@ -66,7 +66,7 @@ export const QuestsPanel = ({ quests }: QuestsPanelProps) => {
       </div>
 
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabType)}>
-        <TabsList className="grid grid-cols-4 mb-4 h-auto">
+        <TabsList className="grid grid-cols-4 mb-3 h-auto">
           {QUEST_TABS.map(tab => {
             const stats = getCompletionCount(tab.type);
             const config = QUEST_TYPE_CONFIG[tab.type];
@@ -139,8 +139,8 @@ export const QuestsPanel = ({ quests }: QuestsPanelProps) => {
       </Tabs>
 
       {achievementQuests.length > 0 && (
-        <div className="mt-6 pt-4 border-t border-border">
-          <div className="flex items-center gap-2 mb-3">
+        <div className="mt-4 pt-3 border-t border-border">
+          <div className="flex items-center gap-2 mb-2">
             <span className="text-sm">{QUEST_TYPE_CONFIG.ACHIEVEMENT.icon}</span>
             <h4 className="text-sm font-medium text-foreground">{t('quests.achievement')}</h4>
             <span className="text-xs text-muted-foreground">
