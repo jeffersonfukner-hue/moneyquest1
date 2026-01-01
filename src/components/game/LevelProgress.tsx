@@ -15,41 +15,47 @@ export const LevelProgress = ({ profile }: LevelProgressProps) => {
   const translatedTitle = t(`levels.${levelTitleKey}`);
 
   return (
-    <div className="bg-card rounded-2xl p-3 sm:p-4 shadow-md animate-slide-up border border-border">
-      <div className="flex items-center gap-3 mb-3">
-        <div className="relative">
-          <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-lg shadow-primary/30 animate-float overflow-hidden">
+    <div className="bg-card rounded-xl p-2 shadow-md animate-slide-up border border-border">
+      <div className="flex items-center gap-2">
+        {/* Avatar compacto */}
+        <div className="relative flex-shrink-0">
+          <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-md shadow-primary/30 overflow-hidden">
             <AvatarDisplay
               avatarUrl={profile.avatar_url}
               avatarIcon={profile.avatar_icon}
-              size="lg"
+              size="md"
               className="w-full h-full border-0"
             />
           </div>
-          <div className="absolute -bottom-1 -right-1 bg-accent text-accent-foreground text-xs font-bold px-2 py-0.5 rounded-full shadow-md">
-            {t('stats.level')} {profile.level}
+          <div className="absolute -bottom-0.5 -right-0.5 bg-accent text-accent-foreground text-[10px] font-bold px-1.5 rounded-full shadow-sm">
+            {profile.level}
           </div>
         </div>
-        <div className="flex-1 min-w-0">
-          <h3 className="font-display text-base sm:text-lg font-semibold text-primary truncate">
+
+        {/* Título */}
+        <div className="flex-shrink-0">
+          <h3 className="font-display text-sm font-semibold text-primary leading-tight">
             {translatedTitle}
           </h3>
-          <p className="text-sm text-muted-foreground">
-            {profile.xp.toLocaleString()} {t('stats.xp')}
+          <p className="text-xs text-muted-foreground">
+            {profile.xp.toLocaleString()} XP
           </p>
         </div>
-      </div>
-      
-      <div className="space-y-2">
-        <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">{t('stats.level')} {profile.level + 1}</span>
-          <span className="font-semibold text-accent">{xpToNextLevel} {t('stats.xp')}</span>
-        </div>
-        <div className="relative h-3 w-full overflow-hidden rounded-full bg-level-progress-bg">
-          <div 
-            className="h-full bg-gradient-to-r from-accent to-xp-gold-glow rounded-full transition-all duration-500"
-            style={{ width: `${progress}%` }}
-          />
+
+        {/* Barra de progresso inline */}
+        <div className="flex items-center gap-1.5 ml-auto">
+          <span className="text-xs text-muted-foreground">
+            Lv{profile.level + 1}
+          </span>
+          <div className="relative h-2 w-16 sm:w-20 overflow-hidden rounded-full bg-level-progress-bg">
+            <div 
+              className="h-full bg-gradient-to-r from-accent to-xp-gold-glow rounded-full transition-all duration-500"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <span className="text-xs font-semibold text-accent whitespace-nowrap">
+            {xpToNextLevel} XP
+          </span>
         </div>
       </div>
     </div>
