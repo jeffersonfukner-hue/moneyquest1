@@ -2,7 +2,12 @@ import type { Config } from "tailwindcss";
 
 export default {
   darkMode: ["class"],
-  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  content: [
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   prefix: "",
   theme: {
     container: {
@@ -14,7 +19,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Space Grotesk', 'sans-serif'],
+        sans: ['Inter', 'sans-serif'],
         display: ['Fredoka', 'sans-serif'],
       },
       colors: {
@@ -61,28 +66,31 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // Game-specific colors
+        // Cores de estado
+        success: "hsl(var(--success))",
+        warning: "hsl(var(--warning))",
+        info: "hsl(var(--info))",
+        // Cores financeiras
+        income: "hsl(var(--income))",
+        expense: "hsl(var(--expense))",
+        // Cores de gamificação
         xp: {
-          DEFAULT: "hsl(var(--xp-gold))",
-          glow: "hsl(var(--xp-gold-glow))",
+          DEFAULT: "hsl(var(--xp))",
+          glow: "hsl(var(--xp-glow))",
         },
         streak: {
-          DEFAULT: "hsl(var(--streak-orange))",
+          DEFAULT: "hsl(var(--streak))",
           glow: "hsl(var(--streak-glow))",
         },
         quest: {
-          DEFAULT: "hsl(var(--quest-purple))",
+          DEFAULT: "hsl(var(--quest))",
           glow: "hsl(var(--quest-glow))",
         },
-        badge: {
-          DEFAULT: "hsl(var(--badge-blue))",
-        },
+        badge: "hsl(var(--badge))",
         level: {
-          DEFAULT: "hsl(var(--level-emerald))",
+          DEFAULT: "hsl(var(--level))",
           glow: "hsl(var(--level-glow))",
         },
-        income: "hsl(var(--income-green))",
-        expense: "hsl(var(--expense-red))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -97,7 +105,9 @@ export default {
         'lg': 'var(--shadow-lg)',
         'glow-primary': 'var(--shadow-glow-primary)',
         'glow-accent': 'var(--shadow-glow-accent)',
+        'glow-xp': 'var(--shadow-glow-xp)',
         'glow-streak': 'var(--shadow-glow-streak)',
+        'glow-quest': 'var(--shadow-glow-quest)',
       },
       keyframes: {
         "accordion-down": {
@@ -110,7 +120,7 @@ export default {
         },
         "level-up": {
           "0%": { transform: "scale(1)", opacity: "1" },
-          "50%": { transform: "scale(1.5)", opacity: "0.8" },
+          "50%": { transform: "scale(1.2)", opacity: "0.8" },
           "100%": { transform: "scale(1)", opacity: "1" },
         },
         "coin-spin": {
@@ -125,14 +135,24 @@ export default {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        "float": {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-6px)" },
+        },
+        "glow-pulse": {
+          "0%, 100%": { boxShadow: "0 0 5px hsl(var(--xp) / 0.5)" },
+          "50%": { boxShadow: "0 0 20px hsl(var(--xp) / 0.8), 0 0 30px hsl(var(--xp) / 0.4)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "level-up": "level-up 0.6s ease-out",
-        "coin-spin": "coin-spin 1s ease-in-out",
+        "level-up": "level-up 0.5s ease-in-out",
+        "coin-spin": "coin-spin 0.6s ease-in-out",
         "slide-up-fade": "slide-up-fade 0.3s ease-out",
-        "shimmer": "shimmer 3s ease-in-out infinite",
+        "shimmer": "shimmer 2s infinite",
+        "float": "float 3s ease-in-out infinite",
+        "glow-pulse": "glow-pulse 2s ease-in-out infinite",
       },
     },
   },
