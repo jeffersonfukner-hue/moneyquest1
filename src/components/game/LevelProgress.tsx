@@ -33,20 +33,21 @@ export const LevelProgress = ({ profile }: LevelProgressProps) => {
           </div>
         </div>
 
-        {/* Título e XP */}
+        {/* Título */}
         <div className="flex-shrink-0 min-w-0">
           <h3 className="font-display text-sm font-semibold text-primary leading-tight">
             {translatedTitle}
           </h3>
-          <p className="text-xs text-muted-foreground">
-            {profile.xp.toLocaleString()} XP
-          </p>
-        </div>
-
-        {/* Streak badge */}
-        <div className="flex items-center gap-0.5 bg-accent/20 text-accent px-1.5 py-0.5 rounded-full">
-          <Flame className="w-3 h-3" />
-          <span className="text-[10px] font-bold">{profile.streak}</span>
+          <div className="flex items-center gap-1.5">
+            {/* Streak badge */}
+            <div className="flex items-center gap-0.5 bg-accent/20 text-accent px-1 py-0.5 rounded-full">
+              <Flame className="w-3 h-3" />
+              <span className="text-[10px] font-bold">{profile.streak}</span>
+            </div>
+            <span className="text-xs text-muted-foreground">
+              {profile.xp.toLocaleString()} XP
+            </span>
+          </div>
         </div>
 
         {/* Barra de progresso inline */}
