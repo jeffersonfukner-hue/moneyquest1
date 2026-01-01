@@ -21,7 +21,7 @@ export const MobileHeader = ({ onSettingsClick, onProfileClick }: MobileHeaderPr
   const navigate = useNavigate();
 
   return (
-    <header className="sticky top-0 z-40 bg-primary border-b border-primary/80 safe-area-top">
+    <header className="sticky top-0 z-40 bg-[#241733] border-b border-primary/50 safe-area-top">
       <div className="flex items-center justify-between h-14 px-4 max-w-md mx-auto">
         <Logo size="sm" />
         
