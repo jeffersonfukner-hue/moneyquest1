@@ -212,16 +212,17 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
       {!isControlled && (
         <DialogTrigger asChild>
           <Button 
+            variant="gold"
             size="lg" 
-            className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-gradient-hero hover:opacity-90 transition-all hover:scale-105"
+            className="fixed bottom-6 right-6 h-14 w-14 rounded-full"
           >
             <Plus className="w-6 h-6" />
           </Button>
         </DialogTrigger>
       )}
-      <DialogContent className="sm:max-w-md mx-4">
+      <DialogContent className="sm:max-w-md mx-4 border-border">
         <DialogHeader>
-          <DialogTitle className="font-display text-xl">{t('transactions.addTransaction')}</DialogTitle>
+          <DialogTitle className="font-display text-xl text-primary">{t('transactions.addTransaction')}</DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -231,7 +232,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
               variant={type === 'INCOME' ? 'default' : 'outline'}
               className={cn(
                 "flex-1 min-h-[48px]",
-                type === 'INCOME' && 'bg-income hover:bg-income/90'
+                type === 'INCOME' && 'bg-success hover:bg-success/90 text-white'
               )}
               onClick={() => {
                 setType('INCOME');
@@ -246,7 +247,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
               variant={type === 'EXPENSE' ? 'default' : 'outline'}
               className={cn(
                 "flex-1 min-h-[48px]",
-                type === 'EXPENSE' && 'bg-expense hover:bg-expense/90'
+                type === 'EXPENSE' && 'bg-destructive hover:bg-destructive/90 text-white'
               )}
               onClick={() => {
                 setType('EXPENSE');
@@ -437,7 +438,8 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
 
           <Button
             type="submit" 
-            className="w-full min-h-[48px] bg-gradient-hero hover:opacity-90"
+            variant="gold"
+            className="w-full min-h-[48px]"
             disabled={loading}
           >
             {loading ? t('common.loading') : `${t('common.add')} 🎮`}
