@@ -1,5 +1,5 @@
 import { Settings, Shield } from 'lucide-react';
-import logoImage from '@/assets/logo.png';
+import { Logo } from '@/components/ui/logo';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { SoundToggle } from '@/components/game/SoundToggle';
@@ -33,12 +33,7 @@ export const MobileHeader = ({ onSettingsClick, onProfileClick }: MobileHeaderPr
             avatarIcon={profile?.avatar_icon || '🎮'}
             size="sm"
           />
-          <img 
-            src={logoImage} 
-            alt="MoneyQuest" 
-            className="w-7 h-7 object-contain"
-          />
-          <h1 className="font-display font-bold text-lg text-foreground">MoneyQuest</h1>
+          <Logo size="sm" showText textClassName="text-lg" />
         </button>
         
         <div className="flex items-center gap-1">

@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import { Sparkles, Eye, EyeOff, ArrowLeft } from 'lucide-react';
-import logoImage from '@/assets/logo.png';
+import { Logo } from '@/components/ui/logo';
 import { detectBrowserLanguage } from '@/lib/browserLanguageDetection';
 import { SupportedLanguage } from '@/i18n';
 
@@ -255,12 +255,8 @@ const Login = () => {
 
       <div className="w-full max-w-md">
         <div className="text-center mb-8 animate-slide-up">
-          <div className="mx-auto mb-4 animate-float">
-            <img 
-              src={logoImage} 
-              alt="MoneyQuest" 
-              className="w-24 h-24 object-contain mx-auto"
-            />
+          <div className="mx-auto mb-4">
+            <Logo size="lg" animated className="justify-center" />
           </div>
           <h1 className="font-display text-4xl font-bold text-gradient-primary">MoneyQuest</h1>
           <p className="text-muted-foreground mt-2">{t('auth.tagline')}</p>
