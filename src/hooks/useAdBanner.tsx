@@ -18,8 +18,7 @@ export const useAdBanner = () => {
   // Check if AdSense is properly configured
   const isAdSenseConfigured = Boolean(
     ADSENSE_CONFIG.client && 
-    ADSENSE_CONFIG.slots.bottomBanner && 
-    ADSENSE_CONFIG.slots.bottomBanner !== '1234567890' // Not placeholder
+    ADSENSE_CONFIG.slots.bottomBanner
   );
 
   // Show banner only for free users, not loading, not on restricted pages
