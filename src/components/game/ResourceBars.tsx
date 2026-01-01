@@ -14,49 +14,49 @@ interface ResourceBarsProps {
 
 const RESOURCE_CONFIG: Record<string, {
   icon: string;
-  rpgName: string;
+  rpgNameKey: string;
   gradient: string;
   maxDefault: number;
 }> = {
   Food: { 
     icon: '🍔', 
-    rpgName: 'Provisions', 
+    rpgNameKey: 'provisions', 
     gradient: 'from-amber-500 to-orange-500',
     maxDefault: 500 
   },
   Transport: { 
     icon: '🚗', 
-    rpgName: 'Travel Fuel', 
+    rpgNameKey: 'travelFuel', 
     gradient: 'from-blue-500 to-cyan-500',
     maxDefault: 300 
   },
   Entertainment: { 
     icon: '🎮', 
-    rpgName: 'Fun Energy', 
+    rpgNameKey: 'funEnergy', 
     gradient: 'from-purple-500 to-pink-500',
     maxDefault: 200 
   },
   Shopping: { 
     icon: '🛍️', 
-    rpgName: 'Treasure', 
+    rpgNameKey: 'treasure', 
     gradient: 'from-pink-500 to-rose-500',
     maxDefault: 400 
   },
   Bills: { 
     icon: '📄', 
-    rpgName: 'Kingdom Tax', 
+    rpgNameKey: 'kingdomTax', 
     gradient: 'from-slate-500 to-gray-500',
     maxDefault: 600 
   },
   Health: { 
     icon: '💊', 
-    rpgName: 'Life Essence', 
+    rpgNameKey: 'lifeEssence', 
     gradient: 'from-emerald-500 to-green-500',
     maxDefault: 200 
   },
   Education: {
     icon: '📚',
-    rpgName: 'Knowledge',
+    rpgNameKey: 'magicScrolls',
     gradient: 'from-indigo-500 to-blue-500',
     maxDefault: 300
   }
@@ -133,9 +133,9 @@ export const ResourceBars = ({ transactions, categoryGoals = [] }: ResourceBarsP
           return (
             <div key={category} className="space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5">
                   <span>{config.icon}</span>
-                  <span className="font-medium text-foreground/80">{config.rpgName}</span>
+                  <span className="font-medium text-foreground/80">{t(`resourceBars.${config.rpgNameKey}`)}</span>
                 </div>
                 <span className={cn(
                   "font-mono text-[10px]",
