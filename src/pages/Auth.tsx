@@ -264,9 +264,8 @@ const Auth = () => {
 
         <div className="text-center mb-8 animate-slide-up">
           <div className="mx-auto mb-4">
-            <Logo size="lg" animated className="justify-center" />
+            <Logo size="xl" animated className="justify-center" />
           </div>
-          <h1 className="font-display text-4xl font-bold text-gradient-primary">MoneyQuest</h1>
           <p className="text-muted-foreground mt-2">{t('auth.tagline')}</p>
         </div>
 
