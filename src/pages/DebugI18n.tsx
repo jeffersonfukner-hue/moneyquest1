@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import { LANGUAGE_PREFERENCE_KEY, mapBrowserLanguage, type SupportedLanguage } from '@/i18n';
+import { detectLanguageFromTimezone, getBrowserTimezone } from '@/lib/countryDetection';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { RefreshCw, Trash2, Globe, Database, Monitor, CheckCircle, XCircle } from 'lucide-react';
+import { RefreshCw, Trash2, Globe, Database, Monitor, CheckCircle, XCircle, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 
@@ -18,6 +19,10 @@ const DebugI18n = () => {
   const storedLanguage = localStorage.getItem('i18nextLng') || 'not set';
   const hasExplicitPreference = localStorage.getItem(LANGUAGE_PREFERENCE_KEY) === 'true';
   const currentI18nLanguage = i18n.language as SupportedLanguage;
+  
+  // Timezone detection info
+  const browserTimezone = getBrowserTimezone();
+  const timezoneLanguage = detectLanguageFromTimezone();
 
   const handleClearStorage = () => {
     localStorage.removeItem('i18nextLng');
@@ -70,7 +75,35 @@ const DebugI18n = () => {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Mapeado para</span>
-              <Badge className="font-mono">{mappedLanguage}</Badge>
+              <Badge className="font-mono">{mappedLanguage || 'null (não reconhecido)'}</Badge>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Timezone Detection */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MapPin className="w-5 h-5" />
+              Detecção por Timezone
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground">Timezone</span>
+              <Badge variant="outline" className="font-mono text-xs">{browserTimezone}</Badge>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground">Idioma detectado</span>
+              {timezoneLanguage ? (
+                <Badge className="font-mono bg-green-500/20 text-green-700 dark:text-green-400">
+                  {timezoneLanguage}
+                </Badge>
+              ) : (
+                <Badge variant="secondary" className="font-mono">
+                  null (requer seleção manual)
+                </Badge>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -161,10 +194,11 @@ const DebugI18n = () => {
             <CardTitle className="text-blue-600 dark:text-blue-400">Comportamento Esperado</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground space-y-2">
-            <p><strong>1ª visita:</strong> Detecta idioma do navegador e aplica automaticamente.</p>
-            <p><strong>Visitas seguintes (sem login):</strong> Mantém o idioma detectado na 1ª visita.</p>
-            <p><strong>Após escolha manual:</strong> Marca preferência explícita e respeita sempre.</p>
-            <p><strong>Após login:</strong> Usa o idioma salvo no perfil do usuário.</p>
+            <p><strong>1. Preferência salva:</strong> Se existe idioma em localStorage, usar imediatamente.</p>
+            <p><strong>2. Detecção por timezone:</strong> Tenta detectar país pelo timezone do navegador.</p>
+            <p><strong>3. Detecção por navigator.language:</strong> Fallback se timezone não mapeado.</p>
+            <p><strong>4. Seleção manual:</strong> Se nenhuma detecção funcionar, exibe tela de seleção.</p>
+            <p className="text-yellow-600 dark:text-yellow-400 font-medium">⚠️ Inglês NUNCA é fallback automático!</p>
           </CardContent>
         </Card>
       </div>

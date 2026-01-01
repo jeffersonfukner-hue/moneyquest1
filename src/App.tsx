@@ -12,12 +12,14 @@ import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { OnboardingGuard } from "@/components/auth/OnboardingGuard";
+import { LanguageGuard } from "@/components/auth/LanguageGuard";
 import { SEOProvider } from "@/components/SEOProvider";
 import '@/i18n';
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import LanguageSelection from "./pages/LanguageSelection";
 import Features from "./pages/Features";
 
 import Onboarding from "./pages/Onboarding";
@@ -59,11 +61,12 @@ const App = () => (
                       <BrowserRouter>
                         <SEOProvider>
                           <Routes>
+                            <Route path="/select-language" element={<LanguageSelection />} />
                             <Route path="/" element={<OnboardingGuard><Index /></OnboardingGuard>} />
                           <Route path="/setup" element={<Navigate to="/signup" replace />} />
-                          <Route path="/login" element={<Login />} />
-                          <Route path="/signup" element={<Signup />} />
-                          <Route path="/features" element={<Features />} />
+                          <Route path="/login" element={<LanguageGuard><Login /></LanguageGuard>} />
+                          <Route path="/signup" element={<LanguageGuard><Signup /></LanguageGuard>} />
+                          <Route path="/features" element={<LanguageGuard><Features /></LanguageGuard>} />
                           <Route path="/onboarding" element={<Onboarding />} />
                           <Route path="/auth" element={<Navigate to="/login" replace />} />
                           <Route path="/settings" element={<Settings />} />
