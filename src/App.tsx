@@ -12,6 +12,7 @@ import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { OnboardingGuard } from "@/components/auth/OnboardingGuard";
+import { SEOProvider } from "@/components/SEOProvider";
 import '@/i18n';
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -54,8 +55,9 @@ const App = () => (
                       <Toaster />
                       <Sonner />
                       <BrowserRouter>
-                        <Routes>
-                          <Route path="/" element={<OnboardingGuard><Index /></OnboardingGuard>} />
+                        <SEOProvider>
+                          <Routes>
+                            <Route path="/" element={<OnboardingGuard><Index /></OnboardingGuard>} />
                           <Route path="/setup" element={<Navigate to="/signup" replace />} />
                           <Route path="/login" element={<Login />} />
                           <Route path="/signup" element={<Signup />} />
@@ -81,7 +83,8 @@ const App = () => (
                           <Route path="/super-admin/logs" element={<AdminRoute><AdminLogs /></AdminRoute>} />
                           <Route path="*" element={<NotFound />} />
                         </Routes>
-                      </BrowserRouter>
+                      </SEOProvider>
+                    </BrowserRouter>
                     </SeasonalThemeProvider>
                   </FinancialMoodProvider>
                 </SubscriptionProvider>
