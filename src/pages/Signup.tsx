@@ -13,13 +13,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { TrustBadge } from '@/components/ui/trust-badge';
 import { toast } from '@/hooks/use-toast';
-import { Sparkles, Eye, EyeOff, ArrowLeft, Check, Globe, Coins } from 'lucide-react';
+import { Eye, EyeOff, ArrowLeft, Check, Globe, Coins, CircleCheck, CreditCard, Zap, Shield, Loader2, ChevronRight } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 import i18n, { SupportedLanguage as I18nLanguage, LANGUAGE_PREFERENCE_KEY } from '@/i18n';
 import { detectBrowserLanguage } from '@/lib/browserLanguageDetection';
 
-type SignupStep = 'preferences' | 'account';
+type SignupStep = 'landing' | 'preferences' | 'account';
 
 const languageFlags: Record<I18nLanguage, { flag: string; label: string }> = {
   'pt-BR': { flag: '🇧🇷', label: 'Português' },
@@ -37,7 +38,7 @@ const Signup = () => {
   const { saveSetupPreferences } = useSetupGuard();
   
   // Step state
-  const [step, setStep] = useState<SignupStep>('preferences');
+  const [step, setStep] = useState<SignupStep>('landing');
   
   // Preferences state - pre-select detected browser language
   const [selectedLanguage, setSelectedLanguage] = useState<SupportedLanguage | null>(() => {
@@ -56,9 +57,6 @@ const Signup = () => {
 
   const isPreferencesValid = selectedLanguage !== null && selectedCurrency !== null;
 
-  // Apply detected language immediately on mount (handled by i18n/index.ts now)
-  // We keep this only for re-applying if somehow missed
-
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
@@ -75,7 +73,6 @@ const Signup = () => {
 
   const handleContinueToAccount = () => {
     if (selectedLanguage && selectedCurrency) {
-      // Marcar preferência explícita de idioma
       localStorage.setItem(LANGUAGE_PREFERENCE_KEY, 'true');
       saveSetupPreferences(selectedLanguage, selectedCurrency);
       setStep('account');
@@ -97,7 +94,6 @@ const Signup = () => {
   };
 
   const handleGoogleSignIn = async () => {
-    // Ensure preferences are saved before OAuth redirect
     if (selectedLanguage && selectedCurrency) {
       saveSetupPreferences(selectedLanguage, selectedCurrency);
     }
@@ -146,9 +142,106 @@ const Signup = () => {
     setLoading(false);
   };
 
+  const renderLandingStep = () => (
+    <div className="space-y-8">
+      {/* Hero Section */}
+      <section className="text-center space-y-4 animate-fade-in">
+        <Logo size="xl" animated className="justify-center" />
+        <div className="space-y-2 pt-4">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            {t('landing.hero.title')}
+          </h1>
+          <p className="text-base text-muted-foreground leading-relaxed">
+            {t('landing.hero.subtitle')}
+          </p>
+        </div>
+      </section>
+
+      {/* Trust Badges */}
+      <section className="space-y-4 bg-card/50 rounded-2xl p-5 border border-border/50 animate-fade-in" style={{ animationDelay: '100ms' }}>
+        <div className="space-y-3">
+          <TrustBadge icon={CircleCheck} text={t('landing.trust.free')} />
+          <TrustBadge icon={CreditCard} text={t('landing.trust.noCard')} />
+          <TrustBadge icon={Zap} text={t('landing.trust.startNow')} />
+        </div>
+        <p className="text-xs text-muted-foreground text-center pt-2">
+          {t('landing.trust.noHiddenFees')}
+        </p>
+      </section>
+
+      {/* Primary CTA */}
+      <section className="space-y-3 animate-fade-in" style={{ animationDelay: '200ms' }}>
+        <Button 
+          onClick={() => setStep('preferences')}
+          className="w-full h-14 text-lg font-semibold bg-gradient-hero hover:opacity-90 shadow-lg transition-all duration-300"
+        >
+          {t('landing.cta.startFree')}
+        </Button>
+        <p className="text-xs text-muted-foreground text-center">
+          {t('landing.cta.noCreditCard')}
+        </p>
+      </section>
+
+      {/* Learn More Link */}
+      <section className="text-center animate-fade-in" style={{ animationDelay: '250ms' }}>
+        <Link 
+          to="/features" 
+          className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+        >
+          {t('landing.learnMore')}
+          <ChevronRight className="w-4 h-4" />
+        </Link>
+      </section>
+
+      {/* Secondary Actions */}
+      <section className="space-y-4 animate-fade-in" style={{ animationDelay: '300ms' }}>
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-border/50" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-3 text-muted-foreground">
+              {t('auth.alreadyHaveAccount')}
+            </span>
+          </div>
+        </div>
+
+        <Button 
+          variant="outline" 
+          asChild
+          className="w-full h-12"
+        >
+          <Link to="/login">{t('auth.login')}</Link>
+        </Button>
+      </section>
+
+      {/* Security Footer */}
+      <footer className="text-center pt-4 animate-fade-in" style={{ animationDelay: '400ms' }}>
+        <p className="text-xs text-muted-foreground flex items-center justify-center gap-1.5">
+          <Shield className="w-3.5 h-3.5" />
+          {t('landing.security.dataProtected')}
+        </p>
+      </footer>
+    </div>
+  );
+
   const renderPreferencesStep = () => (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
+      <div className="flex items-center justify-between mb-4">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => setStep('landing')}
+          className="text-muted-foreground"
+        >
+          <ArrowLeft className="w-4 h-4 mr-1" />
+          {t('common.back')}
+        </Button>
+      </div>
+
       <div className="text-center mb-4">
+        <Logo size="lg" animated className="justify-center mb-4" />
         <h2 className="font-display text-xl font-semibold text-foreground">
           {t('setup.title')}
         </h2>
@@ -229,7 +322,6 @@ const Signup = () => {
         disabled={!isPreferencesValid}
         className="w-full min-h-[48px] bg-gradient-hero hover:opacity-90"
       >
-        <Sparkles className="w-4 h-4 mr-2" />
         {t('setup.continue')}
       </Button>
 
@@ -246,7 +338,7 @@ const Signup = () => {
   );
 
   const renderAccountStep = () => (
-    <div className="space-y-4">
+    <div className="space-y-4 animate-fade-in">
       <div className="flex items-center justify-between mb-4">
         <Button
           type="button"
@@ -264,9 +356,12 @@ const Signup = () => {
         </div>
       </div>
 
-      <h2 className="font-display text-xl font-semibold text-foreground text-center">
-        {t('auth.signup')}
-      </h2>
+      <div className="text-center mb-4">
+        <Logo size="lg" animated className="justify-center mb-4" />
+        <h2 className="font-display text-xl font-semibold text-foreground">
+          {t('landing.cta.createFreeAccount')}
+        </h2>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
@@ -340,8 +435,7 @@ const Signup = () => {
         </div>
 
         <Button type="submit" className="w-full min-h-[48px] bg-gradient-hero hover:opacity-90" disabled={loading}>
-          <Sparkles className="w-4 h-4 mr-2" />
-          {loading ? t('common.loading') : t('auth.createAccount')}
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('auth.createAccount')}
         </Button>
 
         <div className="relative my-4">
@@ -349,7 +443,7 @@ const Signup = () => {
             <span className="w-full border-t border-border" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-card px-2 text-muted-foreground">{t('auth.orContinueWith')}</span>
+            <span className="bg-background px-2 text-muted-foreground">{t('auth.orContinueWith')}</span>
           </div>
         </div>
 
@@ -360,25 +454,31 @@ const Signup = () => {
           onClick={handleGoogleSignIn}
           disabled={googleLoading}
         >
-          <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
-            <path
-              fill="currentColor"
-              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-            />
-            <path
-              fill="currentColor"
-              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-            />
-            <path
-              fill="currentColor"
-              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-            />
-            <path
-              fill="currentColor"
-              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-            />
-          </svg>
-          {googleLoading ? t('common.loading') : t('auth.continueWithGoogle')}
+          {googleLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <>
+              <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                <path
+                  fill="currentColor"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="currentColor"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="currentColor"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                />
+                <path
+                  fill="currentColor"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                />
+              </svg>
+              {t('auth.continueWithGoogle')}
+            </>
+          )}
         </Button>
       </form>
 
@@ -394,28 +494,30 @@ const Signup = () => {
     </div>
   );
 
+  const renderStep = () => {
+    switch (step) {
+      case 'landing':
+        return renderLandingStep();
+      case 'preferences':
+        return renderPreferencesStep();
+      case 'account':
+        return renderAccountStep();
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative">
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20 flex flex-col">
       {/* Language indicator */}
-      <div className="absolute top-4 right-4 flex items-center gap-2 px-3 py-1.5 bg-card/80 backdrop-blur-sm rounded-full border border-border/50 shadow-sm">
-        <span className="text-lg" role="img" aria-label={currentFlag.label}>
-          {currentFlag.flag}
-        </span>
-        <span className="text-xs text-muted-foreground font-medium">
-          {currentFlag.label}
-        </span>
+      <div className="flex justify-end p-4">
+        <div className="flex items-center gap-1.5 text-sm text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full">
+          <span>{currentFlag.flag}</span>
+          <span className="text-xs">{currentFlag.label}</span>
+        </div>
       </div>
 
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8 animate-slide-up">
-          <div className="mx-auto mb-4">
-            <Logo size="xl" animated className="justify-center" />
-          </div>
-          <p className="text-muted-foreground mt-2">{t('auth.tagline')}</p>
-        </div>
-
-        <div className="bg-card rounded-2xl p-6 shadow-lg animate-scale-in">
-          {step === 'preferences' ? renderPreferencesStep() : renderAccountStep()}
+      <div className="flex-1 flex items-center justify-center px-6 pb-8">
+        <div className="w-full max-w-sm">
+          {renderStep()}
         </div>
       </div>
     </div>

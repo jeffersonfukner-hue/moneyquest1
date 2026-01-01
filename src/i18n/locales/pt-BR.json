@@ -264,6 +264,56 @@
     },
     "security": {
       "dataProtected": "Seus dados são protegidos e nunca serão vendidos."
+    },
+    "learnMore": "Saiba mais sobre o MoneyQuest"
+  },
+  "features": {
+    "badge": "100% Gratuito",
+    "hero": {
+      "title": "Tudo o que você precisa para controlar suas finanças",
+      "subtitle": "Descubra como o MoneyQuest transforma a gestão do seu dinheiro em uma experiência divertida e eficiente."
+    },
+    "trust": {
+      "title": "Por que escolher o MoneyQuest?",
+      "secure": "Dados criptografados e seguros"
+    },
+    "core": {
+      "title": "Recursos Principais",
+      "wallets": {
+        "title": "Múltiplas Carteiras",
+        "description": "Organize seu dinheiro em diferentes carteiras: conta corrente, poupança, dinheiro, etc."
+      },
+      "goals": {
+        "title": "Metas por Categoria",
+        "description": "Defina orçamentos mensais e acompanhe quanto já gastou em cada categoria."
+      },
+      "reports": {
+        "title": "Relatórios Detalhados",
+        "description": "Visualize seu fluxo de caixa, compare períodos e entenda para onde vai seu dinheiro."
+      },
+      "insights": {
+        "title": "Insights Inteligentes",
+        "description": "Receba dicas personalizadas baseadas nos seus hábitos de consumo."
+      }
+    },
+    "game": {
+      "title": "Gamificação que Motiva",
+      "xp": {
+        "title": "Ganhe XP",
+        "description": "Cada transação registrada te dá pontos de experiência para subir de nível."
+      },
+      "quests": {
+        "title": "Complete Missões",
+        "description": "Missões diárias e semanais para manter você engajado e no controle."
+      },
+      "badges": {
+        "title": "Desbloqueie Conquistas",
+        "description": "Colecione emblemas especiais conforme atinge marcos importantes."
+      },
+      "levels": {
+        "title": "Suba de Nível",
+        "description": "Evolua seu perfil financeiro e desbloqueie novos títulos."
+      }
     }
   },
   "navigation": {

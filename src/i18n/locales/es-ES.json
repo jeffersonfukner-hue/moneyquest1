@@ -264,6 +264,56 @@
     },
     "security": {
       "dataProtected": "Tus datos están protegidos y nunca serán vendidos."
+    },
+    "learnMore": "Conoce más sobre MoneyQuest"
+  },
+  "features": {
+    "badge": "100% Gratis",
+    "hero": {
+      "title": "Todo lo que necesitas para controlar tus finanzas",
+      "subtitle": "Descubre cómo MoneyQuest transforma la gestión de tu dinero en una experiencia divertida y eficiente."
+    },
+    "trust": {
+      "title": "¿Por qué elegir MoneyQuest?",
+      "secure": "Datos encriptados y seguros"
+    },
+    "core": {
+      "title": "Funciones Principales",
+      "wallets": {
+        "title": "Múltiples Billeteras",
+        "description": "Organiza tu dinero en diferentes billeteras: cuenta corriente, ahorros, efectivo, etc."
+      },
+      "goals": {
+        "title": "Metas por Categoría",
+        "description": "Define presupuestos mensuales y rastrea cuánto has gastado en cada categoría."
+      },
+      "reports": {
+        "title": "Reportes Detallados",
+        "description": "Visualiza tu flujo de caja, compara períodos y entiende a dónde va tu dinero."
+      },
+      "insights": {
+        "title": "Insights Inteligentes",
+        "description": "Recibe consejos personalizados basados en tus hábitos de gasto."
+      }
+    },
+    "game": {
+      "title": "Gamificación que Motiva",
+      "xp": {
+        "title": "Gana XP",
+        "description": "Cada transacción que registras te da puntos de experiencia para subir de nivel."
+      },
+      "quests": {
+        "title": "Completa Misiones",
+        "description": "Misiones diarias y semanales para mantenerte comprometido y en control."
+      },
+      "badges": {
+        "title": "Desbloquea Insignias",
+        "description": "Colecciona insignias especiales al alcanzar hitos importantes."
+      },
+      "levels": {
+        "title": "Sube de Nivel",
+        "description": "Evoluciona tu perfil financiero y desbloquea nuevos títulos."
+      }
     }
   },
   "navigation": {
