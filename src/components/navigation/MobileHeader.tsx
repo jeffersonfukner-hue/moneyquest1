@@ -21,7 +21,7 @@ export const MobileHeader = ({ onSettingsClick, onProfileClick }: MobileHeaderPr
   const navigate = useNavigate();
 
   return (
-    <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border safe-area-top">
+    <header className="sticky top-0 z-40 bg-primary border-b border-primary/80 safe-area-top">
       <div className="flex items-center justify-between h-14 px-4 max-w-md mx-auto">
         <Logo size="sm" />
         
@@ -34,7 +34,7 @@ export const MobileHeader = ({ onSettingsClick, onProfileClick }: MobileHeaderPr
               size="icon" 
               onClick={() => navigate('/super-admin')}
               aria-label={t('admin.title')}
-              className="min-h-[44px] min-w-[44px] text-amber-500"
+              className="min-h-[44px] min-w-[44px] text-accent hover:text-accent/80 hover:bg-primary-foreground/10"
             >
               <Shield className="w-5 h-5" />
             </Button>
@@ -55,7 +55,7 @@ export const MobileHeader = ({ onSettingsClick, onProfileClick }: MobileHeaderPr
             size="icon" 
             onClick={onSettingsClick}
             aria-label={t('navigation.settings')}
-            className="min-h-[44px] min-w-[44px]"
+            className="min-h-[44px] min-w-[44px] text-primary-foreground hover:text-accent hover:bg-primary-foreground/10"
           >
             <Settings className="w-5 h-5" />
           </Button>
