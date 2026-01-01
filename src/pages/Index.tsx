@@ -9,6 +9,7 @@ import { useTransactions } from '@/hooks/useTransactions';
 import { useQuests } from '@/hooks/useQuests';
 import { useBadges } from '@/hooks/useBadges';
 import { useCategoryGoals } from '@/hooks/useCategoryGoals';
+import { useCategories } from '@/hooks/useCategories';
 import { useDailyReward } from '@/hooks/useDailyReward';
 import { useRealtimeXP } from '@/hooks/useRealtimeXP';
 import { LevelProgress } from '@/components/game/LevelProgress';
@@ -55,6 +56,7 @@ const Index = () => {
   const { quests, refetch: refetchQuests } = useQuests();
   const { badges, refetch: refetchBadges } = useBadges();
   const { goals } = useCategoryGoals();
+  const { categories } = useCategories();
   const { status: rewardStatus } = useDailyReward();
   const { shouldShowBanner } = useAdBanner();
   const { xpChange, clearXPChange } = useRealtimeXP();
@@ -188,7 +190,7 @@ const Index = () => {
             {/* Quick templates for fast transaction entry */}
             <QuickTemplates onUseTemplate={handleUseTemplate} />
             
-            <ResourceBars transactions={transactions} categoryGoals={goals} />
+            <ResourceBars transactions={transactions} categoryGoals={goals} categories={categories} />
             <CategoryGoalsCard />
             
             {/* Analytics widgets */}

@@ -85,6 +85,21 @@ export const getCategoryTranslationKey = (name: string, type: 'INCOME' | 'EXPENS
   return map[name] || null;
 };
 
+// Returns the RPG name key for a category (use with i18n: t(`resourceBars.${key}`))
+export const getCategoryRpgKey = (categoryName: string): string | null => {
+  const rpgKeys: Record<string, string> = {
+    'Food': 'provisions',
+    'Transport': 'travelFuel',
+    'Entertainment': 'funEnergy',
+    'Shopping': 'treasure',
+    'Bills': 'kingdomTax',
+    'Health': 'lifeEssence',
+    'Education': 'magicScrolls',
+    'Other': 'guildFees',
+  };
+  return rpgKeys[categoryName] || null;
+};
+
 // Returns translation key for quest based on quest_key
 export const getQuestKey = (questKey: string | null): string | null => {
   if (!questKey) return null;
