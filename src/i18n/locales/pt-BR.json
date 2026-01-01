@@ -241,6 +241,29 @@
       "emailNotConfirmed": "Por favor, confirme seu e-mail",
       "weakPassword": "A senha deve ter pelo menos 6 caracteres",
       "passwordMismatch": "As senhas não coincidem"
+    },
+    "loginDescription": "Entre para continuar sua jornada",
+    "noAccount": "Não tem conta?",
+    "backToLogin": "Voltar para login"
+  },
+  "landing": {
+    "hero": {
+      "title": "Controle seu dinheiro como um jogo",
+      "subtitle": "Organize, acompanhe e evolua suas finanças pessoais de forma simples e gratuita."
+    },
+    "trust": {
+      "free": "100% gratuito",
+      "noCard": "Sem cartão de crédito",
+      "startNow": "Crie sua conta e comece agora",
+      "noHiddenFees": "Nenhuma cobrança escondida. Use o app sem limites."
+    },
+    "cta": {
+      "startFree": "Começar agora — é grátis",
+      "noCreditCard": "Não pedimos cartão de crédito",
+      "createFreeAccount": "Criar conta grátis"
+    },
+    "security": {
+      "dataProtected": "Seus dados são protegidos e nunca serão vendidos."
     }
   },
   "navigation": {
