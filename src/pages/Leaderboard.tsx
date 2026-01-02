@@ -16,11 +16,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { cn } from '@/lib/utils';
 import { AvatarDisplay } from '@/components/profile/AvatarDisplay';
-import { AdBanner } from '@/components/ads/AdBanner';
-import { useAdBanner } from '@/hooks/useAdBanner';
-import { BottomNavigation } from '@/components/navigation/BottomNavigation';
-import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
-import { useTransactions } from '@/hooks/useTransactions';
+import { AppLayout } from '@/components/layout/AppLayout';
 
 const getRankIcon = (rank: number) => {
   if (rank === 1) return <Crown className="w-5 h-5 text-yellow-500" />;
@@ -64,8 +60,6 @@ export default function Leaderboard() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { profile } = useProfile();
-  const { shouldShowBanner } = useAdBanner();
-  const { addTransaction } = useTransactions();
   const {
     isOnLeaderboard,
     myEntry,
@@ -84,7 +78,6 @@ export default function Leaderboard() {
   const [isPublic, setIsPublic] = useState(myEntry?.is_public ?? true);
   const [joining, setJoining] = useState(false);
   const [displayName, setDisplayName] = useState(profile?.display_name || '');
-  const [showAddTransaction, setShowAddTransaction] = useState(false);
 
   const handleJoin = async () => {
     setJoining(true);
@@ -116,7 +109,7 @@ export default function Leaderboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <AppLayout>
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border safe-area-top">
         <div className="flex items-center gap-3 p-4">
@@ -130,7 +123,7 @@ export default function Leaderboard() {
         </div>
       </header>
 
-      <main className={cn("p-4 space-y-4", shouldShowBanner ? "pb-[130px]" : "pb-24")}>
+      <main className="p-4 space-y-4 pb-24">
         {/* Join/Status Card */}
         <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
           <CardContent className="p-4">
@@ -353,24 +346,6 @@ export default function Leaderboard() {
           </TabsContent>
         </Tabs>
       </main>
-
-      <AdBanner />
-
-      <BottomNavigation 
-        activeTab="home" 
-        onTabChange={(tab) => {
-          if (tab === 'home') navigate('/');
-          if (tab === 'transactions') navigate('/');
-          if (tab === 'quests') navigate('/');
-        }}
-        onAddClick={() => setShowAddTransaction(true)}
-      />
-
-      <AddTransactionDialog 
-        open={showAddTransaction} 
-        onOpenChange={setShowAddTransaction}
-        onAdd={addTransaction}
-      />
-    </div>
+    </AppLayout>
   );
 }

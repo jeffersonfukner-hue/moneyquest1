@@ -10,18 +10,14 @@ import { AddWalletDialog } from '@/components/wallets/AddWalletDialog';
 import { EditWalletDialog } from '@/components/wallets/EditWalletDialog';
 import { WalletBalancesWidget } from '@/components/wallets/WalletBalancesWidget';
 import { Wallet } from '@/types/wallet';
-import { BottomNavigation } from '@/components/navigation/BottomNavigation';
-import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
-import { useTransactions } from '@/hooks/useTransactions';
+import { AppLayout } from '@/components/layout/AppLayout';
 
 const WalletsPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { activeWallets, inactiveWallets, deleteWallet, reactivateWallet, loading } = useWallets();
-  const { addTransaction } = useTransactions();
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingWallet, setEditingWallet] = useState<Wallet | null>(null);
-  const [showAddTransaction, setShowAddTransaction] = useState(false);
 
   const handleToggleActive = async (wallet: Wallet) => {
     if (wallet.is_active) {
@@ -44,7 +40,7 @@ const WalletsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <AppLayout>
       {/* Simple Header */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border safe-area-top">
         <div className="flex items-center h-14 px-4 max-w-md mx-auto">
@@ -135,23 +131,7 @@ const WalletsPage = () => {
         open={!!editingWallet}
         onOpenChange={(open) => !open && setEditingWallet(null)}
       />
-
-      <BottomNavigation 
-        activeTab="home" 
-        onTabChange={(tab) => {
-          if (tab === 'home') navigate('/');
-          if (tab === 'transactions') navigate('/');
-          if (tab === 'quests') navigate('/');
-        }}
-        onAddClick={() => setShowAddTransaction(true)}
-      />
-
-      <AddTransactionDialog 
-        open={showAddTransaction} 
-        onOpenChange={setShowAddTransaction}
-        onAdd={addTransaction}
-      />
-    </div>
+    </AppLayout>
   );
 };
 
