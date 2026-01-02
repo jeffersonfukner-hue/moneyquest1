@@ -87,3 +87,20 @@ export const canShowGoogleAds = (pathname: string): boolean => {
 export const shouldShowInternalBanners = (pathname: string): boolean => {
   return isAuthenticatedRoute(pathname);
 };
+
+// Routes where NO banner should be shown (conversion pages)
+export const NO_BANNER_ROUTES = [
+  '/premium',
+  '/premium-success',
+  '/onboarding',
+] as const;
+
+/**
+ * Check if a route should hide ALL banners
+ * Used for conversion pages where banners would be redundant or distracting
+ */
+export const shouldHideBanner = (pathname: string): boolean => {
+  return NO_BANNER_ROUTES.some(
+    route => pathname === route || pathname.startsWith(`${route}/`)
+  );
+};
