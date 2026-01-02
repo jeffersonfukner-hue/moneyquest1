@@ -12,13 +12,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { toast } from '@/hooks/use-toast';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
-import { AdBanner } from '@/components/ads/AdBanner';
-import { useAdBanner } from '@/hooks/useAdBanner';
 import { XPHistoryCard } from '@/components/game/XPHistoryCard';
-import { cn } from '@/lib/utils';
-import { BottomNavigation } from '@/components/navigation/BottomNavigation';
-import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
-import { useTransactions } from '@/hooks/useTransactions';
+import { AppLayout } from '@/components/layout/AppLayout';
 
 const AVATAR_OPTIONS = [
   '🎮', '🚀', '💎', '🔥', '⭐', '🏆', '💰', '🎯', 
@@ -32,15 +27,12 @@ const Profile = () => {
   const { profile, updateProfile, loading } = useProfile();
   const { user } = useAuth();
   const { formatCurrency } = useCurrency();
-  const { shouldShowBanner } = useAdBanner();
-  const { addTransaction } = useTransactions();
   
   const [displayName, setDisplayName] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState('🎮');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
-  const [showAddTransaction, setShowAddTransaction] = useState(false);
 
   useEffect(() => {
     if (profile) {
@@ -83,7 +75,7 @@ const Profile = () => {
 
   const handleEmojiSelect = (emoji: string) => {
     setSelectedAvatar(emoji);
-    setAvatarUrl(null); // Clear photo when selecting emoji
+    setAvatarUrl(null);
   };
 
   if (loading || !profile) {
@@ -136,7 +128,7 @@ const Profile = () => {
   ];
 
   return (
-    <div className={cn("min-h-screen bg-background", shouldShowBanner ? "pb-[130px]" : "pb-20")}>
+    <AppLayout>
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border safe-area-top">
         <div className="flex items-center h-14 px-4 max-w-md mx-auto">
           <Button 
@@ -260,25 +252,7 @@ const Profile = () => {
           {saving ? t('common.saving') : t('profile.saveChanges')}
         </Button>
       </main>
-
-      <AdBanner />
-
-      <BottomNavigation 
-        activeTab="home" 
-        onTabChange={(tab) => {
-          if (tab === 'home') navigate('/');
-          if (tab === 'transactions') navigate('/');
-          if (tab === 'quests') navigate('/');
-        }}
-        onAddClick={() => setShowAddTransaction(true)}
-      />
-
-      <AddTransactionDialog 
-        open={showAddTransaction} 
-        onOpenChange={setShowAddTransaction}
-        onAdd={addTransaction}
-      />
-    </div>
+    </AppLayout>
   );
 };
 

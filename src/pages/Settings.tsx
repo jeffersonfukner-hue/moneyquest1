@@ -8,8 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { BottomNavigation } from '@/components/navigation/BottomNavigation';
-import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
+import { AppLayout } from '@/components/layout/AppLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useSound } from '@/contexts/SoundContext';
@@ -23,10 +22,6 @@ import { useExchangeRates } from '@/hooks/useExchangeRates';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
-import { AdBanner } from '@/components/ads/AdBanner';
-import { useAdBanner } from '@/hooks/useAdBanner';
-import { cn } from '@/lib/utils';
-import { useTransactions } from '@/hooks/useTransactions';
 
 const TIMEZONES = [
   { value: 'America/Sao_Paulo', label: 'Brasília (BRT)' },
@@ -61,10 +56,7 @@ const Settings = () => {
   const { isPremium, canAccessMultiLanguage, canAccessMultiCurrency, plan } = useSubscription();
   const { rates, lastUpdate, loading: ratesLoading, refreshRates, getRate } = useExchangeRates();
   const { isSuperAdmin } = useAdminAuth();
-  const { shouldShowBanner } = useAdBanner();
-  const { addTransaction } = useTransactions();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-  const [showAddTransaction, setShowAddTransaction] = useState(false);
 
   const pricing = PREMIUM_PRICING[currency] || PREMIUM_PRICING.USD;
   const currentTimezone = profile?.timezone || 'America/Sao_Paulo';
@@ -108,7 +100,7 @@ const Settings = () => {
   };
 
   return (
-    <div className={cn("min-h-screen bg-background", shouldShowBanner ? "pb-[130px]" : "pb-20")}>
+    <AppLayout>
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border safe-area-top">
         <div className="flex items-center h-14 px-4 max-w-md mx-auto">
           <Button 
@@ -127,7 +119,7 @@ const Settings = () => {
 
       <main className="px-4 py-6 max-w-md mx-auto space-y-4">
         {/* Subscription Status */}
-        <Card 
+        <Card
           className={`cursor-pointer transition-all ${isPremium ? 'border-amber-400/50 bg-gradient-to-br from-amber-400/10 to-amber-500/5' : 'hover:border-amber-400/30'}`}
           onClick={() => navigate('/premium')}
         >
@@ -465,8 +457,6 @@ const Settings = () => {
         </Button>
       </main>
 
-      <AdBanner />
-
       {/* Logout Confirmation Dialog */}
       <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
         <AlertDialogContent>
@@ -484,23 +474,7 @@ const Settings = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-      <BottomNavigation 
-        activeTab="home" 
-        onTabChange={(tab) => {
-          if (tab === 'home') navigate('/');
-          if (tab === 'transactions') navigate('/');
-          if (tab === 'quests') navigate('/');
-        }}
-        onAddClick={() => setShowAddTransaction(true)}
-      />
-
-      <AddTransactionDialog 
-        open={showAddTransaction} 
-        onOpenChange={setShowAddTransaction}
-        onAdd={addTransaction}
-      />
-    </div>
+    </AppLayout>
   );
 };
 

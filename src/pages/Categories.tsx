@@ -3,7 +3,7 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Plus, Pencil, Trash2, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCategories } from '@/hooks/useCategories';
 import { useAuth } from '@/hooks/useAuth';
@@ -11,27 +11,19 @@ import { Category, TransactionType } from '@/types/database';
 import { AddCategoryDialog } from '@/components/categories/AddCategoryDialog';
 import { EditCategoryDialog } from '@/components/categories/EditCategoryDialog';
 import { DeleteCategoryDialog } from '@/components/categories/DeleteCategoryDialog';
-import { AdBanner } from '@/components/ads/AdBanner';
-import { useAdBanner } from '@/hooks/useAdBanner';
-import { cn } from '@/lib/utils';
 import { getCategoryTranslationKey } from '@/lib/gameLogic';
-import { BottomNavigation } from '@/components/navigation/BottomNavigation';
-import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
-import { useTransactions } from '@/hooks/useTransactions';
+import { AppLayout } from '@/components/layout/AppLayout';
 
 const Categories = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user, loading: authLoading } = useAuth();
   const { categories, loading, getCategoriesByType, deleteCategory, updateCategory, addCategory } = useCategories();
-  const { shouldShowBanner } = useAdBanner();
-  const { addTransaction } = useTransactions();
   
   const [activeTab, setActiveTab] = useState<TransactionType>('EXPENSE');
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [editCategory, setEditCategory] = useState<Category | null>(null);
   const [deleteConfirmCategory, setDeleteConfirmCategory] = useState<Category | null>(null);
-  const [showAddTransaction, setShowAddTransaction] = useState(false);
 
   if (authLoading) {
     return (
@@ -116,103 +108,87 @@ const Categories = () => {
   };
 
   return (
-    <div className={cn("min-h-screen bg-gradient-to-b from-background to-background/95 p-4", shouldShowBanner ? "pb-[130px]" : "pb-24")}>
-      {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <div className="flex-1">
-          <h1 className="text-xl font-display font-bold">{t('categories.title')}</h1>
-          <p className="text-sm text-muted-foreground">{t('categories.pageDescription')}</p>
+    <AppLayout>
+      <div className="p-4 pb-24">
+        {/* Header */}
+        <div className="flex items-center gap-4 mb-6">
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div className="flex-1">
+            <h1 className="text-xl font-display font-bold">{t('categories.title')}</h1>
+            <p className="text-sm text-muted-foreground">{t('categories.pageDescription')}</p>
+          </div>
         </div>
+
+        {/* Tabs */}
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TransactionType)}>
+          <TabsList className="grid w-full grid-cols-2 mb-4">
+            <TabsTrigger value="EXPENSE">{t('categories.expense')}</TabsTrigger>
+            <TabsTrigger value="INCOME">{t('categories.income')}</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="EXPENSE" className="space-y-3">
+            {loading ? (
+              <div className="text-center py-8 text-muted-foreground">{t('common.loading')}</div>
+            ) : expenseCategories.length === 0 ? (
+              <Card className="bg-card/50">
+                <CardContent className="py-8 text-center">
+                  <Tag className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                  <p className="text-muted-foreground">{t('categories.noCategories')}</p>
+                </CardContent>
+              </Card>
+            ) : (
+              expenseCategories.map(cat => <CategoryCard key={cat.id} category={cat} />)
+            )}
+          </TabsContent>
+
+          <TabsContent value="INCOME" className="space-y-3">
+            {loading ? (
+              <div className="text-center py-8 text-muted-foreground">{t('common.loading')}</div>
+            ) : incomeCategories.length === 0 ? (
+              <Card className="bg-card/50">
+                <CardContent className="py-8 text-center">
+                  <Tag className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                  <p className="text-muted-foreground">{t('categories.noCategories')}</p>
+                </CardContent>
+              </Card>
+            ) : (
+              incomeCategories.map(cat => <CategoryCard key={cat.id} category={cat} />)
+            )}
+          </TabsContent>
+        </Tabs>
+
+        {/* Add Button */}
+        <Button
+          size="lg"
+          className="fixed bottom-24 right-6 h-14 w-14 rounded-full shadow-lg bg-gradient-hero hover:opacity-90"
+          onClick={() => setAddDialogOpen(true)}
+        >
+          <Plus className="w-6 h-6" />
+        </Button>
+
+        {/* Dialogs */}
+        <AddCategoryDialog
+          open={addDialogOpen}
+          onOpenChange={setAddDialogOpen}
+          onAdd={handleAdd}
+          defaultType={activeTab}
+        />
+
+        <EditCategoryDialog
+          category={editCategory}
+          onClose={() => setEditCategory(null)}
+          onSave={handleEdit}
+        />
+
+        <DeleteCategoryDialog
+          category={deleteConfirmCategory}
+          onClose={() => setDeleteConfirmCategory(null)}
+          onConfirm={handleDelete}
+        />
       </div>
-
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TransactionType)}>
-        <TabsList className="grid w-full grid-cols-2 mb-4">
-          <TabsTrigger value="EXPENSE">{t('categories.expense')}</TabsTrigger>
-          <TabsTrigger value="INCOME">{t('categories.income')}</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="EXPENSE" className="space-y-3">
-          {loading ? (
-            <div className="text-center py-8 text-muted-foreground">{t('common.loading')}</div>
-          ) : expenseCategories.length === 0 ? (
-            <Card className="bg-card/50">
-              <CardContent className="py-8 text-center">
-                <Tag className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-muted-foreground">{t('categories.noCategories')}</p>
-              </CardContent>
-            </Card>
-          ) : (
-            expenseCategories.map(cat => <CategoryCard key={cat.id} category={cat} />)
-          )}
-        </TabsContent>
-
-        <TabsContent value="INCOME" className="space-y-3">
-          {loading ? (
-            <div className="text-center py-8 text-muted-foreground">{t('common.loading')}</div>
-          ) : incomeCategories.length === 0 ? (
-            <Card className="bg-card/50">
-              <CardContent className="py-8 text-center">
-                <Tag className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-muted-foreground">{t('categories.noCategories')}</p>
-              </CardContent>
-            </Card>
-          ) : (
-            incomeCategories.map(cat => <CategoryCard key={cat.id} category={cat} />)
-          )}
-        </TabsContent>
-      </Tabs>
-
-      {/* Add Button */}
-      <Button
-        size="lg"
-        className="fixed bottom-24 right-6 h-14 w-14 rounded-full shadow-lg bg-gradient-hero hover:opacity-90"
-        onClick={() => setAddDialogOpen(true)}
-      >
-        <Plus className="w-6 h-6" />
-      </Button>
-
-      {/* Dialogs */}
-      <AddCategoryDialog
-        open={addDialogOpen}
-        onOpenChange={setAddDialogOpen}
-        onAdd={handleAdd}
-        defaultType={activeTab}
-      />
-
-      <EditCategoryDialog
-        category={editCategory}
-        onClose={() => setEditCategory(null)}
-        onSave={handleEdit}
-      />
-
-      <DeleteCategoryDialog
-        category={deleteConfirmCategory}
-        onClose={() => setDeleteConfirmCategory(null)}
-        onConfirm={handleDelete}
-      />
-
-      <AdBanner />
-
-      <BottomNavigation 
-        activeTab="home" 
-        onTabChange={(tab) => {
-          if (tab === 'home') navigate('/');
-          if (tab === 'transactions') navigate('/');
-          if (tab === 'quests') navigate('/');
-        }}
-        onAddClick={() => setShowAddTransaction(true)}
-      />
-
-      <AddTransactionDialog 
-        open={showAddTransaction} 
-        onOpenChange={setShowAddTransaction}
-        onAdd={addTransaction}
-      />
-    </div>
+    </AppLayout>
   );
 };
 

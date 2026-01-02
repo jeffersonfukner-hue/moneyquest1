@@ -15,12 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { format } from 'date-fns';
-import { AdBanner } from '@/components/ads/AdBanner';
-import { useAdBanner } from '@/hooks/useAdBanner';
-import { cn } from '@/lib/utils';
-import { BottomNavigation } from '@/components/navigation/BottomNavigation';
-import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
-import { useTransactions } from '@/hooks/useTransactions';
+import { AppLayout } from '@/components/layout/AppLayout';
 
 type FilterType = 'all' | 'income' | 'expense';
 type ImpactFilter = 'all' | 'low' | 'medium' | 'high' | 'critical';
@@ -30,12 +25,9 @@ export default function AdventureJournal() {
   const { t } = useTranslation();
   const { user, loading: authLoading } = useAuth();
   const { entries, loading, hasMore, stats, loadMore, fetchJournal } = useAdventureJournal();
-  const { shouldShowBanner } = useAdBanner();
-  const { addTransaction } = useTransactions();
   
   const [typeFilter, setTypeFilter] = useState<FilterType>('all');
   const [impactFilter, setImpactFilter] = useState<ImpactFilter>('all');
-  const [showAddTransaction, setShowAddTransaction] = useState(false);
 
   // Redirect if not logged in
   if (!authLoading && !user) {
@@ -79,7 +71,7 @@ export default function AdventureJournal() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <AppLayout>
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="flex items-center justify-between px-4 h-14">
@@ -100,7 +92,7 @@ export default function AdventureJournal() {
         </div>
       </header>
 
-      <main className={cn("px-4 py-4 max-w-2xl mx-auto space-y-4", shouldShowBanner ? "pb-[130px]" : "pb-24")}>
+      <main className="px-4 py-4 max-w-2xl mx-auto space-y-4 pb-24">
         {/* Stats Card */}
         <JournalStats stats={stats} />
 
@@ -193,24 +185,6 @@ export default function AdventureJournal() {
           </div>
         )}
       </main>
-
-      <AdBanner />
-
-      <BottomNavigation 
-        activeTab="home" 
-        onTabChange={(tab) => {
-          if (tab === 'home') navigate('/');
-          if (tab === 'transactions') navigate('/');
-          if (tab === 'quests') navigate('/');
-        }}
-        onAddClick={() => setShowAddTransaction(true)}
-      />
-
-      <AddTransactionDialog 
-        open={showAddTransaction} 
-        onOpenChange={setShowAddTransaction}
-        onAdd={addTransaction}
-      />
-    </div>
+    </AppLayout>
   );
 }
