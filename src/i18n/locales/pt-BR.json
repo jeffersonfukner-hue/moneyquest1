@@ -49,7 +49,25 @@
     "removeAdTitle": "Quer remover este anúncio?",
     "removeAdDescription": "Para não ver mais este banner e apoiar o MoneyQuest, é só mudar para o modo Premium.",
     "goPremium": "Mudar para Premium",
-    "stayFree": "Continuar gratuito"
+    "stayFree": "Continuar gratuito",
+    "premiumTrialTitle": "Experimente o Premium grátis",
+    "premiumTrialDescription": "Desbloqueie todos os recursos por 7 dias, sem cartão.",
+    "activatePremium": "Ativar Premium"
+  },
+  "referral": {
+    "bannerTitle": "Indique um amigo e ganhe recompensas",
+    "bannerDescription": "Ganhe XP + 7 dias de Premium quando seu amigo começar",
+    "inviteNow": "Indicar agora",
+    "dialogTitle": "Convide seus amigos",
+    "dialogDescription": "Compartilhe seu link exclusivo e ganhe recompensas quando seus amigos se cadastrarem e fizerem o primeiro lançamento.",
+    "linkCopied": "Link copiado!",
+    "shareMessage": "Experimente o MoneyQuest - o app que transforma suas finanças em uma aventura! Use meu link: {{link}}",
+    "share": "Compartilhar",
+    "rewards": {
+      "title": "Suas recompensas por indicação:",
+      "xp": "{{amount}} XP por cada amigo que se cadastrar",
+      "premium": "{{days}} dias de Premium grátis"
+    }
   },
   "templates": {
     "quickAdd": "Adicionar Rápido",
