@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { BottomNavigation } from '@/components/navigation/BottomNavigation';
+import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useSound } from '@/contexts/SoundContext';
@@ -24,6 +26,7 @@ import { useToast } from '@/hooks/use-toast';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { useAdBanner } from '@/hooks/useAdBanner';
 import { cn } from '@/lib/utils';
+import { useTransactions } from '@/hooks/useTransactions';
 
 const TIMEZONES = [
   { value: 'America/Sao_Paulo', label: 'Brasília (BRT)' },
@@ -59,7 +62,9 @@ const Settings = () => {
   const { rates, lastUpdate, loading: ratesLoading, refreshRates, getRate } = useExchangeRates();
   const { isSuperAdmin } = useAdminAuth();
   const { shouldShowBanner } = useAdBanner();
+  const { addTransaction } = useTransactions();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [showAddTransaction, setShowAddTransaction] = useState(false);
 
   const pricing = PREMIUM_PRICING[currency] || PREMIUM_PRICING.USD;
   const currentTimezone = profile?.timezone || 'America/Sao_Paulo';
@@ -479,6 +484,22 @@ const Settings = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <BottomNavigation 
+        activeTab="home" 
+        onTabChange={(tab) => {
+          if (tab === 'home') navigate('/');
+          if (tab === 'transactions') navigate('/');
+          if (tab === 'quests') navigate('/');
+        }}
+        onAddClick={() => setShowAddTransaction(true)}
+      />
+
+      <AddTransactionDialog 
+        open={showAddTransaction} 
+        onOpenChange={setShowAddTransaction}
+        onAdd={addTransaction}
+      />
     </div>
   );
 };

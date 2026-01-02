@@ -6,12 +6,16 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
+import { useState } from 'react';
+import { BottomNavigation } from '@/components/navigation/BottomNavigation';
+import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
 
 const PeriodComparison = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
-  const { transactions, loading: txLoading } = useTransactions();
+  const { transactions, loading: txLoading, addTransaction } = useTransactions();
+  const [showAddTransaction, setShowAddTransaction] = useState(false);
 
   if (authLoading) {
     return (
@@ -26,7 +30,7 @@ const PeriodComparison = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-8">
+    <div className="min-h-screen bg-background pb-20">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="flex items-center gap-3 h-14 px-4 max-w-4xl mx-auto">
@@ -53,6 +57,22 @@ const PeriodComparison = () => {
           <PeriodComparisonReport transactions={transactions} />
         )}
       </main>
+
+      <BottomNavigation 
+        activeTab="home" 
+        onTabChange={(tab) => {
+          if (tab === 'home') navigate('/');
+          if (tab === 'transactions') navigate('/');
+          if (tab === 'quests') navigate('/');
+        }}
+        onAddClick={() => setShowAddTransaction(true)}
+      />
+
+      <AddTransactionDialog 
+        open={showAddTransaction} 
+        onOpenChange={setShowAddTransaction}
+        onAdd={addTransaction}
+      />
     </div>
   );
 };

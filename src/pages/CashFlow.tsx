@@ -14,15 +14,18 @@ import { useSubscription } from '@/contexts/SubscriptionContext';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
+import { BottomNavigation } from '@/components/navigation/BottomNavigation';
+import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
 
 const CashFlow = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
-  const { transactions, loading: txLoading } = useTransactions();
+  const { transactions, loading: txLoading, addTransaction } = useTransactions();
   const { wallets } = useWallets();
   const { isPremium } = useSubscription();
   const [walletFilter, setWalletFilter] = useState<string | null>(null);
+  const [showAddTransaction, setShowAddTransaction] = useState(false);
 
   if (authLoading) {
     return (
@@ -41,7 +44,7 @@ const CashFlow = () => {
     : transactions;
 
   return (
-    <div className="min-h-screen bg-background pb-8">
+    <div className="min-h-screen bg-background pb-20">
       {/* Simple Header */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="flex items-center gap-3 h-14 px-4 max-w-4xl mx-auto">
@@ -98,6 +101,22 @@ const CashFlow = () => {
           </>
         )}
       </main>
+
+      <BottomNavigation 
+        activeTab="home" 
+        onTabChange={(tab) => {
+          if (tab === 'home') navigate('/');
+          if (tab === 'transactions') navigate('/');
+          if (tab === 'quests') navigate('/');
+        }}
+        onAddClick={() => setShowAddTransaction(true)}
+      />
+
+      <AddTransactionDialog 
+        open={showAddTransaction} 
+        onOpenChange={setShowAddTransaction}
+        onAdd={addTransaction}
+      />
     </div>
   );
 };

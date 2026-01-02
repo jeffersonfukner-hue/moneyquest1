@@ -16,6 +16,9 @@ import { AdBanner } from '@/components/ads/AdBanner';
 import { useAdBanner } from '@/hooks/useAdBanner';
 import { XPHistoryCard } from '@/components/game/XPHistoryCard';
 import { cn } from '@/lib/utils';
+import { BottomNavigation } from '@/components/navigation/BottomNavigation';
+import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
+import { useTransactions } from '@/hooks/useTransactions';
 
 const AVATAR_OPTIONS = [
   '🎮', '🚀', '💎', '🔥', '⭐', '🏆', '💰', '🎯', 
@@ -30,12 +33,14 @@ const Profile = () => {
   const { user } = useAuth();
   const { formatCurrency } = useCurrency();
   const { shouldShowBanner } = useAdBanner();
+  const { addTransaction } = useTransactions();
   
   const [displayName, setDisplayName] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState('🎮');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
+  const [showAddTransaction, setShowAddTransaction] = useState(false);
 
   useEffect(() => {
     if (profile) {
@@ -131,7 +136,7 @@ const Profile = () => {
   ];
 
   return (
-    <div className={cn("min-h-screen bg-background", shouldShowBanner ? "pb-[80px]" : "")}>
+    <div className={cn("min-h-screen bg-background", shouldShowBanner ? "pb-[130px]" : "pb-20")}>
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border safe-area-top">
         <div className="flex items-center h-14 px-4 max-w-md mx-auto">
           <Button 
@@ -257,6 +262,22 @@ const Profile = () => {
       </main>
 
       <AdBanner />
+
+      <BottomNavigation 
+        activeTab="home" 
+        onTabChange={(tab) => {
+          if (tab === 'home') navigate('/');
+          if (tab === 'transactions') navigate('/');
+          if (tab === 'quests') navigate('/');
+        }}
+        onAddClick={() => setShowAddTransaction(true)}
+      />
+
+      <AddTransactionDialog 
+        open={showAddTransaction} 
+        onOpenChange={setShowAddTransaction}
+        onAdd={addTransaction}
+      />
     </div>
   );
 };

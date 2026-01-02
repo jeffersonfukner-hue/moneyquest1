@@ -8,6 +8,9 @@ import { useSupportTickets } from '@/hooks/useSupportTickets';
 import { NewTicketDialog } from '@/components/support/NewTicketDialog';
 import { FAQSection } from '@/components/support/FAQSection';
 import { useAuth } from '@/hooks/useAuth';
+import { BottomNavigation } from '@/components/navigation/BottomNavigation';
+import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
+import { useTransactions } from '@/hooks/useTransactions';
 
 const WHATSAPP_NUMBER = '5511999999999';
 
@@ -17,6 +20,8 @@ export default function Support() {
   const { user } = useAuth();
   const { tickets, unreadCount } = useSupportTickets();
   const [showNewTicketDialog, setShowNewTicketDialog] = useState(false);
+  const { addTransaction } = useTransactions();
+  const [showAddTransaction, setShowAddTransaction] = useState(false);
 
   const getWhatsAppMessage = () => {
     return encodeURIComponent(t('support.whatsapp.defaultMessage'));
@@ -36,7 +41,7 @@ export default function Support() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-20">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
         <div className="container flex items-center gap-3 py-4">
@@ -140,6 +145,22 @@ export default function Support() {
       <NewTicketDialog 
         open={showNewTicketDialog} 
         onOpenChange={setShowNewTicketDialog} 
+      />
+
+      <BottomNavigation 
+        activeTab="home" 
+        onTabChange={(tab) => {
+          if (tab === 'home') navigate('/');
+          if (tab === 'transactions') navigate('/');
+          if (tab === 'quests') navigate('/');
+        }}
+        onAddClick={() => setShowAddTransaction(true)}
+      />
+
+      <AddTransactionDialog 
+        open={showAddTransaction} 
+        onOpenChange={setShowAddTransaction}
+        onAdd={addTransaction}
       />
     </div>
   );

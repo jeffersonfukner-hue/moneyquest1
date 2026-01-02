@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ChevronLeft, Crown, Check, Sparkles, Loader2 } from 'lucide-react';
+import { BottomNavigation } from '@/components/navigation/BottomNavigation';
+import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
+import { useTransactions } from '@/hooks/useTransactions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -20,10 +23,12 @@ const Upgrade = () => {
   const { isPremium, plan } = useSubscription();
   const { refetch: refetchProfile } = useProfile();
   const { billingCurrency, pricing, getPriceId, getFormattedPrice } = usePremiumPricing();
+  const { addTransaction } = useTransactions();
   
   const [isLoading, setIsLoading] = useState(false);
   const [isCheckingSubscription, setIsCheckingSubscription] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>('yearly');
+  const [showAddTransaction, setShowAddTransaction] = useState(false);
 
   // Check subscription status on mount and after Stripe redirect
   useEffect(() => {
@@ -353,6 +358,22 @@ const Upgrade = () => {
           </p>
         </div>
       </main>
+
+      <BottomNavigation 
+        activeTab="home" 
+        onTabChange={(tab) => {
+          if (tab === 'home') navigate('/');
+          if (tab === 'transactions') navigate('/');
+          if (tab === 'quests') navigate('/');
+        }}
+        onAddClick={() => setShowAddTransaction(true)}
+      />
+
+      <AddTransactionDialog 
+        open={showAddTransaction} 
+        onOpenChange={setShowAddTransaction}
+        onAdd={addTransaction}
+      />
     </div>
   );
 };

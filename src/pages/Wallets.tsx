@@ -10,13 +10,18 @@ import { AddWalletDialog } from '@/components/wallets/AddWalletDialog';
 import { EditWalletDialog } from '@/components/wallets/EditWalletDialog';
 import { WalletBalancesWidget } from '@/components/wallets/WalletBalancesWidget';
 import { Wallet } from '@/types/wallet';
+import { BottomNavigation } from '@/components/navigation/BottomNavigation';
+import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
+import { useTransactions } from '@/hooks/useTransactions';
 
 const WalletsPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { activeWallets, inactiveWallets, deleteWallet, reactivateWallet, loading } = useWallets();
+  const { addTransaction } = useTransactions();
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingWallet, setEditingWallet] = useState<Wallet | null>(null);
+  const [showAddTransaction, setShowAddTransaction] = useState(false);
 
   const handleToggleActive = async (wallet: Wallet) => {
     if (wallet.is_active) {
@@ -129,6 +134,22 @@ const WalletsPage = () => {
         wallet={editingWallet}
         open={!!editingWallet}
         onOpenChange={(open) => !open && setEditingWallet(null)}
+      />
+
+      <BottomNavigation 
+        activeTab="home" 
+        onTabChange={(tab) => {
+          if (tab === 'home') navigate('/');
+          if (tab === 'transactions') navigate('/');
+          if (tab === 'quests') navigate('/');
+        }}
+        onAddClick={() => setShowAddTransaction(true)}
+      />
+
+      <AddTransactionDialog 
+        open={showAddTransaction} 
+        onOpenChange={setShowAddTransaction}
+        onAdd={addTransaction}
       />
     </div>
   );

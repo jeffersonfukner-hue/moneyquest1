@@ -18,6 +18,9 @@ import { format } from 'date-fns';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { useAdBanner } from '@/hooks/useAdBanner';
 import { cn } from '@/lib/utils';
+import { BottomNavigation } from '@/components/navigation/BottomNavigation';
+import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
+import { useTransactions } from '@/hooks/useTransactions';
 
 type FilterType = 'all' | 'income' | 'expense';
 type ImpactFilter = 'all' | 'low' | 'medium' | 'high' | 'critical';
@@ -28,9 +31,11 @@ export default function AdventureJournal() {
   const { user, loading: authLoading } = useAuth();
   const { entries, loading, hasMore, stats, loadMore, fetchJournal } = useAdventureJournal();
   const { shouldShowBanner } = useAdBanner();
+  const { addTransaction } = useTransactions();
   
   const [typeFilter, setTypeFilter] = useState<FilterType>('all');
   const [impactFilter, setImpactFilter] = useState<ImpactFilter>('all');
+  const [showAddTransaction, setShowAddTransaction] = useState(false);
 
   // Redirect if not logged in
   if (!authLoading && !user) {
@@ -190,6 +195,22 @@ export default function AdventureJournal() {
       </main>
 
       <AdBanner />
+
+      <BottomNavigation 
+        activeTab="home" 
+        onTabChange={(tab) => {
+          if (tab === 'home') navigate('/');
+          if (tab === 'transactions') navigate('/');
+          if (tab === 'quests') navigate('/');
+        }}
+        onAddClick={() => setShowAddTransaction(true)}
+      />
+
+      <AddTransactionDialog 
+        open={showAddTransaction} 
+        onOpenChange={setShowAddTransaction}
+        onAdd={addTransaction}
+      />
     </div>
   );
 }
