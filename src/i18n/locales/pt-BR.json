@@ -1380,7 +1380,10 @@
     "guildFees": "Taxas da Guilda",
     "ofBudget": "do orçamento",
     "noBudget": "Sem orçamento definido",
-    "overBudget": "Acima do orçamento!"
+    "overBudget": "Acima do orçamento!",
+    "noSpending": "Nenhum gasto registrado este mês!",
+    "noSpendingHint": "Seus recursos estão totalmente preservados.",
+    "hint": "Mantenha seus recursos equilibrados!"
   },
   "journal": {
     "title": "Diário de Aventuras",

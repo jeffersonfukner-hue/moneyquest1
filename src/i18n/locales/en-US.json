@@ -1379,7 +1379,10 @@
     "guildFees": "Guild Fees",
     "ofBudget": "of budget",
     "noBudget": "No budget set",
-    "overBudget": "Over budget!"
+    "overBudget": "Over budget!",
+    "noSpending": "No spending recorded this month!",
+    "noSpendingHint": "Your resources are fully preserved.",
+    "hint": "Keep your resources balanced!"
   },
   "journal": {
     "title": "Adventure Journal",

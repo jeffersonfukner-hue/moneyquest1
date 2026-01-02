@@ -81,6 +81,11 @@ export const ResourceBars = ({ transactions, categoryGoals = [], categories = []
     return 'bg-emerald-500';
   };
 
+  // Check if there's any spending this month
+  const hasSpendingThisMonth = useMemo(() => {
+    return Object.values(monthlySpending).some(amount => amount > 0);
+  }, [monthlySpending]);
+
   // Get categories that have spending or goals
   const activeCategories = useMemo(() => {
     const categoriesWithSpending = Object.keys(monthlySpending);
@@ -131,6 +136,29 @@ export const ResourceBars = ({ transactions, categoryGoals = [], categories = []
 
   if (activeCategories.length === 0) {
     return null;
+  }
+
+  // Show motivational message when there are goals but no spending this month
+  if (!hasSpendingThisMonth) {
+    return (
+      <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+        <CardHeader className="pb-1">
+          <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <span className="text-lg">⚔️</span>
+            {t('resourceBars.title', 'Resource Bars')}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="py-6 text-center">
+          <span className="text-3xl mb-2 block">🎉</span>
+          <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+            {t('resourceBars.noSpending', 'No spending recorded this month!')}
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            {t('resourceBars.noSpendingHint', 'Your resources are fully preserved.')}
+          </p>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
