@@ -5,7 +5,8 @@ import { ADSENSE_CONFIG } from '@/lib/adsenseConfig';
 import { 
   isIndexableRoute, 
   canShowGoogleAds, 
-  shouldShowInternalBanners 
+  shouldShowInternalBanners,
+  shouldHideBanner 
 } from '@/lib/routeConfig';
 
 export const useAdBanner = () => {
@@ -19,6 +20,7 @@ export const useAdBanner = () => {
   const isPageIndexable = isIndexableRoute(location.pathname);
   const isPublicPage = canShowGoogleAds(location.pathname);
   const isAuthenticatedPage = shouldShowInternalBanners(location.pathname);
+  const hideBannerOnRoute = shouldHideBanner(location.pathname);
 
   // Check if AdSense is properly configured
   const isAdSenseConfigured = Boolean(
@@ -29,7 +31,8 @@ export const useAdBanner = () => {
   // Show banner only for non-premium users
   // On public pages: can show Google Ads or internal banners
   // On authenticated pages: ONLY internal banners
-  const shouldShowBanner = !loading && !isPremium && (isPublicPage || isAuthenticatedPage);
+  // Never show on conversion pages (premium, onboarding, etc.)
+  const shouldShowBanner = !loading && !isPremium && !hideBannerOnRoute && (isPublicPage || isAuthenticatedPage);
   
   // Google Ads only allowed on public indexable pages
   const canShowGoogleAdsOnPage = isPublicPage && isAdSenseConfigured;
