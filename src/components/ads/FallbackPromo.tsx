@@ -50,10 +50,10 @@ export const FallbackPromo = ({ onDismiss, onUpgradeClick }: FallbackPromoProps)
         {isTwoLine ? (
           <>
             <span className="text-sm font-medium text-foreground truncate">
-              {t('ads.bannerTitle')}
+              {t('ads.premiumBannerTitle')}
             </span>
             <span className="text-xs text-muted-foreground truncate">
-              {t('ads.bannerDescription')}
+              {t('ads.premiumBannerDescription')}
             </span>
           </>
         ) : (

@@ -3,16 +3,22 @@ import { useNavigate } from 'react-router-dom';
 import { Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-interface PremiumTrialBannerProps {
+interface PremiumInternalBannerProps {
   onDismiss?: () => void;
 }
 
-export const PremiumTrialBanner = ({ onDismiss }: PremiumTrialBannerProps) => {
+export const PremiumInternalBanner = ({ onDismiss }: PremiumInternalBannerProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const handleClick = () => {
     navigate('/premium');
+  };
+
+  const handleNotNow = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Trigger the modal instead of actually dismissing
+    onDismiss?.();
   };
 
   return (
@@ -27,24 +33,33 @@ export const PremiumTrialBanner = ({ onDismiss }: PremiumTrialBannerProps) => {
       
       <div className="flex flex-col justify-center py-1 min-w-0 flex-1 ml-3">
         <span className="text-sm font-medium text-foreground truncate">
-          {t('ads.premiumTrialTitle')}
+          {t('ads.premiumBannerTitle')}
         </span>
         <span className="text-xs text-muted-foreground truncate">
-          {t('ads.premiumTrialDescription')}
+          {t('ads.premiumBannerDescription')}
         </span>
       </div>
       
-      <Button 
-        size="sm" 
-        variant="gold" 
-        className="shrink-0 ml-2"
-        onClick={(e) => {
-          e.stopPropagation();
-          handleClick();
-        }}
-      >
-        {t('ads.activatePremium')}
-      </Button>
+      <div className="flex items-center gap-2 shrink-0 ml-2">
+        <Button 
+          size="sm" 
+          variant="ghost"
+          className="text-xs text-muted-foreground hover:text-foreground"
+          onClick={handleNotNow}
+        >
+          {t('ads.notNow')}
+        </Button>
+        <Button 
+          size="sm" 
+          variant="gold" 
+          onClick={(e) => {
+            e.stopPropagation();
+            handleClick();
+          }}
+        >
+          {t('ads.activatePremium')}
+        </Button>
+      </div>
     </div>
   );
 };

@@ -5,7 +5,7 @@ import { useABTest } from '@/hooks/useABTest';
 import { AdContainer } from './AdContainer';
 import { FallbackPromo } from './FallbackPromo';
 import { ReferralBanner } from './ReferralBanner';
-import { PremiumTrialBanner } from './PremiumTrialBanner';
+import { PremiumInternalBanner } from './PremiumInternalBanner';
 import { PremiumBannerModal } from './PremiumBannerModal';
 import { ADSENSE_CONFIG } from '@/lib/adsenseConfig';
 import { logBannerDebug } from '@/lib/bannerRotationConfig';
@@ -13,6 +13,9 @@ import { logBannerDebug } from '@/lib/bannerRotationConfig';
 export const AdBanner = () => {
   const { 
     shouldShowBanner, 
+    showInternalOnly,
+    canShowGoogleAdsOnPage,
+    isAuthenticatedPage,
     isAdSenseConfigured,
     setAdLoaded, 
     setAdError 
@@ -22,7 +25,6 @@ export const AdBanner = () => {
     currentBanner, 
     rotationReason, 
     handleGoogleAdError,
-    handleGoogleAdTimeout,
     isGoogleAd 
   } = useBannerRotation();
   
@@ -33,9 +35,14 @@ export const AdBanner = () => {
   useEffect(() => {
     if (shouldShowBanner) {
       trackImpression();
-      logBannerDebug('Impression', { bannerType: currentBanner, reason: rotationReason });
+      logBannerDebug('Impression', { 
+        bannerType: currentBanner, 
+        reason: rotationReason,
+        isAuthenticatedPage,
+        showInternalOnly 
+      });
     }
-  }, [shouldShowBanner, trackImpression, currentBanner, rotationReason]);
+  }, [shouldShowBanner, trackImpression, currentBanner, rotationReason, isAuthenticatedPage, showInternalOnly]);
 
   if (!shouldShowBanner) return null;
 
@@ -54,28 +61,41 @@ export const AdBanner = () => {
     logBannerDebug('Google Ad error - switching to internal', { currentBanner });
   };
 
-  // Renderizar banner baseado no tipo selecionado pela rotação
+  // Render banner based on context and rotation selection
   const renderBanner = () => {
-    // Se Google Ads foi selecionado MAS não está configurado, usar fallback interno
-    if (isGoogleAd && !isAdSenseConfigured) {
-      logBannerDebug('Google selected but not configured', { fallback: 'FallbackPromo' });
-      return <FallbackPromo onDismiss={handleDismissAttempt} onUpgradeClick={handlePromoClick} />;
+    // On authenticated pages: ALWAYS show internal banners only (no Google Ads)
+    if (isAuthenticatedPage || showInternalOnly) {
+      logBannerDebug('Rendering internal banner', { 
+        isAuthenticatedPage, 
+        showInternalOnly, 
+        bannerType: currentBanner 
+      });
+      
+      // Respect the rotation selection for internal banners
+      if (currentBanner === 'internal_referral') {
+        return <ReferralBanner onDismiss={handleDismissAttempt} />;
+      }
+      return <PremiumInternalBanner onDismiss={handleDismissAttempt} />;
     }
 
+    // On public pages: can show Google Ads or internal banners based on rotation
+    if (isGoogleAd && canShowGoogleAdsOnPage) {
+      return (
+        <AdContainer 
+          adSlot={ADSENSE_CONFIG.slots.bottomBanner}
+          adClient={ADSENSE_CONFIG.client}
+          onLoad={setAdLoaded}
+          onError={handleGoogleError}
+        />
+      );
+    }
+
+    // Internal banner selected on public page
     switch (currentBanner) {
-      case 'google':
-        return (
-          <AdContainer 
-            adSlot={ADSENSE_CONFIG.slots.bottomBanner}
-            adClient={ADSENSE_CONFIG.client}
-            onLoad={setAdLoaded}
-            onError={handleGoogleError}
-          />
-        );
       case 'internal_referral':
         return <ReferralBanner onDismiss={handleDismissAttempt} />;
       case 'internal_premium':
-        return <PremiumTrialBanner onDismiss={handleDismissAttempt} />;
+        return <PremiumInternalBanner onDismiss={handleDismissAttempt} />;
       default:
         return <FallbackPromo onDismiss={handleDismissAttempt} onUpgradeClick={handlePromoClick} />;
     }

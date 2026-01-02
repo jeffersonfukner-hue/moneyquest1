@@ -1,14 +1,28 @@
+/**
+ * Banner Rotation Configuration
+ * Controls the weighted distribution of banner types based on context
+ */
+
 export type BannerType = 'google' | 'internal_referral' | 'internal_premium';
+export type BannerContext = 'public' | 'authenticated';
 
 interface BannerRotationConfig {
-  distribution: {
-    googleAds: number;
-    internal: number;
+  // Distribution for public pages (Google Ads allowed)
+  publicDistribution: {
+    google: number; // 70%
+    internal: number; // 30%
   };
+  // Distribution for authenticated pages (only internal banners)
+  authenticatedDistribution: {
+    referral: number; // 50%
+    premium: number; // 50%
+  };
+  // Internal banner distribution (when internal is selected on public pages)
   internalDistribution: {
-    referral: number;
-    premium: number;
+    referral: number; // 50%
+    premium: number; // 50%
   };
+  // Debug settings
   debug: {
     enabled: boolean;
     forceType: BannerType | null;
@@ -17,19 +31,18 @@ interface BannerRotationConfig {
 }
 
 export const BANNER_ROTATION_CONFIG: BannerRotationConfig = {
-  // Distribuição principal: 70% Google Ads, 30% Banners internos
-  distribution: {
-    googleAds: 70,
+  publicDistribution: {
+    google: 70,
     internal: 30,
   },
-  
-  // Distribuição interna (dentro dos 30%)
-  internalDistribution: {
-    referral: 50,  // 50% Banner de Indicação
-    premium: 50,   // 50% Banner Premium
+  authenticatedDistribution: {
+    referral: 50,
+    premium: 50,
   },
-  
-  // Modo debug (para testes)
+  internalDistribution: {
+    referral: 50,
+    premium: 50,
+  },
   debug: {
     enabled: false,
     forceType: null,
@@ -37,11 +50,10 @@ export const BANNER_ROTATION_CONFIG: BannerRotationConfig = {
   },
 };
 
-// Função de logging para debug
-export const logBannerDebug = (
-  action: string, 
-  details: Record<string, unknown>
-) => {
+/**
+ * Logs banner debug information if logging is enabled
+ */
+export const logBannerDebug = (action: string, details: Record<string, unknown>) => {
   if (!BANNER_ROTATION_CONFIG.debug.logEnabled) return;
   
   console.log(
@@ -50,56 +62,71 @@ export const logBannerDebug = (
     {
       timestamp: new Date().toISOString(),
       ...details,
-      distribution: BANNER_ROTATION_CONFIG.distribution,
     }
   );
 };
 
-// Função para modo debug (usar no console do navegador)
-// window.setBannerDebug('internal_referral') // Força tipo específico
-// window.setBannerDebug(null) // Volta ao normal
+// Expose debug controls to window for development testing
 if (typeof window !== 'undefined') {
-  (window as unknown as { setBannerDebug: (type: BannerType | null) => void }).setBannerDebug = (type: BannerType | null) => {
+  (window as unknown as { setBannerDebug: (type: BannerType | null) => void }).setBannerDebug = (
+    type: BannerType | null
+  ) => {
     BANNER_ROTATION_CONFIG.debug.enabled = type !== null;
     BANNER_ROTATION_CONFIG.debug.forceType = type;
     console.log('%c[BannerRotation] Debug mode:', 'color: #9333ea; font-weight: bold;', type ? `Forcing ${type}` : 'Disabled');
   };
 }
 
-// Seleciona tipo de banner baseado em probabilidade
-export const selectBannerType = (): BannerType => {
-  // Se debug forçado, usar tipo específico
+/**
+ * Helper to select between internal banner types
+ */
+const selectInternalBanner = (distribution: { referral: number; premium: number }): BannerType => {
+  const random = Math.random() * 100;
+  
+  if (random < distribution.referral) {
+    logBannerDebug('Selected', { type: 'internal_referral', random: random.toFixed(2) });
+    return 'internal_referral';
+  }
+  
+  logBannerDebug('Selected', { type: 'internal_premium', random: random.toFixed(2) });
+  return 'internal_premium';
+};
+
+/**
+ * Select banner type based on context
+ * @param context 'public' for indexable pages, 'authenticated' for logged-in pages
+ */
+export const selectBannerType = (context: BannerContext = 'public'): BannerType => {
+  // If debug forced, use specific type
   if (BANNER_ROTATION_CONFIG.debug.enabled && BANNER_ROTATION_CONFIG.debug.forceType) {
+    // On authenticated pages, don't allow forcing google
+    if (context === 'authenticated' && BANNER_ROTATION_CONFIG.debug.forceType === 'google') {
+      logBannerDebug('Forced type blocked (no google on authenticated)', { context });
+      return selectInternalBanner(BANNER_ROTATION_CONFIG.authenticatedDistribution);
+    }
     logBannerDebug('Forced type', { type: BANNER_ROTATION_CONFIG.debug.forceType });
     return BANNER_ROTATION_CONFIG.debug.forceType;
   }
   
-  // Gerar número aleatório (0-100)
+  // For authenticated pages: only internal banners (no Google Ads)
+  if (context === 'authenticated') {
+    return selectInternalBanner(BANNER_ROTATION_CONFIG.authenticatedDistribution);
+  }
+  
+  // For public pages: 70% Google Ads, 30% Internal banners
   const random = Math.random() * 100;
   
-  // 70% Google, 30% Interno
-  if (random < BANNER_ROTATION_CONFIG.distribution.googleAds) {
+  if (random < BANNER_ROTATION_CONFIG.publicDistribution.google) {
     logBannerDebug('Selected', { type: 'google', random: random.toFixed(2) });
     return 'google';
   }
   
-  // Dentro dos 30%, escolher entre Referral e Premium
-  const internalRandom = Math.random() * 100;
-  const internalType = internalRandom < BANNER_ROTATION_CONFIG.internalDistribution.referral 
-    ? 'internal_referral' 
-    : 'internal_premium';
-  
-  logBannerDebug('Selected', { type: internalType, random: random.toFixed(2), internalRandom: internalRandom.toFixed(2) });
-  return internalType;
+  return selectInternalBanner(BANNER_ROTATION_CONFIG.internalDistribution);
 };
 
-// Seleciona banner interno aleatório (para fallback)
+/**
+ * Select a random internal banner (used as fallback when Google Ads fail)
+ */
 export const selectRandomInternalBanner = (): BannerType => {
-  const random = Math.random() * 100;
-  const type = random < BANNER_ROTATION_CONFIG.internalDistribution.referral 
-    ? 'internal_referral' 
-    : 'internal_premium';
-  
-  logBannerDebug('Fallback to internal', { type, random: random.toFixed(2) });
-  return type;
+  return selectInternalBanner(BANNER_ROTATION_CONFIG.internalDistribution);
 };
