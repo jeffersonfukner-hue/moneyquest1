@@ -155,11 +155,20 @@ const Features = () => {
         </section>
 
         {/* Footer */}
-        <footer className="text-center pt-4 pb-8">
+        <footer className="text-center pt-4 pb-8 space-y-3">
           <p className="text-xs text-muted-foreground flex items-center justify-center gap-1.5">
             <Shield className="w-3.5 h-3.5" />
             {t('landing.security.dataProtected')}
           </p>
+          <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
+            <Link to="/terms" className="hover:text-primary transition-colors">
+              {t('legal.terms.title', 'Termos de Uso')}
+            </Link>
+            <span>•</span>
+            <Link to="/privacy" className="hover:text-primary transition-colors">
+              {t('legal.privacy.title', 'Política de Privacidade')}
+            </Link>
+          </div>
         </footer>
       </main>
     </div>

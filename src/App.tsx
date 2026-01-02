@@ -21,6 +21,8 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import LanguageSelection from "./pages/LanguageSelection";
 import Features from "./pages/Features";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
 
 import Onboarding from "./pages/Onboarding";
 import Settings from "./pages/Settings";
@@ -74,6 +76,8 @@ const App = () => (
                           <Route path="/login" element={<LanguageGuard><Login /></LanguageGuard>} />
                           <Route path="/signup" element={<LanguageGuard><Signup /></LanguageGuard>} />
                           <Route path="/features" element={<LanguageGuard><Features /></LanguageGuard>} />
+                          <Route path="/terms" element={<LanguageGuard><Terms /></LanguageGuard>} />
+                          <Route path="/privacy" element={<LanguageGuard><Privacy /></LanguageGuard>} />
                           <Route path="/onboarding" element={<Onboarding />} />
                           <Route path="/auth" element={<Navigate to="/login" replace />} />
                           <Route path="/settings" element={<Settings />} />
