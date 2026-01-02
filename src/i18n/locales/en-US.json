@@ -1325,5 +1325,55 @@
     "totalReceived": "Total received",
     "congratsMessage": "Congratulations! Your financial mana increased by {{xp}} points.",
     "closeSummary": "Close summary"
+  },
+  "support": {
+    "title": "Contact & Support",
+    "pageTitle": "Get in Touch",
+    "subtitle": "We're here to help",
+    "chooseContact": "Choose how you'd like to contact us",
+    "whatsapp": {
+      "title": "Chat on WhatsApp",
+      "subtitle": "Quick response",
+      "defaultMessage": "Hi, I'm reaching out from MoneyQuest."
+    },
+    "email": {
+      "title": "Send message via app",
+      "subtitle": "Track in your history"
+    },
+    "myMessages": "My messages",
+    "newTicket": "New message",
+    "ticket": "message",
+    "tickets": "messages",
+    "form": {
+      "subject": "Subject",
+      "subjectPlaceholder": "Summary of your message",
+      "category": "Category",
+      "message": "Message",
+      "messagePlaceholder": "Describe how we can help...",
+      "attachment": "Attachment (optional)",
+      "attachmentHint": "Click to attach file (max 5MB)",
+      "send": "Send message"
+    },
+    "categories": {
+      "question": "Question",
+      "technical": "Technical issue",
+      "suggestion": "Suggestion",
+      "financial": "Financial",
+      "other": "Other"
+    },
+    "status": {
+      "sent": "Sent",
+      "in_progress": "In progress",
+      "answered": "Answered",
+      "closed": "Closed"
+    },
+    "success": {
+      "title": "Message sent!",
+      "description": "Our team will respond via app or email."
+    },
+    "needHelp": "Need help?",
+    "noMessages": "You haven't sent any messages yet",
+    "replySent": "Reply sent",
+    "ticketClosed": "This ticket has been closed"
   }
 }

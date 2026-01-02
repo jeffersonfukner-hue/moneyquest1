@@ -898,5 +898,55 @@
     "totalReceived": "Total recebido",
     "congratsMessage": "Parabéns! A sua mana financeira aumentou {{xp}} pontos.",
     "closeSummary": "Fechar resumo"
+  },
+  "support": {
+    "title": "Contacto e Suporte",
+    "pageTitle": "Fale connosco",
+    "subtitle": "Estamos aqui para ajudar",
+    "chooseContact": "Escolha como prefere entrar em contacto",
+    "whatsapp": {
+      "title": "Falar pelo WhatsApp",
+      "subtitle": "Resposta rápida",
+      "defaultMessage": "Olá, estou a entrar em contacto pelo MoneyQuest."
+    },
+    "email": {
+      "title": "Enviar mensagem pela app",
+      "subtitle": "Acompanhe no histórico"
+    },
+    "myMessages": "As minhas mensagens",
+    "newTicket": "Nova mensagem",
+    "ticket": "mensagem",
+    "tickets": "mensagens",
+    "form": {
+      "subject": "Assunto",
+      "subjectPlaceholder": "Resumo da sua mensagem",
+      "category": "Categoria",
+      "message": "Mensagem",
+      "messagePlaceholder": "Descreva como podemos ajudar...",
+      "attachment": "Anexo (opcional)",
+      "attachmentHint": "Clique para anexar ficheiro (máx 5MB)",
+      "send": "Enviar mensagem"
+    },
+    "categories": {
+      "question": "Dúvida",
+      "technical": "Problema técnico",
+      "suggestion": "Sugestão",
+      "financial": "Financeiro",
+      "other": "Outro"
+    },
+    "status": {
+      "sent": "Enviado",
+      "in_progress": "Em análise",
+      "answered": "Respondido",
+      "closed": "Encerrado"
+    },
+    "success": {
+      "title": "Mensagem enviada!",
+      "description": "A nossa equipa responderá pela app ou por email."
+    },
+    "needHelp": "Precisa de ajuda?",
+    "noMessages": "Ainda não enviou mensagens",
+    "replySent": "Resposta enviada",
+    "ticketClosed": "Este ticket foi encerrado"
   }
 }
