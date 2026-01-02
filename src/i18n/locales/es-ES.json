@@ -1374,6 +1374,35 @@
     "needHelp": "¿Necesitas ayuda?",
     "noMessages": "Aún no has enviado mensajes",
     "replySent": "Respuesta enviada",
-    "ticketClosed": "Este ticket ha sido cerrado"
+    "ticketClosed": "Este ticket ha sido cerrado",
+    "faq": {
+      "title": "Preguntas Frecuentes",
+      "items": {
+        "howToAdd": {
+          "question": "¿Cómo añado una transacción?",
+          "answer": "Toca el botón '+' en la barra de navegación inferior. Elige si es ingreso o gasto, completa el monto, descripción y categoría, luego toca 'Añadir'."
+        },
+        "whatIsXP": {
+          "question": "¿Qué es XP y cómo funciona?",
+          "answer": "XP son puntos de experiencia que ganas al registrar transacciones y completar misiones. ¡Al acumular XP, subes de nivel y desbloqueas logros!"
+        },
+        "howPremium": {
+          "question": "¿Cómo me hago Premium?",
+          "answer": "Ve a Configuración > Actualizar a Premium. Allí verás los beneficios exclusivos y podrás elegir el plan que mejor te convenga."
+        },
+        "deleteAccount": {
+          "question": "¿Puedo eliminar mi cuenta?",
+          "answer": "¡Sí! Contáctanos a través del formulario de mensaje o WhatsApp y procesaremos la eliminación completa de tus datos."
+        },
+        "changeLanguage": {
+          "question": "¿Cómo cambio el idioma de la app?",
+          "answer": "Ve a Configuración > Idioma y selecciona entre Portugués, English o Español."
+        },
+        "multipleWallets": {
+          "question": "¿Puedo tener varias billeteras?",
+          "answer": "¡Sí! Puedes crear tantas billeteras como quieras: cuenta corriente, ahorros, efectivo, etc. Accede a la sección Billeteras para gestionarlas."
+        }
+      }
+    }
   }
 }

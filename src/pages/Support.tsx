@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useSupportTickets } from '@/hooks/useSupportTickets';
 import { NewTicketDialog } from '@/components/support/NewTicketDialog';
+import { FAQSection } from '@/components/support/FAQSection';
 import { useAuth } from '@/hooks/useAuth';
 
 const WHATSAPP_NUMBER = '5511999999999';
@@ -95,7 +96,7 @@ export default function Support() {
         </Card>
 
         {/* Divider */}
-        <div className="relative py-4">
+        <div className="relative py-2">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-border"></div>
           </div>
@@ -128,6 +129,11 @@ export default function Support() {
             </CardContent>
           </Card>
         )}
+
+        {/* FAQ Section */}
+        <div className="pt-4">
+          <FAQSection />
+        </div>
       </main>
 
       {/* New Ticket Dialog */}

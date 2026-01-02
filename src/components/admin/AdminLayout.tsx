@@ -10,7 +10,7 @@ import {
   ChevronLeft,
   Shield,
   Menu,
-  X
+  MessageSquare
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -23,6 +23,7 @@ interface AdminLayoutProps {
 const navItems = [
   { path: '/super-admin', icon: LayoutDashboard, labelKey: 'admin.nav.dashboard' },
   { path: '/super-admin/users', icon: Users, labelKey: 'admin.nav.users' },
+  { path: '/super-admin/support', icon: MessageSquare, labelKey: 'admin.nav.support' },
   { path: '/super-admin/engagement', icon: AlertTriangle, labelKey: 'admin.nav.engagement' },
   { path: '/super-admin/analytics', icon: BarChart3, labelKey: 'admin.nav.analytics' },
   { path: '/super-admin/logs', icon: ScrollText, labelKey: 'admin.nav.logs' },
