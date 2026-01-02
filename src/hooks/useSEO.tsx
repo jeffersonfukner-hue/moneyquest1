@@ -17,68 +17,112 @@ const TWITTER_HANDLE = '@moneyquestapp';
 
 // Page-specific SEO configurations
 const pageConfigs: Record<string, SEOConfig> = {
+  // === PUBLIC PAGES (index, follow) ===
   '/': {
-    title: 'MoneyQuest - Gamifique suas Finanças',
-    description: 'Transforme o controle financeiro em uma aventura! Ganhe XP, complete missões, suba de nível e conquiste suas metas financeiras de forma divertida.',
+    title: 'MoneyQuest – Controle Financeiro Inteligente',
+    description: 'MoneyQuest é um app de controle financeiro pessoal com gamificação, metas e modo premium sem anúncios.',
   },
   '/login': {
     title: 'Entrar | MoneyQuest',
     description: 'Faça login na sua conta MoneyQuest e continue sua jornada financeira. Acompanhe seus gastos, metas e conquistas.',
-    noIndex: true,
   },
   '/signup': {
     title: 'Criar Conta | MoneyQuest',
     description: 'Comece sua aventura financeira! Crie sua conta gratuita no MoneyQuest e transforme o controle de gastos em um jogo divertido.',
   },
-  '/onboarding': {
-    title: 'Configuração Inicial | MoneyQuest',
-    description: 'Configure sua conta MoneyQuest e personalize sua experiência financeira.',
-    noIndex: true,
+  '/features': {
+    title: 'Recursos | MoneyQuest',
+    description: 'Conheça todos os recursos do MoneyQuest: gamificação, metas financeiras, coach IA e modo premium sem anúncios.',
   },
   '/premium': {
     title: 'MoneyQuest Premium - Recursos Exclusivos',
     description: 'Desbloqueie todo o potencial do MoneyQuest! Relatórios avançados, IA Coach, temas exclusivos e muito mais.',
   },
+
+  // === AUTHENTICATED PAGES (noindex, nofollow) ===
+  '/onboarding': {
+    title: 'Configuração Inicial | MoneyQuest',
+    description: 'Configure sua conta MoneyQuest e personalize sua experiência financeira.',
+    noIndex: true,
+  },
   '/ai-coach': {
     title: 'Coach Financeiro IA | MoneyQuest',
-    description: 'Receba conselhos personalizados de um coach financeiro inteligente. Análise de gastos, sugestões de economia e planejamento financeiro.',
+    description: 'Receba conselhos personalizados de um coach financeiro inteligente.',
+    noIndex: true,
   },
   '/category-goals': {
     title: 'Metas por Categoria | MoneyQuest',
-    description: 'Defina e acompanhe metas de orçamento para cada categoria de gastos. Mantenha suas finanças sob controle.',
+    description: 'Defina e acompanhe metas de orçamento para cada categoria de gastos.',
+    noIndex: true,
   },
   '/categories': {
     title: 'Categorias | MoneyQuest',
-    description: 'Gerencie suas categorias de receitas e despesas. Organize suas transações de forma personalizada.',
+    description: 'Gerencie suas categorias de receitas e despesas.',
+    noIndex: true,
   },
   '/leaderboard': {
     title: 'Ranking | MoneyQuest',
-    description: 'Veja sua posição no ranking global! Compare seu progresso com outros jogadores e suba de nível.',
+    description: 'Veja sua posição no ranking global!',
+    noIndex: true,
   },
   '/journal': {
     title: 'Diário de Aventuras | MoneyQuest',
-    description: 'Acompanhe sua jornada financeira com narrativas personalizadas e marcos importantes.',
+    description: 'Acompanhe sua jornada financeira com narrativas personalizadas.',
+    noIndex: true,
   },
   '/wallets': {
     title: 'Carteiras | MoneyQuest',
-    description: 'Gerencie todas as suas contas e carteiras em um só lugar. Acompanhe saldos e movimentações.',
+    description: 'Gerencie todas as suas contas e carteiras em um só lugar.',
+    noIndex: true,
   },
   '/cash-flow': {
     title: 'Fluxo de Caixa | MoneyQuest',
-    description: 'Visualize seu fluxo de caixa com gráficos detalhados. Entenda para onde vai seu dinheiro.',
+    description: 'Visualize seu fluxo de caixa com gráficos detalhados.',
+    noIndex: true,
   },
   '/period-comparison': {
     title: 'Comparação de Períodos | MoneyQuest',
-    description: 'Compare seus gastos entre diferentes períodos. Identifique tendências e otimize suas finanças.',
+    description: 'Compare seus gastos entre diferentes períodos.',
+    noIndex: true,
+  },
+  '/referral': {
+    title: 'Indicações | MoneyQuest',
+    description: 'Convide amigos e ganhe recompensas.',
+    noIndex: true,
+  },
+  '/notifications': {
+    title: 'Notificações | MoneyQuest',
+    description: 'Acompanhe suas notificações e alertas.',
+    noIndex: true,
+  },
+  '/support': {
+    title: 'Suporte | MoneyQuest',
+    description: 'Central de ajuda e suporte ao usuário.',
+    noIndex: true,
+  },
+  '/upgrade': {
+    title: 'Upgrade Premium | MoneyQuest',
+    description: 'Faça upgrade para o plano premium.',
+    noIndex: true,
+  },
+  '/premium-success': {
+    title: 'Assinatura Confirmada | MoneyQuest',
+    description: 'Sua assinatura premium foi ativada com sucesso.',
+    noIndex: true,
   },
   '/settings': {
     title: 'Configurações | MoneyQuest',
-    description: 'Personalize sua experiência no MoneyQuest. Ajuste preferências, notificações e muito mais.',
+    description: 'Personalize sua experiência no MoneyQuest.',
     noIndex: true,
   },
   '/profile': {
     title: 'Perfil | MoneyQuest',
-    description: 'Visualize e edite seu perfil MoneyQuest. Acompanhe seu nível, XP e conquistas.',
+    description: 'Visualize e edite seu perfil MoneyQuest.',
+    noIndex: true,
+  },
+  '/my-messages': {
+    title: 'Mensagens | MoneyQuest',
+    description: 'Suas mensagens e comunicações.',
     noIndex: true,
   },
 };
