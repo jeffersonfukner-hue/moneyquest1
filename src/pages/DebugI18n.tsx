@@ -1,16 +1,24 @@
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LANGUAGE_PREFERENCE_KEY, mapBrowserLanguage, type SupportedLanguage } from '@/i18n';
-import { detectLanguageFromTimezone, getBrowserTimezone } from '@/lib/countryDetection';
+import { detectLanguageFromTimezone, detectLanguageFromIP, getBrowserTimezone, clearIPDetectionCache } from '@/lib/countryDetection';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { RefreshCw, Trash2, Globe, Database, Monitor, CheckCircle, XCircle, MapPin } from 'lucide-react';
+import { RefreshCw, Trash2, Globe, Database, Monitor, CheckCircle, XCircle, MapPin, Wifi, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 
 const DebugI18n = () => {
   const { i18n } = useTranslation();
   const navigate = useNavigate();
+  
+  // Estado para detecção por IP (assíncrona)
+  const [ipDetectionResult, setIpDetectionResult] = useState<{
+    loading: boolean;
+    language: SupportedLanguage | null;
+    error: string | null;
+  }>({ loading: false, language: null, error: null });
 
   // Collect all debug info
   const browserLanguage = navigator.language || (navigator as any).userLanguage || 'unknown';
@@ -24,9 +32,27 @@ const DebugI18n = () => {
   const browserTimezone = getBrowserTimezone();
   const timezoneLanguage = detectLanguageFromTimezone();
 
+  // Testar detecção por IP
+  const handleTestIPDetection = async () => {
+    setIpDetectionResult({ loading: true, language: null, error: null });
+    clearIPDetectionCache(); // Limpa cache para forçar nova requisição
+    
+    try {
+      const result = await detectLanguageFromIP();
+      setIpDetectionResult({ loading: false, language: result, error: null });
+    } catch (err) {
+      setIpDetectionResult({ 
+        loading: false, 
+        language: null, 
+        error: err instanceof Error ? err.message : 'Erro desconhecido' 
+      });
+    }
+  };
+
   const handleClearStorage = () => {
     localStorage.removeItem('i18nextLng');
     localStorage.removeItem(LANGUAGE_PREFERENCE_KEY);
+    clearIPDetectionCache();
     toast({
       title: 'Storage limpo',
       description: 'Recarregue a página para testar a detecção novamente.',
@@ -101,10 +127,59 @@ const DebugI18n = () => {
                 </Badge>
               ) : (
                 <Badge variant="secondary" className="font-mono">
-                  null (requer seleção manual)
+                  null (requer fallback)
                 </Badge>
               )}
             </div>
+          </CardContent>
+        </Card>
+
+        {/* IP Detection */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Wifi className="w-5 h-5" />
+              Detecção por IP (Fallback)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground">Status</span>
+              {ipDetectionResult.loading ? (
+                <Badge variant="outline" className="font-mono">
+                  <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                  Testando...
+                </Badge>
+              ) : ipDetectionResult.language ? (
+                <Badge className="font-mono bg-green-500/20 text-green-700 dark:text-green-400">
+                  {ipDetectionResult.language}
+                </Badge>
+              ) : ipDetectionResult.error ? (
+                <Badge variant="destructive" className="font-mono text-xs">
+                  Erro: {ipDetectionResult.error}
+                </Badge>
+              ) : (
+                <Badge variant="secondary" className="font-mono">
+                  Não testado
+                </Badge>
+              )}
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleTestIPDetection}
+              disabled={ipDetectionResult.loading}
+            >
+              {ipDetectionResult.loading ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Wifi className="w-4 h-4 mr-2" />
+              )}
+              Testar Detecção por IP
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              Usa ipapi.co (primário) e ip-api.com (fallback) para detectar país pelo IP.
+            </p>
           </CardContent>
         </Card>
 
@@ -196,8 +271,9 @@ const DebugI18n = () => {
           <CardContent className="text-sm text-muted-foreground space-y-2">
             <p><strong>1. Preferência salva:</strong> Se existe idioma em localStorage, usar imediatamente.</p>
             <p><strong>2. Detecção por timezone:</strong> Tenta detectar país pelo timezone do navegador.</p>
-            <p><strong>3. Detecção por navigator.language:</strong> Fallback se timezone não mapeado.</p>
-            <p><strong>4. Seleção manual:</strong> Se nenhuma detecção funcionar, exibe tela de seleção.</p>
+            <p><strong>3. Detecção por IP:</strong> Fallback assíncrono se timezone não mapeado.</p>
+            <p><strong>4. Detecção por navigator.language:</strong> Fallback se IP também falhar.</p>
+            <p><strong>5. Seleção manual:</strong> Se nenhuma detecção funcionar, exibe tela de seleção.</p>
             <p className="text-yellow-600 dark:text-yellow-400 font-medium">⚠️ Inglês NUNCA é fallback automático!</p>
           </CardContent>
         </Card>
