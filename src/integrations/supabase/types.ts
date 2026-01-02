@@ -1279,10 +1279,15 @@ export type Database = {
         Returns: boolean
       }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
-      process_referral_signup: {
-        Args: { p_referral_code: string; p_referred_user_id: string }
-        Returns: Json
-      }
+      process_referral_signup:
+        | {
+            Args: { p_referral_code: string; p_referred_user_id: string }
+            Returns: Json
+          }
+        | {
+            Args: { p_referral_code: string; p_referred_user_id: string }
+            Returns: Json
+          }
       reset_expired_quests: { Args: { p_user_id: string }; Returns: undefined }
       resolve_premium_status: {
         Args: {

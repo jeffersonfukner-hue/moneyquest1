@@ -11,8 +11,13 @@ interface ReferralBannerProps {
 
 export const ReferralBanner = ({ onDismiss }: ReferralBannerProps) => {
   const { t } = useTranslation();
-  const { referralLink, stats } = useReferral();
+  const { referralLink, stats, isLoading } = useReferral();
   const [showShareDialog, setShowShareDialog] = useState(false);
+
+  // Don't render anything while loading to prevent empty container
+  if (isLoading) {
+    return null;
+  }
 
   const handleClick = () => {
     setShowShareDialog(true);

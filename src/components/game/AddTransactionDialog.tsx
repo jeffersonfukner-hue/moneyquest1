@@ -219,7 +219,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
           </Button>
         </DialogTrigger>
       )}
-      <DialogContent className="sm:max-w-md mx-4 border-border">
+      <DialogContent className="sm:max-w-md w-[calc(100%-2rem)] max-w-[calc(100%-2rem)] sm:w-full border-border">
         <DialogHeader>
           <DialogTitle className="font-display text-xl text-primary">{t('transactions.addTransaction')}</DialogTitle>
         </DialogHeader>
