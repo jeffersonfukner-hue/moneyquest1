@@ -63,10 +63,39 @@
     "linkCopied": "¡Enlace copiado!",
     "shareMessage": "Prueba MoneyQuest - ¡la app que convierte tus finanzas en una aventura! Usa mi enlace: {{link}}",
     "share": "Compartir",
+    "viewStats": "Ver estadísticas completas",
     "rewards": {
       "title": "Tus recompensas por invitación:",
       "xp": "{{amount}} XP por cada amigo que se registre",
-      "premium": "{{days}} días de Premium gratis"
+      "premium": "{{days}} días de Premium gratis",
+      "earned": "Recompensas Ganadas",
+      "earnedLabel": "ganados",
+      "premiumDays": "días Premium"
+    },
+    "pageTitle": "Programa de Invitación",
+    "pageSubtitle": "Invita amigos y gana recompensas",
+    "shareTitle": "Comparte tu enlace",
+    "shareSubtitle": "Envía a amigos y gana recompensas cuando comiencen",
+    "stats": {
+      "total": "Total de invitaciones",
+      "pending": "Pendientes",
+      "completed": "Convertidas",
+      "code": "Tu código"
+    },
+    "howItWorks": {
+      "title": "¿Cómo funciona?",
+      "step1": {
+        "title": "Comparte tu enlace",
+        "description": "Envía tu enlace exclusivo a amigos y familiares"
+      },
+      "step2": {
+        "title": "Amigo se registra",
+        "description": "Tu amigo crea una cuenta usando tu enlace de invitación"
+      },
+      "step3": {
+        "title": "¡Ambos ganan!",
+        "description": "Cuando tu amigo hace su primera transacción, ganas 500 XP + 7 días Premium"
+      }
     }
   },
   "templates": {
