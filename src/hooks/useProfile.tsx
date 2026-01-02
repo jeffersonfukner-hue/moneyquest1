@@ -50,7 +50,9 @@ export const useProfile = () => {
       setProfile(profileData);
 
       // Sync subscription status with Stripe (only once per session)
-      if (!subscriptionCheckDone.current) {
+      // Only attempt if we have a valid session with access token
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!subscriptionCheckDone.current && sessionData?.session?.access_token) {
         subscriptionCheckDone.current = true;
         try {
           const { error: syncError } = await supabase.functions.invoke('check-subscription');
