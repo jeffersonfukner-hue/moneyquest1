@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useProfile } from '@/hooks/useProfile';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { AvatarDisplay } from '@/components/profile/AvatarDisplay';
+import { NotificationBell } from '@/components/notifications/NotificationBell';
 
 interface MobileHeaderProps {
   onSettingsClick: () => void;
@@ -28,6 +29,7 @@ export const MobileHeader = ({ onSettingsClick, onProfileClick }: MobileHeaderPr
         <div className="flex items-center gap-1">
           <SeasonalThemeIndicator />
           <SoundToggle />
+          <NotificationBell />
           {isSuperAdmin && (
             <Button 
               variant="ghost" 

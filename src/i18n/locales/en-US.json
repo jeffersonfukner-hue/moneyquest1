@@ -107,6 +107,15 @@
     "welcomeBonus": "Welcome bonus!",
     "linkedSuccess": "You've been linked to your friend. Make your first transaction to earn XP!"
   },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications",
+    "markAllRead": "Mark all as read",
+    "viewAll": "View all",
+    "supportReply": "New support reply",
+    "referralConverted": "Referral converted!",
+    "rewardEarned": "You earned a reward!"
+  },
   "templates": {
     "quickAdd": "Quick Add",
     "createFirst": "Create your first quick template",
