@@ -704,7 +704,19 @@
     "ratesNotLoaded": "Rates not loaded",
     "timezone": "Timezone",
     "timezoneError": "Failed to update timezone",
-    "timezoneSuccess": "Timezone updated successfully"
+    "timezoneSuccess": "Timezone updated successfully",
+    "notificationPreferences": {
+      "title": "Notification Preferences",
+      "messages": "System Messages",
+      "messagesDesc": "Announcements and updates from MoneyQuest",
+      "support": "Support Replies",
+      "supportDesc": "When your tickets receive a reply",
+      "referral": "Referrals",
+      "referralDesc": "When your referrals are converted",
+      "reward": "Rewards",
+      "rewardDesc": "When you earn XP or prizes",
+      "saveError": "Failed to save preferences"
+    }
   },
   "mood": {
     "veryPositive": "Very Positive",

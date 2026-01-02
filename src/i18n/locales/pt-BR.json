@@ -702,7 +702,19 @@
     "ratesNotLoaded": "Taxas não carregadas",
     "timezone": "Fuso Horário",
     "timezoneError": "Falha ao atualizar fuso horário",
-    "timezoneSuccess": "Fuso horário atualizado com sucesso"
+    "timezoneSuccess": "Fuso horário atualizado com sucesso",
+    "notificationPreferences": {
+      "title": "Preferências de Notificação",
+      "messages": "Mensagens do Sistema",
+      "messagesDesc": "Avisos e atualizações do MoneyQuest",
+      "support": "Respostas do Suporte",
+      "supportDesc": "Quando há resposta nos seus tickets",
+      "referral": "Indicações",
+      "referralDesc": "Quando suas indicações são convertidas",
+      "reward": "Recompensas",
+      "rewardDesc": "Quando você ganha XP ou prêmios",
+      "saveError": "Falha ao salvar preferências"
+    }
   },
   "mood": {
     "veryPositive": "Muito Positivo",
