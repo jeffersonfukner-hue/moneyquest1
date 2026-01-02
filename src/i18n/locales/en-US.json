@@ -98,6 +98,11 @@
       }
     },
     "invitedBanner": "You were invited by a friend!",
+    "bonusOnFirstTransaction": "Get 100 XP bonus on your first transaction",
+    "notification": {
+      "title": "🎉 Referral converted!",
+      "description": "Your friend made their first transaction! You earned 500 XP + 7 Premium days."
+    },
     "bonusOnFirstTransaction": "Earn 100 XP bonus when you make your first transaction",
     "welcomeBonus": "Welcome bonus!",
     "linkedSuccess": "You've been linked to your friend. Make your first transaction to earn XP!"

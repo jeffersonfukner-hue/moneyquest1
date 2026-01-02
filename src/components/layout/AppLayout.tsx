@@ -5,6 +5,7 @@ import { AdBanner } from '@/components/ads/AdBanner';
 import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useAdBanner } from '@/hooks/useAdBanner';
+import { useReferralNotifications } from '@/hooks/useReferralNotifications';
 import { cn } from '@/lib/utils';
 
 interface AppLayoutProps {
@@ -29,6 +30,9 @@ export const AppLayout = ({
   const { addTransaction } = useTransactions();
   const { shouldShowBanner } = useAdBanner();
   const [showAddTransaction, setShowAddTransaction] = useState(false);
+  
+  // Listen for referral conversion notifications
+  useReferralNotifications();
 
   const handleTabChange = (tab: TabId) => {
     if (tab === 'home') navigate('/');
