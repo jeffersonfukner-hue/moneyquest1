@@ -1,11 +1,12 @@
 const SETUP_LANGUAGE_KEY = 'moneyquest_setup_language';
 const SETUP_CURRENCY_KEY = 'moneyquest_setup_currency';
 
-export type SupportedLanguage = 'pt-BR' | 'en-US' | 'es-ES';
+export type SupportedLanguage = 'pt-BR' | 'pt-PT' | 'en-US' | 'es-ES';
 export type SupportedCurrency = 'BRL' | 'USD' | 'EUR';
 
 export const SUPPORTED_LANGUAGES: { value: SupportedLanguage; label: string; flag: string }[] = [
   { value: 'pt-BR', label: 'Português (Brasil)', flag: '🇧🇷' },
+  { value: 'pt-PT', label: 'Português (Portugal)', flag: '🇵🇹' },
   { value: 'en-US', label: 'English (US)', flag: '🇺🇸' },
   { value: 'es-ES', label: 'Español', flag: '🇪🇸' },
 ];

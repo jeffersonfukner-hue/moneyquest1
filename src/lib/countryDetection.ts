@@ -23,10 +23,10 @@ const TIMEZONE_TO_LANGUAGE: Record<string, SupportedLanguage> = {
   'America/Noronha': 'pt-BR',
   'America/Eirunepe': 'pt-BR',
   
-  // Portugal → pt-BR (usamos pt-BR como fallback para português)
-  'Europe/Lisbon': 'pt-BR',
-  'Atlantic/Madeira': 'pt-BR',
-  'Atlantic/Azores': 'pt-BR',
+  // Portugal → pt-PT
+  'Europe/Lisbon': 'pt-PT',
+  'Atlantic/Madeira': 'pt-PT',
+  'Atlantic/Azores': 'pt-PT',
   
   // Espanha → es-ES
   'Europe/Madrid': 'es-ES',
@@ -141,15 +141,17 @@ const TIMEZONE_TO_LANGUAGE: Record<string, SupportedLanguage> = {
  * Usado pela detecção por IP.
  */
 const COUNTRY_CODE_TO_LANGUAGE: Record<string, SupportedLanguage> = {
-  // Países lusófonos → pt-BR
-  'BR': 'pt-BR', // Brasil
-  'PT': 'pt-BR', // Portugal
-  'AO': 'pt-BR', // Angola
-  'MZ': 'pt-BR', // Moçambique
-  'CV': 'pt-BR', // Cabo Verde
-  'GW': 'pt-BR', // Guiné-Bissau
-  'ST': 'pt-BR', // São Tomé e Príncipe
-  'TL': 'pt-BR', // Timor-Leste
+  // Brasil → pt-BR
+  'BR': 'pt-BR',
+  
+  // Portugal e países lusófonos africanos → pt-PT
+  'PT': 'pt-PT', // Portugal
+  'AO': 'pt-PT', // Angola
+  'MZ': 'pt-PT', // Moçambique
+  'CV': 'pt-PT', // Cabo Verde
+  'GW': 'pt-PT', // Guiné-Bissau
+  'ST': 'pt-PT', // São Tomé e Príncipe
+  'TL': 'pt-PT', // Timor-Leste
   
   // Países hispanófonos → es-ES
   'ES': 'es-ES', // Espanha

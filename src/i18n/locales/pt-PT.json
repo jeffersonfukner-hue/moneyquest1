@@ -1,0 +1,902 @@
+{
+  "languageSelection": {
+    "title": "Escolha o seu idioma",
+    "subtitle": "Selecione o idioma para continuar"
+  },
+  "setup": {
+    "title": "Configuração Inicial",
+    "subtitle": "Escolha as suas preferências para começar",
+    "description": "Selecione o seu idioma e moeda antes de criar a sua conta",
+    "selectLanguage": "Selecione o seu idioma",
+    "selectCurrency": "Selecione a sua moeda principal",
+    "continue": "Continuar",
+    "languageLabel": "Idioma",
+    "currencyLabel": "Moeda",
+    "currencyHint": "Esta será a moeda padrão para as suas carteiras e transações"
+  },
+  "onboarding": {
+    "steps": {
+      "welcome": {
+        "title": "Bem-vindo ao MoneyQuest!",
+        "description": "Transforme as suas finanças numa aventura épica. Ganhe XP, desbloqueie conquistas e domine o seu dinheiro!"
+      },
+      "track": {
+        "title": "Registe as Suas Transações",
+        "description": "Adicione receitas e despesas facilmente. Cada registo aproxima-o do controlo financeiro total."
+      },
+      "goals": {
+        "title": "Defina Metas por Categoria",
+        "description": "Crie orçamentos para cada categoria e acompanhe o seu progresso em tempo real."
+      },
+      "rewards": {
+        "title": "Ganhe Recompensas",
+        "description": "Complete missões, ganhe XP e suba de nível enquanto melhora as suas finanças!"
+      }
+    },
+    "features": {
+      "xp": "Ganhe XP a cada transação registada",
+      "badges": "Desbloqueie emblemas por conquistas",
+      "quests": "Complete missões diárias e semanais"
+    },
+    "startAdventure": "Começar Aventura"
+  },
+  "ads": {
+    "bannerTitle": "Cansado de ver este aviso?",
+    "bannerDescription": "Ative o modo Premium e use o MoneyQuest sem anúncios, apoiando o desenvolvimento da aplicação.",
+    "bannerCta": "Mudar para Premium",
+    "goPremiumRemoveAds": "Passe para Premium e remova anúncios",
+    "enjoyAdFree": "Desfrute sem anúncios",
+    "removeAdTitle": "Quer remover este anúncio?",
+    "removeAdDescription": "Para não ver mais este banner e apoiar o MoneyQuest, basta mudar para o modo Premium.",
+    "goPremium": "Mudar para Premium",
+    "stayFree": "Continuar gratuito"
+  },
+  "templates": {
+    "quickAdd": "Adicionar Rápido",
+    "createFirst": "Crie o seu primeiro atalho",
+    "createTemplate": "Criar Atalho",
+    "name": "Nome do Atalho",
+    "namePlaceholder": "ex: Café",
+    "descriptionPlaceholder": "ex: Pequeno-almoço na pastelaria",
+    "icon": "Escolha um Ícone",
+    "save": "Guardar Atalho",
+    "created": "Atalho criado!",
+    "deleted": "Atalho eliminado",
+    "createError": "Falha ao criar atalho",
+    "deleteError": "Falha ao eliminar atalho",
+    "used": "Transação adicionada do atalho!"
+  },
+  "feedback": {
+    "addAnother": "Adicionar Outra",
+    "done": "Concluir",
+    "transactionSaved": "Transação guardada!",
+    "addAnotherQuestion": "Deseja adicionar outra?",
+    "income": {
+      "default": "Ouro recebido! O seu tesouro cresce mais forte.",
+      "large": "Uma grande quantia! Uma adição digna aos seus cofres.",
+      "salary": "A sua guilda recompensa a sua lealdade! Bem merecido.",
+      "freelance": "Recompensa de missão bem-sucedida! As suas competências valem a pena.",
+      "investment": "Os seus investimentos dão frutos! Escolhas sábias."
+    },
+    "expense": {
+      "default": "Recursos gastos sabiamente na sua jornada.",
+      "food": "O seu grupo está bem alimentado para a jornada!",
+      "entertainment": "Um herói também precisa de descansar. Aproveite a taberna!",
+      "shopping": "Novo equipamento adquirido! Pronto para a aventura.",
+      "health": "Poções de cura garantidas. Fique saudável, aventureiro!",
+      "transport": "Viagens rápidas, bravo viajante!",
+      "education": "Conhecimento é poder. Um investimento sábio!",
+      "bills": "A manter a sua fortaleza. Uma despesa necessária.",
+      "housing": "Um refúgio seguro garantido. Descanse bem, herói."
+    }
+  },
+  "validation": {
+    "descriptionRequired": "Por favor, insira uma descrição",
+    "amountRequired": "Por favor, insira um valor válido",
+    "categoryRequired": "Por favor, selecione uma categoria",
+    "walletRequired": "Por favor, selecione uma carteira",
+    "fillRequiredFields": "Por favor, preencha todos os campos obrigatórios"
+  },
+  "wallets": {
+    "title": "Carteiras",
+    "wallet": "Carteira",
+    "addWallet": "Adicionar Carteira",
+    "editWallet": "Editar Carteira",
+    "selectWallet": "Selecionar carteira",
+    "searchWallet": "Procurar carteira...",
+    "noWalletsFound": "Nenhuma carteira encontrada",
+    "name": "Nome da carteira",
+    "institution": "Instituição",
+    "type": "Tipo de conta",
+    "balance": "Saldo",
+    "initialBalance": "Saldo inicial",
+    "currentBalance": "Saldo atual",
+    "created": "Carteira criada!",
+    "updated": "Carteira atualizada!",
+    "deactivated": "Carteira desativada",
+    "reactivated": "Carteira reativada",
+    "createError": "Erro ao criar carteira",
+    "updateError": "Erro ao atualizar carteira",
+    "deactivateError": "Erro ao desativar carteira",
+    "active": "Ativas",
+    "inactive": "Inativas",
+    "noActiveWallets": "Nenhuma carteira ativa",
+    "noInactiveWallets": "Nenhuma carteira inativa",
+    "consolidated": "Consolidado",
+    "byCurrency": "Por Moeda",
+    "types": {
+      "checking": "Conta à Ordem",
+      "savings": "Poupança",
+      "credit": "Cartão de Crédito",
+      "investment": "Investimentos",
+      "cash": "Dinheiro",
+      "other": "Outro"
+    }
+  },
+  "premiumCashFlow": {
+    "title": "Relatório de Fluxo de Caixa Premium",
+    "subtitle": "Análise detalhada das suas finanças",
+    "period": {
+      "week": "Semana",
+      "month": "Mês",
+      "quarter": "Trimestre",
+      "year": "Ano"
+    },
+    "filters": {
+      "title": "Filtros",
+      "wallets": "Carteiras",
+      "categories": "Categorias",
+      "transactionType": "Tipo",
+      "allTypes": "Todos",
+      "allCategories": "Todas as Categorias",
+      "selectCategories": "Procurar categorias...",
+      "clearFilters": "Limpar"
+    },
+    "summary": {
+      "totalIncome": "Receita Total",
+      "totalExpenses": "Despesas Totais",
+      "netFlow": "Fluxo Líquido",
+      "savingsRate": "Taxa de Poupança"
+    },
+    "comparison": {
+      "title": "Comparação de Períodos",
+      "previous": "Anterior",
+      "current": "Atual"
+    },
+    "table": {
+      "title": "Detalhamento",
+      "date": "Data",
+      "description": "Descrição",
+      "category": "Categoria",
+      "wallet": "Carteira",
+      "income": "Receita",
+      "expense": "Despesa",
+      "balance": "Saldo",
+      "noTransactions": "Nenhuma transação no período"
+    },
+    "teaser": {
+      "title": "Fluxo de Caixa Premium",
+      "description": "Desbloqueie análises avançadas",
+      "features": {
+        "advancedFilters": "Filtros por carteira e categoria",
+        "periodComparison": "Compare períodos",
+        "detailedTable": "Tabela com saldo",
+        "narratives": "Resumos em estilo RPG"
+      },
+      "unlock": "Desbloquear Premium"
+    }
+  },
+  "common": {
+    "loading": "A carregar...",
+    "save": "Guardar",
+    "saving": "A guardar...",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "add": "Adicionar",
+    "edit": "Editar",
+    "confirm": "Confirmar",
+    "back": "Voltar",
+    "next": "Próximo",
+    "all": "Tudo",
+    "week": "Semana",
+    "month": "Mês",
+    "year": "Ano",
+    "today": "Hoje",
+    "yesterday": "Ontem",
+    "noData": "Nenhum dado encontrado",
+    "success": "Sucesso",
+    "error": "Erro",
+    "refresh": "Atualizar",
+    "skip": "Saltar",
+    "continue": "Continuar",
+    "close": "Fechar",
+    "halfway": "Metade do caminho!"
+  },
+  "auth": {
+    "login": "Entrar",
+    "signup": "Criar Conta",
+    "logout": "Sair",
+    "email": "E-mail",
+    "password": "Palavra-passe",
+    "confirmPassword": "Confirmar Palavra-passe",
+    "emailPlaceholder": "seu@email.com",
+    "passwordPlaceholder": "Mínimo 6 caracteres",
+    "confirmPasswordPlaceholder": "Introduza a palavra-passe novamente",
+    "forgotPassword": "Esqueceu a palavra-passe?",
+    "resetPassword": "Recuperar Palavra-passe",
+    "resetPasswordDescription": "Introduza o seu e-mail para receber um link de recuperação",
+    "sendResetLink": "Enviar Link",
+    "resetEmailSent": "E-mail enviado!",
+    "checkInbox": "Verifique a sua caixa de entrada",
+    "dontHaveAccount": "Não tem conta?",
+    "alreadyHaveAccount": "Já tem conta?",
+    "welcomeBack": "Bem-vindo de volta!",
+    "accountCreated": "Conta criada!",
+    "createAccount": "Criar Conta",
+    "startQuest": "Iniciar Jornada",
+    "questBegin": "Que a jornada comece! 🎮",
+    "tagline": "Suba de nível nas suas finanças",
+    "error": "Erro",
+    "signInWith": "Entrar com",
+    "orContinueWith": "ou continue com",
+    "continueWithGoogle": "Continuar com Google",
+    "errors": {
+      "invalidCredentials": "E-mail ou palavra-passe incorretos",
+      "userExists": "Este e-mail já está registado",
+      "emailNotConfirmed": "Por favor, confirme o seu e-mail",
+      "weakPassword": "A palavra-passe deve ter pelo menos 6 caracteres",
+      "passwordMismatch": "As palavras-passe não coincidem"
+    },
+    "loginDescription": "Entre para continuar a sua jornada",
+    "noAccount": "Não tem conta?",
+    "backToLogin": "Voltar para login"
+  },
+  "landing": {
+    "hero": {
+      "title": "Controle o seu dinheiro como um jogo",
+      "subtitle": "Organize, acompanhe e evolua as suas finanças pessoais de forma simples e gratuita."
+    },
+    "trust": {
+      "free": "100% gratuito",
+      "noCard": "Sem cartão de crédito",
+      "startNow": "Crie a sua conta e comece agora",
+      "noHiddenFees": "Nenhuma cobrança escondida. Use a aplicação sem limites."
+    },
+    "cta": {
+      "startFree": "Começar agora — é grátis",
+      "noCreditCard": "Não pedimos cartão de crédito",
+      "createFreeAccount": "Criar conta grátis"
+    },
+    "security": {
+      "dataProtected": "Os seus dados são protegidos e nunca serão vendidos."
+    },
+    "learnMore": "Saiba mais sobre o MoneyQuest"
+  },
+  "features": {
+    "badge": "100% Gratuito",
+    "hero": {
+      "title": "Tudo o que precisa para controlar as suas finanças",
+      "subtitle": "Descubra como o MoneyQuest transforma a gestão do seu dinheiro numa experiência divertida e eficiente."
+    },
+    "trust": {
+      "title": "Porquê escolher o MoneyQuest?",
+      "secure": "Dados encriptados e seguros"
+    },
+    "core": {
+      "title": "Funcionalidades Principais",
+      "wallets": {
+        "title": "Múltiplas Carteiras",
+        "description": "Organize o seu dinheiro em diferentes carteiras: conta à ordem, poupança, dinheiro, etc."
+      },
+      "goals": {
+        "title": "Metas por Categoria",
+        "description": "Defina orçamentos mensais e acompanhe quanto já gastou em cada categoria."
+      },
+      "reports": {
+        "title": "Relatórios Detalhados",
+        "description": "Visualize o seu fluxo de caixa, compare períodos e perceba para onde vai o seu dinheiro."
+      },
+      "insights": {
+        "title": "Insights Inteligentes",
+        "description": "Receba dicas personalizadas baseadas nos seus hábitos de consumo."
+      }
+    },
+    "game": {
+      "title": "Gamificação que Motiva",
+      "xp": {
+        "title": "Ganhe XP",
+        "description": "Cada transação registada dá-lhe pontos de experiência para subir de nível."
+      },
+      "quests": {
+        "title": "Complete Missões",
+        "description": "Missões diárias e semanais para o manter envolvido e no controlo."
+      },
+      "badges": {
+        "title": "Desbloqueie Conquistas",
+        "description": "Colecione emblemas especiais conforme atinge marcos importantes."
+      },
+      "levels": {
+        "title": "Suba de Nível",
+        "description": "Evolua o seu perfil financeiro e desbloqueie novos títulos."
+      }
+    }
+  },
+  "navigation": {
+    "home": "Início",
+    "transactions": "Transações",
+    "add": "Adicionar",
+    "quests": "Missões",
+    "badges": "Conquistas",
+    "journal": "Diário",
+    "settings": "Definições"
+  },
+  "transactions": {
+    "title": "Transações",
+    "recent": "Transações Recentes",
+    "recentTransactions": "Transações Recentes",
+    "viewMore": "Ver mais",
+    "income": "Receita",
+    "expense": "Despesa",
+    "addTransaction": "Adicionar Transação",
+    "description": "Descrição",
+    "amount": "Valor",
+    "category": "Categoria",
+    "date": "Data",
+    "type": "Tipo",
+    "selectCategory": "Selecione uma categoria",
+    "selectDate": "Selecione uma data",
+    "noTransactions": "Nenhuma transação ainda",
+    "noTransactionsForPeriod": "Nenhuma transação neste período",
+    "startTracking": "Comece a registar as suas transações!",
+    "deleteConfirm": "Tem a certeza que deseja eliminar esta transação?",
+    "editTitle": "Editar Transação",
+    "saveChanges": "Guardar Alterações",
+    "updated": "Transação atualizada!",
+    "categories": {
+      "salary": "Ordenado",
+      "freelance": "Freelance",
+      "investment": "Investimentos",
+      "gift": "Presente",
+      "other_income": "Outras Receitas",
+      "food": "Alimentação",
+      "transport": "Transporte",
+      "entertainment": "Entretenimento",
+      "shopping": "Compras",
+      "bills": "Contas",
+      "health": "Saúde",
+      "education": "Educação",
+      "other_expense": "Outras Despesas"
+    },
+    "batchActions": {
+      "select": "Selecionar",
+      "cancel": "Cancelar",
+      "selected": "{{count}} selecionada(s)",
+      "assignWallet": "Atribuir Carteira",
+      "assignWalletTitle": "Atribuir Carteira em Lote",
+      "assignWalletDescription": "Selecione a carteira para atribuir às {{count}} transações selecionadas:",
+      "confirm": "Confirmar",
+      "success": "{{count}} transações atualizadas!",
+      "error": "Erro ao atualizar transações",
+      "premiumOnly": "Edição em Lote",
+      "delete": "Eliminar",
+      "deleteTitle": "Eliminar Transações",
+      "deleteDescription": "Tem a certeza que deseja eliminar {{count}} transações? Esta ação não pode ser desfeita.",
+      "deleteSuccess": "{{count}} transações eliminadas!",
+      "deleteError": "Erro ao eliminar transações"
+    }
+  },
+  "dashboard": {
+    "spendingByCategory": "Gastos por Categoria",
+    "monthlySavings": "Poupança Mensal",
+    "saved": "Poupado",
+    "target": "Meta",
+    "monthlyComparison": "Comparativo Mensal",
+    "spentMore": "gastou mais que o mês anterior",
+    "spentLess": "gastou menos que o mês anterior",
+    "spentSame": "mesmo valor do mês anterior",
+    "difference": "Diferença"
+  },
+  "months": {
+    "jan": "Jan", "feb": "Fev", "mar": "Mar", "apr": "Abr",
+    "may": "Mai", "jun": "Jun", "jul": "Jul", "aug": "Ago",
+    "sep": "Set", "oct": "Out", "nov": "Nov", "dec": "Dez"
+  },
+  "stats": {
+    "dayStreak": "Sequência de Dias",
+    "streak": "Sequência",
+    "days": "dias",
+    "totalIncome": "Receita Total",
+    "totalExpenses": "Despesas Totais",
+    "totalSaved": "Total Poupado",
+    "netLoss": "Saldo Negativo",
+    "balance": "Saldo",
+    "level": "Nível",
+    "xp": "XP",
+    "xpToNextLevel": "XP para o próximo nível"
+  },
+  "profile": {
+    "title": "Perfil",
+    "avatar": "Avatar",
+    "displayName": "Nome de Apresentação",
+    "displayNameLabel": "O seu nome",
+    "displayNamePlaceholder": "Introduza o seu nome",
+    "displayNameHint": "É assim que aparecerá na aplicação e no ranking",
+    "yourStats": "As Suas Estatísticas",
+    "saveChanges": "Guardar Alterações",
+    "saveSuccess": "Perfil atualizado com sucesso!",
+    "saveError": "Falha ao atualizar perfil",
+    "uploadPhoto": "Carregar Foto",
+    "removePhoto": "Remover Foto",
+    "useEmojiInstead": "Usar emoji",
+    "photoUploading": "A carregar...",
+    "photoUploadSuccess": "Foto atualizada com sucesso",
+    "photoUploadError": "Falha ao carregar foto",
+    "photoSizeLimit": "Tamanho máximo: 2MB",
+    "photoFormats": "Formatos: JPG, PNG, WebP"
+  },
+  "quests": {
+    "title": "Missões",
+    "daily": "Diária",
+    "weekly": "Semanal",
+    "monthly": "Mensal",
+    "special": "Especial",
+    "achievement": "Conquista",
+    "completed": "Concluída",
+    "inProgress": "Em Progresso",
+    "reward": "Recompensa",
+    "timeLeft": "Tempo restante",
+    "progress": "Progresso",
+    "expires": "Expira em",
+    "items": {
+      "daily_checkin": {
+        "title": "Check-in Diário",
+        "description": "Registe pelo menos uma transação hoje"
+      },
+      "daily_categorized": {
+        "title": "Gasto Consciente",
+        "description": "Registe uma despesa com categoria"
+      },
+      "daily_expense": {
+        "title": "Rastreador de Despesas",
+        "description": "Registe uma despesa do dia"
+      },
+      "daily_logger": {
+        "title": "Registo Diário",
+        "description": "Registe uma transação hoje"
+      },
+      "weekly_balance": {
+        "title": "Equilíbrio Semanal",
+        "description": "Registe transações em pelo menos 5 dias diferentes esta semana"
+      },
+      "weekly_categories": {
+        "title": "Mestre das Categorias",
+        "description": "Use pelo menos 3 categorias de despesas diferentes esta semana"
+      },
+      "frugal_friday": {
+        "title": "Sexta Económica",
+        "description": "Não gaste nada em pelo menos uma sexta-feira desta semana"
+      },
+      "income_hunter": {
+        "title": "Caçador de Rendimento",
+        "description": "Registe receita de 2 fontes diferentes esta semana"
+      },
+      "monthly_master": {
+        "title": "Mestre Mensal",
+        "description": "Registe transações em 20 dias diferentes este mês"
+      },
+      "category_diversifier": {
+        "title": "Diversificador",
+        "description": "Use pelo menos 6 categorias diferentes este mês"
+      },
+      "savings_champion": {
+        "title": "Campeão da Poupança",
+        "description": "Termine o mês com saldo positivo"
+      },
+      "budget_keeper": {
+        "title": "Guardião do Orçamento",
+        "description": "Mantenha-se dentro do limite em pelo menos 3 categorias"
+      },
+      "spring_savings": {
+        "title": "Poupança de Primavera",
+        "description": "Poupe 10% do seu rendimento esta primavera"
+      },
+      "summer_balance": {
+        "title": "Equilíbrio de Verão",
+        "description": "Mantenha as despesas de lazer abaixo de 20%"
+      },
+      "autumn_harvest": {
+        "title": "Colheita de Outono",
+        "description": "Aumente o seu rendimento em 5% este outono"
+      },
+      "winter_warmth": {
+        "title": "Aconchego de Inverno",
+        "description": "Crie uma reserva de emergência de 1 mês"
+      }
+    }
+  },
+  "settings": {
+    "title": "Definições",
+    "appearance": "Aparência",
+    "theme": "Tema",
+    "light": "Claro",
+    "dark": "Escuro",
+    "system": "Sistema",
+    "language": "Idioma",
+    "currency": "Moeda",
+    "timezone": "Fuso Horário",
+    "account": "Conta",
+    "subscription": "Subscrição",
+    "planFree": "Gratuito",
+    "planPremium": "Premium",
+    "upgradeToPremium": "Fazer Upgrade para Premium",
+    "manageSubscription": "Gerir Subscrição",
+    "data": "Dados",
+    "categories": "Categorias",
+    "manageCategories": "Gerir Categorias",
+    "danger": "Zona de Perigo",
+    "dangerZone": "Zona de Perigo",
+    "deleteAccount": "Eliminar Conta",
+    "deleteAccountWarning": "Esta ação é irreversível. Todos os seus dados serão eliminados permanentemente.",
+    "deleteAccountConfirm": "Tem a certeza que deseja eliminar a sua conta? Esta ação não pode ser desfeita."
+  },
+  "premium": {
+    "title": "Seja Premium",
+    "subtitle": "Desbloqueie todo o potencial do MoneyQuest",
+    "currentPlan": "Plano Atual",
+    "free": "Gratuito",
+    "premium": "Premium",
+    "annual": "Anual",
+    "monthly": "Mensal",
+    "month": "mês",
+    "year": "ano",
+    "bestValue": "Melhor Valor",
+    "save": "Poupa",
+    "features": {
+      "title": "Recursos Premium",
+      "advancedReports": "Relatórios Avançados",
+      "advancedReportsDesc": "Análises detalhadas e comparações de períodos",
+      "unlimitedWallets": "Carteiras Ilimitadas",
+      "unlimitedWalletsDesc": "Crie quantas carteiras precisar",
+      "aiCoach": "Conselheiro Financeiro IA",
+      "aiCoachDesc": "Dicas personalizadas baseadas nos seus hábitos",
+      "prioritySupport": "Suporte Prioritário",
+      "prioritySupportDesc": "Atendimento rápido e personalizado",
+      "noAds": "Sem Anúncios",
+      "noAdsDesc": "Experiência limpa e sem interrupções",
+      "exclusiveBadges": "Emblemas Exclusivos",
+      "exclusiveBadgesDesc": "Conquistas especiais para membros Premium"
+    },
+    "cta": {
+      "upgrade": "Fazer Upgrade Agora",
+      "startTrial": "Começar Teste Grátis",
+      "subscribe": "Subscrever"
+    },
+    "alreadyPremium": "Você já é Premium!",
+    "thanksForSupport": "Obrigado pelo seu apoio!",
+    "billingRegion": "Moeda de cobrança",
+    "billingNote": "Será cobrado em {{currency}} com base na sua localização"
+  },
+  "categories": {
+    "title": "Categorias",
+    "add": "Adicionar Categoria",
+    "edit": "Editar Categoria",
+    "delete": "Eliminar Categoria",
+    "name": "Nome da categoria",
+    "type": "Tipo",
+    "color": "Cor",
+    "icon": "Ícone",
+    "income": "Receita",
+    "expense": "Despesa",
+    "created": "Categoria criada!",
+    "updated": "Categoria atualizada!",
+    "deleted": "Categoria eliminada!",
+    "createError": "Erro ao criar categoria",
+    "updateError": "Erro ao atualizar categoria",
+    "deleteError": "Erro ao eliminar categoria",
+    "deleteConfirm": "Tem a certeza que deseja eliminar esta categoria?",
+    "hasTransactions": "Esta categoria possui transações associadas",
+    "incomeCategories": "Categorias de Receita",
+    "expenseCategories": "Categorias de Despesa",
+    "noCategories": "Nenhuma categoria encontrada",
+    "default": {
+      "salary": "Ordenado",
+      "freelance": "Freelance",
+      "investment": "Investimentos",
+      "gift": "Presente",
+      "other_income": "Outras Receitas",
+      "food": "Alimentação",
+      "transport": "Transporte",
+      "entertainment": "Entretenimento",
+      "shopping": "Compras",
+      "bills": "Contas",
+      "health": "Saúde",
+      "education": "Educação",
+      "housing": "Habitação",
+      "other_expense": "Outras Despesas"
+    }
+  },
+  "goals": {
+    "title": "Metas de Categoria",
+    "add": "Adicionar Meta",
+    "edit": "Editar Meta",
+    "delete": "Eliminar Meta",
+    "category": "Categoria",
+    "limit": "Limite",
+    "spent": "Gasto",
+    "remaining": "Restante",
+    "exceeded": "Excedido",
+    "onTrack": "No Caminho Certo",
+    "warning": "Atenção",
+    "noGoals": "Nenhuma meta definida",
+    "noGoalsDescription": "Defina metas para as suas categorias de despesas",
+    "createFirst": "Criar Primeira Meta",
+    "created": "Meta criada!",
+    "updated": "Meta atualizada!",
+    "deleted": "Meta eliminada!",
+    "createError": "Erro ao criar meta",
+    "updateError": "Erro ao atualizar meta",
+    "deleteError": "Erro ao eliminar meta",
+    "progress": "Progresso",
+    "budgetLimit": "Limite do Orçamento",
+    "selectCategory": "Selecionar Categoria",
+    "alreadyExists": "Já existe uma meta para esta categoria",
+    "suggestion": {
+      "title": "Sugestão de Meta",
+      "description": "Com base nos seus gastos anteriores em {{category}}, sugerimos um limite de {{amount}}.",
+      "accept": "Aceitar Sugestão",
+      "customize": "Personalizar"
+    },
+    "history": {
+      "title": "Histórico de Metas",
+      "period": "Período",
+      "status": "Estado",
+      "achieved": "Atingida",
+      "notAchieved": "Não Atingida",
+      "noHistory": "Sem histórico disponível"
+    },
+    "report": {
+      "title": "Relatório Mensal de Metas",
+      "summary": "Resumo",
+      "goalsAchieved": "Metas Atingidas",
+      "totalSaved": "Total Poupado",
+      "overBudget": "Acima do Orçamento"
+    },
+    "quickAdd": {
+      "title": "Adicionar Meta Rápida",
+      "prompt": "Quer definir uma meta para {{category}}?",
+      "suggestion": "Sugerimos €{{amount}} com base nos seus gastos"
+    }
+  },
+  "badges": {
+    "title": "Conquistas",
+    "locked": "Bloqueado",
+    "unlocked": "Desbloqueado",
+    "progress": "Progresso",
+    "items": {
+      "first_transaction": {
+        "name": "Primeira Transação",
+        "description": "Registe a sua primeira transação"
+      },
+      "week_streak": {
+        "name": "Sequência Semanal",
+        "description": "Use a aplicação por 7 dias seguidos"
+      },
+      "month_streak": {
+        "name": "Sequência Mensal",
+        "description": "Use a aplicação por 30 dias seguidos"
+      },
+      "first_goal": {
+        "name": "Primeira Meta",
+        "description": "Crie a sua primeira meta de categoria"
+      },
+      "goal_achieved": {
+        "name": "Meta Cumprida",
+        "description": "Fique dentro do limite de uma meta"
+      },
+      "saver_bronze": {
+        "name": "Poupador Bronze",
+        "description": "Poupe €100 no total"
+      },
+      "saver_silver": {
+        "name": "Poupador Prata",
+        "description": "Poupe €500 no total"
+      },
+      "saver_gold": {
+        "name": "Poupador Ouro",
+        "description": "Poupe €1.000 no total"
+      },
+      "level_5": {
+        "name": "Nível 5",
+        "description": "Alcance o nível 5"
+      },
+      "level_10": {
+        "name": "Nível 10",
+        "description": "Alcance o nível 10"
+      },
+      "quest_master": {
+        "name": "Mestre das Missões",
+        "description": "Complete 50 missões"
+      },
+      "budget_wizard": {
+        "name": "Feiticeiro do Orçamento",
+        "description": "Fique dentro do limite em 5 categorias num mês"
+      }
+    }
+  },
+  "levelTitles": {
+    "Noob Financeiro": "Noob Financeiro",
+    "Aprendiz de Ouro": "Aprendiz de Ouro",
+    "Escudeiro Frugal": "Escudeiro Frugal",
+    "Guardião de Moedas": "Guardião de Moedas",
+    "Comerciante Hábil": "Comerciante Hábil",
+    "Caçador de Fortunas": "Caçador de Fortunas",
+    "Cavaleiro do Cofre": "Cavaleiro do Cofre",
+    "Mago das Finanças": "Mago das Finanças",
+    "Arquimago Económico": "Arquimago Económico",
+    "Lorde do Tesouro": "Lorde do Tesouro",
+    "Imperador Dourado": "Imperador Dourado",
+    "Mestre Poupador": "Mestre Poupador",
+    "Campeão da Poupança": "Campeão da Poupança",
+    "Barão dos Investimentos": "Barão dos Investimentos",
+    "Lenda Financeira": "Lenda Financeira"
+  },
+  "dailyReward": {
+    "title": "Recompensa Diária",
+    "claim": "Resgatar Recompensa",
+    "claimed": "Resgatada",
+    "streak": "Sequência",
+    "days": "dias",
+    "bonusXP": "XP Bónus",
+    "claimSuccess": "Recompensa resgatada!",
+    "alreadyClaimed": "Volte amanhã para mais recompensas!",
+    "multiplier": "Multiplicador"
+  },
+  "leaderboard": {
+    "title": "Ranking",
+    "rank": "Posição",
+    "player": "Jogador",
+    "level": "Nível",
+    "xp": "XP",
+    "you": "Você",
+    "joinLeaderboard": "Entrar no Ranking",
+    "joinDescription": "Participe do ranking global e compare o seu progresso!",
+    "join": "Participar",
+    "updateSuccess": "Perfil atualizado no ranking!",
+    "joinSuccess": "Agora faz parte do ranking!",
+    "leaveSuccess": "Saiu do ranking",
+    "displayName": "Nome de Apresentação",
+    "displayNamePlaceholder": "Como quer ser chamado?",
+    "avatarIcon": "Ícone Avatar",
+    "isPublic": "Perfil Público",
+    "publicDescription": "Outros jogadores podem ver o seu perfil",
+    "notParticipating": "Não está a participar",
+    "participateToSee": "Participe para ver a sua posição",
+    "top10": "Top 10",
+    "yourPosition": "A sua posição"
+  },
+  "mood": {
+    "title": "Humor Financeiro",
+    "thriving": "Prosperando",
+    "stable": "Estável",
+    "cautious": "Cauteloso",
+    "struggling": "Com Dificuldades",
+    "description": {
+      "thriving": "As suas finanças estão ótimas! Continue assim!",
+      "stable": "Equilíbrio sólido. Está no caminho certo.",
+      "cautious": "Atenção aos gastos. Reveja o orçamento.",
+      "struggling": "Momento difícil. Procure ajuda se precisar."
+    }
+  },
+  "narrative": {
+    "eventTitle": "Evento do Dia",
+    "impact": {
+      "positive": "Impacto Positivo",
+      "negative": "Impacto Negativo",
+      "neutral": "Impacto Neutro"
+    }
+  },
+  "journal": {
+    "title": "Diário de Aventuras",
+    "noEntries": "Nenhuma entrada ainda",
+    "startJourney": "A sua história financeira começa aqui!",
+    "entry": "Entrada",
+    "entries": "Entradas",
+    "stats": {
+      "totalEntries": "Total de Entradas",
+      "thisMonth": "Este Mês",
+      "topCategory": "Categoria Principal"
+    }
+  },
+  "xpHistory": {
+    "title": "Histórico de XP",
+    "source": {
+      "transaction": "Transação",
+      "quest": "Missão",
+      "daily_reward": "Recompensa Diária",
+      "badge": "Conquista",
+      "bonus": "Bónus"
+    },
+    "noHistory": "Nenhum XP registado ainda"
+  },
+  "seasonal": {
+    "spring": "Primavera",
+    "summer": "Verão",
+    "autumn": "Outono",
+    "winter": "Inverno"
+  },
+  "aiCoach": {
+    "title": "Conselheiro Financeiro IA",
+    "subtitle": "Insights personalizados para as suas finanças",
+    "analyzing": "A analisar os seus dados...",
+    "askQuestion": "Faça uma pergunta",
+    "placeholder": "Como posso poupar mais?",
+    "send": "Enviar",
+    "premiumOnly": "Disponível apenas para Premium",
+    "error": "Erro ao obter resposta",
+    "suggestions": {
+      "spending": "Como estão os meus gastos?",
+      "saving": "Como poupar mais este mês?",
+      "goals": "Qual deve ser o meu próximo objetivo?",
+      "habits": "Quais são os meus hábitos financeiros?"
+    }
+  },
+  "cashFlow": {
+    "title": "Fluxo de Caixa",
+    "income": "Entradas",
+    "expenses": "Saídas",
+    "net": "Líquido",
+    "trend": "Tendência",
+    "trendUp": "em alta",
+    "trendDown": "em baixa",
+    "trendStable": "estável",
+    "avgIncome": "Receita Média",
+    "avgExpenses": "Despesas Média",
+    "avgNetFlow": "Fluxo Médio",
+    "projectedBalance": "Saldo Projetado",
+    "positiveTrend": "Tendência positiva",
+    "negativeTrend": "Atenção ao fluxo",
+    "projectionNote": "Baseado nos últimos 3 meses",
+    "noData": "Sem dados para apresentar"
+  },
+  "periodComparison": {
+    "title": "Comparação de Períodos",
+    "widgetTitle": "Comparar Períodos",
+    "widgetDescription": "Este mês vs ano passado",
+    "selectPeriods": "Selecionar Períodos",
+    "vsLastYear": "vs Ano Passado",
+    "vsPreviousMonth": "vs Mês Anterior",
+    "custom": "Personalizado",
+    "expenses": "Despesas",
+    "income": "Receitas",
+    "byCategory": "Comparação por Categoria",
+    "insights": "Insights",
+    "insightSaved": "Poupou {{amount}} em despesas comparado a {{period}}!",
+    "insightSpentMore": "Gastou {{amount}} a mais que em {{period}}.",
+    "insightEarnedMore": "O seu rendimento aumentou {{amount}} comparado a {{period}}!",
+    "noData": "Não há dados suficientes para comparação nesses períodos.",
+    "monthNames": {
+      "january": "Janeiro",
+      "february": "Fevereiro",
+      "march": "Março",
+      "april": "Abril",
+      "may": "Maio",
+      "june": "Junho",
+      "july": "Julho",
+      "august": "Agosto",
+      "september": "Setembro",
+      "october": "Outubro",
+      "november": "Novembro",
+      "december": "Dezembro"
+    }
+  },
+  "sessionSummary": {
+    "title": "Resumo de Lançamentos",
+    "missionComplete": "Missão Concluída!",
+    "transactionsLaunched": "{{count}} transações lançadas",
+    "transactionLaunched": "1 transação lançada",
+    "totalSpent": "Total gasto",
+    "totalReceived": "Total recebido",
+    "congratsMessage": "Parabéns! A sua mana financeira aumentou {{xp}} pontos.",
+    "closeSummary": "Fechar resumo"
+  }
+}

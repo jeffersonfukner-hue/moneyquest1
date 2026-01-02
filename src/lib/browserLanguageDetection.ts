@@ -22,6 +22,8 @@ export const detectBrowserLanguage = (): SupportedLanguage => {
 export const mapBrowserLanguage = (browserLang: string): SupportedLanguage => {
   const lang = browserLang.toLowerCase();
   
+  // Verificar pt-PT especificamente primeiro
+  if (lang === 'pt-pt' || lang === 'pt_pt') return 'pt-PT';
   if (lang.startsWith('pt')) return 'pt-BR';
   if (lang.startsWith('es')) return 'es-ES';
   if (lang.startsWith('en')) return 'en-US';
