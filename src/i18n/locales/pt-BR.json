@@ -95,7 +95,11 @@
         "title": "Vocês dois ganham!",
         "description": "Quando seu amigo faz a primeira transação, você ganha 500 XP + 7 dias Premium"
       }
-    }
+    },
+    "invitedBanner": "Você foi convidado por um amigo!",
+    "bonusOnFirstTransaction": "Ganhe 100 XP de bônus ao fazer sua primeira transação",
+    "welcomeBonus": "Bônus de boas-vindas!",
+    "linkedSuccess": "Você foi vinculado ao seu amigo. Faça sua primeira transação para ganhar XP!"
   },
   "templates": {
     "quickAdd": "Adicionar Rápido",

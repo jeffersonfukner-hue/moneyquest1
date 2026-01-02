@@ -51,12 +51,15 @@ export const useReferral = () => {
     return result;
   };
 
+  const referralCode = stats?.referral_code || user?.id?.substring(0, 8) || '';
+  const referralLink = `https://moneyquest.app.br/r/${referralCode}`;
+
   return {
     stats,
     isLoading,
     refetch,
     processReferralCode,
-    referralCode: stats?.referral_code || user?.id?.substring(0, 8) || '',
-    referralLink: stats?.referral_link || `https://moneyquest.app.br/${user?.id?.substring(0, 8) || ''}`,
+    referralCode,
+    referralLink,
   };
 };

@@ -96,7 +96,11 @@
         "title": "You both win!",
         "description": "When your friend makes their first transaction, you earn 500 XP + 7 Premium days"
       }
-    }
+    },
+    "invitedBanner": "You were invited by a friend!",
+    "bonusOnFirstTransaction": "Earn 100 XP bonus when you make your first transaction",
+    "welcomeBonus": "Welcome bonus!",
+    "linkedSuccess": "You've been linked to your friend. Make your first transaction to earn XP!"
   },
   "templates": {
     "quickAdd": "Quick Add",
