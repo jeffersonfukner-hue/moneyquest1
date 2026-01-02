@@ -45,15 +45,15 @@ export const PremiumBannerModal = ({ open, onOpenChange }: PremiumBannerModalPro
         <DialogHeader>
           <DialogTitle>{t('ads.removeAdTitle')}</DialogTitle>
           <DialogDescription>
-            {t('ads.removeAdDescription')}
+            {t('ads.removeAdDescriptionClean')}
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-3 mt-4">
           <Button onClick={handleGoPremium} className="w-full">
-            {t('ads.goPremium')}
+            {t('ads.activatePremium')}
           </Button>
           <Button variant="ghost" onClick={handleStayFree} className="w-full">
-            {t('ads.stayFree')}
+            {t('ads.notNow')}
           </Button>
         </div>
       </DialogContent>

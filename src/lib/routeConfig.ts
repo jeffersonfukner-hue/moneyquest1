@@ -1,10 +1,10 @@
 /**
  * Centralized Route Configuration
- * Single source of truth for SEO indexing and ad display rules
+ * Single source of truth for SEO indexing, ad display rules, and route context
  */
 
 // Public pages that SHOULD be indexed by Google
-// These are the ONLY pages that can display ads for free users
+// These are the ONLY pages where Google AdSense can be displayed
 export const INDEXABLE_ROUTES = [
   '/',
   '/login',
@@ -16,6 +16,33 @@ export const INDEXABLE_ROUTES = [
 ] as const;
 
 export type IndexableRoute = typeof INDEXABLE_ROUTES[number];
+
+// Authenticated pages (restricted - no Google AdSense)
+// Only internal banners (Premium/Referral) are allowed here
+export const AUTHENTICATED_ROUTES = [
+  '/dashboard',
+  '/transactions',
+  '/wallets',
+  '/categories',
+  '/goals',
+  '/settings',
+  '/profile',
+  '/ai-coach',
+  '/leaderboard',
+  '/journal',
+  '/quests',
+  '/cash-flow',
+  '/period-comparison',
+  '/referral',
+  '/notifications',
+  '/support',
+  '/onboarding',
+  '/upgrade',
+  '/premium-success',
+  '/my-messages',
+] as const;
+
+export type AuthenticatedRoute = typeof AUTHENTICATED_ROUTES[number];
 
 /**
  * Check if a route should be indexed by search engines
@@ -33,4 +60,30 @@ export const isIndexableRoute = (pathname: string): boolean => {
  */
 export const isRestrictedRoute = (pathname: string): boolean => {
   return !isIndexableRoute(pathname);
+};
+
+/**
+ * Check if a route requires authentication
+ * Used to determine which banner type to show
+ */
+export const isAuthenticatedRoute = (pathname: string): boolean => {
+  return AUTHENTICATED_ROUTES.some(
+    route => pathname === route || pathname.startsWith(`${route}/`)
+  );
+};
+
+/**
+ * Check if Google Ads can be shown on a route
+ * Only allowed on public indexable pages
+ */
+export const canShowGoogleAds = (pathname: string): boolean => {
+  return isIndexableRoute(pathname) && !isAuthenticatedRoute(pathname);
+};
+
+/**
+ * Check if internal banners (Premium/Referral) should be shown
+ * Shown on authenticated pages for free users
+ */
+export const shouldShowInternalBanners = (pathname: string): boolean => {
+  return isAuthenticatedRoute(pathname);
 };

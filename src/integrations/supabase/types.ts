@@ -1207,6 +1207,10 @@ export type Database = {
         }
         Returns: string
       }
+      validate_referral_transactions: {
+        Args: { p_user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "super_admin" | "admin" | "user"

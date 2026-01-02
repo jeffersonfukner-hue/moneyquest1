@@ -2,7 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { ADSENSE_CONFIG } from '@/lib/adsenseConfig';
-import { isIndexableRoute } from '@/lib/routeConfig';
+import { 
+  isIndexableRoute, 
+  canShowGoogleAds, 
+  shouldShowInternalBanners 
+} from '@/lib/routeConfig';
 
 export const useAdBanner = () => {
   const { isPremium, loading } = useSubscription();
@@ -11,8 +15,10 @@ export const useAdBanner = () => {
   const [adError, setAdError] = useState(false);
   const [adTimedOut, setAdTimedOut] = useState(false);
 
-  // Check if page is indexable (from centralized config)
+  // Route context checks (from centralized config)
   const isPageIndexable = isIndexableRoute(location.pathname);
+  const isPublicPage = canShowGoogleAds(location.pathname);
+  const isAuthenticatedPage = shouldShowInternalBanners(location.pathname);
 
   // Check if AdSense is properly configured
   const isAdSenseConfigured = Boolean(
@@ -20,17 +26,20 @@ export const useAdBanner = () => {
     ADSENSE_CONFIG.slots.bottomBanner
   );
 
-  // Show banner only for:
-  // 1. Page is indexable (public pages)
-  // 2. User is NOT premium
-  // 3. Not in loading state
-  const shouldShowBanner = !loading && !isPremium && isPageIndexable;
+  // Show banner only for non-premium users
+  // On public pages: can show Google Ads or internal banners
+  // On authenticated pages: ONLY internal banners
+  const shouldShowBanner = !loading && !isPremium && (isPublicPage || isAuthenticatedPage);
   
-  // Use fallback if:
+  // Google Ads only allowed on public indexable pages
+  const canShowGoogleAdsOnPage = isPublicPage && isAdSenseConfigured;
+  
+  // Use fallback (internal banner) when:
+  // - On authenticated pages (always internal only)
   // - AdSense not configured
   // - Ad failed to load
   // - Ad timed out (possible ad blocker)
-  const showFallback = !isAdSenseConfigured || adError || adTimedOut;
+  const showInternalOnly = isAuthenticatedPage || !isAdSenseConfigured || adError || adTimedOut;
 
   // Reset states when route changes
   useEffect(() => {
@@ -39,9 +48,9 @@ export const useAdBanner = () => {
     setAdTimedOut(false);
   }, [location.pathname]);
 
-  // Timeout detection for ad blockers
+  // Timeout detection for ad blockers (only on public pages)
   useEffect(() => {
-    if (!shouldShowBanner || !isAdSenseConfigured || adLoaded || adError) {
+    if (!shouldShowBanner || !canShowGoogleAdsOnPage || adLoaded || adError) {
       return;
     }
 
@@ -53,7 +62,7 @@ export const useAdBanner = () => {
     }, ADSENSE_CONFIG.adLoadTimeout);
 
     return () => clearTimeout(timer);
-  }, [shouldShowBanner, isAdSenseConfigured, adLoaded, adError]);
+  }, [shouldShowBanner, canShowGoogleAdsOnPage, adLoaded, adError]);
 
   const handleAdLoaded = useCallback(() => {
     setAdLoaded(true);
@@ -66,7 +75,9 @@ export const useAdBanner = () => {
 
   return {
     shouldShowBanner,
-    showFallback,
+    showInternalOnly,
+    canShowGoogleAdsOnPage,
+    isAuthenticatedPage,
     adLoaded,
     isAdSenseConfigured,
     setAdLoaded: handleAdLoaded,

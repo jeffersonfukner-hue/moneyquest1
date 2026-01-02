@@ -11,12 +11,15 @@ interface ReferralBannerProps {
 
 export const ReferralBanner = ({ onDismiss }: ReferralBannerProps) => {
   const { t } = useTranslation();
-  const { referralLink } = useReferral();
+  const { referralLink, stats } = useReferral();
   const [showShareDialog, setShowShareDialog] = useState(false);
 
   const handleClick = () => {
     setShowShareDialog(true);
   };
+
+  // Show progress if there are pending referrals
+  const hasPendingReferrals = stats?.pending_referrals && stats.pending_referrals > 0;
 
   return (
     <>
@@ -28,10 +31,13 @@ export const ReferralBanner = ({ onDismiss }: ReferralBannerProps) => {
         
         <div className="flex flex-col justify-center py-1 min-w-0 flex-1 ml-3">
           <span className="text-sm font-medium text-foreground truncate">
-            {t('referral.bannerTitle')}
+            {t('referral.bannerTitleReward')}
           </span>
           <span className="text-xs text-muted-foreground truncate">
-            {t('referral.bannerDescription')}
+            {hasPendingReferrals 
+              ? t('referral.bannerPendingProgress', { count: stats.pending_referrals })
+              : t('referral.bannerDescriptionReward')
+            }
           </span>
         </div>
         

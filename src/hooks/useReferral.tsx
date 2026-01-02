@@ -2,6 +2,12 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 
+interface PendingProgress {
+  referred_id: string;
+  transaction_count: number;
+  required_count: number;
+}
+
 interface ReferralStats {
   referral_code: string;
   referral_link: string;
@@ -10,6 +16,7 @@ interface ReferralStats {
   completed_referrals: number;
   total_xp_earned: number;
   total_premium_days: number;
+  pending_progress?: PendingProgress[];
 }
 
 export const useReferral = () => {
@@ -54,6 +61,14 @@ export const useReferral = () => {
   const referralCode = stats?.referral_code || user?.id?.substring(0, 8) || '';
   const referralLink = `https://moneyquest.app.br/r/${referralCode}`;
 
+  // Get best pending progress to show in banner
+  const bestPendingProgress = stats?.pending_progress?.reduce((best, current) => {
+    if (!best || current.transaction_count > best.transaction_count) {
+      return current;
+    }
+    return best;
+  }, null as PendingProgress | null);
+
   return {
     stats,
     isLoading,
@@ -61,5 +76,6 @@ export const useReferral = () => {
     processReferralCode,
     referralCode,
     referralLink,
+    bestPendingProgress,
   };
 };

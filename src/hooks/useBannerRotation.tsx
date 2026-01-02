@@ -6,24 +6,31 @@ import {
   selectRandomInternalBanner,
   logBannerDebug 
 } from '@/lib/bannerRotationConfig';
+import { shouldShowInternalBanners } from '@/lib/routeConfig';
 
 export const useBannerRotation = () => {
   const location = useLocation();
-  const [currentBanner, setCurrentBanner] = useState<BannerType>(() => selectBannerType());
+  const isAuthenticatedPage = shouldShowInternalBanners(location.pathname);
+  
+  const [currentBanner, setCurrentBanner] = useState<BannerType>(() => 
+    selectBannerType(isAuthenticatedPage ? 'authenticated' : 'public')
+  );
   const [rotationReason, setRotationReason] = useState<string>('initial_selection');
 
-  // Recalcula banner a cada mudança de rota
+  // Recalculate banner on route change
   useEffect(() => {
-    const selected = selectBannerType();
+    const context = isAuthenticatedPage ? 'authenticated' : 'public';
+    const selected = selectBannerType(context);
     setCurrentBanner(selected);
     setRotationReason('route_change');
     logBannerDebug('Route change - reselected', { 
       path: location.pathname, 
+      context,
       selected 
     });
-  }, [location.pathname]);
+  }, [location.pathname, isAuthenticatedPage]);
 
-  // Fallback quando Google Ads falha
+  // Fallback when Google Ads fails
   const handleGoogleAdError = useCallback(() => {
     const internalType = selectRandomInternalBanner();
     setCurrentBanner(internalType);
@@ -31,7 +38,7 @@ export const useBannerRotation = () => {
     logBannerDebug('Google Ad error - fallback', { newType: internalType });
   }, []);
 
-  // Fallback quando Google Ads não carrega (timeout)
+  // Fallback when Google Ads doesn't load (timeout)
   const handleGoogleAdTimeout = useCallback(() => {
     const internalType = selectRandomInternalBanner();
     setCurrentBanner(internalType);
@@ -48,5 +55,6 @@ export const useBannerRotation = () => {
     isInternalBanner: currentBanner.startsWith('internal_'),
     isReferralBanner: currentBanner === 'internal_referral',
     isPremiumBanner: currentBanner === 'internal_premium',
+    isAuthenticatedPage,
   };
 };
