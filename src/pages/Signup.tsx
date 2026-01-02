@@ -15,10 +15,12 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TrustBadge } from '@/components/ui/trust-badge';
 import { toast } from '@/hooks/use-toast';
-import { Eye, EyeOff, ArrowLeft, Check, Globe, Coins, CircleCheck, CreditCard, Zap, Shield, Loader2, ChevronRight } from 'lucide-react';
+import { Eye, EyeOff, ArrowLeft, Check, Globe, Coins, CircleCheck, CreditCard, Zap, Shield, Loader2, ChevronRight, Gift } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 import i18n, { SupportedLanguage as I18nLanguage, LANGUAGE_PREFERENCE_KEY } from '@/i18n';
 import { detectBrowserLanguage } from '@/lib/browserLanguageDetection';
+import { getReferralCode, clearReferralCode } from '@/pages/ReferralRedirect';
+import { supabase } from '@/integrations/supabase/client';
 
 type SignupStep = 'landing' | 'preferences' | 'account';
 
@@ -66,8 +68,52 @@ const Signup = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [referralCode] = useState<string | null>(() => getReferralCode());
 
   const isPreferencesValid = selectedLanguage !== null && selectedCurrency !== null;
+
+  // Process referral after successful signup
+  const processReferral = async (userId: string) => {
+    if (!referralCode) return;
+    
+    try {
+      console.log('[Referral] Processing code for new user:', referralCode);
+      const { data, error } = await supabase.rpc('process_referral_signup', {
+        p_referred_user_id: userId,
+        p_referral_code: referralCode
+      });
+      
+      if (error) {
+        console.error('[Referral] Error processing:', error);
+        return;
+      }
+      
+      const result = data as { success?: boolean; referrer_id?: string; error?: string } | null;
+      
+      if (result?.success) {
+        console.log('[Referral] Successfully linked to referrer:', result.referrer_id);
+        toast({
+          title: t('referral.welcomeBonus'),
+          description: t('referral.linkedSuccess'),
+        });
+      } else {
+        console.log('[Referral] Not applied:', result?.error);
+      }
+      
+      // Clear the referral code from storage
+      clearReferralCode();
+    } catch (err) {
+      console.error('[Referral] Unexpected error:', err);
+    }
+  };
+
+  // Process referral when user is created
+  useEffect(() => {
+    if (user && referralCode) {
+      // User just signed up, process the referral
+      processReferral(user.id);
+    }
+  }, [user, referralCode]);
 
   // Redirect if already logged in
   useEffect(() => {
@@ -173,6 +219,21 @@ const Signup = () => {
 
   const renderLandingStep = () => (
     <div className="space-y-8">
+      {/* Referral Banner */}
+      {referralCode && (
+        <section className="animate-fade-in">
+          <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border border-primary/20 rounded-xl p-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+              <Gift className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-foreground">{t('referral.invitedBanner')}</p>
+              <p className="text-xs text-muted-foreground">{t('referral.bonusOnFirstTransaction')}</p>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Hero Section */}
       <section className="text-center space-y-4 animate-fade-in">
         <Logo size="xl" animated shine className="justify-center" />

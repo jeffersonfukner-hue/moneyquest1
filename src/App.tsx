@@ -39,6 +39,7 @@ import Support from "./pages/Support";
 import MyMessages from "./pages/MyMessages";
 import SupportTicket from "./pages/SupportTicket";
 import Referral from "./pages/Referral";
+import ReferralRedirect from "./pages/ReferralRedirect";
 import NotFound from "./pages/NotFound";
 import DebugI18n from "./pages/DebugI18n";
 import SuperAdminDashboard from "./pages/admin/SuperAdminDashboard";
@@ -91,6 +92,7 @@ const App = () => (
                           <Route path="/support/messages" element={<MyMessages />} />
                           <Route path="/support/ticket/:id" element={<SupportTicket />} />
                           <Route path="/referral" element={<Referral />} />
+                          <Route path="/r/:code" element={<ReferralRedirect />} />
                           <Route path="/debug-i18n" element={<DebugI18n />} />
                           {/* Admin Routes */}
                           <Route path="/super-admin" element={<AdminRoute><SuperAdminDashboard /></AdminRoute>} />
