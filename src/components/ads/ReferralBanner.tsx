@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Gift } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/useAuth';
+import { useReferral } from '@/hooks/useReferral';
 import { ReferralShareDialog } from './ReferralShareDialog';
 
 interface ReferralBannerProps {
@@ -11,12 +11,8 @@ interface ReferralBannerProps {
 
 export const ReferralBanner = ({ onDismiss }: ReferralBannerProps) => {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { referralLink } = useReferral();
   const [showShareDialog, setShowShareDialog] = useState(false);
-
-  // Gerar código curto do usuário (primeiros 8 caracteres do ID)
-  const userShortId = user?.id?.substring(0, 8) || '';
-  const referralLink = `https://moneyquest.app.br/${userShortId}`;
 
   const handleClick = () => {
     setShowShareDialog(true);

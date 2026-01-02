@@ -460,6 +460,8 @@ export type Database = {
           locale: string
           onboarding_completed: boolean
           premium_override: Database["public"]["Enums"]["premium_override_type"]
+          referral_code: string | null
+          referred_by: string | null
           status: string | null
           streak: number
           stripe_customer_id: string | null
@@ -490,6 +492,8 @@ export type Database = {
           locale?: string
           onboarding_completed?: boolean
           premium_override?: Database["public"]["Enums"]["premium_override_type"]
+          referral_code?: string | null
+          referred_by?: string | null
           status?: string | null
           streak?: number
           stripe_customer_id?: string | null
@@ -520,6 +524,8 @@ export type Database = {
           locale?: string
           onboarding_completed?: boolean
           premium_override?: Database["public"]["Enums"]["premium_override_type"]
+          referral_code?: string | null
+          referred_by?: string | null
           status?: string | null
           streak?: number
           stripe_customer_id?: string | null
@@ -535,7 +541,15 @@ export type Database = {
           updated_at?: string
           xp?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       quests: {
         Row: {
@@ -596,6 +610,54 @@ export type Database = {
           {
             foreignKeyName: "quests_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referrals: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          referral_code: string
+          referred_id: string
+          referrer_id: string
+          rewarded_at: string | null
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          referral_code: string
+          referred_id: string
+          referrer_id: string
+          rewarded_at?: string | null
+          status?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          referral_code?: string
+          referred_id?: string
+          referrer_id?: string
+          rewarded_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_referred_id_fkey"
+            columns: ["referred_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -1034,6 +1096,8 @@ export type Database = {
           locale: string
           onboarding_completed: boolean
           premium_override: Database["public"]["Enums"]["premium_override_type"]
+          referral_code: string | null
+          referred_by: string | null
           status: string | null
           streak: number
           stripe_customer_id: string | null
@@ -1106,6 +1170,10 @@ export type Database = {
       }
       archive_monthly_goals: { Args: { p_user_id: string }; Returns: undefined }
       claim_daily_reward: { Args: { p_user_id: string }; Returns: Json }
+      complete_referral_reward: {
+        Args: { p_referred_user_id: string }
+        Returns: Json
+      }
       create_default_categories: {
         Args: { p_user_id: string }
         Returns: undefined
@@ -1114,6 +1182,7 @@ export type Database = {
       get_level_title: { Args: { user_level: number }; Returns: string }
       get_period_end: { Args: { period_type: string }; Returns: string }
       get_period_start: { Args: { period_type: string }; Returns: string }
+      get_referral_stats: { Args: { p_user_id: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1122,6 +1191,10 @@ export type Database = {
         Returns: boolean
       }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
+      process_referral_signup: {
+        Args: { p_referral_code: string; p_referred_user_id: string }
+        Returns: Json
+      }
       reset_expired_quests: { Args: { p_user_id: string }; Returns: undefined }
       resolve_premium_status: {
         Args: {
