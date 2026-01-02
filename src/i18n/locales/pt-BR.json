@@ -98,6 +98,10 @@
     },
     "invitedBanner": "Você foi convidado por um amigo!",
     "bonusOnFirstTransaction": "Ganhe 100 XP de bônus ao fazer sua primeira transação",
+    "notification": {
+      "title": "🎉 Indicação convertida!",
+      "description": "Seu amigo fez a primeira transação! Você ganhou 500 XP + 7 dias Premium."
+    },
     "welcomeBonus": "Bônus de boas-vindas!",
     "linkedSuccess": "Você foi vinculado ao seu amigo. Faça sua primeira transação para ganhar XP!"
   },
