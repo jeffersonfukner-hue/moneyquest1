@@ -139,7 +139,20 @@
     "beFirst": "Be the first to refer friends!",
     "yourRank": "Your position",
     "you": "You",
-    "conversions": "conversions"
+    "conversions": "conversions",
+    "tier": {
+      "title": "Your Level",
+      "none": "Starter",
+      "bronze": "Bronze",
+      "silver": "Silver",
+      "gold": "Gold",
+      "completedReferrals": "Valid referrals:",
+      "progressTo": "Progress to",
+      "remaining": "{{count}} referrals remaining",
+      "maxLevel": "You've reached the max level!",
+      "benefits": "Rewards per referral:",
+      "premiumDays": "Premium days"
+    }
   },
   "notifications": {
     "title": "Notifications",
@@ -1023,7 +1036,9 @@
       "users": "Users",
       "engagement": "Engagement",
       "analytics": "Analytics",
-      "logs": "Activity Logs"
+      "logs": "Activity Logs",
+      "support": "Support",
+      "referrals": "Referrals"
     },
     "backToApp": "Back to App",
     "searchUsers": "Search users...",

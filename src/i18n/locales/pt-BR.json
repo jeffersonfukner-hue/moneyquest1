@@ -138,7 +138,20 @@
     "beFirst": "Seja o primeiro a indicar amigos!",
     "yourRank": "Sua posição",
     "you": "Você",
-    "conversions": "conversões"
+    "conversions": "conversões",
+    "tier": {
+      "title": "Seu Nível",
+      "none": "Iniciante",
+      "bronze": "Bronze",
+      "silver": "Prata",
+      "gold": "Ouro",
+      "completedReferrals": "Indicações válidas:",
+      "progressTo": "Progresso para",
+      "remaining": "Faltam {{count}} indicações",
+      "maxLevel": "Você atingiu o nível máximo!",
+      "benefits": "Recompensas por indicação:",
+      "premiumDays": "dias Premium"
+    }
   },
   "notifications": {
     "title": "Notificações",
@@ -1022,7 +1035,9 @@
       "users": "Usuários",
       "engagement": "Engajamento",
       "analytics": "Analytics",
-      "logs": "Logs de Atividade"
+      "logs": "Logs de Atividade",
+      "support": "Suporte",
+      "referrals": "Referrals"
     },
     "backToApp": "Voltar ao App",
     "searchUsers": "Buscar usuários...",
@@ -1147,7 +1162,9 @@
       "BLOCK_USER": "Usuário Bloqueado",
       "UNBLOCK_USER": "Usuário Desbloqueado",
       "GRANT_BONUS": "Bônus Concedido",
-      "SEND_MESSAGE": "Mensagem Enviada"
+      "SEND_MESSAGE": "Mensagem Enviada",
+      "APPROVE_REFERRAL": "Referral Aprovado",
+      "REJECT_REFERRAL": "Referral Rejeitado"
     },
     "filterByAction": "Filtrar por ação",
     "allActions": "Todas as ações",
