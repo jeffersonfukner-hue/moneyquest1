@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { ADSENSE_CONFIG } from '@/lib/adsenseConfig';
+import { isIndexableRoute } from '@/lib/routeConfig';
 
 export const useAdBanner = () => {
   const { isPremium, loading } = useSubscription();
@@ -10,10 +11,8 @@ export const useAdBanner = () => {
   const [adError, setAdError] = useState(false);
   const [adTimedOut, setAdTimedOut] = useState(false);
 
-  // Check if current route is restricted (exact match or starts with)
-  const isRestrictedRoute = ADSENSE_CONFIG.restrictedRoutes.some(
-    route => location.pathname === route || location.pathname.startsWith(`${route}/`)
-  );
+  // Check if page is indexable (from centralized config)
+  const isPageIndexable = isIndexableRoute(location.pathname);
 
   // Check if AdSense is properly configured
   const isAdSenseConfigured = Boolean(
@@ -21,8 +20,11 @@ export const useAdBanner = () => {
     ADSENSE_CONFIG.slots.bottomBanner
   );
 
-  // Show banner only for free users, not loading, not on restricted pages
-  const shouldShowBanner = !loading && !isPremium && !isRestrictedRoute;
+  // Show banner only for:
+  // 1. Page is indexable (public pages)
+  // 2. User is NOT premium
+  // 3. Not in loading state
+  const shouldShowBanner = !loading && !isPremium && isPageIndexable;
   
   // Use fallback if:
   // - AdSense not configured
