@@ -1374,6 +1374,35 @@
     "needHelp": "Precisa de ajuda?",
     "noMessages": "Você ainda não enviou mensagens",
     "replySent": "Resposta enviada",
-    "ticketClosed": "Este ticket foi encerrado"
+    "ticketClosed": "Este ticket foi encerrado",
+    "faq": {
+      "title": "Perguntas Frequentes",
+      "items": {
+        "howToAdd": {
+          "question": "Como adiciono uma transação?",
+          "answer": "Toque no botão '+' na barra de navegação inferior. Escolha se é receita ou despesa, preencha o valor, descrição e categoria, depois toque em 'Adicionar'."
+        },
+        "whatIsXP": {
+          "question": "O que é XP e como funciona?",
+          "answer": "XP são pontos de experiência que você ganha ao registrar transações e completar missões. Ao acumular XP, você sobe de nível e desbloqueia conquistas!"
+        },
+        "howPremium": {
+          "question": "Como faço para virar Premium?",
+          "answer": "Acesse Configurações > Atualizar para Premium. Lá você verá os benefícios exclusivos e poderá escolher o plano que melhor se encaixa para você."
+        },
+        "deleteAccount": {
+          "question": "Posso excluir minha conta?",
+          "answer": "Sim! Entre em contato conosco pelo formulário de mensagem ou WhatsApp e solicitaremos a exclusão completa dos seus dados."
+        },
+        "changeLanguage": {
+          "question": "Como mudo o idioma do app?",
+          "answer": "Acesse Configurações > Idioma e selecione entre Português, English ou Español."
+        },
+        "multipleWallets": {
+          "question": "Posso ter várias carteiras?",
+          "answer": "Sim! Você pode criar quantas carteiras quiser: conta corrente, poupança, dinheiro em espécie, etc. Acesse a seção Carteiras para gerenciá-las."
+        }
+      }
+    }
   }
 }

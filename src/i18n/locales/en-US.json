@@ -1374,6 +1374,35 @@
     "needHelp": "Need help?",
     "noMessages": "You haven't sent any messages yet",
     "replySent": "Reply sent",
-    "ticketClosed": "This ticket has been closed"
+    "ticketClosed": "This ticket has been closed",
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "items": {
+        "howToAdd": {
+          "question": "How do I add a transaction?",
+          "answer": "Tap the '+' button in the bottom navigation bar. Choose if it's income or expense, fill in the amount, description and category, then tap 'Add'."
+        },
+        "whatIsXP": {
+          "question": "What is XP and how does it work?",
+          "answer": "XP are experience points you earn by logging transactions and completing quests. As you accumulate XP, you level up and unlock achievements!"
+        },
+        "howPremium": {
+          "question": "How do I become Premium?",
+          "answer": "Go to Settings > Upgrade to Premium. There you'll see exclusive benefits and can choose the plan that best fits you."
+        },
+        "deleteAccount": {
+          "question": "Can I delete my account?",
+          "answer": "Yes! Contact us through the message form or WhatsApp and we'll process the complete deletion of your data."
+        },
+        "changeLanguage": {
+          "question": "How do I change the app language?",
+          "answer": "Go to Settings > Language and select between Portuguese, English or Spanish."
+        },
+        "multipleWallets": {
+          "question": "Can I have multiple wallets?",
+          "answer": "Yes! You can create as many wallets as you want: checking account, savings, cash, etc. Access the Wallets section to manage them."
+        }
+      }
+    }
   }
 }
