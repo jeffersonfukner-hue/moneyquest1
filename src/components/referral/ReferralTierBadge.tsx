@@ -4,6 +4,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Trophy } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface TierInfo {
   tier: 'none' | 'bronze' | 'silver' | 'gold';
@@ -63,20 +64,40 @@ export const ReferralTierBadge = ({ tierInfo, isLoading }: ReferralTierBadgeProp
   const tier = tierInfo.tier as keyof typeof tierColors;
 
   return (
-    <Card className={`bg-gradient-to-br ${tierGradients[tier]} border-2 ${tier === 'gold' ? 'border-yellow-500/30' : tier === 'silver' ? 'border-slate-400/30' : tier === 'bronze' ? 'border-amber-700/30' : 'border-border'}`}>
-      <CardHeader className="pb-2">
+    <Card className={cn(
+      `bg-gradient-to-br ${tierGradients[tier]} border-2 relative overflow-hidden`,
+      tier === 'gold' ? 'border-yellow-500/50 gold-glow hover:scale-[1.02] transition-transform duration-300' : 
+      tier === 'silver' ? 'border-slate-400/30' : 
+      tier === 'bronze' ? 'border-amber-700/30' : 'border-border'
+    )}>
+      {/* Shimmer overlay for Gold tier */}
+      {tier === 'gold' && (
+        <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-lg">
+          <div 
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-400/10 to-transparent"
+            style={{ animation: 'shimmer-sweep-gold 3s ease-in-out infinite' }}
+          />
+        </div>
+      )}
+      <CardHeader className="pb-2 relative z-10">
         <CardTitle className="text-base flex items-center justify-between">
           <span className="flex items-center gap-2">
-            <Trophy className="h-4 w-4" />
+            <Trophy className={cn("h-4 w-4", tier === 'gold' && "text-yellow-500")} />
             {t('referral.tier.title', 'Seu Nível')}
           </span>
-          <Badge variant="outline" className={tierColors[tier]}>
+          <Badge 
+            variant="outline" 
+            className={cn(
+              tierColors[tier],
+              tier === 'gold' && 'animate-shimmer-gold gold-glow border-yellow-500'
+            )}
+          >
             <span className="mr-1">{tierInfo.tier_icon}</span>
             {t(`referral.tier.${tier}`, tier.charAt(0).toUpperCase() + tier.slice(1))}
           </Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-3 relative z-10">
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted-foreground">
             {t('referral.tier.completedReferrals', 'Indicações válidas:')}
