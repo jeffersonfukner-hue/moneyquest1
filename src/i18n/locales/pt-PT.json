@@ -119,6 +119,19 @@
     "referralConverted": "Indicação convertida!",
     "rewardEarned": "Ganhou uma recompensa!"
   },
+  "notificationsPage": {
+    "title": "Histórico de Notificações",
+    "searchPlaceholder": "Pesquisar notificações...",
+    "filterByType": "Filtrar por tipo",
+    "allTypes": "Todos os tipos",
+    "typeMessage": "Mensagens",
+    "typeSupport": "Suporte",
+    "typeReferral": "Indicações",
+    "typeReward": "Recompensas",
+    "total": "{{count}} notificações",
+    "unread": "{{count}} não lidas",
+    "noResults": "Nenhuma notificação encontrada"
+  },
   "templates": {
     "quickAdd": "Adicionar Rápido",
     "createFirst": "Crie o seu primeiro atalho",
