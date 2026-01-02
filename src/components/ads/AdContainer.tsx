@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
+import { canShowGoogleAds } from '@/lib/routeConfig';
 
 interface AdContainerProps {
   adSlot?: string;
@@ -21,11 +22,20 @@ export const AdContainer = ({ adSlot, adClient, onLoad, onError }: AdContainerPr
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
   const [adStatus, setAdStatus] = useState<'loading' | 'loaded' | 'error'>('loading');
 
+  // CRITICAL: Block Google Ads on restricted routes
+  const canShowAds = canShowGoogleAds(location.pathname);
+
   // Reset on route change for SPA navigation
   useEffect(() => {
     initAttempted.current = false;
     setAdStatus('loading');
   }, [location.pathname]);
+
+  // Block rendering on restricted routes
+  if (!canShowAds) {
+    onError?.();
+    return null;
+  }
 
   // Check if AdSense script is loaded with retry mechanism
   useEffect(() => {

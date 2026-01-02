@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAdBanner } from '@/hooks/useAdBanner';
 import { useBannerRotation } from '@/hooks/useBannerRotation';
 import { useABTest } from '@/hooks/useABTest';
+import { useAdSenseLoader } from '@/hooks/useAdSenseLoader';
 import { AdContainer } from './AdContainer';
 import { FallbackPromo } from './FallbackPromo';
 import { ReferralBanner } from './ReferralBanner';
@@ -30,6 +31,9 @@ export const AdBanner = () => {
   
   const { trackImpression, trackClick } = useABTest('adBanner');
   const [showModal, setShowModal] = useState(false);
+  
+  // Load AdSense script dynamically only on public pages
+  useAdSenseLoader();
 
   // Track impression when banner is shown
   useEffect(() => {
@@ -62,7 +66,8 @@ export const AdBanner = () => {
   };
 
   // Render banner based on context and rotation selection
-  const renderBanner = () => {
+  // Returns null if no valid banner - prevents empty container
+  const renderBanner = (): React.ReactNode => {
     // On authenticated pages: ALWAYS show internal banners only (no Google Ads)
     if (isAuthenticatedPage || showInternalOnly) {
       logBannerDebug('Rendering internal banner', { 
@@ -101,6 +106,12 @@ export const AdBanner = () => {
     }
   };
 
+  // Get banner content - if null, don't render container at all
+  const bannerContent = renderBanner();
+  if (!bannerContent) {
+    return null;
+  }
+
   return (
     <>
       <div 
@@ -108,7 +119,7 @@ export const AdBanner = () => {
         style={{ bottom: 'calc(64px + env(safe-area-inset-bottom, 0px))' }}
       >
         <div className="max-w-md mx-auto h-[60px] flex items-center">
-          {renderBanner()}
+          {bannerContent}
         </div>
       </div>
       <PremiumBannerModal open={showModal} onOpenChange={setShowModal} />
