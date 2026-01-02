@@ -1129,6 +1129,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_approve_referral: {
+        Args: { p_note?: string; p_referral_id: string }
+        Returns: Json
+      }
       admin_check_retention_alerts: { Args: never; Returns: Json }
       admin_get_all_profiles: {
         Args: never
@@ -1184,6 +1188,24 @@ export type Database = {
           user_id: string
         }[]
       }
+      admin_get_suspicious_referrals: {
+        Args: never
+        Returns: {
+          created_at: string
+          flagged_as_suspicious: boolean
+          id: string
+          referral_code: string
+          referred_email: string
+          referred_id: string
+          referred_name: string
+          referrer_email: string
+          referrer_id: string
+          referrer_name: string
+          status: string
+          suspicion_reason: string
+          transaction_count: number
+        }[]
+      }
       admin_get_user_email: { Args: { _user_id: string }; Returns: string }
       admin_grant_bonus: {
         Args: {
@@ -1193,6 +1215,10 @@ export type Database = {
           _target_user_id: string
         }
         Returns: undefined
+      }
+      admin_reject_referral: {
+        Args: { p_note?: string; p_referral_id: string }
+        Returns: Json
       }
       admin_reset_premium_override: {
         Args: { _note?: string; _target_user_id: string }
@@ -1243,6 +1269,7 @@ export type Database = {
       get_period_end: { Args: { period_type: string }; Returns: string }
       get_period_start: { Args: { period_type: string }; Returns: string }
       get_referral_stats: { Args: { p_user_id: string }; Returns: Json }
+      get_referral_tier: { Args: { p_completed_count: number }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

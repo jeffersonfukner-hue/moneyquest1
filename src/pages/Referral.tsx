@@ -16,6 +16,17 @@ import { supabase } from '@/integrations/supabase/client';
 import { ReferredUsersList } from '@/components/referral/ReferredUsersList';
 import { RewardHistory } from '@/components/referral/RewardHistory';
 import { ReferralRanking } from '@/components/referral/ReferralRanking';
+import { ReferralTierBadge } from '@/components/referral/ReferralTierBadge';
+
+interface TierInfo {
+  tier: 'none' | 'bronze' | 'silver' | 'gold';
+  tier_icon: string;
+  next_tier: string | null;
+  next_tier_icon: string | null;
+  progress_to_next: number;
+  remaining: number;
+  completed_count: number;
+}
 
 interface DetailedStats {
   referral_code: string;
@@ -42,8 +53,11 @@ interface DetailedStats {
     avatar_icon: string;
     completed_count: number;
     rank: number;
+    tier?: string;
+    tier_icon?: string;
   }>;
   user_rank: number | null;
+  tier: TierInfo | null;
 }
 
 const Referral = () => {
@@ -197,6 +211,12 @@ const Referral = () => {
 
             {/* Overview Tab */}
             <TabsContent value="overview" className="space-y-4 mt-4">
+              {/* Tier Badge */}
+              <ReferralTierBadge 
+                tierInfo={detailedStats?.tier || null} 
+                isLoading={isLoadingDetailed} 
+              />
+
               {/* Stats Grid */}
               <div className="grid grid-cols-2 gap-3">
                 {/* Total Referrals */}
