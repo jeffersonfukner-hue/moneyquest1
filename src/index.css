@@ -644,3 +644,45 @@
     box-shadow: 0 0 15px rgba(234, 179, 8, 0.6), 0 0 25px rgba(253, 224, 71, 0.3);
   }
 }
+
+/* Floating particles animation for Gold tier */
+@keyframes gold-particle-float {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  90% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(-120px) scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* Gold badge entrance animation */
+@keyframes gold-badge-entrance {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) rotateY(-10deg);
+    filter: brightness(1.5);
+  }
+  50% {
+    filter: brightness(1.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotateY(0deg);
+    filter: brightness(1);
+  }
+}
+
+.animate-gold-entrance {
+  animation: gold-badge-entrance 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
