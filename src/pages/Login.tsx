@@ -179,17 +179,24 @@ const Login = () => {
       </section>
 
       {/* Security Footer */}
-      <footer className="text-center pt-4 animate-fade-in space-y-2" style={{ animationDelay: '400ms' }}>
+      <footer className="text-center pt-4 animate-fade-in space-y-3" style={{ animationDelay: '400ms' }}>
         <p className="text-xs text-muted-foreground flex items-center justify-center gap-1.5">
           <Shield className="w-3.5 h-3.5" />
           {t('landing.security.dataProtected')}
         </p>
-        <Link 
-          to="/support" 
-          className="text-xs text-muted-foreground hover:text-primary transition-colors inline-block"
-        >
-          {t('support.needHelp')}
-        </Link>
+        <div className="flex items-center justify-center gap-3 text-xs text-muted-foreground">
+          <Link to="/terms" className="hover:text-primary transition-colors">
+            {t('legal.terms.title', 'Termos de Uso')}
+          </Link>
+          <span>•</span>
+          <Link to="/privacy" className="hover:text-primary transition-colors">
+            {t('legal.privacy.title', 'Privacidade')}
+          </Link>
+          <span>•</span>
+          <Link to="/support" className="hover:text-primary transition-colors">
+            {t('support.needHelp')}
+          </Link>
+        </div>
       </footer>
     </div>
   );
