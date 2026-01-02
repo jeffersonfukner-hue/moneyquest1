@@ -1,13 +1,14 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { isRestrictedRoute } from '@/lib/routeConfig';
 
 interface SEOConfig {
   title?: string;
   description?: string;
   image?: string;
   type?: string;
-  noIndex?: boolean;
+  noIndex?: boolean; // Can be used to override for specific pages
 }
 
 const BASE_URL = 'https://www.moneyquest.app.br';
@@ -170,8 +171,12 @@ export function useSEO(customConfig?: SEOConfig) {
     setMeta('description', description, true);
     setMeta('author', 'MoneyQuest', true);
 
-    // Robots
-    if (config.noIndex) {
+    // Robots - use centralized route config, with override support
+    const shouldNoIndex = config.noIndex !== undefined 
+      ? config.noIndex 
+      : isRestrictedRoute(pathname);
+    
+    if (shouldNoIndex) {
       setMeta('robots', 'noindex, nofollow', true);
     } else {
       setMeta('robots', 'index, follow', true);
