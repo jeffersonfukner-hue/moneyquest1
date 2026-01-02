@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
@@ -45,9 +45,22 @@ const triggerReferralCelebration = () => {
   }, 300);
 };
 
+// Calculate tier from completed count
+const getTierFromCount = (count: number): 'none' | 'bronze' | 'silver' | 'gold' => {
+  if (count >= 15) return 'gold';
+  if (count >= 5) return 'silver';
+  if (count >= 1) return 'bronze';
+  return 'none';
+};
+
 export const useReferralNotifications = () => {
   const { user } = useAuth();
   const { t } = useTranslation();
+  const [tierUpgrade, setTierUpgrade] = useState<'bronze' | 'silver' | 'gold' | null>(null);
+
+  const clearTierUpgrade = useCallback(() => {
+    setTierUpgrade(null);
+  }, []);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -62,19 +75,38 @@ export const useReferralNotifications = () => {
           table: 'referrals',
           filter: `referrer_id=eq.${user.id}`
         },
-        (payload: RealtimePostgresUpdatePayload<ReferralRow>) => {
+        async (payload: RealtimePostgresUpdatePayload<ReferralRow>) => {
           const oldStatus = (payload.old as ReferralRow)?.status;
           const newStatus = payload.new?.status;
 
           // Notify when referral is completed or rewarded
           if (oldStatus === 'pending' && (newStatus === 'completed' || newStatus === 'rewarded')) {
-            // Trigger confetti celebration
-            triggerReferralCelebration();
+            // Get current completed count to check for tier upgrade
+            const { count: newCount } = await supabase
+              .from('referrals')
+              .select('*', { count: 'exact', head: true })
+              .eq('referrer_id', user.id)
+              .in('status', ['completed', 'rewarded']);
+
+            const currentCount = newCount || 0;
+            const previousCount = currentCount - 1;
             
-            toast.success(t('referral.notification.title'), {
-              description: t('referral.notification.description'),
-              duration: 8000,
-            });
+            const oldTier = getTierFromCount(previousCount);
+            const newTier = getTierFromCount(currentCount);
+
+            // Check if tier was upgraded
+            if (newTier !== oldTier && newTier !== 'none') {
+              // Trigger tier upgrade celebration
+              setTierUpgrade(newTier);
+            } else {
+              // Regular referral celebration
+              triggerReferralCelebration();
+              
+              toast.success(t('referral.notification.title'), {
+                description: t('referral.notification.description'),
+                duration: 8000,
+              });
+            }
           }
         }
       )
@@ -84,4 +116,9 @@ export const useReferralNotifications = () => {
       supabase.removeChannel(channel);
     };
   }, [user?.id, t]);
+
+  return {
+    tierUpgrade,
+    clearTierUpgrade,
+  };
 };
