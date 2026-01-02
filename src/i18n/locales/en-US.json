@@ -119,6 +119,19 @@
     "referralConverted": "Referral converted!",
     "rewardEarned": "You earned a reward!"
   },
+  "notificationsPage": {
+    "title": "Notification History",
+    "searchPlaceholder": "Search notifications...",
+    "filterByType": "Filter by type",
+    "allTypes": "All types",
+    "typeMessage": "Messages",
+    "typeSupport": "Support",
+    "typeReferral": "Referrals",
+    "typeReward": "Rewards",
+    "total": "{{count}} notifications",
+    "unread": "{{count}} unread",
+    "noResults": "No notifications found"
+  },
   "templates": {
     "quickAdd": "Quick Add",
     "createFirst": "Create your first quick template",

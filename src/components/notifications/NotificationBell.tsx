@@ -156,7 +156,7 @@ export const NotificationBell = () => {
               variant="ghost" 
               className="w-full text-sm"
               onClick={() => {
-                navigate('/my-messages');
+                navigate('/notifications');
                 setOpen(false);
               }}
             >
