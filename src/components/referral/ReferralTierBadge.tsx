@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Trophy } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useState, useEffect } from 'react';
 
 interface TierInfo {
   tier: 'none' | 'bronze' | 'silver' | 'gold';
@@ -43,8 +44,29 @@ const tierRewards = {
   gold: { xp: 750, days: 10 },
 };
 
+// Generate random particles for Gold tier
+const generateParticles = (count: number) => {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    delay: Math.random() * 3,
+    duration: 2 + Math.random() * 2,
+    size: 3 + Math.random() * 4,
+  }));
+};
+
 export const ReferralTierBadge = ({ tierInfo, isLoading }: ReferralTierBadgeProps) => {
   const { t } = useTranslation();
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const [particles] = useState(() => generateParticles(8));
+
+  useEffect(() => {
+    if (tierInfo?.tier === 'gold' && !hasAnimated) {
+      // Trigger entrance animation
+      const timer = setTimeout(() => setHasAnimated(true), 100);
+      return () => clearTimeout(timer);
+    }
+  }, [tierInfo?.tier, hasAnimated]);
 
   if (isLoading) {
     return (
@@ -66,10 +88,33 @@ export const ReferralTierBadge = ({ tierInfo, isLoading }: ReferralTierBadgeProp
   return (
     <Card className={cn(
       `bg-gradient-to-br ${tierGradients[tier]} border-2 relative overflow-hidden`,
-      tier === 'gold' ? 'border-yellow-500/50 gold-glow hover:scale-[1.02] transition-transform duration-300' : 
+      tier === 'gold' ? 'border-yellow-500/50 gold-glow hover:scale-[1.02] transition-all duration-300' : 
       tier === 'silver' ? 'border-slate-400/30' : 
-      tier === 'bronze' ? 'border-amber-700/30' : 'border-border'
+      tier === 'bronze' ? 'border-amber-700/30' : 'border-border',
+      // Entrance animation for Gold
+      tier === 'gold' && !hasAnimated && 'opacity-0 scale-95',
+      tier === 'gold' && hasAnimated && 'opacity-100 scale-100 animate-gold-entrance'
     )}>
+      {/* Floating particles for Gold tier */}
+      {tier === 'gold' && (
+        <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-lg">
+          {particles.map((particle) => (
+            <div
+              key={particle.id}
+              className="absolute rounded-full bg-yellow-400"
+              style={{
+                width: particle.size,
+                height: particle.size,
+                left: `${particle.left}%`,
+                bottom: '-10px',
+                opacity: 0.6,
+                boxShadow: '0 0 6px rgba(250, 204, 21, 0.8)',
+                animation: `gold-particle-float ${particle.duration}s ease-in-out ${particle.delay}s infinite`,
+              }}
+            />
+          ))}
+        </div>
+      )}
       {/* Shimmer overlay for Gold tier */}
       {tier === 'gold' && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-lg">
