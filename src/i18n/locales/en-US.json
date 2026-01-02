@@ -102,7 +102,7 @@
       },
       "step3": {
         "title": "You both win!",
-        "description": "When your friend makes their first transaction, you earn 500 XP + 7 Premium days"
+        "description": "After 5 valid transactions, you earn 500 XP + 7 Premium days"
       }
     },
     "invitedBanner": "You were invited by a friend!",
@@ -111,9 +111,35 @@
       "title": "🎉 Referral converted!",
       "description": "Your friend made their first transaction! You earned 500 XP + 7 Premium days."
     },
-    "bonusOnFirstTransaction": "Earn 100 XP bonus when you make your first transaction",
     "welcomeBonus": "Welcome bonus!",
-    "linkedSuccess": "You've been linked to your friend. Make your first transaction to earn XP!"
+    "linkedSuccess": "You've been linked to your friend. Make your first transaction to earn XP!",
+    "tabs": {
+      "overview": "Overview",
+      "referred": "Referred",
+      "history": "History",
+      "ranking": "Ranking"
+    },
+    "noReferred": "You haven't referred anyone yet",
+    "shareToStart": "Share your link to start earning rewards",
+    "userLabel": "User",
+    "transactionProgress": "Transaction progress",
+    "status": {
+      "pending": "Pending",
+      "completed": "Converted",
+      "suspicious": "Suspicious"
+    },
+    "suspicionReasons": {
+      "sameDevice": "Same device detected",
+      "sameIp": "Same IP detected within 24h"
+    },
+    "noRewards": "No rewards yet",
+    "rewardsWillAppear": "Your rewards will appear here",
+    "rewardLabel": "Referral reward",
+    "noRanking": "Ranking is empty",
+    "beFirst": "Be the first to refer friends!",
+    "yourRank": "Your position",
+    "you": "You",
+    "conversions": "conversions"
   },
   "notifications": {
     "title": "Notifications",
@@ -1215,12 +1241,16 @@
     },
     "adMetrics": {
       "title": "Ad Metrics",
-      "description": "Impressions, CTR and estimated revenue for the last 30 days",
+      "description": "Impressions, CTR and estimated revenue",
       "totalImpressions": "Total Impressions",
       "totalClicks": "Total Clicks",
       "estimatedRevenue": "Estimated Revenue",
       "monthlyProjection": "Monthly Projection",
       "basedOnLast14Days": "Based on the last 14 days",
+      "basedOnPeriod": "Based on selected period",
+      "periodToday": "Today",
+      "period7Days": "7 days",
+      "period30Days": "30 days",
       "trendTab": "Trends",
       "variantsTab": "Variants",
       "revenueTrend": "Revenue Trend",
@@ -1234,7 +1264,9 @@
       "estimatedCPC": "Estimated CPC",
       "fillRate": "Fill Rate",
       "filledImpressions": "Filled Impressions",
+      "adjustedImpressions": "Adjusted Impressions",
       "disclaimer": "* Estimated values based on industry averages. Actual revenue may vary.",
+      "officialDisclaimer": "Estimated values. Official data available on Google AdSense.",
       "internalPromo": "Internal Promo",
       "singleLine": "Single Line",
       "twoLine": "Two Line",
