@@ -63,10 +63,39 @@
     "linkCopied": "Link copiado!",
     "shareMessage": "Experimente o MoneyQuest - a aplicação que transforma as suas finanças numa aventura! Use o meu link: {{link}}",
     "share": "Partilhar",
+    "viewStats": "Ver estatísticas completas",
     "rewards": {
       "title": "As suas recompensas por indicação:",
       "xp": "{{amount}} XP por cada amigo que se registar",
-      "premium": "{{days}} dias de Premium grátis"
+      "premium": "{{days}} dias de Premium grátis",
+      "earned": "Recompensas Ganhas",
+      "earnedLabel": "ganhos",
+      "premiumDays": "dias Premium"
+    },
+    "pageTitle": "Programa de Indicação",
+    "pageSubtitle": "Indique amigos e ganhe recompensas",
+    "shareTitle": "Partilhe o seu link",
+    "shareSubtitle": "Envie para amigos e ganhe recompensas quando eles começarem",
+    "stats": {
+      "total": "Total de indicações",
+      "pending": "Pendentes",
+      "completed": "Convertidas",
+      "code": "O seu código"
+    },
+    "howItWorks": {
+      "title": "Como funciona?",
+      "step1": {
+        "title": "Partilhe o seu link",
+        "description": "Envie o seu link exclusivo para amigos e familiares"
+      },
+      "step2": {
+        "title": "Amigo regista-se",
+        "description": "O seu amigo cria uma conta usando o seu link de indicação"
+      },
+      "step3": {
+        "title": "Ambos ganham!",
+        "description": "Quando o seu amigo faz a primeira transação, ganha 500 XP + 7 dias Premium"
+      }
     }
   },
   "templates": {

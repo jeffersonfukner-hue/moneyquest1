@@ -63,10 +63,39 @@
     "linkCopied": "Link copied!",
     "shareMessage": "Try MoneyQuest - the app that turns your finances into an adventure! Use my link: {{link}}",
     "share": "Share",
+    "viewStats": "View full statistics",
     "rewards": {
       "title": "Your referral rewards:",
       "xp": "{{amount}} XP for each friend who signs up",
-      "premium": "{{days}} days of free Premium"
+      "premium": "{{days}} days of free Premium",
+      "earned": "Rewards Earned",
+      "earnedLabel": "earned",
+      "premiumDays": "Premium days"
+    },
+    "pageTitle": "Referral Program",
+    "pageSubtitle": "Invite friends and earn rewards",
+    "shareTitle": "Share your link",
+    "shareSubtitle": "Send to friends and earn rewards when they start",
+    "stats": {
+      "total": "Total referrals",
+      "pending": "Pending",
+      "completed": "Converted",
+      "code": "Your code"
+    },
+    "howItWorks": {
+      "title": "How does it work?",
+      "step1": {
+        "title": "Share your link",
+        "description": "Send your unique link to friends and family"
+      },
+      "step2": {
+        "title": "Friend signs up",
+        "description": "Your friend creates an account using your referral link"
+      },
+      "step3": {
+        "title": "You both win!",
+        "description": "When your friend makes their first transaction, you earn 500 XP + 7 Premium days"
+      }
     }
   },
   "templates": {

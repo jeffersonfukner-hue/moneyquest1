@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { Copy, MessageCircle, Share2, Gift } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Copy, MessageCircle, Share2, Gift, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -23,6 +24,7 @@ export const ReferralShareDialog = ({
   referralLink 
 }: ReferralShareDialogProps) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const handleCopyLink = async () => {
     try {
@@ -52,6 +54,11 @@ export const ReferralShareDialog = ({
     } else {
       handleCopyLink();
     }
+  };
+
+  const handleViewStats = () => {
+    onOpenChange(false);
+    navigate('/referral');
   };
 
   return (
@@ -108,6 +115,16 @@ export const ReferralShareDialog = ({
             <li>• {t('referral.rewards.premium', { days: 7 })}</li>
           </ul>
         </div>
+
+        {/* Link to full page */}
+        <Button 
+          variant="ghost" 
+          onClick={handleViewStats}
+          className="mt-2 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <ExternalLink className="w-4 h-4 mr-2" />
+          {t('referral.viewStats', 'Ver estatísticas completas')}
+        </Button>
       </DialogContent>
     </Dialog>
   );
