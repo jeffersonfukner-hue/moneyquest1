@@ -2,6 +2,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 import ptBR from './locales/pt-BR.json';
+import ptPT from './locales/pt-PT.json';
 import enUS from './locales/en-US.json';
 import esES from './locales/es-ES.json';
 import { detectLanguageFromTimezone, detectLanguageFromIP, clearIPDetectionCache } from '@/lib/countryDetection';
@@ -11,6 +12,7 @@ export { detectLanguageFromIP, clearIPDetectionCache };
 
 export const SUPPORTED_LANGUAGES = {
   'pt-BR': { name: 'Português (Brasil)', flag: '🇧🇷' },
+  'pt-PT': { name: 'Português (Portugal)', flag: '🇵🇹' },
   'en-US': { name: 'English (US)', flag: '🇺🇸' },
   'es-ES': { name: 'Español', flag: '🇪🇸' },
 } as const;
@@ -20,7 +22,7 @@ export type SupportedLanguage = keyof typeof SUPPORTED_LANGUAGES;
 export const SUPPORTED_CURRENCIES = {
   BRL: { symbol: 'R$', name: 'Real Brasileiro', locale: 'pt-BR' },
   USD: { symbol: '$', name: 'US Dollar', locale: 'en-US' },
-  EUR: { symbol: '€', name: 'Euro', locale: 'de-DE' },
+  EUR: { symbol: '€', name: 'Euro', locale: 'pt-PT' },
 } as const;
 
 export type SupportedCurrency = keyof typeof SUPPORTED_CURRENCIES;
@@ -30,18 +32,21 @@ export const LANGUAGE_PREFERENCE_KEY = 'moneyquest_language_set';
 
 const resources = {
   'pt-BR': { translation: ptBR },
+  'pt-PT': { translation: ptPT },
   'en-US': { translation: enUS },
   'es-ES': { translation: esES },
 };
 
 /**
  * Mapeia idioma do navegador para idioma suportado.
- * pt* → pt-BR, es* → es-ES, en* → en-US
+ * pt-PT → pt-PT, pt* → pt-BR, es* → es-ES, en* → en-US
  * IMPORTANTE: Não retorna fallback para en-US - retorna null se não reconhecer
  */
 export const mapBrowserLanguage = (browserLang: string): SupportedLanguage | null => {
   const lang = browserLang.toLowerCase();
   
+  // Verificar pt-PT especificamente primeiro
+  if (lang === 'pt-pt' || lang === 'pt_pt') return 'pt-PT';
   if (lang.startsWith('pt')) return 'pt-BR';
   if (lang.startsWith('es')) return 'es-ES';
   if (lang.startsWith('en')) return 'en-US';
@@ -99,7 +104,7 @@ i18n
     resources,
     lng: initialLanguage || 'pt-BR', // pt-BR como fallback temporário para i18n funcionar
     fallbackLng: 'pt-BR', // Fallback para pt-BR, não en-US
-    supportedLngs: ['pt-BR', 'en-US', 'es-ES'],
+    supportedLngs: ['pt-BR', 'pt-PT', 'en-US', 'es-ES'],
     interpolation: {
       escapeValue: false,
     },
@@ -116,6 +121,8 @@ export const getDateLocale = async (language: string) => {
   switch (language) {
     case 'pt-BR':
       return (await import('date-fns/locale/pt-BR')).ptBR;
+    case 'pt-PT':
+      return (await import('date-fns/locale/pt')).pt;
     case 'es-ES':
       return (await import('date-fns/locale/es')).es;
     case 'en-US':

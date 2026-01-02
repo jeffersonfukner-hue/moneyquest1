@@ -42,6 +42,7 @@ const LanguageSelection: React.FC = () => {
 
   const languages = [
     { code: 'pt-BR' as SupportedLanguage, flag: '🇧🇷', name: 'Português (Brasil)' },
+    { code: 'pt-PT' as SupportedLanguage, flag: '🇵🇹', name: 'Português (Portugal)' },
     { code: 'en-US' as SupportedLanguage, flag: '🇺🇸', name: 'English (US)' },
     { code: 'es-ES' as SupportedLanguage, flag: '🇪🇸', name: 'Español' },
   ];

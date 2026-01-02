@@ -22,7 +22,8 @@ import {
 } from 'lucide-react';
 
 const languageFlags: Record<SupportedLanguage, { flag: string; label: string }> = {
-  'pt-BR': { flag: '🇧🇷', label: 'Português' },
+  'pt-BR': { flag: '🇧🇷', label: 'Português (BR)' },
+  'pt-PT': { flag: '🇵🇹', label: 'Português (PT)' },
   'en-US': { flag: '🇺🇸', label: 'English' },
   'es-ES': { flag: '🇪🇸', label: 'Español' },
 };

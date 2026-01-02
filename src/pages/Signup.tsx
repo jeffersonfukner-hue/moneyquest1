@@ -25,7 +25,8 @@ type SignupStep = 'landing' | 'preferences' | 'account';
 const STEPS: SignupStep[] = ['landing', 'preferences', 'account'];
 
 const languageFlags: Record<I18nLanguage, { flag: string; label: string }> = {
-  'pt-BR': { flag: '🇧🇷', label: 'Português' },
+  'pt-BR': { flag: '🇧🇷', label: 'Português (BR)' },
+  'pt-PT': { flag: '🇵🇹', label: 'Português (PT)' },
   'en-US': { flag: '🇺🇸', label: 'English' },
   'es-ES': { flag: '🇪🇸', label: 'Español' },
 };
