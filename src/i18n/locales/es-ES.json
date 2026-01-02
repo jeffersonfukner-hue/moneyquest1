@@ -102,18 +102,44 @@
       },
       "step3": {
         "title": "¡Ambos ganan!",
-        "description": "Cuando tu amigo hace su primera transacción, ganas 500 XP + 7 días Premium"
+        "description": "Después de 5 transacciones válidas, ganas 500 XP + 7 días Premium"
       }
     },
     "invitedBanner": "¡Fuiste invitado por un amigo!",
-    "bonusOnFirstTransaction": "Obtén 100 XP de bono en tu primera transacción",
+    "bonusOnFirstTransaction": "Gana 100 XP de bono al hacer tu primera transacción",
     "notification": {
       "title": "🎉 ¡Invitación convertida!",
       "description": "¡Tu amigo hizo su primera transacción! Ganaste 500 XP + 7 días Premium."
     },
-    "bonusOnFirstTransaction": "Gana 100 XP de bono al hacer tu primera transacción",
     "welcomeBonus": "¡Bono de bienvenida!",
-    "linkedSuccess": "Has sido vinculado a tu amigo. ¡Haz tu primera transacción para ganar XP!"
+    "linkedSuccess": "Has sido vinculado a tu amigo. ¡Haz tu primera transacción para ganar XP!",
+    "tabs": {
+      "overview": "Resumen",
+      "referred": "Invitados",
+      "history": "Historial",
+      "ranking": "Ranking"
+    },
+    "noReferred": "Aún no has invitado a nadie",
+    "shareToStart": "Comparte tu enlace para empezar a ganar recompensas",
+    "userLabel": "Usuario",
+    "transactionProgress": "Progreso de transacciones",
+    "status": {
+      "pending": "Pendiente",
+      "completed": "Convertido",
+      "suspicious": "Sospechoso"
+    },
+    "suspicionReasons": {
+      "sameDevice": "Mismo dispositivo detectado",
+      "sameIp": "Mismo IP detectado en 24h"
+    },
+    "noRewards": "Sin recompensas aún",
+    "rewardsWillAppear": "Tus recompensas aparecerán aquí",
+    "rewardLabel": "Recompensa de invitación",
+    "noRanking": "Ranking vacío",
+    "beFirst": "¡Sé el primero en invitar amigos!",
+    "yourRank": "Tu posición",
+    "you": "Tú",
+    "conversions": "conversiones"
   },
   "notifications": {
     "title": "Notificaciones",
@@ -1215,12 +1241,16 @@
     },
     "adMetrics": {
       "title": "Métricas de Anuncios",
-      "description": "Impresiones, CTR e ingresos estimados de los últimos 30 días",
+      "description": "Impresiones, CTR e ingresos estimados",
       "totalImpressions": "Total de Impresiones",
       "totalClicks": "Total de Clics",
       "estimatedRevenue": "Ingresos Estimados",
       "monthlyProjection": "Proyección Mensual",
       "basedOnLast14Days": "Basado en los últimos 14 días",
+      "basedOnPeriod": "Basado en el período seleccionado",
+      "periodToday": "Hoy",
+      "period7Days": "7 días",
+      "period30Days": "30 días",
       "trendTab": "Tendencias",
       "variantsTab": "Variantes",
       "revenueTrend": "Tendencia de Ingresos",
@@ -1234,7 +1264,9 @@
       "estimatedCPC": "CPC Estimado",
       "fillRate": "Tasa de Relleno",
       "filledImpressions": "Impresiones Rellenadas",
+      "adjustedImpressions": "Impresiones Ajustadas",
       "disclaimer": "* Valores estimados basados en promedios del sector. Los ingresos reales pueden variar.",
+      "officialDisclaimer": "Valores estimados. Datos oficiales disponibles en Google AdSense.",
       "internalPromo": "Promo Interno",
       "singleLine": "Una Línea",
       "twoLine": "Dos Líneas",

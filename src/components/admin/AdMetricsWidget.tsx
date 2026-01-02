@@ -1,11 +1,13 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { DollarSign, Eye, MousePointer, TrendingUp, Calculator, BarChart3 } from 'lucide-react';
+import { DollarSign, Eye, MousePointer, TrendingUp, Calculator, BarChart3, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis, 
@@ -20,6 +22,8 @@ const ADSENSE_RATES = {
   cpcEstimate: 0.25, // Average CPC in USD
   fillRate: 0.85,    // Estimated fill rate (85%)
 };
+
+type PeriodType = 'today' | '7days' | '30days';
 
 interface ABTestEvent {
   id: string;
@@ -40,6 +44,13 @@ interface DailyMetrics {
 
 export const AdMetricsWidget = () => {
   const { t, i18n } = useTranslation();
+  const [period, setPeriod] = useState<PeriodType>('30days');
+
+  const periodDays: Record<PeriodType, number> = {
+    today: 0,
+    '7days': 6,
+    '30days': 29,
+  };
 
   const getLocale = () => {
     switch (i18n.language) {
@@ -51,15 +62,15 @@ export const AdMetricsWidget = () => {
 
   // Fetch ad-related events (from ab_test_events)
   const { data: events, isLoading } = useQuery({
-    queryKey: ['admin-ad-metrics'],
+    queryKey: ['admin-ad-metrics', period],
     queryFn: async () => {
-      const thirtyDaysAgo = subDays(new Date(), 30).toISOString();
+      const daysAgo = subDays(new Date(), periodDays[period]).toISOString();
       
       const { data, error } = await supabase
         .from('ab_test_events')
         .select('*')
         .in('test_name', ['ad_banner_v1', 'banner_copy_v1'])
-        .gte('created_at', thirtyDaysAgo)
+        .gte('created_at', daysAgo)
         .order('created_at', { ascending: true });
       
       if (error) throw error;
@@ -112,12 +123,13 @@ export const AdMetricsWidget = () => {
   const dailyMetrics = useMemo(() => {
     if (!events || events.length === 0) return [];
 
-    const last14Days = eachDayOfInterval({
-      start: subDays(new Date(), 13),
+    const chartDays = period === 'today' ? 1 : period === '7days' ? 7 : 14;
+    const days = eachDayOfInterval({
+      start: subDays(new Date(), chartDays - 1),
       end: new Date(),
     });
 
-    return last14Days.map(day => {
+    return days.map(day => {
       const dayStart = startOfDay(day);
       const dayEnd = new Date(dayStart);
       dayEnd.setDate(dayEnd.getDate() + 1);
@@ -146,7 +158,7 @@ export const AdMetricsWidget = () => {
         estimatedRevenue: revenue,
       };
     });
-  }, [events, i18n.language]);
+  }, [events, period, i18n.language]);
 
   // Variant performance comparison
   const variantPerformance = useMemo(() => {
@@ -247,11 +259,33 @@ export const AdMetricsWidget = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <DollarSign className="w-5 h-5 text-green-500" />
-          {t('admin.adMetrics.title')}
-        </CardTitle>
-        <CardDescription>{t('admin.adMetrics.description')}</CardDescription>
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <DollarSign className="w-5 h-5 text-green-500" />
+              {t('admin.adMetrics.title')}
+            </CardTitle>
+            <CardDescription>{t('admin.adMetrics.description')}</CardDescription>
+          </div>
+          
+          {/* Period Selector */}
+          <ToggleGroup 
+            type="single" 
+            value={period} 
+            onValueChange={(value) => value && setPeriod(value as PeriodType)}
+            className="bg-muted/50 p-1 rounded-lg"
+          >
+            <ToggleGroupItem value="today" className="text-xs px-3">
+              {t('admin.adMetrics.periodToday', 'Hoje')}
+            </ToggleGroupItem>
+            <ToggleGroupItem value="7days" className="text-xs px-3">
+              {t('admin.adMetrics.period7Days', '7 dias')}
+            </ToggleGroupItem>
+            <ToggleGroupItem value="30days" className="text-xs px-3">
+              {t('admin.adMetrics.period30Days', '30 dias')}
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Key Metrics Summary */}
@@ -284,7 +318,7 @@ export const AdMetricsWidget = () => {
             <Calculator className="w-6 h-6 text-green-500" />
             <div>
               <p className="text-sm font-medium text-foreground">{t('admin.adMetrics.monthlyProjection')}</p>
-              <p className="text-xs text-muted-foreground">{t('admin.adMetrics.basedOnLast14Days')}</p>
+              <p className="text-xs text-muted-foreground">{t('admin.adMetrics.basedOnPeriod', 'Baseado no período selecionado')}</p>
             </div>
           </div>
           <Badge variant="outline" className="text-lg px-4 py-2 bg-green-500/10 text-green-600 border-green-500/30">
@@ -445,7 +479,7 @@ export const AdMetricsWidget = () => {
                           </div>
                           <div>
                             <span className="text-muted-foreground">{t('admin.adMetrics.revenue')}</span>
-                            <p className="font-medium text-green-600">{formatCurrency(variant.estimatedRevenue)}</p>
+                            <p className="font-medium text-foreground">{formatCurrency(variant.estimatedRevenue)}</p>
                           </div>
                         </div>
                       </div>
@@ -463,33 +497,35 @@ export const AdMetricsWidget = () => {
         </Tabs>
 
         {/* Revenue Breakdown */}
-        <div className="p-4 bg-muted/50 rounded-lg">
-          <h4 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
-            <Calculator className="w-4 h-4" />
-            {t('admin.adMetrics.revenueBreakdown')}
-          </h4>
+        <div className="p-4 bg-muted/30 rounded-lg border border-border">
+          <h4 className="text-sm font-medium text-foreground mb-3">{t('admin.adMetrics.revenueBreakdown')}</h4>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div>
-              <span className="text-muted-foreground">{t('admin.adMetrics.estimatedCPM')}</span>
+              <p className="text-muted-foreground">{t('admin.adMetrics.estimatedCPM')}</p>
               <p className="font-medium text-foreground">${ADSENSE_RATES.cpmEstimate.toFixed(2)}</p>
             </div>
             <div>
-              <span className="text-muted-foreground">{t('admin.adMetrics.estimatedCPC')}</span>
+              <p className="text-muted-foreground">{t('admin.adMetrics.estimatedCPC')}</p>
               <p className="font-medium text-foreground">${ADSENSE_RATES.cpcEstimate.toFixed(2)}</p>
             </div>
             <div>
-              <span className="text-muted-foreground">{t('admin.adMetrics.fillRate')}</span>
+              <p className="text-muted-foreground">{t('admin.adMetrics.fillRate')}</p>
               <p className="font-medium text-foreground">{(ADSENSE_RATES.fillRate * 100).toFixed(0)}%</p>
             </div>
             <div>
-              <span className="text-muted-foreground">{t('admin.adMetrics.filledImpressions')}</span>
+              <p className="text-muted-foreground">{t('admin.adMetrics.adjustedImpressions')}</p>
               <p className="font-medium text-foreground">{Math.round(overallMetrics.fillAdjustedImpressions).toLocaleString()}</p>
             </div>
           </div>
-          <p className="text-xs text-muted-foreground mt-3">
-            {t('admin.adMetrics.disclaimer')}
-          </p>
         </div>
+
+        {/* Official Disclaimer */}
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription className="text-sm">
+            {t('admin.adMetrics.officialDisclaimer', 'Valores estimados. Dados oficiais disponíveis no Google AdSense.')}
+          </AlertDescription>
+        </Alert>
       </CardContent>
     </Card>
   );

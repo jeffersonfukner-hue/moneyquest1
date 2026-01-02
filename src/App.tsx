@@ -13,6 +13,7 @@ import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { OnboardingGuard } from "@/components/auth/OnboardingGuard";
 import { LanguageGuard } from "@/components/auth/LanguageGuard";
+import { FingerprintCapture } from "@/components/auth/FingerprintCapture";
 import { SEOProvider } from "@/components/SEOProvider";
 import '@/i18n';
 import Index from "./pages/Index";
@@ -67,6 +68,7 @@ const App = () => (
                     <SeasonalThemeProvider>
                       <Toaster />
                       <Sonner />
+                      <FingerprintCapture />
                       <BrowserRouter>
                         <SEOProvider>
                           <Routes>

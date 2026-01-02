@@ -101,7 +101,7 @@
       },
       "step3": {
         "title": "Vocês dois ganham!",
-        "description": "Quando seu amigo faz a primeira transação, você ganha 500 XP + 7 dias Premium"
+        "description": "Após 5 transações válidas, você ganha 500 XP + 7 dias Premium"
       }
     },
     "invitedBanner": "Você foi convidado por um amigo!",
@@ -111,7 +111,34 @@
       "description": "Seu amigo fez a primeira transação! Você ganhou 500 XP + 7 dias Premium."
     },
     "welcomeBonus": "Bônus de boas-vindas!",
-    "linkedSuccess": "Você foi vinculado ao seu amigo. Faça sua primeira transação para ganhar XP!"
+    "linkedSuccess": "Você foi vinculado ao seu amigo. Faça sua primeira transação para ganhar XP!",
+    "tabs": {
+      "overview": "Resumo",
+      "referred": "Indicados",
+      "history": "Histórico",
+      "ranking": "Ranking"
+    },
+    "noReferred": "Você ainda não indicou ninguém",
+    "shareToStart": "Compartilhe seu link para começar a ganhar recompensas",
+    "userLabel": "Usuário",
+    "transactionProgress": "Progresso de transações",
+    "status": {
+      "pending": "Pendente",
+      "completed": "Convertido",
+      "suspicious": "Suspeito"
+    },
+    "suspicionReasons": {
+      "sameDevice": "Mesmo dispositivo detectado",
+      "sameIp": "Mesmo IP detectado em 24h"
+    },
+    "noRewards": "Nenhuma recompensa ainda",
+    "rewardsWillAppear": "Suas recompensas aparecerão aqui",
+    "rewardLabel": "Recompensa de indicação",
+    "noRanking": "Ranking ainda vazio",
+    "beFirst": "Seja o primeiro a indicar amigos!",
+    "yourRank": "Sua posição",
+    "you": "Você",
+    "conversions": "conversões"
   },
   "notifications": {
     "title": "Notificações",
@@ -1213,12 +1240,16 @@
     },
     "adMetrics": {
       "title": "Métricas de Anúncios",
-      "description": "Impressões, CTR e receita estimada dos últimos 30 dias",
+      "description": "Impressões, CTR e receita estimada",
       "totalImpressions": "Total de Impressões",
       "totalClicks": "Total de Cliques",
       "estimatedRevenue": "Receita Estimada",
       "monthlyProjection": "Projeção Mensal",
       "basedOnLast14Days": "Baseado nos últimos 14 dias",
+      "basedOnPeriod": "Baseado no período selecionado",
+      "periodToday": "Hoje",
+      "period7Days": "7 dias",
+      "period30Days": "30 dias",
       "trendTab": "Tendências",
       "variantsTab": "Variantes",
       "revenueTrend": "Tendência de Receita",
@@ -1232,7 +1263,9 @@
       "estimatedCPC": "CPC Estimado",
       "fillRate": "Taxa de Preenchimento",
       "filledImpressions": "Impressões Preenchidas",
+      "adjustedImpressions": "Impressões Ajustadas",
       "disclaimer": "* Valores estimados com base em médias do setor. A receita real pode variar.",
+      "officialDisclaimer": "Valores estimados. Dados oficiais disponíveis no Google AdSense.",
       "internalPromo": "Promo Interno",
       "singleLine": "Uma Linha",
       "twoLine": "Duas Linhas",

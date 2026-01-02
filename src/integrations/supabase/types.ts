@@ -623,32 +623,44 @@ export type Database = {
         Row: {
           completed_at: string | null
           created_at: string | null
+          flagged_as_suspicious: boolean | null
           id: string
           referral_code: string
           referred_id: string
           referrer_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
           rewarded_at: string | null
           status: string
+          suspicion_reason: string | null
         }
         Insert: {
           completed_at?: string | null
           created_at?: string | null
+          flagged_as_suspicious?: boolean | null
           id?: string
           referral_code: string
           referred_id: string
           referrer_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           rewarded_at?: string | null
           status?: string
+          suspicion_reason?: string | null
         }
         Update: {
           completed_at?: string | null
           created_at?: string | null
+          flagged_as_suspicious?: boolean | null
           id?: string
           referral_code?: string
           referred_id?: string
           referrer_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           rewarded_at?: string | null
           status?: string
+          suspicion_reason?: string | null
         }
         Relationships: [
           {
@@ -938,6 +950,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_fingerprints: {
+        Row: {
+          created_at: string | null
+          fingerprint_hash: string
+          id: string
+          ip_address: string | null
+          language: string | null
+          screen_resolution: string | null
+          timezone: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          fingerprint_hash: string
+          id?: string
+          ip_address?: string | null
+          language?: string | null
+          screen_resolution?: string | null
+          timezone?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          fingerprint_hash?: string
+          id?: string
+          ip_address?: string | null
+          language?: string | null
+          screen_resolution?: string | null
+          timezone?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_messages: {
         Row: {
           content: string
@@ -1173,6 +1221,10 @@ export type Database = {
         Returns: undefined
       }
       archive_monthly_goals: { Args: { p_user_id: string }; Returns: undefined }
+      check_referral_fraud: {
+        Args: { p_referred_id: string; p_referrer_id: string }
+        Returns: Json
+      }
       claim_daily_reward: { Args: { p_user_id: string }; Returns: Json }
       complete_referral_reward: {
         Args: { p_referred_user_id: string }
@@ -1183,6 +1235,10 @@ export type Database = {
         Returns: undefined
       }
       get_daily_reward_status: { Args: { p_user_id: string }; Returns: Json }
+      get_detailed_referral_stats: {
+        Args: { p_user_id: string }
+        Returns: Json
+      }
       get_level_title: { Args: { user_level: number }; Returns: string }
       get_period_end: { Args: { period_type: string }; Returns: string }
       get_period_start: { Args: { period_type: string }; Returns: string }
