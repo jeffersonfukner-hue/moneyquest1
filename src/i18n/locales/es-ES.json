@@ -1499,5 +1499,72 @@
         }
       }
     }
+  },
+  "legal": {
+    "lastUpdated": "Última actualización",
+    "terms": {
+      "title": "Términos de Uso",
+      "badge": "Documento Legal",
+      "section1": {
+        "title": "1. Aceptación de los Términos",
+        "content": "Al acceder y usar MoneyQuest, aceptas cumplir y estar sujeto a estos Términos de Uso. Si no estás de acuerdo con alguna parte de estos términos, no podrás acceder al servicio."
+      },
+      "section2": {
+        "title": "2. Descripción del Servicio",
+        "content": "MoneyQuest es una aplicación de control financiero personal con elementos de gamificación. Ofrecemos funcionalidades gratuitas y premium para ayudarte a gestionar tus finanzas de forma divertida y atractiva."
+      },
+      "section3": {
+        "title": "3. Cuenta de Usuario",
+        "content": "Eres responsable de mantener la confidencialidad de tu cuenta y contraseña. Aceptas asumir la responsabilidad de todas las actividades que ocurran bajo tu cuenta."
+      },
+      "section4": {
+        "title": "4. Suscripciones Premium",
+        "content": "Los planes premium se cobran según el ciclo de facturación elegido. Puedes cancelar tu suscripción en cualquier momento. Los reembolsos se procesan según nuestra política de reembolso."
+      },
+      "section5": {
+        "title": "5. Uso Aceptable",
+        "content": "Aceptas no usar el servicio para fines ilegales o no autorizados. No debes, en el uso del servicio, violar ninguna ley de tu jurisdicción."
+      },
+      "section6": {
+        "title": "6. Limitación de Responsabilidad",
+        "content": "MoneyQuest no se responsabiliza de las decisiones financieras tomadas basándose en la información proporcionada por la aplicación. La información es solo para fines educativos y de organización personal."
+      },
+      "section7": {
+        "title": "7. Contacto",
+        "content": "Para preguntas sobre estos Términos de Uso, contáctanos a través de la página de Soporte en la aplicación."
+      }
+    },
+    "privacy": {
+      "title": "Política de Privacidad",
+      "badge": "Tu Privacidad",
+      "section1": {
+        "title": "1. Información que Recopilamos",
+        "content": "Recopilamos información que nos proporcionas directamente, como nombre, correo electrónico y datos financieros que ingresas en la aplicación. También recopilamos información de uso para mejorar nuestros servicios."
+      },
+      "section2": {
+        "title": "2. Cómo Usamos tu Información",
+        "content": "Usamos tu información para proporcionar, mantener y mejorar nuestros servicios, procesar transacciones, enviar notificaciones importantes y personalizar tu experiencia en la aplicación."
+      },
+      "section3": {
+        "title": "3. Protección de Datos",
+        "content": "Tus datos se almacenan de forma segura con cifrado de extremo a extremo. Implementamos medidas de seguridad técnicas y organizativas para proteger tu información contra accesos no autorizados."
+      },
+      "section4": {
+        "title": "4. Compartir Datos",
+        "content": "No vendemos tu información personal. Podemos compartir datos con proveedores de servicios que nos ayudan a operar la aplicación, siempre bajo acuerdos de confidencialidad."
+      },
+      "section5": {
+        "title": "5. Cookies y Tecnologías Similares",
+        "content": "Usamos cookies y tecnologías similares para mejorar tu experiencia, analizar el uso del servicio y personalizar contenido. Puedes controlar el uso de cookies a través de la configuración de tu navegador."
+      },
+      "section6": {
+        "title": "6. Tus Derechos",
+        "content": "Tienes derecho a acceder, corregir o eliminar tus datos personales. También puedes solicitar la portabilidad de tus datos o revocar el consentimiento en cualquier momento."
+      },
+      "section7": {
+        "title": "7. Cumplimiento",
+        "content": "MoneyQuest cumple con las regulaciones de protección de datos aplicables. Para ejercer tus derechos o aclarar dudas, contáctanos a través de la página de Soporte."
+      }
+    }
   }
 }

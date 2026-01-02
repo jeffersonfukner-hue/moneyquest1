@@ -7,9 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { TrustBadge } from '@/components/ui/trust-badge';
 import { toast } from '@/hooks/use-toast';
-import { Eye, EyeOff, CircleCheck, CreditCard, Zap, Shield, Loader2, Mail, Lock, ChevronRight } from 'lucide-react';
+import { Eye, EyeOff, CircleCheck, CreditCard, Zap, Loader2, Mail, Lock, ChevronRight } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 import { SupportedLanguage } from '@/i18n';
+import PublicFooter from '@/components/layout/PublicFooter';
 
 type LoginMode = 'landing' | 'login' | 'forgot';
 
@@ -179,25 +180,7 @@ const Login = () => {
       </section>
 
       {/* Security Footer */}
-      <footer className="text-center pt-4 animate-fade-in space-y-3" style={{ animationDelay: '400ms' }}>
-        <p className="text-xs text-muted-foreground flex items-center justify-center gap-1.5">
-          <Shield className="w-3.5 h-3.5" />
-          {t('landing.security.dataProtected')}
-        </p>
-        <div className="flex items-center justify-center gap-3 text-xs text-muted-foreground">
-          <Link to="/terms" className="hover:text-primary transition-colors">
-            {t('legal.terms.title', 'Termos de Uso')}
-          </Link>
-          <span>•</span>
-          <Link to="/privacy" className="hover:text-primary transition-colors">
-            {t('legal.privacy.title', 'Privacidade')}
-          </Link>
-          <span>•</span>
-          <Link to="/support" className="hover:text-primary transition-colors">
-            {t('support.needHelp')}
-          </Link>
-        </div>
-      </footer>
+      <PublicFooter showSupport className="pt-4 animate-fade-in" />
     </div>
   );
 

@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Logo } from '@/components/ui/logo';
 import { ArrowLeft, Shield } from 'lucide-react';
+import PublicFooter from '@/components/layout/PublicFooter';
 
 const Privacy = () => {
   const { t } = useTranslation();
@@ -100,18 +101,8 @@ const Privacy = () => {
           </div>
         </section>
 
-        {/* Footer Links */}
-        <footer className="text-center pt-4 pb-8 space-y-3">
-          <div className="flex items-center justify-center gap-4 text-sm">
-            <Link to="/terms" className="text-primary hover:underline">
-              {t('legal.terms.title', 'Termos de Uso')}
-            </Link>
-            <span className="text-muted-foreground">•</span>
-            <Link to="/login" className="text-primary hover:underline">
-              {t('auth.login', 'Entrar')}
-            </Link>
-          </div>
-        </footer>
+        {/* Footer */}
+        <PublicFooter className="pt-4 pb-8" />
       </main>
     </div>
   );
