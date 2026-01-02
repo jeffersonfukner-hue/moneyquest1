@@ -38,6 +38,14 @@ const pageConfigs: Record<string, SEOConfig> = {
     title: 'MoneyQuest Premium - Recursos Exclusivos',
     description: 'Desbloqueie todo o potencial do MoneyQuest! Relatórios avançados, IA Coach, temas exclusivos e muito mais.',
   },
+  '/terms': {
+    title: 'Termos de Uso | MoneyQuest',
+    description: 'Leia os Termos de Uso do MoneyQuest. Entenda seus direitos e responsabilidades ao usar nosso aplicativo de controle financeiro.',
+  },
+  '/privacy': {
+    title: 'Política de Privacidade | MoneyQuest',
+    description: 'Saiba como o MoneyQuest protege seus dados. Nossa Política de Privacidade em conformidade com a LGPD.',
+  },
 
   // === AUTHENTICATED PAGES (noindex, nofollow) ===
   '/onboarding': {
