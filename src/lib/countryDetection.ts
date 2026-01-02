@@ -137,6 +137,63 @@ const TIMEZONE_TO_LANGUAGE: Record<string, SupportedLanguage> = {
 };
 
 /**
+ * Mapeamento de códigos de país (ISO 3166-1 alpha-2) para idiomas suportados.
+ * Usado pela detecção por IP.
+ */
+const COUNTRY_CODE_TO_LANGUAGE: Record<string, SupportedLanguage> = {
+  // Países lusófonos → pt-BR
+  'BR': 'pt-BR', // Brasil
+  'PT': 'pt-BR', // Portugal
+  'AO': 'pt-BR', // Angola
+  'MZ': 'pt-BR', // Moçambique
+  'CV': 'pt-BR', // Cabo Verde
+  'GW': 'pt-BR', // Guiné-Bissau
+  'ST': 'pt-BR', // São Tomé e Príncipe
+  'TL': 'pt-BR', // Timor-Leste
+  
+  // Países hispanófonos → es-ES
+  'ES': 'es-ES', // Espanha
+  'MX': 'es-ES', // México
+  'AR': 'es-ES', // Argentina
+  'CO': 'es-ES', // Colômbia
+  'PE': 'es-ES', // Peru
+  'VE': 'es-ES', // Venezuela
+  'CL': 'es-ES', // Chile
+  'EC': 'es-ES', // Equador
+  'GT': 'es-ES', // Guatemala
+  'CU': 'es-ES', // Cuba
+  'BO': 'es-ES', // Bolívia
+  'DO': 'es-ES', // República Dominicana
+  'HN': 'es-ES', // Honduras
+  'PY': 'es-ES', // Paraguai
+  'SV': 'es-ES', // El Salvador
+  'NI': 'es-ES', // Nicarágua
+  'CR': 'es-ES', // Costa Rica
+  'PA': 'es-ES', // Panamá
+  'UY': 'es-ES', // Uruguai
+  'PR': 'es-ES', // Porto Rico
+  'GQ': 'es-ES', // Guiné Equatorial
+  
+  // Países anglófonos → en-US
+  'US': 'en-US', // Estados Unidos
+  'GB': 'en-US', // Reino Unido
+  'CA': 'en-US', // Canadá
+  'AU': 'en-US', // Austrália
+  'NZ': 'en-US', // Nova Zelândia
+  'IE': 'en-US', // Irlanda
+  'ZA': 'en-US', // África do Sul
+  'PH': 'en-US', // Filipinas
+  'SG': 'en-US', // Singapura
+  'IN': 'en-US', // Índia
+  'PK': 'en-US', // Paquistão
+  'NG': 'en-US', // Nigéria
+  'KE': 'en-US', // Quênia
+  'GH': 'en-US', // Gana
+  'JM': 'en-US', // Jamaica
+  'TT': 'en-US', // Trinidad e Tobago
+};
+
+/**
  * Prefixos de timezone para idiomas (fallback por região)
  */
 const TIMEZONE_PREFIX_TO_LANGUAGE: Record<string, SupportedLanguage> = {
@@ -146,6 +203,10 @@ const TIMEZONE_PREFIX_TO_LANGUAGE: Record<string, SupportedLanguage> = {
   // Europa
   'Europe/': 'en-US', // Fallback para inglês na Europa (exceto já mapeados)
 };
+
+// Cache para resultado da detecção por IP (evita múltiplas chamadas)
+let ipDetectionCache: { language: SupportedLanguage | null; timestamp: number } | null = null;
+const IP_CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 horas
 
 /**
  * Detecta o idioma baseado no timezone do navegador.
@@ -194,7 +255,86 @@ export const detectLanguageFromTimezone = (): SupportedLanguage | null => {
 };
 
 /**
- * Verifica se a detecção automática de idioma está disponível.
+ * Detecta o idioma baseado no IP do usuário usando serviço externo.
+ * Usa cache para evitar múltiplas chamadas à API.
+ * Retorna null se a detecção falhar.
+ */
+export const detectLanguageFromIP = async (): Promise<SupportedLanguage | null> => {
+  // Verifica cache válido
+  if (ipDetectionCache && Date.now() - ipDetectionCache.timestamp < IP_CACHE_DURATION) {
+    return ipDetectionCache.language;
+  }
+  
+  try {
+    // Usa ipapi.co que é gratuito e não requer API key
+    const response = await fetch('https://ipapi.co/json/', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      },
+      // Timeout de 5 segundos
+      signal: AbortSignal.timeout(5000),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`IP API returned ${response.status}`);
+    }
+    
+    const data = await response.json();
+    const countryCode = data.country_code?.toUpperCase();
+    
+    if (!countryCode) {
+      ipDetectionCache = { language: null, timestamp: Date.now() };
+      return null;
+    }
+    
+    const language = COUNTRY_CODE_TO_LANGUAGE[countryCode] || null;
+    
+    // Salva no cache
+    ipDetectionCache = { language, timestamp: Date.now() };
+    
+    console.log(`[IP Detection] Country: ${countryCode}, Language: ${language || 'not mapped'}`);
+    
+    return language;
+  } catch (error) {
+    console.warn('[IP Detection] Failed:', error);
+    
+    // Em caso de erro, tenta serviço alternativo (ip-api.com)
+    try {
+      const fallbackResponse = await fetch('http://ip-api.com/json/?fields=countryCode', {
+        method: 'GET',
+        signal: AbortSignal.timeout(5000),
+      });
+      
+      if (fallbackResponse.ok) {
+        const fallbackData = await fallbackResponse.json();
+        const countryCode = fallbackData.countryCode?.toUpperCase();
+        
+        if (countryCode) {
+          const language = COUNTRY_CODE_TO_LANGUAGE[countryCode] || null;
+          ipDetectionCache = { language, timestamp: Date.now() };
+          console.log(`[IP Detection Fallback] Country: ${countryCode}, Language: ${language || 'not mapped'}`);
+          return language;
+        }
+      }
+    } catch (fallbackError) {
+      console.warn('[IP Detection Fallback] Also failed:', fallbackError);
+    }
+    
+    ipDetectionCache = { language: null, timestamp: Date.now() };
+    return null;
+  }
+};
+
+/**
+ * Limpa o cache de detecção por IP.
+ */
+export const clearIPDetectionCache = (): void => {
+  ipDetectionCache = null;
+};
+
+/**
+ * Verifica se a detecção automática de idioma está disponível (timezone).
  */
 export const isLanguageDetectionAvailable = (): boolean => {
   try {
@@ -214,4 +354,22 @@ export const getBrowserTimezone = (): string => {
   } catch {
     return 'Unknown';
   }
+};
+
+/**
+ * Detecta idioma usando múltiplas estratégias em ordem de prioridade.
+ * 1. Timezone (síncrono, mais rápido)
+ * 2. IP (assíncrono, fallback)
+ * 3. Retorna null se ambos falharem
+ */
+export const detectLanguageWithFallback = async (): Promise<SupportedLanguage | null> => {
+  // Primeiro tenta timezone (síncrono)
+  const timezoneLanguage = detectLanguageFromTimezone();
+  if (timezoneLanguage) {
+    return timezoneLanguage;
+  }
+  
+  // Fallback para detecção por IP
+  const ipLanguage = await detectLanguageFromIP();
+  return ipLanguage;
 };

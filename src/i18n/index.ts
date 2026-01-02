@@ -4,7 +4,10 @@ import { initReactI18next } from 'react-i18next';
 import ptBR from './locales/pt-BR.json';
 import enUS from './locales/en-US.json';
 import esES from './locales/es-ES.json';
-import { detectLanguageFromTimezone } from '@/lib/countryDetection';
+import { detectLanguageFromTimezone, detectLanguageFromIP, clearIPDetectionCache } from '@/lib/countryDetection';
+
+// Re-export para uso em outros módulos
+export { detectLanguageFromIP, clearIPDetectionCache };
 
 export const SUPPORTED_LANGUAGES = {
   'pt-BR': { name: 'Português (Brasil)', flag: '🇧🇷' },
