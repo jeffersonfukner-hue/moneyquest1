@@ -107,6 +107,15 @@
     "welcomeBonus": "¡Bono de bienvenida!",
     "linkedSuccess": "Has sido vinculado a tu amigo. ¡Haz tu primera transacción para ganar XP!"
   },
+  "notifications": {
+    "title": "Notificaciones",
+    "empty": "Sin notificaciones",
+    "markAllRead": "Marcar todas como leídas",
+    "viewAll": "Ver todas",
+    "supportReply": "Nueva respuesta del soporte",
+    "referralConverted": "¡Invitación convertida!",
+    "rewardEarned": "¡Ganaste una recompensa!"
+  },
   "templates": {
     "quickAdd": "Añadir Rápido",
     "createFirst": "Crea tu primer atajo",
