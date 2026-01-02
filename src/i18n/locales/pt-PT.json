@@ -249,7 +249,9 @@
     },
     "loginDescription": "Entre para continuar a sua jornada",
     "noAccount": "Não tem conta?",
-    "backToLogin": "Voltar para login"
+    "backToLogin": "Voltar para login",
+    "logoutConfirmTitle": "Terminar sessão?",
+    "logoutConfirmDescription": "Tem a certeza que deseja sair da sua conta?"
   },
   "landing": {
     "hero": {

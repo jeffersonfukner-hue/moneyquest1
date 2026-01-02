@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Globe, Coins, Volume2, LogOut, Crown, RefreshCw, TrendingUp, FolderOpen, ChevronRight, Target, Shield, Sun, Moon, Monitor, Clock, MessageSquare } from 'lucide-react';
@@ -6,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useSound } from '@/contexts/SoundContext';
@@ -57,6 +59,7 @@ const Settings = () => {
   const { rates, lastUpdate, loading: ratesLoading, refreshRates, getRate } = useExchangeRates();
   const { isSuperAdmin } = useAdminAuth();
   const { shouldShowBanner } = useAdBanner();
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   const pricing = PREMIUM_PRICING[currency] || PREMIUM_PRICING.USD;
   const currentTimezone = profile?.timezone || 'America/Sao_Paulo';
@@ -450,7 +453,7 @@ const Settings = () => {
         <Button 
           variant="destructive" 
           className="w-full min-h-[48px] mt-6"
-          onClick={handleSignOut}
+          onClick={() => setShowLogoutDialog(true)}
         >
           <LogOut className="w-4 h-4 mr-2" />
           {t('auth.logout')}
@@ -458,6 +461,24 @@ const Settings = () => {
       </main>
 
       <AdBanner />
+
+      {/* Logout Confirmation Dialog */}
+      <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('auth.logoutConfirmTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('auth.logoutConfirmDescription')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleSignOut} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              {t('auth.logout')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
