@@ -1072,5 +1072,72 @@
         }
       }
     }
+  },
+  "legal": {
+    "lastUpdated": "Última atualização",
+    "terms": {
+      "title": "Termos de Utilização",
+      "badge": "Documento Legal",
+      "section1": {
+        "title": "1. Aceitação dos Termos",
+        "content": "Ao aceder e utilizar o MoneyQuest, concorda em cumprir e estar vinculado a estes Termos de Utilização. Se não concordar com qualquer parte destes termos, não poderá aceder ao serviço."
+      },
+      "section2": {
+        "title": "2. Descrição do Serviço",
+        "content": "O MoneyQuest é uma aplicação de controlo financeiro pessoal com elementos de gamificação. Oferecemos funcionalidades gratuitas e premium para o ajudar a gerir as suas finanças de forma divertida e envolvente."
+      },
+      "section3": {
+        "title": "3. Conta de Utilizador",
+        "content": "É responsável por manter a confidencialidade da sua conta e palavra-passe. Concorda em aceitar responsabilidade por todas as atividades que ocorram sob a sua conta."
+      },
+      "section4": {
+        "title": "4. Subscrições Premium",
+        "content": "Os planos premium são cobrados de acordo com o ciclo de faturação escolhido. Pode cancelar a sua subscrição a qualquer momento. Os reembolsos são processados conforme a nossa política de reembolso."
+      },
+      "section5": {
+        "title": "5. Uso Aceitável",
+        "content": "Concorda em não utilizar o serviço para fins ilegais ou não autorizados. Não deve, no uso do serviço, violar quaisquer leis na sua jurisdição."
+      },
+      "section6": {
+        "title": "6. Limitação de Responsabilidade",
+        "content": "O MoneyQuest não se responsabiliza por decisões financeiras tomadas com base nas informações fornecidas pela aplicação. As informações são apenas para fins educativos e de organização pessoal."
+      },
+      "section7": {
+        "title": "7. Contacto",
+        "content": "Para questões sobre estes Termos de Utilização, contacte-nos através da página de Suporte na aplicação."
+      }
+    },
+    "privacy": {
+      "title": "Política de Privacidade",
+      "badge": "A Sua Privacidade",
+      "section1": {
+        "title": "1. Informações que Recolhemos",
+        "content": "Recolhemos informações que nos fornece diretamente, como nome, e-mail e dados financeiros que insere na aplicação. Também recolhemos informações de utilização para melhorar os nossos serviços."
+      },
+      "section2": {
+        "title": "2. Como Utilizamos as Suas Informações",
+        "content": "Utilizamos as suas informações para fornecer, manter e melhorar os nossos serviços, processar transações, enviar notificações importantes e personalizar a sua experiência na aplicação."
+      },
+      "section3": {
+        "title": "3. Proteção de Dados",
+        "content": "Os seus dados são armazenados de forma segura com encriptação de ponta a ponta. Implementamos medidas de segurança técnicas e organizacionais para proteger as suas informações contra acesso não autorizado."
+      },
+      "section4": {
+        "title": "4. Partilha de Dados",
+        "content": "Não vendemos as suas informações pessoais. Podemos partilhar dados com prestadores de serviços que nos ajudam a operar a aplicação, sempre sob acordos de confidencialidade."
+      },
+      "section5": {
+        "title": "5. Cookies e Tecnologias Similares",
+        "content": "Utilizamos cookies e tecnologias similares para melhorar a sua experiência, analisar a utilização do serviço e personalizar conteúdo. Pode controlar a utilização de cookies através das definições do seu navegador."
+      },
+      "section6": {
+        "title": "6. Os Seus Direitos",
+        "content": "Tem o direito de aceder, corrigir ou eliminar os seus dados pessoais. Também pode solicitar a portabilidade dos seus dados ou revogar o consentimento a qualquer momento."
+      },
+      "section7": {
+        "title": "7. RGPD e Conformidade",
+        "content": "O MoneyQuest está em conformidade com o Regulamento Geral sobre a Proteção de Dados (RGPD). Para exercer os seus direitos ou esclarecer dúvidas, contacte-nos através da página de Suporte."
+      }
+    }
   }
 }
