@@ -452,6 +452,7 @@ export type Database = {
           currency: string
           display_name: string | null
           financial_mood: string
+          has_used_trial: boolean
           id: string
           language: string
           last_active_date: string | null
@@ -475,6 +476,8 @@ export type Database = {
           timezone: string
           total_expenses: number
           total_income: number
+          trial_end_date: string | null
+          trial_start_date: string | null
           updated_at: string
           xp: number
         }
@@ -485,6 +488,7 @@ export type Database = {
           currency?: string
           display_name?: string | null
           financial_mood?: string
+          has_used_trial?: boolean
           id: string
           language?: string
           last_active_date?: string | null
@@ -508,6 +512,8 @@ export type Database = {
           timezone?: string
           total_expenses?: number
           total_income?: number
+          trial_end_date?: string | null
+          trial_start_date?: string | null
           updated_at?: string
           xp?: number
         }
@@ -518,6 +524,7 @@ export type Database = {
           currency?: string
           display_name?: string | null
           financial_mood?: string
+          has_used_trial?: boolean
           id?: string
           language?: string
           last_active_date?: string | null
@@ -541,6 +548,8 @@ export type Database = {
           timezone?: string
           total_expenses?: number
           total_income?: number
+          trial_end_date?: string | null
+          trial_start_date?: string | null
           updated_at?: string
           xp?: number
         }
@@ -1143,6 +1152,7 @@ export type Database = {
           currency: string
           display_name: string | null
           financial_mood: string
+          has_used_trial: boolean
           id: string
           language: string
           last_active_date: string | null
@@ -1166,6 +1176,8 @@ export type Database = {
           timezone: string
           total_expenses: number
           total_income: number
+          trial_end_date: string | null
+          trial_start_date: string | null
           updated_at: string
           xp: number
         }[]

@@ -42,6 +42,8 @@ import { AdBanner } from '@/components/ads/AdBanner';
 import { CashFlowWidget } from '@/components/reports/CashFlowWidget';
 import { PeriodComparisonWidget } from '@/components/reports/PeriodComparisonWidget';
 import { TierUpgradeCelebration } from '@/components/referral/TierUpgradeCelebration';
+import { TrialBanner } from '@/components/trial/TrialBanner';
+import { TrialExpiredDialog } from '@/components/trial/TrialExpiredDialog';
 import { useAdBanner } from '@/hooks/useAdBanner';
 import { useReferralNotifications } from '@/hooks/useReferralNotifications';
 import { getFeedbackMessage } from '@/lib/feedbackMessages';
@@ -162,6 +164,9 @@ const Index = () => {
             <div className="flex justify-center sm:justify-start">
               <MoodIndicator />
             </div>
+            
+            {/* Trial Premium Banner */}
+            <TrialBanner />
             
             <DailyRewardBanner onClaimClick={() => setShowRewardDialog(true)} />
             <LevelProgress profile={profile} />
@@ -295,6 +300,9 @@ const Index = () => {
           refetchBadges();
         }}
       />
+
+      {/* Trial expired dialog - shown once when trial ends */}
+      <TrialExpiredDialog />
     </div>
   );
 };

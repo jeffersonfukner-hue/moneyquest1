@@ -58,38 +58,55 @@ serve(async (req) => {
     if (!user?.email) throw new Error("User not authenticated or email not available");
     logStep("User authenticated", { userId: user.id, email: user.email });
 
-    // Fetch current profile to check premium_override
+    // Fetch current profile to check premium_override and trial status
     const { data: profile, error: profileError } = await supabaseClient
       .from("profiles")
-      .select("premium_override")
+      .select("premium_override, trial_start_date, trial_end_date, has_used_trial, subscription_plan")
       .eq("id", user.id)
       .single();
 
     if (profileError) {
-      logStep("WARNING", { message: "Failed to fetch profile override", error: profileError.message });
+      logStep("WARNING", { message: "Failed to fetch profile", error: profileError.message });
     }
 
     const premiumOverride = profile?.premium_override || 'none';
-    logStep("Current override status", { premiumOverride });
+    const trialEndDate = profile?.trial_end_date ? new Date(profile.trial_end_date) : null;
+    const hasUsedTrial = profile?.has_used_trial ?? false;
+    const now = new Date();
+    
+    // Check if trial has expired
+    const trialExpired = trialEndDate && trialEndDate < now;
+    const wasInTrial = hasUsedTrial && profile?.subscription_plan === 'PREMIUM';
+    
+    logStep("Current status", { premiumOverride, trialEndDate, trialExpired, hasUsedTrial, wasInTrial });
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     
     if (customers.data.length === 0) {
-      logStep("No customer found, updating stripe status only");
+      logStep("No Stripe customer found, checking trial status");
       
       // Build update data - always update stripe_subscription_status
       const updateData: Record<string, any> = { 
         stripe_subscription_status: 'inactive',
-        subscription_expires_at: null,
         stripe_customer_id: null,
         stripe_subscription_id: null
       };
 
-      // Only update subscription_plan if no admin override
+      // Determine subscription plan based on trial and override
       if (premiumOverride === 'none') {
-        updateData.subscription_plan = "FREE";
-        logStep("No override - setting plan to FREE");
+        // If trial is still active, keep as PREMIUM
+        if (trialEndDate && trialEndDate > now) {
+          logStep("Trial still active - keeping PREMIUM");
+          // Don't change subscription_plan, keep it as PREMIUM
+        } else if (trialExpired && wasInTrial) {
+          // Trial expired - downgrade to FREE
+          updateData.subscription_plan = "FREE";
+          logStep("Trial expired - downgrading to FREE");
+        } else {
+          updateData.subscription_plan = "FREE";
+          logStep("No trial or subscription - setting plan to FREE");
+        }
       } else {
         logStep("Override active - preserving current subscription_plan", { premiumOverride });
       }
@@ -98,11 +115,21 @@ serve(async (req) => {
         .from("profiles")
         .update(updateData)
         .eq("id", user.id);
+
+      // Determine effective plan for response
+      let effectivePlan = "FREE";
+      if (premiumOverride === 'force_on') {
+        effectivePlan = "PREMIUM";
+      } else if (trialEndDate && trialEndDate > now) {
+        effectivePlan = "PREMIUM";
+      }
       
       return new Response(JSON.stringify({ 
         subscribed: false,
-        plan: premiumOverride === 'force_on' ? "PREMIUM" : "FREE",
-        override: premiumOverride
+        plan: effectivePlan,
+        override: premiumOverride,
+        is_trial: trialEndDate && trialEndDate > now,
+        trial_end_date: trialEndDate?.toISOString() || null
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
@@ -149,10 +176,23 @@ serve(async (req) => {
       subscription_expires_at: subscriptionEnd,
     };
 
-    // Only update subscription_plan if no admin override
+    // Determine subscription plan based on override, Stripe status, and trial
     if (premiumOverride === 'none') {
-      updateData.subscription_plan = hasActiveSub ? "PREMIUM" : "FREE";
-      logStep("No override - updating subscription_plan", { plan: updateData.subscription_plan });
+      if (hasActiveSub) {
+        updateData.subscription_plan = "PREMIUM";
+        logStep("Active Stripe subscription - setting PREMIUM");
+      } else if (trialEndDate && trialEndDate > now) {
+        // Trial still active, keep PREMIUM
+        logStep("Trial still active - keeping PREMIUM");
+        // Don't set plan in updateData to preserve current
+      } else if (trialExpired) {
+        // Trial expired and no Stripe subscription - downgrade
+        updateData.subscription_plan = "FREE";
+        logStep("Trial expired, no Stripe sub - downgrading to FREE");
+      } else {
+        updateData.subscription_plan = "FREE";
+        logStep("No active subscription or trial - setting FREE");
+      }
     } else {
       logStep("Override active - preserving current subscription_plan", { premiumOverride });
     }
@@ -167,13 +207,18 @@ serve(async (req) => {
     if (premiumOverride === 'force_on') effectivePlan = "PREMIUM";
     if (premiumOverride === 'force_off') effectivePlan = "FREE";
 
+    // Check if user is in trial (has trial, no Stripe sub)
+    const isInTrial = !hasActiveSub && trialEndDate && trialEndDate > now;
+
     return new Response(JSON.stringify({
       subscribed: hasActiveSub,
       plan: effectivePlan,
       subscription_end: subscriptionEnd,
       customer_id: customerId,
       subscription_id: stripeSubscriptionId,
-      override: premiumOverride
+      override: premiumOverride,
+      is_trial: isInTrial,
+      trial_end_date: isInTrial ? trialEndDate?.toISOString() : null
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
