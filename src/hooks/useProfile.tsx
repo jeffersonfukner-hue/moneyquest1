@@ -33,7 +33,7 @@ export const useProfile = () => {
       .maybeSingle();
 
     if (!error && data) {
-      const profileData = data as Profile;
+      const profileData = data as unknown as Profile;
       
       // Auto-detect and set timezone on first login (when still using default)
       if (profileData.timezone === 'America/Sao_Paulo') {
@@ -64,7 +64,7 @@ export const useProfile = () => {
               .eq('id', user.id)
               .maybeSingle();
             if (updatedData) {
-              setProfile(updatedData as Profile);
+              setProfile(updatedData as unknown as Profile);
             }
           }
         } catch (e) {
@@ -111,7 +111,7 @@ export const useProfile = () => {
 
     const { error } = await supabase
       .from('profiles')
-      .update(updates)
+      .update(updates as Record<string, unknown>)
       .eq('id', user.id);
 
     if (!error) {

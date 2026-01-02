@@ -704,7 +704,19 @@
     "ratesNotLoaded": "Tasas no cargadas",
     "timezone": "Zona Horaria",
     "timezoneError": "Error al actualizar zona horaria",
-    "timezoneSuccess": "Zona horaria actualizada correctamente"
+    "timezoneSuccess": "Zona horaria actualizada correctamente",
+    "notificationPreferences": {
+      "title": "Preferencias de Notificación",
+      "messages": "Mensajes del Sistema",
+      "messagesDesc": "Avisos y actualizaciones de MoneyQuest",
+      "support": "Respuestas del Soporte",
+      "supportDesc": "Cuando hay respuesta en tus tickets",
+      "referral": "Invitaciones",
+      "referralDesc": "Cuando tus invitaciones son convertidas",
+      "reward": "Recompensas",
+      "rewardDesc": "Cuando ganas XP o premios",
+      "saveError": "Error al guardar preferencias"
+    }
   },
   "mood": {
     "veryPositive": "Muy Positivo",

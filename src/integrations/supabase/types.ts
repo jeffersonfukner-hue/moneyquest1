@@ -458,6 +458,7 @@ export type Database = {
           level: number
           level_title: string
           locale: string
+          notification_preferences: Json
           onboarding_completed: boolean
           premium_override: Database["public"]["Enums"]["premium_override_type"]
           referral_code: string | null
@@ -490,6 +491,7 @@ export type Database = {
           level?: number
           level_title?: string
           locale?: string
+          notification_preferences?: Json
           onboarding_completed?: boolean
           premium_override?: Database["public"]["Enums"]["premium_override_type"]
           referral_code?: string | null
@@ -522,6 +524,7 @@ export type Database = {
           level?: number
           level_title?: string
           locale?: string
+          notification_preferences?: Json
           onboarding_completed?: boolean
           premium_override?: Database["public"]["Enums"]["premium_override_type"]
           referral_code?: string | null
@@ -1094,6 +1097,7 @@ export type Database = {
           level: number
           level_title: string
           locale: string
+          notification_preferences: Json
           onboarding_completed: boolean
           premium_override: Database["public"]["Enums"]["premium_override_type"]
           referral_code: string | null

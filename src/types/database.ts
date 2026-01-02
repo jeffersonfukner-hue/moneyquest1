@@ -6,6 +6,13 @@ export type SubscriptionPlan = 'FREE' | 'PREMIUM';
 export type ThemePreference = 'light' | 'dark' | 'system';
 export type PremiumOverride = 'none' | 'force_on' | 'force_off';
 
+export interface NotificationPreferences {
+  messages: boolean;
+  support: boolean;
+  referral: boolean;
+  reward: boolean;
+}
+
 export interface Profile {
   id: string;
   xp: number;
@@ -32,6 +39,7 @@ export interface Profile {
   theme_preference: ThemePreference;
   timezone: string;
   onboarding_completed: boolean;
+  notification_preferences: NotificationPreferences;
   created_at: string;
   updated_at: string;
 }

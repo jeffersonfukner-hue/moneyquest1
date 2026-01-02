@@ -620,7 +620,19 @@
     "dangerZone": "Zona de Perigo",
     "deleteAccount": "Eliminar Conta",
     "deleteAccountWarning": "Esta ação é irreversível. Todos os seus dados serão eliminados permanentemente.",
-    "deleteAccountConfirm": "Tem a certeza que deseja eliminar a sua conta? Esta ação não pode ser desfeita."
+    "deleteAccountConfirm": "Tem a certeza que deseja eliminar a sua conta? Esta ação não pode ser desfeita.",
+    "notificationPreferences": {
+      "title": "Preferências de Notificação",
+      "messages": "Mensagens do Sistema",
+      "messagesDesc": "Avisos e atualizações do MoneyQuest",
+      "support": "Respostas do Suporte",
+      "supportDesc": "Quando há resposta nos seus tickets",
+      "referral": "Indicações",
+      "referralDesc": "Quando as suas indicações são convertidas",
+      "reward": "Recompensas",
+      "rewardDesc": "Quando ganha XP ou prémios",
+      "saveError": "Falha ao guardar preferências"
+    }
   },
   "premium": {
     "title": "Seja Premium",
