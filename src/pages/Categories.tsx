@@ -15,6 +15,9 @@ import { AdBanner } from '@/components/ads/AdBanner';
 import { useAdBanner } from '@/hooks/useAdBanner';
 import { cn } from '@/lib/utils';
 import { getCategoryTranslationKey } from '@/lib/gameLogic';
+import { BottomNavigation } from '@/components/navigation/BottomNavigation';
+import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
+import { useTransactions } from '@/hooks/useTransactions';
 
 const Categories = () => {
   const navigate = useNavigate();
@@ -22,11 +25,13 @@ const Categories = () => {
   const { user, loading: authLoading } = useAuth();
   const { categories, loading, getCategoriesByType, deleteCategory, updateCategory, addCategory } = useCategories();
   const { shouldShowBanner } = useAdBanner();
+  const { addTransaction } = useTransactions();
   
   const [activeTab, setActiveTab] = useState<TransactionType>('EXPENSE');
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [editCategory, setEditCategory] = useState<Category | null>(null);
   const [deleteConfirmCategory, setDeleteConfirmCategory] = useState<Category | null>(null);
+  const [showAddTransaction, setShowAddTransaction] = useState(false);
 
   if (authLoading) {
     return (
@@ -191,6 +196,22 @@ const Categories = () => {
       />
 
       <AdBanner />
+
+      <BottomNavigation 
+        activeTab="home" 
+        onTabChange={(tab) => {
+          if (tab === 'home') navigate('/');
+          if (tab === 'transactions') navigate('/');
+          if (tab === 'quests') navigate('/');
+        }}
+        onAddClick={() => setShowAddTransaction(true)}
+      />
+
+      <AddTransactionDialog 
+        open={showAddTransaction} 
+        onOpenChange={setShowAddTransaction}
+        onAdd={addTransaction}
+      />
     </div>
   );
 };

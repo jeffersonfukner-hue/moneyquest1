@@ -11,6 +11,9 @@ import { NewTicketDialog } from '@/components/support/NewTicketDialog';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR, enUS, es } from 'date-fns/locale';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { BottomNavigation } from '@/components/navigation/BottomNavigation';
+import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
+import { useTransactions } from '@/hooks/useTransactions';
 
 const STATUS_CONFIG = {
   sent: { 
@@ -45,6 +48,8 @@ export default function MyMessages() {
   const { language } = useLanguage();
   const { tickets, ticketsLoading } = useSupportTickets();
   const [showNewTicketDialog, setShowNewTicketDialog] = useState(false);
+  const { addTransaction } = useTransactions();
+  const [showAddTransaction, setShowAddTransaction] = useState(false);
 
   const getDateLocale = () => {
     if (language.startsWith('pt')) return ptBR;
@@ -60,7 +65,7 @@ export default function MyMessages() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-20">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
         <div className="container flex items-center justify-between gap-3 py-4">
@@ -154,6 +159,22 @@ export default function MyMessages() {
       <NewTicketDialog 
         open={showNewTicketDialog} 
         onOpenChange={setShowNewTicketDialog} 
+      />
+
+      <BottomNavigation 
+        activeTab="home" 
+        onTabChange={(tab) => {
+          if (tab === 'home') navigate('/');
+          if (tab === 'transactions') navigate('/');
+          if (tab === 'quests') navigate('/');
+        }}
+        onAddClick={() => setShowAddTransaction(true)}
+      />
+
+      <AddTransactionDialog 
+        open={showAddTransaction} 
+        onOpenChange={setShowAddTransaction}
+        onAdd={addTransaction}
       />
     </div>
   );

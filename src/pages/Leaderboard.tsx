@@ -18,6 +18,9 @@ import { cn } from '@/lib/utils';
 import { AvatarDisplay } from '@/components/profile/AvatarDisplay';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { useAdBanner } from '@/hooks/useAdBanner';
+import { BottomNavigation } from '@/components/navigation/BottomNavigation';
+import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
+import { useTransactions } from '@/hooks/useTransactions';
 
 const getRankIcon = (rank: number) => {
   if (rank === 1) return <Crown className="w-5 h-5 text-yellow-500" />;
@@ -62,6 +65,7 @@ export default function Leaderboard() {
   const { user } = useAuth();
   const { profile } = useProfile();
   const { shouldShowBanner } = useAdBanner();
+  const { addTransaction } = useTransactions();
   const {
     isOnLeaderboard,
     myEntry,
@@ -80,6 +84,7 @@ export default function Leaderboard() {
   const [isPublic, setIsPublic] = useState(myEntry?.is_public ?? true);
   const [joining, setJoining] = useState(false);
   const [displayName, setDisplayName] = useState(profile?.display_name || '');
+  const [showAddTransaction, setShowAddTransaction] = useState(false);
 
   const handleJoin = async () => {
     setJoining(true);
@@ -350,6 +355,22 @@ export default function Leaderboard() {
       </main>
 
       <AdBanner />
+
+      <BottomNavigation 
+        activeTab="home" 
+        onTabChange={(tab) => {
+          if (tab === 'home') navigate('/');
+          if (tab === 'transactions') navigate('/');
+          if (tab === 'quests') navigate('/');
+        }}
+        onAddClick={() => setShowAddTransaction(true)}
+      />
+
+      <AddTransactionDialog 
+        open={showAddTransaction} 
+        onOpenChange={setShowAddTransaction}
+        onAdd={addTransaction}
+      />
     </div>
   );
 }
