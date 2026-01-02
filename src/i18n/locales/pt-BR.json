@@ -150,7 +150,8 @@
       "remaining": "Faltam {{count}} indicações",
       "maxLevel": "Você atingiu o nível máximo!",
       "benefits": "Recompensas por indicação:",
-      "premiumDays": "dias Premium"
+      "premiumDays": "dias Premium",
+      "nextTierRewards": "{{tier}}: +{{xp}} XP, +{{days}} dias"
     }
   },
   "notifications": {

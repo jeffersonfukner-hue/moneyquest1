@@ -151,7 +151,8 @@
       "remaining": "{{count}} referrals remaining",
       "maxLevel": "You've reached the max level!",
       "benefits": "Rewards per referral:",
-      "premiumDays": "Premium days"
+      "premiumDays": "Premium days",
+      "nextTierRewards": "{{tier}}: +{{xp}} XP, +{{days}} days"
     }
   },
   "notifications": {
