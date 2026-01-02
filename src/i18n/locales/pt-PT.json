@@ -1144,5 +1144,22 @@
         "content": "O MoneyQuest está em conformidade com o Regulamento Geral sobre a Proteção de Dados (RGPD). Para exercer os seus direitos ou esclarecer dúvidas, contacte-nos através da página de Suporte."
       }
     }
+  },
+  "resourceBars": {
+    "title": "Estado de Recursos",
+    "provisions": "Provisões",
+    "travelFuel": "Combustível de Viagem",
+    "funEnergy": "Energia de Diversão",
+    "treasure": "Tesouro",
+    "kingdomTax": "Taxa do Reino",
+    "lifeEssence": "Essência Vital",
+    "magicScrolls": "Pergaminhos Mágicos",
+    "guildFees": "Taxas da Guilda",
+    "ofBudget": "do orçamento",
+    "noBudget": "Sem orçamento definido",
+    "overBudget": "Acima do orçamento!",
+    "noSpending": "Nenhum gasto registado este mês!",
+    "noSpendingHint": "Os seus recursos estão totalmente preservados.",
+    "hint": "Mantenha os seus recursos equilibrados!"
   }
 }

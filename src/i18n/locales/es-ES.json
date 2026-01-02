@@ -1357,7 +1357,10 @@
     "guildFees": "Tasas del Gremio",
     "ofBudget": "del presupuesto",
     "noBudget": "Sin presupuesto definido",
-    "overBudget": "¡Sobre el presupuesto!"
+    "overBudget": "¡Sobre el presupuesto!",
+    "noSpending": "¡Ningún gasto registrado este mes!",
+    "noSpendingHint": "Tus recursos están completamente preservados.",
+    "hint": "¡Mantén tus recursos equilibrados!"
   },
   "journal": {
     "title": "Diario de Aventuras",
