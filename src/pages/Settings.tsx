@@ -90,7 +90,12 @@ const Settings = () => {
   };
 
   const handleSignOut = async () => {
-    await signOut();
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Logout error (ignored):', error);
+    }
+    // Always navigate to login, regardless of result
     navigate('/login');
   };
 

@@ -79,7 +79,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('SignOut API error (ignored):', error);
+    }
+    
+    // Always clear local state, even if API fails
+    setUser(null);
+    setSession(null);
+    
+    // Clear localStorage as fallback for corrupted sessions
+    const keys = Object.keys(localStorage);
+    keys.forEach(key => {
+      if (key.startsWith('sb-') || key.includes('supabase')) {
+        localStorage.removeItem(key);
+      }
+    });
   };
 
   const resetPassword = async (email: string) => {
