@@ -598,3 +598,49 @@
 .hover-glow:hover {
   box-shadow: var(--shadow-glow-accent);
 }
+
+/* ========================================
+   GOLD TIER SHIMMER ANIMATION
+   ======================================== */
+
+.animate-shimmer-gold {
+  position: relative;
+  overflow: hidden;
+}
+
+.animate-shimmer-gold::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg, 
+    transparent 0%, 
+    rgba(234, 179, 8, 0.4) 25%, 
+    rgba(253, 224, 71, 0.6) 50%, 
+    rgba(234, 179, 8, 0.4) 75%, 
+    transparent 100%
+  );
+  animation: shimmer-sweep-gold 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes shimmer-sweep-gold {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.gold-glow {
+  animation: gold-glow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes gold-glow-pulse {
+  0%, 100% { 
+    box-shadow: 0 0 5px rgba(234, 179, 8, 0.3);
+  }
+  50% { 
+    box-shadow: 0 0 15px rgba(234, 179, 8, 0.6), 0 0 25px rgba(253, 224, 71, 0.3);
+  }
+}
