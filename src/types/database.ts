@@ -1,6 +1,6 @@
 export type FinancialMood = 'VERY_POSITIVE' | 'POSITIVE' | 'NEUTRAL' | 'NEGATIVE' | 'CRITICAL';
 
-export type SupportedLanguage = 'pt-BR' | 'en-US' | 'es-ES';
+export type SupportedLanguage = 'pt-BR' | 'pt-PT' | 'en-US' | 'es-ES';
 export type SupportedCurrency = 'BRL' | 'USD' | 'EUR';
 export type SubscriptionPlan = 'FREE' | 'PREMIUM';
 export type ThemePreference = 'light' | 'dark' | 'system';
