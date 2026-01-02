@@ -42,6 +42,10 @@ export interface Profile {
   notification_preferences: NotificationPreferences;
   created_at: string;
   updated_at: string;
+  // Trial premium fields
+  trial_start_date: string | null;
+  trial_end_date: string | null;
+  has_used_trial: boolean;
 }
 
 export interface Transaction {

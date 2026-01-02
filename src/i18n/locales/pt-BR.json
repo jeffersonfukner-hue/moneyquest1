@@ -1385,6 +1385,24 @@
     "noSpendingHint": "Seus recursos estão totalmente preservados.",
     "hint": "Mantenha seus recursos equilibrados!"
   },
+  "trial": {
+    "bannerTitle": "Premium Gratuito",
+    "normalMessage": "Você está usando o Premium gratuito. Termina em {{days}} dias.",
+    "warningMessage": "Seu Premium gratuito termina em {{days}} dias. Não perca os recursos exclusivos!",
+    "criticalMessage": "Últimas {{hours}} horas de Premium gratuito. Faça o upgrade para continuar.",
+    "ctaButton": "Fazer upgrade para Premium",
+    "progressStart": "Início",
+    "daysLeft": "{{days}} dias restantes",
+    "hoursLeft": "{{hours}}h restantes",
+    "expiredTitle": "Período Premium encerrado",
+    "expiredMessage": "Seu período gratuito de Premium terminou. Faça o upgrade para continuar aproveitando todos os recursos.",
+    "expiredFeaturesLost": "Recursos que você perderá:",
+    "expiredFeature1": "Missões semanais e mensais",
+    "expiredFeature2": "Metas por categoria ilimitadas",
+    "expiredFeature3": "Consultor financeiro com IA",
+    "expiredFeature4": "Relatórios avançados",
+    "continueFreePlan": "Continuar com plano gratuito"
+  },
   "journal": {
     "title": "Diário de Aventuras",
     "questStats": "Estatísticas da Jornada",

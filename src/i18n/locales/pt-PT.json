@@ -1161,5 +1161,23 @@
     "noSpending": "Nenhum gasto registado este mês!",
     "noSpendingHint": "Os seus recursos estão totalmente preservados.",
     "hint": "Mantenha os seus recursos equilibrados!"
+  },
+  "trial": {
+    "bannerTitle": "Premium Gratuito",
+    "normalMessage": "Está a usar o Premium gratuito. Termina em {{days}} dias.",
+    "warningMessage": "O seu Premium gratuito termina em {{days}} dias. Não perca os recursos exclusivos!",
+    "criticalMessage": "Últimas {{hours}} horas de Premium gratuito. Faça o upgrade para continuar.",
+    "ctaButton": "Fazer upgrade para Premium",
+    "progressStart": "Início",
+    "daysLeft": "{{days}} dias restantes",
+    "hoursLeft": "{{hours}}h restantes",
+    "expiredTitle": "Período Premium terminado",
+    "expiredMessage": "O seu período Premium gratuito terminou. Faça o upgrade para continuar a desfrutar de todos os recursos.",
+    "expiredFeaturesLost": "Recursos que vai perder:",
+    "expiredFeature1": "Missões semanais e mensais",
+    "expiredFeature2": "Metas por categoria ilimitadas",
+    "expiredFeature3": "Consultor financeiro com IA",
+    "expiredFeature4": "Relatórios avançados",
+    "continueFreePlan": "Continuar com plano gratuito"
   }
 }

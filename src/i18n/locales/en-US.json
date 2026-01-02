@@ -1384,6 +1384,24 @@
     "noSpendingHint": "Your resources are fully preserved.",
     "hint": "Keep your resources balanced!"
   },
+  "trial": {
+    "bannerTitle": "Free Premium",
+    "normalMessage": "You're using free Premium. Ends in {{days}} days.",
+    "warningMessage": "Your free Premium ends in {{days}} days. Don't miss the exclusive features!",
+    "criticalMessage": "Last {{hours}} hours of free Premium. Upgrade to continue.",
+    "ctaButton": "Upgrade to Premium",
+    "progressStart": "Start",
+    "daysLeft": "{{days}} days left",
+    "hoursLeft": "{{hours}}h left",
+    "expiredTitle": "Premium period ended",
+    "expiredMessage": "Your free Premium period has ended. Upgrade to continue enjoying all the features.",
+    "expiredFeaturesLost": "Features you'll lose:",
+    "expiredFeature1": "Weekly and monthly quests",
+    "expiredFeature2": "Unlimited category goals",
+    "expiredFeature3": "AI financial coach",
+    "expiredFeature4": "Advanced reports",
+    "continueFreePlan": "Continue with free plan"
+  },
   "journal": {
     "title": "Adventure Journal",
     "questStats": "Quest Statistics",
