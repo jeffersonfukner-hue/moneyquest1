@@ -1400,7 +1400,9 @@
     "expiredFeature2": "Unlimited category goals",
     "expiredFeature3": "AI financial coach",
     "expiredFeature4": "Advanced reports",
-    "continueFreePlan": "Continue with free plan"
+    "continueFreePlan": "Continue with free plan",
+    "abuseDetected": "Trial blocked",
+    "abuseMessage": "We detected that this device has already used the free trial period. The trial is not available for this account."
   },
   "journal": {
     "title": "Adventure Journal",

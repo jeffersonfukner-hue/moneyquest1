@@ -1401,7 +1401,9 @@
     "expiredFeature2": "Metas por categoria ilimitadas",
     "expiredFeature3": "Consultor financeiro com IA",
     "expiredFeature4": "Relatórios avançados",
-    "continueFreePlan": "Continuar com plano gratuito"
+    "continueFreePlan": "Continuar com plano gratuito",
+    "abuseDetected": "Trial bloqueado",
+    "abuseMessage": "Detectamos que este dispositivo já utilizou o período gratuito anteriormente. O trial não está disponível para esta conta."
   },
   "journal": {
     "title": "Diário de Aventuras",

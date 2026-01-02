@@ -1259,6 +1259,14 @@ export type Database = {
         Returns: undefined
       }
       archive_monthly_goals: { Args: { p_user_id: string }; Returns: undefined }
+      block_trial_for_abuse: {
+        Args: { p_reason: string; p_user_id: string }
+        Returns: undefined
+      }
+      check_fingerprint_trial_abuse: {
+        Args: { p_fingerprint_hash: string }
+        Returns: Json
+      }
       check_referral_fraud: {
         Args: { p_referred_id: string; p_referrer_id: string }
         Returns: Json
@@ -1300,6 +1308,17 @@ export type Database = {
             Args: { p_referral_code: string; p_referred_user_id: string }
             Returns: Json
           }
+      register_fingerprint_with_trial_check: {
+        Args: {
+          p_fingerprint_hash: string
+          p_language?: string
+          p_screen_resolution?: string
+          p_timezone?: string
+          p_user_agent?: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
       reset_expired_quests: { Args: { p_user_id: string }; Returns: undefined }
       resolve_premium_status: {
         Args: {

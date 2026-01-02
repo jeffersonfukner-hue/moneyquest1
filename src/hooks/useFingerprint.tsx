@@ -1,13 +1,25 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
+
+interface FingerprintResult {
+  success: boolean;
+  trialBlocked: boolean;
+  reason?: string;
+}
 
 export const useFingerprint = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
+  const [trialBlocked, setTrialBlocked] = useState(false);
 
-  const captureFingerprint = useCallback(async () => {
-    if (!user?.id) return;
+  const captureFingerprint = useCallback(async (): Promise<FingerprintResult> => {
+    if (!user?.id) {
+      return { success: false, trialBlocked: false };
+    }
 
     try {
       // Initialize FingerprintJS
@@ -16,29 +28,47 @@ export const useFingerprint = () => {
 
       // Gather additional device info
       const fingerprintData = {
-        user_id: user.id,
-        fingerprint_hash: result.visitorId,
-        user_agent: navigator.userAgent,
-        screen_resolution: `${screen.width}x${screen.height}`,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        language: navigator.language,
+        p_user_id: user.id,
+        p_fingerprint_hash: result.visitorId,
+        p_user_agent: navigator.userAgent,
+        p_screen_resolution: `${screen.width}x${screen.height}`,
+        p_timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        p_language: navigator.language,
       };
 
-      // Insert fingerprint (will be ignored if duplicate due to unique constraint)
-      const { error } = await supabase
-        .from('user_fingerprints')
-        .upsert(fingerprintData, { 
-          onConflict: 'user_id,fingerprint_hash',
-          ignoreDuplicates: true 
-        });
+      // Call the RPC function that checks for trial abuse
+      const { data, error } = await supabase.rpc(
+        'register_fingerprint_with_trial_check',
+        fingerprintData
+      );
 
-      if (error && !error.message.includes('duplicate')) {
-        console.error('Error saving fingerprint:', error);
+      if (error) {
+        console.error('Error registering fingerprint:', error);
+        return { success: false, trialBlocked: false };
       }
+
+      const response = data as { success: boolean; trial_blocked: boolean; reason?: string; message?: string };
+
+      // If trial was blocked due to abuse
+      if (response?.trial_blocked) {
+        setTrialBlocked(true);
+        toast.error(t('trial.abuseDetected'), {
+          description: t('trial.abuseMessage'),
+          duration: 10000,
+        });
+        return { 
+          success: false, 
+          trialBlocked: true, 
+          reason: response.reason 
+        };
+      }
+
+      return { success: true, trialBlocked: false };
     } catch (error) {
       console.error('Error capturing fingerprint:', error);
+      return { success: false, trialBlocked: false };
     }
-  }, [user?.id]);
+  }, [user?.id, t]);
 
   // Capture fingerprint when user logs in
   useEffect(() => {
@@ -47,5 +77,5 @@ export const useFingerprint = () => {
     }
   }, [user?.id, captureFingerprint]);
 
-  return { captureFingerprint };
+  return { captureFingerprint, trialBlocked };
 };
