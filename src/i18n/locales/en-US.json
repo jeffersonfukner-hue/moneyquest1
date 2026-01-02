@@ -153,6 +153,12 @@
       "benefits": "Rewards per referral:",
       "premiumDays": "Premium days",
       "nextTierRewards": "{{tier}}: +{{xp}} XP, +{{days}} days"
+    },
+    "tierCelebration": {
+      "title": "New Tier Unlocked!",
+      "description": "Congratulations! You've leveled up in the referral program and unlocked new rewards!",
+      "newRewards": "Your new rewards per referral:",
+      "badgeUnlocked": "Tier badge unlocked!"
     }
   },
   "notifications": {

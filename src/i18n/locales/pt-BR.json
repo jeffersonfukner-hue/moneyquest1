@@ -152,6 +152,12 @@
       "benefits": "Recompensas por indicação:",
       "premiumDays": "dias Premium",
       "nextTierRewards": "{{tier}}: +{{xp}} XP, +{{days}} dias"
+    },
+    "tierCelebration": {
+      "title": "Novo Nível Desbloqueado!",
+      "description": "Parabéns! Você subiu de nível no programa de indicação e desbloqueou novas recompensas!",
+      "newRewards": "Suas novas recompensas por indicação:",
+      "badgeUnlocked": "Badge de tier desbloqueado!"
     }
   },
   "notifications": {
