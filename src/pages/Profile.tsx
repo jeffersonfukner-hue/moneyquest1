@@ -13,6 +13,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { toast } from '@/hooks/use-toast';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
 import { XPHistoryCard } from '@/components/game/XPHistoryCard';
+import { ReferralSummaryWidget } from '@/components/referral/ReferralSummaryWidget';
 import { AppLayout } from '@/components/layout/AppLayout';
 
 const AVATAR_OPTIONS = [
@@ -238,6 +239,9 @@ const Profile = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Referral Summary Widget */}
+        <ReferralSummaryWidget />
 
         {/* XP History Section */}
         <XPHistoryCard />
