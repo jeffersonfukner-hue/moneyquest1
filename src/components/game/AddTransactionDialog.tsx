@@ -166,13 +166,13 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
         xpGained: prev.xpGained + (result.xpEarned || 10),
       }));
       
-      // Reset form for next transaction
+      // Reset form for next transaction (keep date for convenience)
       setDescription('');
       setAmount('');
       setCategory('');
       setSelectedCurrency(currency);
       setWalletId(null);
-      setDate(new Date());
+      // Date is intentionally kept for multiple transactions on same day
       setTouched({ description: false, amount: false, category: false, wallet: false });
       setAttemptedSubmit(false);
     }
