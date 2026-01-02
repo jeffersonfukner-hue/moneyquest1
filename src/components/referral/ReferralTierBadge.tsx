@@ -34,6 +34,14 @@ const tierGradients = {
   gold: 'from-yellow-500/20 via-yellow-500/10 to-transparent',
 };
 
+// Tier-based rewards
+const tierRewards = {
+  none: { xp: 500, days: 7 },
+  bronze: { xp: 500, days: 7 },
+  silver: { xp: 600, days: 8 },
+  gold: { xp: 750, days: 10 },
+};
+
 export const ReferralTierBadge = ({ tierInfo, isLoading }: ReferralTierBadgeProps) => {
   const { t } = useTranslation();
 
@@ -106,14 +114,23 @@ export const ReferralTierBadge = ({ tierInfo, isLoading }: ReferralTierBadgeProp
           </p>
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div className="text-center p-2 rounded bg-background/50">
-              <span className="font-bold text-primary">+500</span>
+              <span className="font-bold text-primary">+{tierRewards[tier].xp}</span>
               <span className="text-muted-foreground ml-1">XP</span>
             </div>
             <div className="text-center p-2 rounded bg-background/50">
-              <span className="font-bold text-accent">+7</span>
+              <span className="font-bold text-accent">+{tierRewards[tier].days}</span>
               <span className="text-muted-foreground ml-1">{t('referral.tier.premiumDays', 'dias Premium')}</span>
             </div>
           </div>
+          {tier !== 'gold' && tierInfo.next_tier && (
+            <p className="text-xs text-center text-muted-foreground mt-2">
+              {t('referral.tier.nextTierRewards', '{{tier}}: +{{xp}} XP, +{{days}} dias', {
+                tier: t(`referral.tier.${tierInfo.next_tier}`, tierInfo.next_tier),
+                xp: tierRewards[tierInfo.next_tier as keyof typeof tierRewards]?.xp || 600,
+                days: tierRewards[tierInfo.next_tier as keyof typeof tierRewards]?.days || 8,
+              })}
+            </p>
+          )}
         </div>
       </CardContent>
     </Card>

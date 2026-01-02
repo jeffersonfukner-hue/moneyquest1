@@ -1270,6 +1270,7 @@ export type Database = {
       get_period_start: { Args: { period_type: string }; Returns: string }
       get_referral_stats: { Args: { p_user_id: string }; Returns: Json }
       get_referral_tier: { Args: { p_completed_count: number }; Returns: Json }
+      get_tier_rewards: { Args: { p_completed_count: number }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
