@@ -249,7 +249,9 @@
     },
     "loginDescription": "Inicia sesión para continuar tu aventura",
     "noAccount": "¿No tienes cuenta?",
-    "backToLogin": "Volver al inicio de sesión"
+    "backToLogin": "Volver al inicio de sesión",
+    "logoutConfirmTitle": "¿Cerrar sesión?",
+    "logoutConfirmDescription": "¿Estás seguro de que deseas cerrar tu sesión?"
   },
   "landing": {
     "hero": {
