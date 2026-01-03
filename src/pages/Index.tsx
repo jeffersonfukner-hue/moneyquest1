@@ -37,6 +37,7 @@ import { SessionSummaryCard } from '@/components/game/SessionSummaryCard';
 import { BottomNavigation, type TabId } from '@/components/navigation/BottomNavigation';
 import { MobileHeader } from '@/components/navigation/MobileHeader';
 import { AICoachCard } from '@/components/ai/AICoachCard';
+import { BlogPreviewCard } from '@/components/blog/BlogPreviewCard';
 import { CategoryGoalsCard } from '@/components/goals/CategoryGoalsCard';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { CashFlowWidget } from '@/components/reports/CashFlowWidget';
@@ -226,6 +227,7 @@ const Index = () => {
             {/* Social & AI at bottom */}
             <LeaderboardCard />
             <AICoachCard />
+            <BlogPreviewCard />
           </div>
         );
       case 'transactions':
