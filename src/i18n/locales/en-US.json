@@ -1,4 +1,232 @@
 {
+  "admin": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "campaigns": "Campaigns",
+      "support": "Support",
+      "comments": "Comments",
+      "referrals": "Referrals",
+      "trialAbuse": "Trial Abuse",
+      "engagement": "Engagement",
+      "analytics": "Analytics",
+      "logs": "Logs"
+    },
+    "backToApp": "Back to App",
+    "dashboard": "Super Admin Dashboard",
+    "description": "Platform overview and metrics",
+    "totalUsers": "Total Users",
+    "activeToday": "Active Today",
+    "premiumUsers": "Premium Users",
+    "engagementRate": "Engagement Rate",
+    "searchUsers": "Search users...",
+    "noUsersFound": "No users found",
+    "users": {
+      "title": "Manage Users",
+      "subtitle": "View and manage all platform users"
+    },
+    "table": {
+      "user": "User",
+      "status": "Status",
+      "plan": "Plan",
+      "lastActive": "Last Active",
+      "registered": "Registered"
+    },
+    "status": {
+      "active": "Active",
+      "blocked": "Blocked",
+      "inactive": "Inactive"
+    },
+    "actions": {
+      "grantPremium": "Grant Premium",
+      "revokePremium": "Revoke Premium",
+      "resetOverride": "Reset Override",
+      "grantBonus": "Grant Bonus",
+      "sendMessage": "Send Message",
+      "block": "Block",
+      "unblock": "Unblock",
+      "deleteUser": "Delete User"
+    },
+    "premium": {
+      "title": "Grant Premium",
+      "description": "Grant Premium access to {{user}}",
+      "lifetime": "Lifetime",
+      "temporary": "For a period",
+      "days": "Premium Days",
+      "confirm": "Confirm"
+    },
+    "block": {
+      "title": "Block User",
+      "description": "Are you sure you want to block {{user}}? This action can be reversed.",
+      "confirm": "Block"
+    },
+    "override": {
+      "forceOn": "Premium forced (admin override)",
+      "forceOff": "Premium disabled (admin override)",
+      "resetTitle": "Reset Override",
+      "resetDescription": "Reset premium override for {{user}}? Status will be controlled by Stripe.",
+      "resetConfirm": "Reset"
+    },
+    "note": "Note",
+    "notePlaceholder": "Add an optional note...",
+    "delete": {
+      "title": "Delete User",
+      "warning": "This action is irreversible. All user data will be permanently deleted.",
+      "permanentWarning": "WARNING: This action CANNOT be undone!",
+      "userInfo": "User to be deleted",
+      "autoBackup": "Automatic cloud backup",
+      "autoBackupHint": "Saves user data before deletion",
+      "backupComplete": "Backup completed successfully",
+      "backupInProgress": "Performing backup...",
+      "backupInProgressDesc": "Saving user data to cloud",
+      "backupSuccess": "Backup completed",
+      "backupSuccessDesc": "Data saved successfully to storage",
+      "backupError": "Backup error",
+      "backingUp": "Backing up...",
+      "exportButton": "Download data (JSON)",
+      "exportSuccess": "Data exported",
+      "exportSuccessDesc": "Download started successfully",
+      "exportError": "Error exporting data",
+      "confirmLabel": "Type the user's email to confirm:",
+      "emailMismatch": "The email does not match",
+      "confirmButton": "Delete permanently"
+    },
+    "logs": {
+      "title": "Activity Logs",
+      "subtitle": "Administrative action history",
+      "recentActions": "Recent Actions",
+      "date": "Date",
+      "action": "Action",
+      "details": "Details",
+      "note": "Note",
+      "noLogs": "No logs found"
+    },
+    "log": {
+      "premiumGrant": "Premium Granted",
+      "premiumRevoke": "Premium Revoked",
+      "blockUser": "User Blocked",
+      "unblockUser": "User Unblocked",
+      "grantBonus": "Bonus Granted",
+      "sendMessage": "Message Sent"
+    },
+    "charts": {
+      "week1": "Week 1",
+      "week2": "Week 2",
+      "week3": "Week 3",
+      "week4": "Week 4",
+      "last7days": "last 7 days",
+      "activityTrend": "Activity Trend",
+      "activityTrendDesc": "Active and new users in the last 7 days",
+      "activeUsers": "Active Users",
+      "newUsers": "New Users",
+      "planDistribution": "Plan Distribution",
+      "planDistributionDesc": "Free vs Premium",
+      "users": "users",
+      "highlyEngaged": "Highly Engaged",
+      "moderatelyEngaged": "Mod. Engaged",
+      "lowEngaged": "Low Engaged",
+      "inactive": "Inactive",
+      "engagementLevels": "Engagement Levels",
+      "engagementLevelsDesc": "Distribution by activity",
+      "registrationTrend": "Registration Trend",
+      "registrationTrendDesc": "New users per week",
+      "conversionFunnel": "Conversion Funnel",
+      "conversionFunnelDesc": "User journey"
+    },
+    "risk": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "distribution": "Risk Distribution",
+      "distributionDesc": "Users at risk of abandonment"
+    },
+    "funnel": {
+      "registration": "Registration",
+      "firstUse": "First Use",
+      "recurringUse": "Recurring Use",
+      "premium": "Premium"
+    },
+    "retention": {
+      "day1": "Day 1",
+      "day7": "Day 7",
+      "day30": "Day 30",
+      "title": "Retention",
+      "description": "Retention rates by period"
+    },
+    "support": {
+      "title": "Support Tickets",
+      "description": "Manage user support tickets",
+      "tickets": "Tickets",
+      "ticketsFound": "tickets found",
+      "filterByStatus": "Filter by status",
+      "status": "Status",
+      "created": "Created",
+      "actions": "Actions",
+      "view": "View",
+      "noTickets": "No tickets found",
+      "admin": "Admin",
+      "user": "User",
+      "viewAttachment": "View attachment",
+      "replyPlaceholder": "Type your reply...",
+      "sendReply": "Send Reply",
+      "replySent": "Reply sent",
+      "statusUpdated": "Status updated"
+    },
+    "referrals": {
+      "title": "Suspicious Referrals",
+      "subtitle": "Review and manage flagged referrals",
+      "suspicious": "Suspicious",
+      "pending": "Pending",
+      "approveSuccess": "Referral approved successfully",
+      "approveError": "Error approving referral",
+      "rejectSuccess": "Referral rejected",
+      "rejectError": "Error rejecting referral",
+      "reason": {
+        "sameDevice": "Same device",
+        "sameIp": "Same IP (24h)",
+        "pending": "Pending validation"
+      },
+      "approve": "Approve",
+      "reject": "Reject",
+      "approveTitle": "Approve Referral",
+      "approveDescription": "Confirm approval of this referral?",
+      "rejectTitle": "Reject Referral",
+      "rejectDescription": "Confirm rejection of this referral?"
+    },
+    "trialAbuse": {
+      "title": "Trial Abuse",
+      "subtitle": "Monitor trial period abuse attempts",
+      "totalAttempts": "Total Attempts",
+      "uniqueFingerprints": "Unique Fingerprints",
+      "reviewed": "Reviewed",
+      "markAsReviewed": "Mark as reviewed",
+      "viewFingerprint": "View fingerprint",
+      "fingerprintDetails": "Fingerprint Details",
+      "usersWithFingerprint": "Users with this fingerprint",
+      "originalUser": "Original User",
+      "duplicateUser": "Duplicate User"
+    },
+    "engagement": {
+      "title": "Engagement Alerts",
+      "subtitle": "Users at risk of abandonment",
+      "highRisk": "High Risk",
+      "mediumRisk": "Medium Risk",
+      "lowRisk": "Low Risk",
+      "daysInactive": "days inactive"
+    },
+    "comments": {
+      "title": "Comment Moderation",
+      "subtitle": "Review and moderate blog comments",
+      "pending": "Pending",
+      "approved": "Approved",
+      "hidden": "Hidden",
+      "total": "Total",
+      "approve": "Approve",
+      "hide": "Hide",
+      "delete": "Delete",
+      "noComments": "No comments found"
+    }
+  },
   "languageSelection": {
     "title": "Choose your language",
     "subtitle": "Select your language to continue"
