@@ -9,20 +9,13 @@ import { TrustBadge } from '@/components/ui/trust-badge';
 import { toast } from '@/hooks/use-toast';
 import { Eye, EyeOff, CircleCheck, CreditCard, Zap, Loader2, Mail, Lock, ChevronRight } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
-import { SupportedLanguage } from '@/i18n';
 import PublicFooter from '@/components/layout/PublicFooter';
+import PublicNavigation from '@/components/layout/PublicNavigation';
 
 type LoginMode = 'landing' | 'login' | 'forgot';
 
-const languageFlags: Record<SupportedLanguage, { flag: string; label: string }> = {
-  'pt-BR': { flag: '🇧🇷', label: 'Português (BR)' },
-  'pt-PT': { flag: '🇵🇹', label: 'Português (PT)' },
-  'en-US': { flag: '🇺🇸', label: 'English' },
-  'es-ES': { flag: '🇪🇸', label: 'Español' },
-};
-
 const Login = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [mode, setMode] = useState<LoginMode>('landing');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -31,9 +24,6 @@ const Login = () => {
   const [googleLoading, setGoogleLoading] = useState(false);
   const { signIn, signInWithGoogle, resetPassword, user } = useAuth();
   const navigate = useNavigate();
-
-  const currentLanguage = i18n.language as SupportedLanguage;
-  const currentFlag = languageFlags[currentLanguage] || languageFlags['en-US'];
 
   useEffect(() => {
     if (user) {
@@ -345,23 +335,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20 flex flex-col">
-      {/* Header */}
-      <header className="flex items-center justify-between p-4">
-        <div className="flex items-center gap-1.5 text-sm text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full">
-          <span>{currentFlag.flag}</span>
-          <span className="text-xs">{currentFlag.label}</span>
-        </div>
-        {mode === 'landing' && (
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={() => setMode('login')}
-            className="text-sm font-medium"
-          >
-            {t('auth.login')}
-          </Button>
-        )}
-      </header>
+      <PublicNavigation />
 
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center px-6 pb-8">
