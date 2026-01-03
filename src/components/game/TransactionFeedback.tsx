@@ -187,21 +187,38 @@ export const TransactionFeedback = ({
               {isLoadingNarrative ? (
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-accent animate-pulse">✨</span>
+                    <span className={`animate-pulse ${isIncome ? 'text-emerald-400' : 'text-amber-400'}`}>
+                      {isIncome ? '💰' : '⚔️'}
+                    </span>
                     <span className="text-muted-foreground italic animate-pulse">
-                      {t('narrative.generatingNarrative')}
+                      {isIncome 
+                        ? t('narrative.loadingIncome', 'Contabilizando tesouros encontrados...')
+                        : t('narrative.loadingExpense', 'Analisando recursos consumidos...')
+                      }
                     </span>
                   </div>
-                  {/* Animated loading bars with RPG theme */}
+                  {/* Animated loading bars with contextual theme */}
                   <div className="space-y-1.5 mt-1">
                     <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
-                      <div className="h-full w-3/4 bg-gradient-to-r from-accent/40 via-accent to-accent/40 rounded-full animate-shimmer" />
+                      <div className={`h-full w-3/4 rounded-full animate-shimmer ${
+                        isIncome 
+                          ? 'bg-gradient-to-r from-emerald-500/40 via-emerald-400 to-emerald-500/40' 
+                          : 'bg-gradient-to-r from-amber-500/40 via-amber-400 to-amber-500/40'
+                      }`} />
                     </div>
                     <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
-                      <div className="h-full w-1/2 bg-gradient-to-r from-accent/40 via-accent to-accent/40 rounded-full animate-shimmer" style={{ animationDelay: '0.2s' }} />
+                      <div className={`h-full w-1/2 rounded-full animate-shimmer ${
+                        isIncome 
+                          ? 'bg-gradient-to-r from-emerald-500/40 via-emerald-400 to-emerald-500/40' 
+                          : 'bg-gradient-to-r from-amber-500/40 via-amber-400 to-amber-500/40'
+                      }`} style={{ animationDelay: '0.2s' }} />
                     </div>
                     <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
-                      <div className="h-full w-2/3 bg-gradient-to-r from-accent/40 via-accent to-accent/40 rounded-full animate-shimmer" style={{ animationDelay: '0.4s' }} />
+                      <div className={`h-full w-2/3 rounded-full animate-shimmer ${
+                        isIncome 
+                          ? 'bg-gradient-to-r from-emerald-500/40 via-emerald-400 to-emerald-500/40' 
+                          : 'bg-gradient-to-r from-amber-500/40 via-amber-400 to-amber-500/40'
+                      }`} style={{ animationDelay: '0.4s' }} />
                     </div>
                   </div>
                 </div>
