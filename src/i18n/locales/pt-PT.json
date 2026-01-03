@@ -1008,6 +1008,10 @@
     "pageTitle": "Fale connosco",
     "subtitle": "Estamos aqui para ajudar",
     "chooseContact": "Escolha como prefere entrar em contacto",
+    "hours": {
+      "label": "Horário de atendimento",
+      "weekdays": "Seg-Sex"
+    },
     "whatsapp": {
       "title": "Falar pelo WhatsApp",
       "subtitle": "Resposta rápida",

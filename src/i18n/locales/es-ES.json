@@ -1523,6 +1523,10 @@
     "pageTitle": "Habla con nosotros",
     "subtitle": "Estamos aquí para ayudar",
     "chooseContact": "Elige cómo prefieres contactarnos",
+    "hours": {
+      "label": "Horario de atención",
+      "weekdays": "Lun-Vie"
+    },
     "whatsapp": {
       "title": "Hablar por WhatsApp",
       "subtitle": "Respuesta rápida",

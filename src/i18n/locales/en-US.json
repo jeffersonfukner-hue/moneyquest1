@@ -1558,6 +1558,10 @@
     "pageTitle": "Get in Touch",
     "subtitle": "We're here to help",
     "chooseContact": "Choose how you'd like to contact us",
+    "hours": {
+      "label": "Business hours",
+      "weekdays": "Mon-Fri"
+    },
     "whatsapp": {
       "title": "Chat on WhatsApp",
       "subtitle": "Quick response",
