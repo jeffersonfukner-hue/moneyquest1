@@ -14,8 +14,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { FraudAnalysisWidget } from '@/components/admin/FraudAnalysisWidget';
 
 interface SuspiciousReferral {
   id: string;
@@ -141,39 +143,51 @@ const SuspiciousReferrals = () => {
           </Button>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 gap-4">
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-destructive/10">
-                  <AlertTriangle className="h-5 w-5 text-destructive" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{suspiciousCount}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {t('admin.referrals.suspicious', 'Suspeitos')}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-amber-500/10">
-                  <Clock className="h-5 w-5 text-amber-500" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{pendingCount}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {t('admin.referrals.pending', 'Pendentes')}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Tabs for different views */}
+        <Tabs defaultValue="pending" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="pending">
+              Pending Review ({suspiciousCount + pendingCount})
+            </TabsTrigger>
+            <TabsTrigger value="fraud-analysis">
+              AI Fraud Analysis
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="pending" className="space-y-4">
+            {/* Stats Cards */}
+            <div className="grid grid-cols-2 gap-4">
+              <Card>
+                <CardContent className="pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-destructive/10">
+                      <AlertTriangle className="h-5 w-5 text-destructive" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold">{suspiciousCount}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t('admin.referrals.suspicious', 'Suspeitos')}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-amber-500/10">
+                      <Clock className="h-5 w-5 text-amber-500" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold">{pendingCount}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t('admin.referrals.pending', 'Pendentes')}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
         {/* Referrals Table */}
         <Card>
@@ -295,7 +309,13 @@ const SuspiciousReferrals = () => {
               </div>
             )}
           </CardContent>
-        </Card>
+          </Card>
+          </TabsContent>
+
+          <TabsContent value="fraud-analysis">
+            <FraudAnalysisWidget />
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Approve Dialog */}
