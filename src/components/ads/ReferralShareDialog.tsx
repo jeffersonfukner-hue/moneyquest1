@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Copy, MessageCircle, Share2, Gift, ExternalLink } from 'lucide-react';
+import { Copy, Share2, Gift, ExternalLink } from 'lucide-react';
+import { FaWhatsapp } from 'react-icons/fa';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -92,7 +93,7 @@ export const ReferralShareDialog = ({
             onClick={handleShareWhatsApp} 
             className="flex-1 bg-green-600 hover:bg-green-700 text-white"
           >
-            <MessageCircle className="w-4 h-4 mr-2" />
+            <FaWhatsapp className="w-4 h-4 mr-2" />
             WhatsApp
           </Button>
           <Button 
