@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { openWhatsApp } from '@/lib/whatsapp';
 
 interface ReferralShareDialogProps {
   open: boolean;
@@ -38,7 +39,7 @@ export const ReferralShareDialog = ({
 
   const handleShareWhatsApp = () => {
     const text = t('referral.shareMessage', { link: referralLink });
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    openWhatsApp({ mode: 'share', text });
   };
 
   const handleNativeShare = async () => {

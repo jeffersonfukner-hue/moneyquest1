@@ -11,6 +11,7 @@ import { FAQSection } from '@/components/support/FAQSection';
 import { useAuth } from '@/hooks/useAuth';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { WHATSAPP_SUPPORT_NUMBER, SUPPORT_CONFIG } from '@/lib/supportConfig';
+import { openWhatsApp } from '@/lib/whatsapp';
 
 export default function Support() {
   const navigate = useNavigate();
@@ -19,17 +20,17 @@ export default function Support() {
   const { tickets, unreadCount } = useSupportTickets();
   const [showNewTicketDialog, setShowNewTicketDialog] = useState(false);
 
-  const getWhatsAppMessage = () => {
+  const handleWhatsAppClick = () => {
     const baseMessage = t('support.whatsapp.defaultMessage');
     const userInfo = user 
       ? `\n\n---\n${t('support.whatsapp.userInfo')}\nEmail: ${user.email || 'N/A'}\nID: ${user.id.substring(0, 8)}...`
       : '';
-    return encodeURIComponent(baseMessage + userInfo);
-  };
-
-  const openWhatsApp = () => {
-    const url = `https://wa.me/${WHATSAPP_SUPPORT_NUMBER}?text=${getWhatsAppMessage()}`;
-    window.open(url, '_blank');
+    
+    openWhatsApp({
+      mode: 'chat',
+      phoneE164: WHATSAPP_SUPPORT_NUMBER,
+      text: baseMessage + userInfo,
+    });
   };
 
   const handleNewTicket = () => {
@@ -77,7 +78,7 @@ export default function Support() {
         {/* WhatsApp Option */}
         <Card 
           className="cursor-pointer border-2 border-[#25D366]/30 hover:border-[#25D366]/60 transition-colors bg-[#25D366]/5"
-          onClick={openWhatsApp}
+          onClick={handleWhatsAppClick}
         >
           <CardContent className="p-5 flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-[#25D366] flex items-center justify-center shrink-0">
