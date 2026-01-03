@@ -17,8 +17,15 @@ type LoginMode = 'landing' | 'login' | 'forgot';
 const Login = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
-  const initialMode = searchParams.get('mode') === 'login' ? 'login' : 'landing';
-  const [mode, setMode] = useState<LoginMode>(initialMode);
+  const [mode, setMode] = useState<LoginMode>('landing');
+
+  // Sync mode with URL query param
+  useEffect(() => {
+    const urlMode = searchParams.get('mode');
+    if (urlMode === 'login') {
+      setMode('login');
+    }
+  }, [searchParams]);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
