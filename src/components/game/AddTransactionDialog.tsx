@@ -293,7 +293,8 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
               id="description"
               placeholder={t('transactions.description')}
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => setDescription(e.target.value.toUpperCase())}
+              style={{ textTransform: 'uppercase' }}
               onBlur={() => setTouched(prev => ({ ...prev, description: true }))}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') e.preventDefault();
