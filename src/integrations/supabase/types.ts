@@ -178,6 +178,60 @@ export type Database = {
           },
         ]
       }
+      blog_articles_generated: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          excerpt: string
+          id: string
+          internal_links: Json | null
+          keyword: string
+          meta_description: string
+          meta_title: string
+          published_at: string
+          read_time: number
+          related_slugs: string[] | null
+          slug: string
+          status: string
+          title: string
+        }
+        Insert: {
+          category: string
+          content: string
+          created_at?: string
+          excerpt: string
+          id?: string
+          internal_links?: Json | null
+          keyword: string
+          meta_description: string
+          meta_title: string
+          published_at?: string
+          read_time?: number
+          related_slugs?: string[] | null
+          slug: string
+          status?: string
+          title: string
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          excerpt?: string
+          id?: string
+          internal_links?: Json | null
+          keyword?: string
+          meta_description?: string
+          meta_title?: string
+          published_at?: string
+          read_time?: number
+          related_slugs?: string[] | null
+          slug?: string
+          status?: string
+          title?: string
+        }
+        Relationships: []
+      }
       blog_comment_likes: {
         Row: {
           comment_id: string
