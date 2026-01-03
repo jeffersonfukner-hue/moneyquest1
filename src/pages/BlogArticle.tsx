@@ -11,6 +11,7 @@ import BlogBreadcrumb, { getBreadcrumbSchema } from '@/components/blog/BlogBread
 import AuthorCard from '@/components/blog/AuthorCard';
 import PublicFooter from '@/components/layout/PublicFooter';
 import PublicNavigation from '@/components/layout/PublicNavigation';
+import { CommentSection } from '@/components/blog/CommentSection';
 
 // Custom component to render markdown-like content
 const ArticleContent = ({ content }: { content: string }) => {
@@ -295,8 +296,11 @@ const BlogArticle = () => {
           <ArticleContent content={article.content} />
         </div>
 
+        {/* Comment Section */}
+        <CommentSection articleSlug={article.slug} />
+
         {/* Author Card */}
-        <section className="mb-8">
+        <section className="mt-8 mb-8">
           <h2 className="text-lg font-semibold text-foreground mb-4">Escrito por</h2>
           <AuthorCard author={author} />
         </section>
