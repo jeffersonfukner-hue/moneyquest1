@@ -72,7 +72,7 @@ export const EditTransactionDialog = ({
   // Reset form when transaction changes
   useEffect(() => {
     setType(transaction.type);
-    setDescription(transaction.description);
+    setDescription(transaction.description.toUpperCase());
     setAmount(transaction.amount.toString());
     setCategory(transaction.category);
     setCurrency(transaction.currency || 'BRL');
@@ -181,8 +181,9 @@ export const EditTransactionDialog = ({
               <Input
                 id="description"
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={(e) => setDescription(e.target.value.toUpperCase())}
                 placeholder={t('transactions.description')}
+                style={{ textTransform: 'uppercase' }}
                 className={cn(
                   attemptedSubmit && !isDescriptionValid && "border-destructive ring-1 ring-destructive"
                 )}
