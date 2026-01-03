@@ -10,7 +10,7 @@ import { FAQSection } from '@/components/support/FAQSection';
 import { useAuth } from '@/hooks/useAuth';
 import { AppLayout } from '@/components/layout/AppLayout';
 
-const WHATSAPP_NUMBER = '5511999999999';
+const WHATSAPP_NUMBER = '5543998650196';
 
 export default function Support() {
   const navigate = useNavigate();
