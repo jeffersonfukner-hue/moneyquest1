@@ -94,7 +94,7 @@ export const EditTransactionDialog = ({
 
   const isDescriptionValid = description.trim().length > 0;
   const isAmountValid = parseFloat(amount) > 0;
-  const isCategoryValid = category.length > 0;
+  const isCategoryValid = category.length > 0 && category !== '__new__';
   const isWalletValid = !!walletId;
 
   const handleSubmit = async () => {
