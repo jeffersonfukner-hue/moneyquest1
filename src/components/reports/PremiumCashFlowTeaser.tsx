@@ -60,7 +60,7 @@ export const PremiumCashFlowTeaser = () => {
 
         {/* CTA */}
         <Button
-          onClick={() => navigate('/upgrade')}
+          onClick={() => navigate('/premium')}
           className="w-full min-h-[44px]"
           size="lg"
         >
