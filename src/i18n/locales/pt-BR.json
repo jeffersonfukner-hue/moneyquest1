@@ -1150,6 +1150,17 @@
       "success": "Usuário bloqueado com sucesso!",
       "error": "Erro ao bloquear usuário"
     },
+    "delete": {
+      "title": "Excluir Usuário",
+      "warning": "Esta ação é permanente e não pode ser desfeita. Todos os dados do usuário serão removidos.",
+      "permanentWarning": "ATENÇÃO: Esta ação irá excluir permanentemente o usuário e todos os seus dados, incluindo transações, carteiras, metas e conquistas.",
+      "userInfo": "Usuário a ser excluído",
+      "confirmLabel": "Digite o email do usuário para confirmar",
+      "emailMismatch": "O email não corresponde",
+      "confirmButton": "Excluir Permanentemente",
+      "success": "Usuário excluído com sucesso!",
+      "error": "Erro ao excluir usuário"
+    },
     "unblock": {
       "confirmTitle": "Desbloquear Usuário",
       "confirmDesc": "Tem certeza que deseja desbloquear este usuário?",

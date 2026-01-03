@@ -1131,6 +1131,17 @@
       "success": "¡Usuario bloqueado con éxito!",
       "error": "Error al bloquear usuario"
     },
+    "delete": {
+      "title": "Eliminar Usuario",
+      "warning": "Esta acción es permanente y no se puede deshacer. Todos los datos del usuario serán eliminados.",
+      "permanentWarning": "ADVERTENCIA: Esta acción eliminará permanentemente al usuario y todos sus datos, incluyendo transacciones, billeteras, metas y logros.",
+      "userInfo": "Usuario a eliminar",
+      "confirmLabel": "Escribe el email del usuario para confirmar",
+      "emailMismatch": "El email no coincide",
+      "confirmButton": "Eliminar Permanentemente",
+      "success": "¡Usuario eliminado con éxito!",
+      "error": "Error al eliminar usuario"
+    },
     "unblock": {
       "confirmTitle": "Desbloquear Usuario",
       "confirmDesc": "¿Estás seguro de que quieres desbloquear a este usuario?",
