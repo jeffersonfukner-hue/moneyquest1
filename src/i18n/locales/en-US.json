@@ -489,6 +489,7 @@
     "editTitle": "Edit Transaction",
     "saveChanges": "Save Changes",
     "updated": "Transaction updated!",
+    "duplicate": "Duplicate",
     "deleteConfirm": "Are you sure you want to delete this transaction?",
     "categories": {
       "salary": "Salary",
