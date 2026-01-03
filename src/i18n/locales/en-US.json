@@ -1703,5 +1703,30 @@
         "content": "MoneyQuest complies with applicable data protection regulations. To exercise your rights or clarify questions, contact us through the Support page."
       }
     }
+  },
+  "narrative": {
+    "generatingNarrative": "Generating epic narrative...",
+    "tapToContinue": "Tap to continue",
+    "epicEvent": "Epic Event!",
+    "questUpdate": "Quest Update",
+    "fallback": {
+      "incomeSmall": "💰 A small reward of {{value}} appeared in your inventory. Every treasure counts on the journey!",
+      "incomeMedium": "✨ A chest of {{value}} was discovered! Your gold reserves grow with each conquest.",
+      "incomeLarge": "🏆 Epic treasure of {{value}} unlocked! You're mastering the art of finance.",
+      "expenseSmall": "🛡️ A small attack of {{value}} was absorbed by your shield. Solid defense!",
+      "expenseMedium": "⚔️ A challenge of {{value}} tested your defenses. Stay vigilant, hero!",
+      "expenseLarge": "💥 A heavy blow of {{value}} hit your treasure. Review your strategy!",
+      "expenseCritical": "🔥 Critical alert! {{value}} drained from reserves. Time to review the mission!"
+    },
+    "missions": {
+      "buildShield": "Build Your Financial Shield",
+      "buildShieldDesc": "Every dollar saved is a brick in your fortress",
+      "huntTreasure": "Monthly Treasure Hunt",
+      "huntTreasureDesc": "Find ways to increase your income",
+      "defeatDragon": "Defeat the Debt Dragon",
+      "defeatDragonDesc": "Eliminate unnecessary expenses one by one",
+      "protectKingdom": "Protect the Kingdom",
+      "protectKingdomDesc": "Keep your categories within budget"
+    }
   }
 }
