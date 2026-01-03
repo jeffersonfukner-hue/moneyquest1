@@ -1,6 +1,7 @@
 import { useState, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BottomNavigation, type TabId } from '@/components/navigation/BottomNavigation';
+import { MobileHeader } from '@/components/navigation/MobileHeader';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
 import { useTransactions } from '@/hooks/useTransactions';
@@ -14,6 +15,8 @@ interface AppLayoutProps {
   activeTab?: TabId;
   /** Additional className for the container */
   className?: string;
+  /** Whether to show the header (default: true) */
+  showHeader?: boolean;
   /** Whether to show the bottom navigation (default: true) */
   showNavigation?: boolean;
   /** Whether to show the ad banner (default: true) */
@@ -26,6 +29,7 @@ export const AppLayout = ({
   children, 
   activeTab = 'home',
   className,
+  showHeader = true,
   showNavigation = true,
   showAdBanner = true,
   showWhatsAppButton = true,
@@ -57,6 +61,13 @@ export const AppLayout = ({
 
   return (
     <div className={cn("min-h-screen bg-background", getBottomPadding(), className)}>
+      {showHeader && (
+        <MobileHeader 
+          onSettingsClick={() => navigate('/settings')}
+          onProfileClick={() => navigate('/profile')}
+        />
+      )}
+
       {children}
 
       {showWhatsAppButton && <FloatingWhatsAppButton />}

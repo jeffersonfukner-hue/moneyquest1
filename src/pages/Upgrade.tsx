@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ChevronLeft, Crown, Check, Sparkles, Loader2, Clock, Zap } from 'lucide-react';
+import { Crown, Check, Sparkles, Loader2, Clock, Zap } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -148,22 +148,6 @@ const Upgrade = () => {
 
   return (
     <AppLayout showAdBanner={false}>
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border safe-area-top">
-        <div className="flex items-center h-14 px-4 max-w-md mx-auto">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={() => navigate(-1)}
-            className="min-h-[44px] min-w-[44px] -ml-2"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="font-display font-bold text-lg text-foreground ml-2">
-            {t('subscription.upgradeToPremium')}
-          </h1>
-        </div>
-      </header>
-
       <main className="px-4 py-6 max-w-md mx-auto space-y-6">
         {/* Discount Banner */}
         {isDiscountValid && (
