@@ -1912,5 +1912,15 @@
       "protectKingdom": "Proteja o Reino",
       "protectKingdomDesc": "Mantenha suas categorias dentro do orçamento"
     }
+  },
+  "levelLock": {
+    "featureLocked": "Recurso Bloqueado",
+    "unlockAtLevel": "Desbloqueie no Nível {{level}}",
+    "currentLevel": "Nível {{level}}",
+    "needLevel": "Nível {{level}}",
+    "levelsAway_one": "Falta {{count}} nível",
+    "levelsAway_other": "Faltam {{count}} níveis",
+    "keepPlaying": "Continue jogando para desbloquear!",
+    "premiumUnlock": "Ou desbloqueie agora com Premium"
   }
 }

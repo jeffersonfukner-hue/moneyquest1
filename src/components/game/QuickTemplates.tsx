@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTransactionTemplates, TransactionTemplate } from '@/hooks/useTransactionTemplates';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { AddTemplateDialog } from './AddTemplateDialog';
+import { LevelLockedFeature } from './LevelLockedFeature';
 import { cn } from '@/lib/utils';
 
 interface QuickTemplatesProps {
@@ -52,7 +53,7 @@ export const QuickTemplates = ({ onUseTemplate }: QuickTemplatesProps) => {
   }
 
   return (
-    <>
+    <LevelLockedFeature featureKey="transaction_templates">
       <Card className="bg-card/80 backdrop-blur-sm">
         <CardHeader className="pb-2 flex flex-row items-center justify-between">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
@@ -115,6 +116,6 @@ export const QuickTemplates = ({ onUseTemplate }: QuickTemplatesProps) => {
         </CardContent>
       </Card>
       <AddTemplateDialog open={showAddDialog} onOpenChange={setShowAddDialog} />
-    </>
+    </LevelLockedFeature>
   );
 };

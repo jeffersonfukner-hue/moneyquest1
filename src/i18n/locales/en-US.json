@@ -1728,5 +1728,15 @@
       "protectKingdom": "Protect the Kingdom",
       "protectKingdomDesc": "Keep your categories within budget"
     }
+  },
+  "levelLock": {
+    "featureLocked": "Feature Locked",
+    "unlockAtLevel": "Unlock at Level {{level}}",
+    "currentLevel": "Level {{level}}",
+    "needLevel": "Level {{level}}",
+    "levelsAway_one": "{{count}} level away",
+    "levelsAway_other": "{{count}} levels away",
+    "keepPlaying": "Keep playing to unlock!",
+    "premiumUnlock": "Or unlock now with Premium"
   }
 }
