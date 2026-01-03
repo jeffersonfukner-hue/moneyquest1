@@ -1717,5 +1717,98 @@
         "content": "O MoneyQuest está em conformidade com a Lei Geral de Proteção de Dados (LGPD) do Brasil. Para exercer seus direitos ou esclarecer dúvidas, entre em contato através da página de Suporte."
       }
     }
+  },
+  "personalRewards": {
+    "title": "Minhas Recompensas",
+    "addNew": "Nova",
+    "createTitle": "Criar Recompensa",
+    "suggestions": "Sugestões rápidas",
+    "nameLabel": "Nome da recompensa",
+    "namePlaceholder": "Ex: Café especial",
+    "descriptionLabel": "Descrição (opcional)",
+    "descriptionPlaceholder": "Ex: Na minha cafeteria favorita",
+    "xpGoal": "Meta de XP",
+    "currentXp": "Você tem {{xp}} XP atualmente",
+    "iconLabel": "Ícone",
+    "warning": "Dica: Escolha recompensas que não sabotem sua economia! O objetivo é celebrar conquistas, não gastar desnecessariamente.",
+    "create": "Criar Recompensa",
+    "claim": "Resgatar",
+    "claimed": "Resgatada!",
+    "claimable": "{{count}} recompensa(s) disponível(is) para resgatar!",
+    "empty": "Nenhuma recompensa configurada",
+    "emptyHint": "Crie metas pessoais para seus marcos de XP!",
+    "addError": "Erro ao adicionar recompensa",
+    "addSuccess": "Recompensa adicionada!",
+    "claimError": "Erro ao resgatar recompensa",
+    "claimSuccess": "🎉 Recompensa resgatada: {{name}}!",
+    "deleteError": "Erro ao remover recompensa",
+    "deleteSuccess": "Recompensa removida",
+    "nameRequired": "Digite um nome para a recompensa"
+  },
+  "levelUnlocks": {
+    "title": "Desbloqueios por Nível",
+    "level": "NÍVEL {{level}}",
+    "unlocked": "Desbloqueado",
+    "nextUnlock": "Próximo desbloqueio no nível {{level}}:",
+    "summary": "{{unlocked}} de {{total}} recursos desbloqueados",
+    "keepGoing": "Continue ganhando XP para desbloquear mais!",
+    "features": {
+      "daily_quests": {
+        "name": "Missões Diárias",
+        "description": "Desafios diários para ganhar XP"
+      },
+      "basic_stats": {
+        "name": "Estatísticas Básicas",
+        "description": "Visualize seus gastos e receitas"
+      },
+      "weekly_quests": {
+        "name": "Missões Semanais",
+        "description": "Desafios de 7 dias com mais XP"
+      },
+      "custom_categories": {
+        "name": "Categorias Personalizadas",
+        "description": "Crie suas próprias categorias"
+      },
+      "leaderboard": {
+        "name": "Ranking Global",
+        "description": "Compare seu progresso com outros jogadores"
+      },
+      "transaction_templates": {
+        "name": "Templates de Transação",
+        "description": "Salve transações frequentes"
+      },
+      "monthly_quests": {
+        "name": "Missões Mensais",
+        "description": "Desafios épicos de 30 dias"
+      },
+      "category_goals": {
+        "name": "Metas por Categoria",
+        "description": "Defina limites de gastos por categoria"
+      },
+      "ai_coach": {
+        "name": "Coach Financeiro IA",
+        "description": "Dicas personalizadas com inteligência artificial"
+      },
+      "special_quests": {
+        "name": "Missões Especiais",
+        "description": "Eventos sazonais exclusivos"
+      },
+      "advanced_reports": {
+        "name": "Relatórios Avançados",
+        "description": "Análises detalhadas do seu fluxo de caixa"
+      },
+      "multi_wallet": {
+        "name": "Múltiplas Carteiras",
+        "description": "Gerencie várias contas e cartões"
+      },
+      "export_data": {
+        "name": "Exportar Dados",
+        "description": "Exporte seus dados em CSV/PDF"
+      },
+      "narrative_events": {
+        "name": "Eventos Narrativos",
+        "description": "Histórias personalizadas sobre suas finanças"
+      }
+    }
   }
 }

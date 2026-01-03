@@ -641,6 +641,50 @@ export type Database = {
         }
         Relationships: []
       }
+      personal_rewards: {
+        Row: {
+          claimed_at: string | null
+          created_at: string
+          description: string | null
+          icon: string
+          id: string
+          is_claimed: boolean
+          name: string
+          user_id: string
+          xp_threshold: number
+        }
+        Insert: {
+          claimed_at?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          is_claimed?: boolean
+          name: string
+          user_id: string
+          xp_threshold: number
+        }
+        Update: {
+          claimed_at?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          is_claimed?: boolean
+          name?: string
+          user_id?: string
+          xp_threshold?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "personal_rewards_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_icon: string
@@ -677,6 +721,7 @@ export type Database = {
           total_income: number
           trial_end_date: string | null
           trial_start_date: string | null
+          unlocked_features: Json | null
           updated_at: string
           xp: number
         }
@@ -715,6 +760,7 @@ export type Database = {
           total_income?: number
           trial_end_date?: string | null
           trial_start_date?: string | null
+          unlocked_features?: Json | null
           updated_at?: string
           xp?: number
         }
@@ -753,6 +799,7 @@ export type Database = {
           total_income?: number
           trial_end_date?: string | null
           trial_start_date?: string | null
+          unlocked_features?: Json | null
           updated_at?: string
           xp?: number
         }
@@ -1446,6 +1493,7 @@ export type Database = {
           total_income: number
           trial_end_date: string | null
           trial_start_date: string | null
+          unlocked_features: Json | null
           updated_at: string
           xp: number
         }[]
