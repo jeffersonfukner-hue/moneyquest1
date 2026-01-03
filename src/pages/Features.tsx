@@ -1,10 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Logo } from '@/components/ui/logo';
 import { TrustBadge, TrustBadgeCard } from '@/components/ui/trust-badge';
-import { SupportedLanguage } from '@/i18n';
 import PublicFooter from '@/components/layout/PublicFooter';
+import PublicNavigation from '@/components/layout/PublicNavigation';
 import {
   CircleCheck,
   CreditCard,
@@ -18,36 +17,15 @@ import {
   Sparkles,
   Gamepad2,
   Medal,
-  ArrowLeft,
   Star,
 } from 'lucide-react';
 
-const languageFlags: Record<SupportedLanguage, { flag: string; label: string }> = {
-  'pt-BR': { flag: '🇧🇷', label: 'Português (BR)' },
-  'pt-PT': { flag: '🇵🇹', label: 'Português (PT)' },
-  'en-US': { flag: '🇺🇸', label: 'English' },
-  'es-ES': { flag: '🇪🇸', label: 'Español' },
-};
-
 const Features = () => {
-  const { t, i18n } = useTranslation();
-  const currentLanguage = i18n.language as SupportedLanguage;
-  const currentFlag = languageFlags[currentLanguage] || languageFlags['en-US'];
+  const { t } = useTranslation();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/50">
-        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/login" className="text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <Logo size="sm" />
-          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <span>{currentFlag.flag}</span>
-          </div>
-        </div>
-      </header>
+      <PublicNavigation />
 
       <main className="max-w-2xl mx-auto px-6 py-8 space-y-12">
         {/* Hero */}

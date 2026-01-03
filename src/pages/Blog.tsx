@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import BlogBreadcrumb, { getBreadcrumbSchema } from '@/components/blog/BlogBreadcrumb';
 import PublicFooter from '@/components/layout/PublicFooter';
+import PublicNavigation from '@/components/layout/PublicNavigation';
 
 const Blog = () => {
   useSEO({
@@ -38,29 +39,7 @@ const Blog = () => {
         }}
       />
 
-      {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <img src="/logo.png" alt="MoneyQuest" className="h-8" />
-            <span className="font-bold text-xl text-primary">MoneyQuest</span>
-          </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
-              Início
-            </Link>
-            <Link to="/features" className="text-muted-foreground hover:text-foreground transition-colors">
-              Funcionalidades
-            </Link>
-            <Link to="/blog" className="text-foreground font-medium">
-              Blog
-            </Link>
-            <Link to="/signup">
-              <Button variant="gold" size="sm">Começar Grátis</Button>
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <PublicNavigation />
 
       <main className="container mx-auto px-4 py-8">
         <BlogBreadcrumb items={breadcrumbItems} />
