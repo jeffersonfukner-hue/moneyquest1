@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Clock } from 'lucide-react';
+import { Clock, RefreshCw } from 'lucide-react';
 import { getTimeUntilReset } from '@/lib/gameLogic';
 import { QuestType } from '@/types/database';
+import { cn } from '@/lib/utils';
 
 interface QuestTimerProps {
   periodEndDate: string | null;
@@ -22,8 +23,21 @@ export const QuestTimer = ({ periodEndDate, questType, label }: QuestTimerProps)
 
   if (!periodEndDate) return null;
 
+  // Don't show timer if expired
+  if (timeInfo.isExpired) {
+    return (
+      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+        <span>{timeInfo.displayText}</span>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+    <div className={cn(
+      "flex items-center gap-1.5 text-xs text-muted-foreground",
+      timeInfo.hours === 0 && timeInfo.days === 0 && "text-warning"
+    )}>
       <Clock className="w-3.5 h-3.5" />
       <span>
         {label && `${label} `}
