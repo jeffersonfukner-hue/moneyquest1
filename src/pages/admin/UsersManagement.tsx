@@ -10,12 +10,13 @@ import type { AdminUser } from '@/types/admin';
 
 const UsersManagement = () => {
   const { t } = useTranslation();
-  const { users, usersLoading, updateSubscription, updateUserStatus, grantBonus, sendMessage, resetPremiumOverride } = useAdminData();
+  const { users, usersLoading, updateSubscription, updateUserStatus, grantBonus, sendMessage, resetPremiumOverride, deleteUser } = useAdminData();
   
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [premiumOpen, setPremiumOpen] = useState(false);
   const [blockOpen, setBlockOpen] = useState(false);
   const [resetOverrideOpen, setResetOverrideOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const handleGrantPremium = (user: AdminUser) => {
     setSelectedUser(user);
@@ -62,6 +63,18 @@ const UsersManagement = () => {
     setResetOverrideOpen(false);
   };
 
+  const handleDeleteUser = (user: AdminUser) => {
+    setSelectedUser(user);
+    setDeleteOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedUser) {
+      deleteUser.mutate({ targetUserId: selectedUser.id, note: 'User deleted by admin' });
+    }
+    setDeleteOpen(false);
+  };
+
   const handlePremiumConfirm = (userId: string, expiresAt: string | null, note: string) => {
     updateSubscription.mutate({ targetUserId: userId, plan: 'PREMIUM', expiresAt, note });
     setPremiumOpen(false);
@@ -95,6 +108,7 @@ const UsersManagement = () => {
           onSendMessage={handleSendMessage}
           onGrantBonus={handleGrantBonus}
           onResetOverride={handleResetOverride}
+          onDeleteUser={handleDeleteUser}
         />
       </div>
 
@@ -134,6 +148,23 @@ const UsersManagement = () => {
             <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={handleConfirmResetOverride}>
               {t('admin.override.resetConfirm')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('admin.delete.title', 'Delete User')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('admin.delete.description', 'This will permanently delete {{user}} and all their data. This action cannot be undone.', { user: selectedUser?.email })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive text-destructive-foreground">
+              {t('admin.delete.confirm', 'Delete Permanently')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
