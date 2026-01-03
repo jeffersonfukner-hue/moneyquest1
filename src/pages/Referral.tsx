@@ -93,27 +93,28 @@ const Referral = () => {
     try {
       await navigator.clipboard.writeText(referralLink);
       toast.success(t('referral.linkCopied'));
+      trackShareEvent('copy_link');
     } catch {
       toast.error(t('common.error'));
     }
   };
 
-  const trackWhatsAppClick = async (location: string) => {
+  const trackShareEvent = async (action: string) => {
     try {
       await supabase.from('ab_test_events').insert([{
         user_id: user?.id || null,
-        test_name: 'whatsapp_click',
-        variant: 'referral_share',
+        test_name: 'referral_share',
+        variant: action,
         event_type: 'click',
-        metadata: { location }
+        metadata: { location: 'referral_page', action }
       }]);
     } catch (error) {
-      console.error('Error tracking WhatsApp click:', error);
+      console.error('Error tracking share event:', error);
     }
   };
 
   const handleShareWhatsApp = () => {
-    trackWhatsAppClick('referral_page');
+    trackShareEvent('whatsapp');
     const text = t('referral.shareMessage', { link: referralLink });
     window.open(
       `https://wa.me/?text=${encodeURIComponent(text)}`,
@@ -126,6 +127,7 @@ const Referral = () => {
     try {
       await navigator.clipboard.writeText(text);
       toast.success(t('referral.whatsAppMessageCopied', 'Mensagem copiada'));
+      trackShareEvent('copy_whatsapp_message');
     } catch {
       toast.error(t('common.error'));
     }
@@ -139,6 +141,7 @@ const Referral = () => {
           text: t('referral.shareMessage', { link: referralLink }),
           url: referralLink,
         });
+        trackShareEvent('native_share');
       } catch {
         // User cancelled
       }
