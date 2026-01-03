@@ -1,16 +1,17 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Pencil, Trash2, Power, PowerOff, Calendar, Eye } from 'lucide-react';
+import { Plus, Pencil, Trash2, Power, PowerOff, Calendar, Eye, BarChart3 } from 'lucide-react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
+import { CampaignAnalyticsWidget } from '@/components/admin/CampaignAnalyticsWidget';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
@@ -247,6 +248,20 @@ const CampaignsManagement = () => {
           </Button>
         </div>
 
+        <Tabs defaultValue="campaigns" className="w-full">
+          <TabsList>
+            <TabsTrigger value="campaigns">
+              <Plus className="w-4 h-4 mr-2" />
+              Campanhas
+            </TabsTrigger>
+            <TabsTrigger value="analytics">
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Analytics
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="campaigns" className="space-y-6 mt-6">
+
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card>
@@ -417,6 +432,12 @@ const CampaignsManagement = () => {
             </Card>
           )}
         </div>
+          </TabsContent>
+
+          <TabsContent value="analytics" className="mt-6">
+            <CampaignAnalyticsWidget campaigns={campaigns || []} />
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Create/Edit Dialog */}

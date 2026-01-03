@@ -1,6 +1,9 @@
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Campaign } from '@/hooks/useCampaigns';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 interface CampaignBannerProps {
   campaign: Campaign;
@@ -9,8 +12,38 @@ interface CampaignBannerProps {
 
 export const CampaignBanner = ({ campaign, onDismiss }: CampaignBannerProps) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const impressionTracked = useRef(false);
+
+  // Track impression on mount
+  useEffect(() => {
+    if (!impressionTracked.current && campaign.id) {
+      impressionTracked.current = true;
+      trackCampaignEvent('impression');
+    }
+  }, [campaign.id]);
+
+  const trackCampaignEvent = async (eventType: 'impression' | 'click') => {
+    try {
+      await supabase.from('ab_test_events').insert([{
+        user_id: user?.id || null,
+        test_name: 'campaign',
+        variant: campaign.id,
+        event_type: eventType,
+        metadata: {
+          campaign_name: campaign.name,
+          campaign_type: campaign.campaign_type,
+          cta_link: campaign.cta_link,
+        },
+      }]);
+    } catch (error) {
+      console.warn('Failed to track campaign event:', error);
+    }
+  };
 
   const handleClick = () => {
+    trackCampaignEvent('click');
+    
     if (campaign.cta_link.startsWith('http')) {
       window.open(campaign.cta_link, '_blank');
     } else {
