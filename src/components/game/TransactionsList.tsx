@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Locale } from 'date-fns';
 import { Transaction, SupportedCurrency } from '@/types/database';
-import { ArrowUpCircle, ArrowDownCircle, Trash2, Pencil, MoreVertical, CheckSquare, X, Wallet, Lock } from 'lucide-react';
+import { ArrowUpCircle, ArrowDownCircle, Trash2, Pencil, MoreVertical, CheckSquare, X, Wallet, Lock, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { format, subDays } from 'date-fns';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -38,11 +38,12 @@ interface TransactionsListProps {
   onUpdate: (id: string, updates: Partial<Omit<Transaction, 'id' | 'user_id' | 'xp_earned' | 'created_at'>>) => Promise<{ error: Error | null }>;
   onBatchUpdateWallet?: (transactionIds: string[], walletId: string) => Promise<{ error: Error | null; updatedCount: number }>;
   onBatchDelete?: (transactionIds: string[]) => Promise<{ error: Error | null; deletedCount: number }>;
+  onDuplicate?: (transaction: Transaction) => void;
 }
 
 type FilterPeriod = 'all' | 'week' | 'month' | 'year';
 
-export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpdateWallet, onBatchDelete }: TransactionsListProps) => {
+export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpdateWallet, onBatchDelete, onDuplicate }: TransactionsListProps) => {
   const { t } = useTranslation();
   const { dateLocale } = useLanguage();
   const { formatCurrency, currency: userCurrency, formatConverted } = useCurrency();
@@ -279,6 +280,7 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
                     transaction={transaction} 
                     onDelete={onDelete}
                     onEdit={() => setEditingTransaction(transaction)}
+                    onDuplicate={onDuplicate ? () => onDuplicate(transaction) : undefined}
                     dateLocale={dateLocale}
                     formatCurrency={formatCurrency}
                     userCurrency={userCurrency}
@@ -369,6 +371,7 @@ const TransactionItem = ({
   transaction, 
   onDelete,
   onEdit,
+  onDuplicate,
   dateLocale,
   formatCurrency,
   userCurrency,
@@ -383,6 +386,7 @@ const TransactionItem = ({
   transaction: Transaction; 
   onDelete: (id: string) => void;
   onEdit: () => void;
+  onDuplicate?: () => void;
   dateLocale: Locale;
   formatCurrency: (amount: number) => string;
   userCurrency: SupportedCurrency;
@@ -434,6 +438,15 @@ const TransactionItem = ({
           <Pencil className="w-4 h-4" />
           {t('common.edit')}
         </DropdownMenuItem>
+        {onDuplicate && (
+          <DropdownMenuItem 
+            onClick={onDuplicate}
+            className="min-h-[44px] gap-3 cursor-pointer"
+          >
+            <Copy className="w-4 h-4" />
+            {t('transactions.duplicate')}
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem 
           onClick={() => onDelete(transaction.id)}

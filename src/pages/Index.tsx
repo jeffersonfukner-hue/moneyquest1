@@ -25,7 +25,7 @@ import { RecentTransactionsCard } from '@/components/game/RecentTransactionsCard
 import { SpendingByCategoryChart } from '@/components/game/SpendingByCategoryChart';
 import { MonthlySavingsWidget } from '@/components/game/MonthlySavingsWidget';
 import { MonthlyComparisonWidget } from '@/components/game/MonthlyComparisonWidget';
-import { AddTransactionDialog, SessionSummary } from '@/components/game/AddTransactionDialog';
+import { AddTransactionDialog, SessionSummary, PrefillData } from '@/components/game/AddTransactionDialog';
 import { MoodIndicator } from '@/components/game/MoodIndicator';
 import { QuestCelebration } from '@/components/game/QuestCelebration';
 import { SeasonalDecorations } from '@/components/game/SeasonalDecorations';
@@ -70,6 +70,7 @@ const Index = () => {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showRewardDialog, setShowRewardDialog] = useState(false);
   const [sessionSummary, setSessionSummary] = useState<SessionSummary | null>(null);
+  const [duplicatePrefill, setDuplicatePrefill] = useState<PrefillData | null>(null);
   
   // Inline feedback state
   const [inlineFeedback, setInlineFeedback] = useState<{
@@ -155,6 +156,19 @@ const Index = () => {
     }
   };
 
+  // Handle duplicating a transaction
+  const handleDuplicateTransaction = (transaction: typeof transactions[0]) => {
+    setDuplicatePrefill({
+      type: transaction.type,
+      description: transaction.description,
+      amount: transaction.amount,
+      category: transaction.category,
+      currency: transaction.currency,
+      wallet_id: transaction.wallet_id,
+    });
+    setShowAddDialog(true);
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'home':
@@ -214,7 +228,7 @@ const Index = () => {
           </div>
         );
       case 'transactions':
-        return <TransactionsList transactions={transactions} onDelete={deleteTransaction} onUpdate={updateTransaction} onBatchUpdateWallet={batchUpdateWallet} onBatchDelete={batchDeleteTransactions} />;
+        return <TransactionsList transactions={transactions} onDelete={deleteTransaction} onUpdate={updateTransaction} onBatchUpdateWallet={batchUpdateWallet} onBatchDelete={batchDeleteTransactions} onDuplicate={handleDuplicateTransaction} />;
       case 'quests':
         return <QuestsPanel quests={quests} />;
       default:
@@ -246,12 +260,18 @@ const Index = () => {
       <AddTransactionDialog 
         onAdd={addTransaction}
         open={showAddDialog}
-        onOpenChange={setShowAddDialog}
+        onOpenChange={(open) => {
+          setShowAddDialog(open);
+          if (!open) {
+            setDuplicatePrefill(null);
+          }
+        }}
         onSessionComplete={(summary) => {
           if (summary.transactionCount > 0) {
             setSessionSummary(summary);
           }
         }}
+        prefillData={duplicatePrefill}
       />
       
       <QuestCelebration 

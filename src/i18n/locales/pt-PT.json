@@ -443,6 +443,7 @@
     "editTitle": "Editar Transação",
     "saveChanges": "Guardar Alterações",
     "updated": "Transação atualizada!",
+    "duplicate": "Duplicar",
     "categories": {
       "salary": "Ordenado",
       "freelance": "Freelance",

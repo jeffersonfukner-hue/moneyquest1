@@ -30,6 +30,15 @@ export interface SessionSummary {
   xpGained: number;
 }
 
+export interface PrefillData {
+  type: TransactionType;
+  description: string;
+  amount: number;
+  category: string;
+  currency: string;
+  wallet_id: string | null;
+}
+
 interface AddTransactionDialogProps {
   onAdd: (transaction: {
     description: string;
@@ -43,9 +52,10 @@ interface AddTransactionDialogProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   onSessionComplete?: (summary: SessionSummary) => void;
+  prefillData?: PrefillData | null;
 }
 
-export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange, onSessionComplete }: AddTransactionDialogProps) => {
+export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange, onSessionComplete, prefillData }: AddTransactionDialogProps) => {
   const { t } = useTranslation();
   const { dateLocale } = useLanguage();
   const { currencySymbol, currency } = useCurrency();
@@ -111,6 +121,22 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   useEffect(() => {
     setSelectedCurrency(currency);
   }, [currency]);
+
+  // Handle prefill data (for duplicating transactions)
+  useEffect(() => {
+    if (prefillData) {
+      setType(prefillData.type);
+      setDescription(prefillData.description);
+      setAmount(prefillData.amount.toString());
+      setCategory(prefillData.category);
+      setSelectedCurrency(prefillData.currency as SupportedCurrency);
+      if (prefillData.wallet_id) {
+        setWalletId(prefillData.wallet_id);
+      }
+      // Date is always set to today for duplicates
+      setDate(new Date());
+    }
+  }, [prefillData]);
 
   // Use controlled or internal state
   const isControlled = controlledOpen !== undefined;

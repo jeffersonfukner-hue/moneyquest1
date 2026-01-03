@@ -1364,6 +1364,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      admin_link_referral_manually: {
+        Args: { p_note?: string; p_referred_id: string; p_referrer_id: string }
+        Returns: Json
+      }
       admin_mark_fraud_reviewed: {
         Args: { p_analysis_id: string }
         Returns: undefined

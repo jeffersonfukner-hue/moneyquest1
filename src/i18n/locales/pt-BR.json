@@ -488,6 +488,7 @@
     "editTitle": "Editar Transação",
     "saveChanges": "Salvar Alterações",
     "updated": "Transação atualizada!",
+    "duplicate": "Duplicar",
     "deleteConfirm": "Tem certeza que deseja excluir esta transação?",
     "categories": {
       "salary": "Salário",
