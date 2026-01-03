@@ -13,7 +13,8 @@ import {
   MessageSquare,
   Gift,
   Fingerprint,
-  Megaphone
+  Megaphone,
+  MessageSquareText
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -28,6 +29,7 @@ const navItems = [
   { path: '/super-admin/users', icon: Users, labelKey: 'admin.nav.users' },
   { path: '/super-admin/campaigns', icon: Megaphone, labelKey: 'admin.nav.campaigns' },
   { path: '/super-admin/support', icon: MessageSquare, labelKey: 'admin.nav.support' },
+  { path: '/super-admin/comments', icon: MessageSquareText, labelKey: 'admin.nav.comments' },
   { path: '/super-admin/referrals', icon: Gift, labelKey: 'admin.nav.referrals' },
   { path: '/super-admin/trial-abuse', icon: Fingerprint, labelKey: 'admin.nav.trialAbuse' },
   { path: '/super-admin/engagement', icon: AlertTriangle, labelKey: 'admin.nav.engagement' },
