@@ -342,7 +342,12 @@ const Login = () => {
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center px-6 pb-8">
         <div className="w-full max-w-sm">
-          {mode === 'landing' ? renderLandingMode() : renderLoginForm()}
+          <div 
+            key={mode} 
+            className="animate-fade-in"
+          >
+            {mode === 'landing' ? renderLandingMode() : renderLoginForm()}
+          </div>
         </div>
       </div>
     </div>
