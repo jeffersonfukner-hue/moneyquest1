@@ -1,4 +1,232 @@
 {
+  "admin": {
+    "nav": {
+      "dashboard": "Panel",
+      "users": "Usuarios",
+      "campaigns": "Campañas",
+      "support": "Soporte",
+      "comments": "Comentarios",
+      "referrals": "Referencias",
+      "trialAbuse": "Abuso de Trial",
+      "engagement": "Engagement",
+      "analytics": "Analíticas",
+      "logs": "Logs"
+    },
+    "backToApp": "Volver a la App",
+    "dashboard": "Panel Super Admin",
+    "description": "Visión general y métricas de la plataforma",
+    "totalUsers": "Total de Usuarios",
+    "activeToday": "Activos Hoy",
+    "premiumUsers": "Usuarios Premium",
+    "engagementRate": "Tasa de Engagement",
+    "searchUsers": "Buscar usuarios...",
+    "noUsersFound": "Ningún usuario encontrado",
+    "users": {
+      "title": "Gestionar Usuarios",
+      "subtitle": "Ver y gestionar todos los usuarios de la plataforma"
+    },
+    "table": {
+      "user": "Usuario",
+      "status": "Estado",
+      "plan": "Plan",
+      "lastActive": "Último Acceso",
+      "registered": "Registro"
+    },
+    "status": {
+      "active": "Activo",
+      "blocked": "Bloqueado",
+      "inactive": "Inactivo"
+    },
+    "actions": {
+      "grantPremium": "Otorgar Premium",
+      "revokePremium": "Revocar Premium",
+      "resetOverride": "Resetear Override",
+      "grantBonus": "Otorgar Bonus",
+      "sendMessage": "Enviar Mensaje",
+      "block": "Bloquear",
+      "unblock": "Desbloquear",
+      "deleteUser": "Eliminar Usuario"
+    },
+    "premium": {
+      "title": "Otorgar Premium",
+      "description": "Otorgar acceso Premium a {{user}}",
+      "lifetime": "Vitalicio",
+      "temporary": "Por período",
+      "days": "Días de Premium",
+      "confirm": "Confirmar"
+    },
+    "block": {
+      "title": "Bloquear Usuario",
+      "description": "¿Estás seguro de que quieres bloquear a {{user}}? Esta acción puede revertirse.",
+      "confirm": "Bloquear"
+    },
+    "override": {
+      "forceOn": "Premium forzado (override admin)",
+      "forceOff": "Premium desactivado (override admin)",
+      "resetTitle": "Resetear Override",
+      "resetDescription": "¿Resetear el override de premium para {{user}}? El estado será controlado por Stripe.",
+      "resetConfirm": "Resetear"
+    },
+    "note": "Nota",
+    "notePlaceholder": "Añade una nota opcional...",
+    "delete": {
+      "title": "Eliminar Usuario",
+      "warning": "Esta acción es irreversible. Todos los datos del usuario serán eliminados permanentemente.",
+      "permanentWarning": "¡ATENCIÓN: Esta acción NO puede deshacerse!",
+      "userInfo": "Usuario a eliminar",
+      "autoBackup": "Backup automático en la nube",
+      "autoBackupHint": "Guarda los datos del usuario antes de eliminar",
+      "backupComplete": "Backup completado con éxito",
+      "backupInProgress": "Realizando backup...",
+      "backupInProgressDesc": "Guardando datos del usuario en la nube",
+      "backupSuccess": "Backup realizado",
+      "backupSuccessDesc": "Datos guardados con éxito en el storage",
+      "backupError": "Error en el backup",
+      "backingUp": "Haciendo backup...",
+      "exportButton": "Descargar datos (JSON)",
+      "exportSuccess": "Datos exportados",
+      "exportSuccessDesc": "Descarga iniciada con éxito",
+      "exportError": "Error al exportar datos",
+      "confirmLabel": "Escribe el email del usuario para confirmar:",
+      "emailMismatch": "El email introducido no coincide",
+      "confirmButton": "Eliminar permanentemente"
+    },
+    "logs": {
+      "title": "Logs de Actividad",
+      "subtitle": "Historial de acciones administrativas",
+      "recentActions": "Acciones Recientes",
+      "date": "Fecha",
+      "action": "Acción",
+      "details": "Detalles",
+      "note": "Nota",
+      "noLogs": "Ningún log encontrado"
+    },
+    "log": {
+      "premiumGrant": "Premium Otorgado",
+      "premiumRevoke": "Premium Revocado",
+      "blockUser": "Usuario Bloqueado",
+      "unblockUser": "Usuario Desbloqueado",
+      "grantBonus": "Bonus Otorgado",
+      "sendMessage": "Mensaje Enviado"
+    },
+    "charts": {
+      "week1": "Sem. 1",
+      "week2": "Sem. 2",
+      "week3": "Sem. 3",
+      "week4": "Sem. 4",
+      "last7days": "últimos 7 días",
+      "activityTrend": "Tendencia de Actividad",
+      "activityTrendDesc": "Usuarios activos y nuevos en los últimos 7 días",
+      "activeUsers": "Usuarios Activos",
+      "newUsers": "Nuevos Usuarios",
+      "planDistribution": "Distribución de Planes",
+      "planDistributionDesc": "Free vs Premium",
+      "users": "usuarios",
+      "highlyEngaged": "Muy Comprometidos",
+      "moderatelyEngaged": "Mod. Comprometidos",
+      "lowEngaged": "Poco Comprometidos",
+      "inactive": "Inactivos",
+      "engagementLevels": "Niveles de Engagement",
+      "engagementLevelsDesc": "Distribución por actividad",
+      "registrationTrend": "Tendencia de Registros",
+      "registrationTrendDesc": "Nuevos usuarios por semana",
+      "conversionFunnel": "Embudo de Conversión",
+      "conversionFunnelDesc": "Viaje del usuario"
+    },
+    "risk": {
+      "low": "Bajo",
+      "medium": "Medio",
+      "high": "Alto",
+      "distribution": "Distribución de Riesgo",
+      "distributionDesc": "Usuarios en riesgo de abandono"
+    },
+    "funnel": {
+      "registration": "Registro",
+      "firstUse": "Primer Uso",
+      "recurringUse": "Uso Recurrente",
+      "premium": "Premium"
+    },
+    "retention": {
+      "day1": "Día 1",
+      "day7": "Día 7",
+      "day30": "Día 30",
+      "title": "Retención",
+      "description": "Tasas de retención por período"
+    },
+    "support": {
+      "title": "Tickets de Soporte",
+      "description": "Gestiona los tickets de soporte de los usuarios",
+      "tickets": "Tickets",
+      "ticketsFound": "tickets encontrados",
+      "filterByStatus": "Filtrar por estado",
+      "status": "Estado",
+      "created": "Creado",
+      "actions": "Acciones",
+      "view": "Ver",
+      "noTickets": "Ningún ticket encontrado",
+      "admin": "Admin",
+      "user": "Usuario",
+      "viewAttachment": "Ver adjunto",
+      "replyPlaceholder": "Escribe tu respuesta...",
+      "sendReply": "Enviar Respuesta",
+      "replySent": "Respuesta enviada",
+      "statusUpdated": "Estado actualizado"
+    },
+    "referrals": {
+      "title": "Referencias Sospechosas",
+      "subtitle": "Revisa y gestiona referencias marcadas",
+      "suspicious": "Sospechosas",
+      "pending": "Pendientes",
+      "approveSuccess": "Referencia aprobada con éxito",
+      "approveError": "Error al aprobar referencia",
+      "rejectSuccess": "Referencia rechazada",
+      "rejectError": "Error al rechazar referencia",
+      "reason": {
+        "sameDevice": "Mismo dispositivo",
+        "sameIp": "Mismo IP (24h)",
+        "pending": "Pendiente de validación"
+      },
+      "approve": "Aprobar",
+      "reject": "Rechazar",
+      "approveTitle": "Aprobar Referencia",
+      "approveDescription": "¿Confirmas la aprobación de esta referencia?",
+      "rejectTitle": "Rechazar Referencia",
+      "rejectDescription": "¿Confirmas el rechazo de esta referencia?"
+    },
+    "trialAbuse": {
+      "title": "Abuso de Trial",
+      "subtitle": "Monitorea intentos de abuso del período de prueba",
+      "totalAttempts": "Total de Intentos",
+      "uniqueFingerprints": "Fingerprints Únicos",
+      "reviewed": "Revisados",
+      "markAsReviewed": "Marcar como revisado",
+      "viewFingerprint": "Ver fingerprint",
+      "fingerprintDetails": "Detalles del Fingerprint",
+      "usersWithFingerprint": "Usuarios con este fingerprint",
+      "originalUser": "Usuario Original",
+      "duplicateUser": "Usuario Duplicado"
+    },
+    "engagement": {
+      "title": "Alertas de Engagement",
+      "subtitle": "Usuarios en riesgo de abandono",
+      "highRisk": "Alto Riesgo",
+      "mediumRisk": "Riesgo Medio",
+      "lowRisk": "Bajo Riesgo",
+      "daysInactive": "días inactivo"
+    },
+    "comments": {
+      "title": "Moderación de Comentarios",
+      "subtitle": "Revisa y modera comentarios del blog",
+      "pending": "Pendientes",
+      "approved": "Aprobados",
+      "hidden": "Ocultos",
+      "total": "Total",
+      "approve": "Aprobar",
+      "hide": "Ocultar",
+      "delete": "Eliminar",
+      "noComments": "Ningún comentario encontrado"
+    }
+  },
   "languageSelection": {
     "title": "Elige tu idioma",
     "subtitle": "Selecciona el idioma para continuar"
