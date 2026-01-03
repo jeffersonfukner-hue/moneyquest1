@@ -14,6 +14,7 @@ export const INDEXABLE_ROUTES = [
   '/terms',
   '/privacy',
   '/blog',
+  '/autor',
   '/controle-financeiro',
   '/educacao-financeira-gamificada',
   '/desafios-financeiros',

@@ -1,12 +1,15 @@
 import { useParams, Link, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { useSEO } from '@/hooks/useSEO';
 import { getArticleBySlug, getRelatedArticles, BLOG_CATEGORIES } from '@/lib/blogData';
-import { Calendar, Clock, ChevronRight, Home, ArrowLeft } from 'lucide-react';
+import { defaultAuthor, getAuthorSchema } from '@/lib/authorData';
+import { Calendar, Clock, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import BlogBreadcrumb, { getBreadcrumbSchema } from '@/components/blog/BlogBreadcrumb';
+import AuthorCard from '@/components/blog/AuthorCard';
 import PublicFooter from '@/components/layout/PublicFooter';
-import { useEffect } from 'react';
 
 // Custom component to render markdown-like content
 const ArticleContent = ({ content }: { content: string }) => {
@@ -193,6 +196,13 @@ const BlogArticle = () => {
 
   const relatedArticles = getRelatedArticles(article.slug);
 
+  const author = defaultAuthor;
+
+  const breadcrumbItems = [
+    { label: 'Blog', href: '/blog' },
+    { label: article.title }
+  ];
+
   // JSON-LD Schema for Article
   const articleSchema = {
     "@context": "https://schema.org",
@@ -202,8 +212,9 @@ const BlogArticle = () => {
     "datePublished": article.publishedAt,
     "dateModified": article.updatedAt,
     "author": {
-      "@type": "Organization",
-      "name": "MoneyQuest"
+      "@type": "Person",
+      "name": author.name,
+      "url": `https://moneyquest.app.br/autor/${author.slug}`
     },
     "publisher": {
       "@type": "Organization",
@@ -219,12 +230,23 @@ const BlogArticle = () => {
     }
   };
 
+  const breadcrumbSchema = getBreadcrumbSchema(breadcrumbItems);
+  const authorSchema = getAuthorSchema(author);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
       {/* Schema.org JSON-LD */}
       <script 
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+      <script 
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script 
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(authorSchema) }}
       />
 
       {/* Header */}
@@ -252,19 +274,7 @@ const BlogArticle = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Breadcrumbs */}
-        <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8 flex-wrap">
-          <Link to="/" className="hover:text-foreground flex items-center gap-1">
-            <Home className="h-4 w-4" />
-            Início
-          </Link>
-          <ChevronRight className="h-4 w-4" />
-          <Link to="/blog" className="hover:text-foreground">
-            Blog
-          </Link>
-          <ChevronRight className="h-4 w-4" />
-          <span className="text-foreground line-clamp-1">{article.title}</span>
-        </nav>
+        <BlogBreadcrumb items={breadcrumbItems} />
 
         {/* Back Button */}
         <Link to="/blog" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
@@ -306,6 +316,12 @@ const BlogArticle = () => {
           <ArticleContent content={article.content} />
         </div>
 
+        {/* Author Card */}
+        <section className="mb-8">
+          <h2 className="text-lg font-semibold text-foreground mb-4">Escrito por</h2>
+          <AuthorCard author={author} />
+        </section>
+
         {/* Related Articles */}
         {relatedArticles.length > 0 && (
           <section className="mb-12">
@@ -318,7 +334,7 @@ const BlogArticle = () => {
                   <Card className="h-full hover:shadow-md transition-all hover:border-primary/50 cursor-pointer group">
                     <CardHeader className="pb-2">
                       <Badge 
-                        variant="secondary" 
+                        variant="secondary"
                         className="w-fit mb-2 bg-primary/10 text-primary text-xs"
                       >
                         {BLOG_CATEGORIES[related.category].name}

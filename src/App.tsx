@@ -32,6 +32,7 @@ import DesafiosFinanceiros from "./pages/DesafiosFinanceiros";
 import AppFinancasPessoais from "./pages/AppFinancasPessoais";
 import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
+import Author from "./pages/Author";
 
 import Onboarding from "./pages/Onboarding";
 import Settings from "./pages/Settings";
@@ -99,6 +100,7 @@ const App = () => (
                           {/* Blog */}
                           <Route path="/blog" element={<Blog />} />
                           <Route path="/blog/:slug" element={<BlogArticle />} />
+                          <Route path="/autor/:slug" element={<Author />} />
                           <Route path="/onboarding" element={<Onboarding />} />
                           <Route path="/auth" element={<Navigate to="/login" replace />} />
                           <Route path="/settings" element={<Settings />} />
