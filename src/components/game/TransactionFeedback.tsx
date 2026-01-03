@@ -185,9 +185,26 @@ export const TransactionFeedback = ({
             {/* Narrative with typewriter effect */}
             <div className="text-sm text-foreground/90 leading-relaxed min-h-[60px]">
               {isLoadingNarrative ? (
-                <span className="text-muted-foreground italic">
-                  {t('narrative.generatingNarrative')}
-                </span>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-accent animate-pulse">✨</span>
+                    <span className="text-muted-foreground italic animate-pulse">
+                      {t('narrative.generatingNarrative')}
+                    </span>
+                  </div>
+                  {/* Animated loading bars with RPG theme */}
+                  <div className="space-y-1.5 mt-1">
+                    <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
+                      <div className="h-full w-3/4 bg-gradient-to-r from-accent/40 via-accent to-accent/40 rounded-full animate-shimmer" />
+                    </div>
+                    <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
+                      <div className="h-full w-1/2 bg-gradient-to-r from-accent/40 via-accent to-accent/40 rounded-full animate-shimmer" style={{ animationDelay: '0.2s' }} />
+                    </div>
+                    <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
+                      <div className="h-full w-2/3 bg-gradient-to-r from-accent/40 via-accent to-accent/40 rounded-full animate-shimmer" style={{ animationDelay: '0.4s' }} />
+                    </div>
+                  </div>
+                </div>
               ) : (
                 <>
                   {displayedNarrative}
