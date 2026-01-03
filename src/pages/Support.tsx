@@ -11,6 +11,7 @@ import { FAQSection } from '@/components/support/FAQSection';
 import { useAuth } from '@/hooks/useAuth';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { WHATSAPP_SUPPORT_NUMBER, SUPPORT_CONFIG } from '@/lib/supportConfig';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function Support() {
   const navigate = useNavigate();
@@ -19,7 +20,23 @@ export default function Support() {
   const { tickets, unreadCount } = useSupportTickets();
   const [showNewTicketDialog, setShowNewTicketDialog] = useState(false);
 
+  const trackWhatsAppClick = async () => {
+    try {
+      await supabase.from('ab_test_events').insert([{
+        user_id: user?.id || null,
+        test_name: 'whatsapp_click',
+        variant: 'support_page',
+        event_type: 'click',
+        metadata: { location: 'support_page' }
+      }]);
+    } catch (error) {
+      console.error('Error tracking WhatsApp click:', error);
+    }
+  };
+
   const handleWhatsAppClick = () => {
+    trackWhatsAppClick();
+    
     const userEmail = user?.email || 'N/A';
     const userId = user?.id ? user.id.substring(0, 8) + '...' : 'N/A';
     const message = `Olá, estou entrando em contato pelo MoneyQuest e preciso de ajuda.\n\n---\nInformações do usuário:\nEmail: ${userEmail}\nID: ${userId}`;

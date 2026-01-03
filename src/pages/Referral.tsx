@@ -98,7 +98,22 @@ const Referral = () => {
     }
   };
 
+  const trackWhatsAppClick = async (location: string) => {
+    try {
+      await supabase.from('ab_test_events').insert([{
+        user_id: user?.id || null,
+        test_name: 'whatsapp_click',
+        variant: 'referral_share',
+        event_type: 'click',
+        metadata: { location }
+      }]);
+    } catch (error) {
+      console.error('Error tracking WhatsApp click:', error);
+    }
+  };
+
   const handleShareWhatsApp = () => {
+    trackWhatsAppClick('referral_page');
     const text = t('referral.shareMessage', { link: referralLink });
     window.open(
       `https://wa.me/?text=${encodeURIComponent(text)}`,
