@@ -1298,6 +1298,21 @@
       "singleLine": "Uma Linha",
       "twoLine": "Duas Linhas",
       "noVariantData": "Nenhum dado de variante disponível ainda"
+    },
+    "discount": {
+      "title": "Analytics de Desconto",
+      "description": "Acompanhe taxas de conversão para o desconto de 30% na expiração do trial",
+      "trialExpired": "Trial Expirado",
+      "offerShown": "Oferta Exibida",
+      "converted": "Convertido",
+      "conversionRate": "Taxa de Conversão",
+      "funnel": "Funil de Conversão",
+      "offerStatus": "Status das Ofertas",
+      "active": "Ativas",
+      "expired": "Expiradas",
+      "notShown": "Não Exibidas",
+      "activeOffers": "ofertas de desconto ativas",
+      "activeOffersDesc": "Usuários com janela de 48h de desconto pendente"
     }
   },
   "dailyReward": {

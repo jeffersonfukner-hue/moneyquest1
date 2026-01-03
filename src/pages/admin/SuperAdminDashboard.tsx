@@ -8,6 +8,7 @@ import { ModalConversionWidget } from '@/components/admin/ModalConversionWidget'
 import { ABTestComparisonWidget } from '@/components/admin/ABTestComparisonWidget';
 import { AdMetricsWidget } from '@/components/admin/AdMetricsWidget';
 import { InternalBannerAnalyticsWidget } from '@/components/admin/InternalBannerAnalyticsWidget';
+import { DiscountConversionWidget } from '@/components/admin/DiscountConversionWidget';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useAdminData } from '@/hooks/useAdminData';
 import { 
@@ -770,6 +771,9 @@ const SuperAdminDashboard = () => {
 
         {/* Internal Banner Analytics Widget */}
         <InternalBannerAnalyticsWidget />
+
+        {/* Discount Conversion Widget */}
+        <DiscountConversionWidget />
 
         {/* A/B Test Comparison Widget */}
         <ABTestComparisonWidget />
