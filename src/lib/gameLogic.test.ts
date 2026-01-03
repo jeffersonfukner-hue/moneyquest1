@@ -6,68 +6,23 @@ import {
   getLevelTitleKey,
   calculateFinancialMood,
   XP_PER_LEVEL,
+  XP_VALUES,
 } from './gameLogic';
 
 describe('gameLogic', () => {
   describe('calculateXP', () => {
-    describe('INCOME transactions', () => {
-      it('should return minimum 1 XP for very small amounts', () => {
-        expect(calculateXP(0, 'INCOME')).toBe(1);
-        expect(calculateXP(5, 'INCOME')).toBe(1);
-        expect(calculateXP(9, 'INCOME')).toBe(1);
-      });
-
-      it('should calculate XP correctly for normal amounts', () => {
-        expect(calculateXP(10, 'INCOME')).toBe(1);
-        expect(calculateXP(50, 'INCOME')).toBe(5);
-        expect(calculateXP(100, 'INCOME')).toBe(10);
-        expect(calculateXP(500, 'INCOME')).toBe(50);
-      });
-
-      it('should cap XP at 100 for large income', () => {
-        expect(calculateXP(1000, 'INCOME')).toBe(100);
-        expect(calculateXP(5000, 'INCOME')).toBe(100);
-        expect(calculateXP(10000, 'INCOME')).toBe(100);
-      });
-
-      it('should never return 0 XP', () => {
-        expect(calculateXP(0, 'INCOME')).toBeGreaterThanOrEqual(1);
-        expect(calculateXP(-10, 'INCOME')).toBeGreaterThanOrEqual(1);
-      });
+    it('should always return fixed +5 XP per transaction', () => {
+      // All transactions give the same XP regardless of amount or type
+      expect(calculateXP(0, 'INCOME')).toBe(5);
+      expect(calculateXP(100, 'INCOME')).toBe(5);
+      expect(calculateXP(10000, 'INCOME')).toBe(5);
+      expect(calculateXP(0, 'EXPENSE')).toBe(5);
+      expect(calculateXP(100, 'EXPENSE')).toBe(5);
+      expect(calculateXP(10000, 'EXPENSE')).toBe(5);
     });
 
-    describe('EXPENSE transactions', () => {
-      it('should return minimum 1 XP for very small amounts', () => {
-        expect(calculateXP(0, 'EXPENSE')).toBe(1);
-        expect(calculateXP(10, 'EXPENSE')).toBe(1);
-        expect(calculateXP(19, 'EXPENSE')).toBe(1);
-      });
-
-      it('should calculate XP correctly for normal amounts', () => {
-        expect(calculateXP(20, 'EXPENSE')).toBe(1);
-        expect(calculateXP(40, 'EXPENSE')).toBe(2);
-        expect(calculateXP(100, 'EXPENSE')).toBe(5);
-        expect(calculateXP(200, 'EXPENSE')).toBe(10);
-      });
-
-      it('should cap XP at 50 for large expenses', () => {
-        expect(calculateXP(1000, 'EXPENSE')).toBe(50);
-        expect(calculateXP(5000, 'EXPENSE')).toBe(50);
-        expect(calculateXP(10000, 'EXPENSE')).toBe(50);
-      });
-
-      it('should never return 0 XP', () => {
-        expect(calculateXP(0, 'EXPENSE')).toBeGreaterThanOrEqual(1);
-      });
-    });
-
-    describe('XP formula validation', () => {
-      it('INCOME should give more XP than EXPENSE for same amount', () => {
-        const amount = 100;
-        const incomeXP = calculateXP(amount, 'INCOME');
-        const expenseXP = calculateXP(amount, 'EXPENSE');
-        expect(incomeXP).toBeGreaterThan(expenseXP);
-      });
+    it('should match the XP_VALUES.TRANSACTION constant', () => {
+      expect(calculateXP(500, 'INCOME')).toBe(XP_PER_LEVEL / 200); // 5 XP = 1000/200
     });
   });
 

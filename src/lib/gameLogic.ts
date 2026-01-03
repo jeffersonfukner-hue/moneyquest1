@@ -15,13 +15,18 @@ export const calculateFinancialMood = (totalIncome: number, totalExpenses: numbe
   return 'CRITICAL';
 };
 
-export const calculateXP = (amount: number, type: 'INCOME' | 'EXPENSE'): number => {
-  if (type === 'INCOME') {
-    // Minimum 1 XP, maximum 100 XP for income
-    return Math.max(1, Math.min(Math.floor(amount / 10), 100));
-  }
-  // Minimum 1 XP, maximum 50 XP for expense
-  return Math.max(1, Math.min(Math.floor(amount / 20), 50));
+// XP Constants - standardized values per spec
+export const XP_VALUES = {
+  TRANSACTION: 5,      // +5 per transaction logged
+  SAVINGS_BONUS: 10,   // +10 when income > expenses (savings achieved)
+  NO_SPEND_DAY: 15,    // +15 for a day without expenses
+  STREAK_7_DAYS: 50,   // +50 for reaching 7-day streak
+  MONTHLY_GOAL: 100,   // +100 for completing a monthly goal
+} as const;
+
+// Calculate XP for a transaction - fixed +5 per transaction
+export const calculateXP = (_amount: number, _type: 'INCOME' | 'EXPENSE'): number => {
+  return XP_VALUES.TRANSACTION;
 };
 
 export const getLevelFromXP = (xp: number): number => {
