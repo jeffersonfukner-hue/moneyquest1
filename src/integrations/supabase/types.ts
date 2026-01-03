@@ -1191,6 +1191,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_add_ip_whitelist: {
+        Args: {
+          p_description?: string
+          p_ip_address: string
+          p_organization?: string
+        }
+        Returns: string
+      }
       admin_approve_referral: {
         Args: { p_note?: string; p_referral_id: string }
         Returns: Json
@@ -1281,6 +1289,18 @@ export type Database = {
           risk_score: number
         }[]
       }
+      admin_get_ip_whitelist: {
+        Args: never
+        Returns: {
+          created_at: string
+          created_by: string
+          description: string
+          id: string
+          ip_address: string
+          is_active: boolean
+          organization: string
+        }[]
+      }
       admin_get_suspicious_referrals: {
         Args: never
         Returns: {
@@ -1355,8 +1375,13 @@ export type Database = {
         Args: { p_note?: string; p_referral_id: string }
         Returns: Json
       }
+      admin_remove_ip_whitelist: { Args: { p_id: string }; Returns: undefined }
       admin_reset_premium_override: {
         Args: { _note?: string; _target_user_id: string }
+        Returns: undefined
+      }
+      admin_toggle_ip_whitelist: {
+        Args: { p_id: string; p_is_active: boolean }
         Returns: undefined
       }
       admin_update_retention_thresholds: {
