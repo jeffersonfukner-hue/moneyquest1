@@ -12,7 +12,8 @@ import {
   checkAndUpdateBadges,
   checkAndUpdateQuests,
   calculateFinancialMood,
-  getBadgeKey
+  getBadgeKey,
+  XP_VALUES
 } from '@/lib/gameLogic';
 import { getTodayString } from '@/lib/dateUtils';
 import { toast } from '@/hooks/use-toast';
@@ -104,11 +105,18 @@ export const useTransactions = () => {
     }
 
     // Calculate new profile values
-    const newXP = profile.xp + xpEarned;
-    const newLevel = getLevelFromXP(newXP);
-    const newLevelTitle = getLevelTitle(newLevel);
+    let totalXpEarned = xpEarned;
     const { newStreak, isNewDay } = calculateStreak(profile.last_active_date, profile.streak);
     const today = getTodayString();
+
+    // Apply 7-day streak bonus (+50 XP when reaching exactly 7)
+    if (isNewDay && newStreak === 7) {
+      totalXpEarned += XP_VALUES.STREAK_7_DAYS;
+    }
+
+    const newXP = profile.xp + totalXpEarned;
+    const newLevel = getLevelFromXP(newXP);
+    const newLevelTitle = getLevelTitle(newLevel);
 
     const profileUpdates: Record<string, unknown> = {
       xp: newXP,
@@ -150,9 +158,9 @@ export const useTransactions = () => {
       user_id: user.id,
       xp_before: profile.xp,
       xp_after: newXP,
-      xp_change: xpEarned,
+      xp_change: totalXpEarned,
       source: 'transaction',
-      description: `${transaction.type}: ${transaction.description}`
+      description: `${transaction.type}: ${transaction.description}${isNewDay && newStreak === 7 ? ' (+50 streak bonus)' : ''}`
     });
 
     // Check for level up
@@ -258,7 +266,7 @@ export const useTransactions = () => {
       })
       .catch(console.error);
 
-    return { error: null, xpEarned };
+    return { error: null, xpEarned: totalXpEarned };
   };
 
   const updateTransaction = async (
