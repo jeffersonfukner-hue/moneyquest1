@@ -1159,6 +1159,11 @@
       "confirmLabel": "Type the user's email to confirm",
       "emailMismatch": "Email doesn't match",
       "confirmButton": "Delete Permanently",
+      "exportHint": "We recommend exporting user data before deleting:",
+      "exportButton": "Export User Data",
+      "exportSuccess": "Data exported successfully",
+      "exportSuccessDesc": "The JSON file has been downloaded",
+      "exportError": "Error exporting data",
       "success": "User deleted successfully!",
       "error": "Error deleting user"
     },

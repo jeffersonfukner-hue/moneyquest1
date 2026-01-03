@@ -157,6 +157,7 @@ const UsersManagement = () => {
       <DeleteUserDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
+        userId={selectedUser?.id || ''}
         userEmail={selectedUser?.email || ''}
         userName={selectedUser?.display_name || selectedUser?.email || ''}
         onConfirm={handleConfirmDelete}
