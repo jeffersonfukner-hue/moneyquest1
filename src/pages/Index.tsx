@@ -285,16 +285,7 @@ const Index = () => {
         }}
       />
 
-      {narrativeData && (
-        <NarrativeEvent
-          narrative={narrativeData.narrative}
-          impact={narrativeData.impact}
-          eventType={narrativeData.eventType}
-          category={narrativeData.category}
-          amount={narrativeData.amount}
-          onClose={clearNarrative}
-        />
-      )}
+      {/* NarrativeEvent removed - narratives now shown inline via TransactionFeedback */}
 
       <DailyRewardDialog 
         open={showRewardDialog} 
@@ -304,13 +295,16 @@ const Index = () => {
         }}
       />
 
-      <XPNotification 
-        xpChange={xpChange} 
-        onDismiss={() => {
-          clearXPChange();
-          refetchProfile();
-        }} 
-      />
+      {/* XPNotification only shows for level ups to reduce pop-up fatigue */}
+      {xpChange && xpChange.levelUp && (
+        <XPNotification 
+          xpChange={xpChange} 
+          onDismiss={() => {
+            clearXPChange();
+            refetchProfile();
+          }} 
+        />
+      )}
 
       <TierUpgradeCelebration
         newTier={tierUpgrade}

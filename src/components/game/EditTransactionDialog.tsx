@@ -309,9 +309,10 @@ export const EditTransactionDialog = ({
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
-                  <Calendar
+                <Calendar
                     mode="single"
                     selected={date}
+                    defaultMonth={date}
                     onSelect={(d) => d && setDate(d)}
                     disabled={disabledDays}
                     locale={dateLocale}

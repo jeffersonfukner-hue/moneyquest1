@@ -7,6 +7,7 @@ import { DeleteUserDialog } from '@/components/admin/DeleteUserDialog';
 import { useAdminData } from '@/hooks/useAdminData';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { ManualReferralLinkWidget } from '@/components/admin/ManualReferralLinkWidget';
 import type { AdminUser } from '@/types/admin';
 
 const UsersManagement = () => {
@@ -99,6 +100,9 @@ const UsersManagement = () => {
           <h1 className="text-2xl lg:text-3xl font-display font-bold">{t('admin.users.title')}</h1>
           <p className="text-muted-foreground">{t('admin.users.subtitle')}</p>
         </div>
+
+        {/* Manual Referral Link Widget */}
+        <ManualReferralLinkWidget />
 
         <UsersTable
           users={users || []}
