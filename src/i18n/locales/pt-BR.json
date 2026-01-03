@@ -1,4 +1,17 @@
 {
+  "admin": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "users": "Usuários",
+      "campaigns": "Campanhas",
+      "support": "Suporte",
+      "referrals": "Indicações",
+      "trialAbuse": "Abuso de Trial",
+      "engagement": "Engajamento",
+      "analytics": "Analytics",
+      "logs": "Logs"
+    }
+  },
   "languageSelection": {
     "title": "Escolha seu idioma",
     "subtitle": "Selecione o idioma para continuar"

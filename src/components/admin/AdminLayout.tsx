@@ -12,7 +12,8 @@ import {
   Menu,
   MessageSquare,
   Gift,
-  Fingerprint
+  Fingerprint,
+  Megaphone
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -25,6 +26,7 @@ interface AdminLayoutProps {
 const navItems = [
   { path: '/super-admin', icon: LayoutDashboard, labelKey: 'admin.nav.dashboard' },
   { path: '/super-admin/users', icon: Users, labelKey: 'admin.nav.users' },
+  { path: '/super-admin/campaigns', icon: Megaphone, labelKey: 'admin.nav.campaigns' },
   { path: '/super-admin/support', icon: MessageSquare, labelKey: 'admin.nav.support' },
   { path: '/super-admin/referrals', icon: Gift, labelKey: 'admin.nav.referrals' },
   { path: '/super-admin/trial-abuse', icon: Fingerprint, labelKey: 'admin.nav.trialAbuse' },
