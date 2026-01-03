@@ -6,6 +6,7 @@ import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useAdBanner } from '@/hooks/useAdBanner';
 import { useReferralNotifications } from '@/hooks/useReferralNotifications';
+import { FloatingWhatsAppButton } from '@/components/support/FloatingWhatsAppButton';
 import { cn } from '@/lib/utils';
 
 interface AppLayoutProps {
@@ -54,6 +55,8 @@ export const AppLayout = ({
   return (
     <div className={cn("min-h-screen bg-background", getBottomPadding(), className)}>
       {children}
+
+      <FloatingWhatsAppButton />
 
       {showAdBanner && <AdBanner />}
 
