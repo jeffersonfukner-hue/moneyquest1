@@ -31,7 +31,10 @@ export const useQuests = () => {
       .order('type', { ascending: true });
 
     if (!error && data) {
-      setQuests(data.map(q => ({
+      // Deduplicate quests by quest_key - keep the most relevant one
+      const questMap = new Map<string, Quest>();
+      
+      const rawQuests = data.map(q => ({
         ...q,
         type: q.type as QuestType,
         period_start_date: q.period_start_date || null,
@@ -41,7 +44,32 @@ export const useQuests = () => {
         quest_key: q.quest_key || null,
         is_active: q.is_active ?? true,
         season: q.season || null
-      })));
+      }));
+
+      for (const quest of rawQuests) {
+        // Normalize quest_key - remove UUID suffixes for deduplication
+        const baseKey = quest.quest_key 
+          ? quest.quest_key.replace(/_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i, '')
+          : `${quest.type}_${quest.title}`;
+        
+        const existing = questMap.get(baseKey);
+        
+        if (!existing) {
+          questMap.set(baseKey, quest);
+        } else {
+          // Keep the one with more progress, or completed, or most recent dates
+          const shouldReplace = 
+            (!existing.is_completed && quest.is_completed) ||
+            (quest.progress_current > existing.progress_current) ||
+            (quest.period_end_date && !existing.period_end_date);
+          
+          if (shouldReplace) {
+            questMap.set(baseKey, quest);
+          }
+        }
+      }
+
+      setQuests(Array.from(questMap.values()));
     }
     setLoading(false);
   }, [user]);
@@ -50,9 +78,19 @@ export const useQuests = () => {
     fetchQuests();
   }, [fetchQuests]);
 
-  // Filter quests by type
+  // Filter quests by type - separate missions from achievements
   const getQuestsByType = useCallback((type: QuestType): Quest[] => {
     return quests.filter(q => q.type === type);
+  }, [quests]);
+
+  // Get only mission quests (DAILY, WEEKLY, MONTHLY, SPECIAL)
+  const getMissions = useCallback((): Quest[] => {
+    return quests.filter(q => ['DAILY', 'WEEKLY', 'MONTHLY', 'SPECIAL'].includes(q.type));
+  }, [quests]);
+
+  // Get only achievement quests
+  const getAchievements = useCallback((): Quest[] => {
+    return quests.filter(q => q.type === 'ACHIEVEMENT');
   }, [quests]);
 
   // Get quest completion stats
@@ -92,6 +130,8 @@ export const useQuests = () => {
     loading, 
     refetch: fetchQuests,
     getQuestsByType,
+    getMissions,
+    getAchievements,
     getQuestStats
   };
 };

@@ -138,19 +138,33 @@ export const QuestsPanel = ({ quests }: QuestsPanelProps) => {
         })}
       </Tabs>
 
+      {/* Achievements Section - Separate from missions */}
       {achievementQuests.length > 0 && (
         <div className="mt-4 pt-3 border-t border-border">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-sm">{QUEST_TYPE_CONFIG.ACHIEVEMENT.icon}</span>
-            <h4 className="text-sm font-medium text-foreground">{t('quests.achievement')}</h4>
-            <span className="text-xs text-muted-foreground">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-6 h-6 bg-gradient-to-r from-amber-500 to-yellow-400 rounded-lg flex items-center justify-center">
+              <span className="text-xs">{QUEST_TYPE_CONFIG.ACHIEVEMENT.icon}</span>
+            </div>
+            <h4 className="text-sm font-semibold text-foreground">{t('quests.achievement')}</h4>
+            <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
               {achievementQuests.filter(q => q.is_completed).length}/{achievementQuests.length}
             </span>
           </div>
+          <p className="text-xs text-muted-foreground mb-3">
+            {t('quests.achievementDescription', { defaultValue: 'One-time goals with permanent rewards' })}
+          </p>
           <div className="space-y-2">
-            {achievementQuests.map(quest => (
-              <QuestCard key={quest.id} quest={quest} />
-            ))}
+            {achievementQuests
+              .sort((a, b) => {
+                // Completed last, then by progress percentage
+                if (a.is_completed !== b.is_completed) return a.is_completed ? 1 : -1;
+                const aProgress = a.progress_target > 0 ? a.progress_current / a.progress_target : 0;
+                const bProgress = b.progress_target > 0 ? b.progress_current / b.progress_target : 0;
+                return bProgress - aProgress;
+              })
+              .map(quest => (
+                <QuestCard key={quest.id} quest={quest} />
+              ))}
           </div>
         </div>
       )}
