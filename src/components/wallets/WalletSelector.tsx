@@ -72,10 +72,10 @@ export const WalletSelector = ({
             disabled={disabled}
           >
             {selectedWallet ? (
-              <span className="flex items-center gap-2 truncate">
-                <span>{selectedWallet.icon}</span>
-                <span className="truncate">{selectedWallet.name}</span>
-                <span className="text-xs text-muted-foreground ml-auto">
+              <span className="flex items-center gap-2 min-w-0 w-full">
+                <span className="flex-shrink-0">{selectedWallet.icon}</span>
+                <span className="truncate flex-1 min-w-0">{selectedWallet.name}</span>
+                <span className="text-xs text-muted-foreground flex-shrink-0">
                   {formatBalance(selectedWallet.current_balance, selectedWallet.currency)}
                 </span>
               </span>
