@@ -17,9 +17,11 @@ export const calculateFinancialMood = (totalIncome: number, totalExpenses: numbe
 
 export const calculateXP = (amount: number, type: 'INCOME' | 'EXPENSE'): number => {
   if (type === 'INCOME') {
-    return Math.min(Math.floor(amount / 10), 100);
+    // Minimum 1 XP, maximum 100 XP for income
+    return Math.max(1, Math.min(Math.floor(amount / 10), 100));
   }
-  return Math.min(Math.floor(amount / 20), 50);
+  // Minimum 1 XP, maximum 50 XP for expense
+  return Math.max(1, Math.min(Math.floor(amount / 20), 50));
 };
 
 export const getLevelFromXP = (xp: number): number => {

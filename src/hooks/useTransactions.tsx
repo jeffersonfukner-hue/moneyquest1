@@ -163,18 +163,11 @@ export const useTransactions = () => {
     const didLevelUp = newLevel > profile.level;
     if (didLevelUp) {
       playSound('levelUp');
-      toast({
-        title: "🎉 Level Up!",
-        description: `You're now Level ${newLevel} - ${newLevelTitle}!`,
-      });
+      // Level up toast is now handled by XPNotification component
     }
 
-    // Play XP sound and show toast
+    // Play XP sound (no toast - handled by XPNotification and SessionSummaryCard)
     playSound('xpGain');
-    toast({
-      title: `+${xpEarned} XP`,
-      description: `Earned from logging ${transaction.type.toLowerCase()}`,
-    });
 
     // Check quests and badges
     const transactionCount = transactions.length + 1;

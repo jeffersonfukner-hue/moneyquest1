@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Plus, ArrowUpCircle, ArrowDownCircle, CalendarIcon, Coins, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
@@ -74,6 +74,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   const [date, setDate] = useState<Date>(new Date());
   const [loading, setLoading] = useState(false);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const descriptionInputRef = useRef<HTMLInputElement>(null);
   const [showGoalPrompt, setShowGoalPrompt] = useState(false);
   
   // Session tracking
@@ -200,6 +201,11 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
       // Wallet and date are intentionally kept for multiple transactions
       setTouched({ description: false, amount: false, category: false, wallet: false });
       setAttemptedSubmit(false);
+      
+      // Focus on description field for next transaction
+      setTimeout(() => {
+        descriptionInputRef.current?.focus();
+      }, 100);
     }
     setLoading(false);
   };
@@ -290,6 +296,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
               <span className="text-destructive">*</span>
             </Label>
             <Input
+              ref={descriptionInputRef}
               id="description"
               placeholder={t('transactions.description')}
               value={description}
