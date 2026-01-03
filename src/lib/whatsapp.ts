@@ -1,9 +1,4 @@
-// WhatsApp helper with fallback strategy to avoid api.whatsapp.com blocking
-
-const isMobile = (): boolean => {
-  if (typeof navigator === 'undefined') return false;
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-};
+// WhatsApp helper (Lovable-safe): always opens wa.me as a real external link
 
 interface WhatsAppChatOptions {
   phoneE164: string;
@@ -20,51 +15,37 @@ interface OpenWhatsAppOptions {
   text?: string;
 }
 
-/**
- * Build WhatsApp chat URLs (with phone number)
- */
-export const buildWhatsAppChatUrls = ({ phoneE164, text }: WhatsAppChatOptions) => {
-  const encodedText = text ? encodeURIComponent(text) : '';
-  const textParam = text ? `&text=${encodedText}` : '';
-  
-  return {
-    app: `whatsapp://send?phone=${phoneE164}${textParam}`,
-    web: `https://web.whatsapp.com/send?phone=${phoneE164}${textParam}`,
-  };
+export const buildWaMeChatUrl = ({ phoneE164, text }: WhatsAppChatOptions): string => {
+  const messageParam = text ? `?text=${encodeURIComponent(text)}` : '';
+  return `https://wa.me/${phoneE164}${messageParam}`;
+};
+
+export const buildWaMeShareUrl = ({ text }: WhatsAppShareOptions): string => {
+  return `https://wa.me/?text=${encodeURIComponent(text)}`;
 };
 
 /**
- * Build WhatsApp share URLs (without phone number, for sharing content)
+ * Forces opening a real external link in a new tab.
+ * (Using a programmatic <a> click avoids SPA navigation interception.)
  */
-export const buildWhatsAppShareUrls = ({ text }: WhatsAppShareOptions) => {
-  const encodedText = encodeURIComponent(text);
-  
-  return {
-    app: `whatsapp://send?text=${encodedText}`,
-    web: `https://web.whatsapp.com/send?text=${encodedText}`,
-  };
+export const openExternalUrl = (url: string): void => {
+  const a = document.createElement('a');
+  a.href = url;
+  a.target = '_blank';
+  a.rel = 'noopener noreferrer';
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
 };
 
 /**
- * Open WhatsApp with intelligent fallback
- * - Mobile: tries app deep link first, falls back to web
- * - Desktop: opens web.whatsapp.com directly
+ * Open WhatsApp via wa.me (external, _blank).
  */
 export const openWhatsApp = ({ mode, phoneE164, text }: OpenWhatsAppOptions): void => {
-  const urls = mode === 'chat' && phoneE164
-    ? buildWhatsAppChatUrls({ phoneE164, text })
-    : buildWhatsAppShareUrls({ text: text || '' });
+  const url = mode === 'chat' && phoneE164
+    ? buildWaMeChatUrl({ phoneE164, text })
+    : buildWaMeShareUrl({ text: text || '' });
 
-  if (isMobile()) {
-    // On mobile, try app deep link
-    window.location.href = urls.app;
-    
-    // Fallback to web after short delay if app doesn't open
-    setTimeout(() => {
-      window.open(urls.web, '_blank');
-    }, 1000);
-  } else {
-    // On desktop, open web.whatsapp.com directly
-    window.open(urls.web, '_blank');
-  }
+  openExternalUrl(url);
 };
