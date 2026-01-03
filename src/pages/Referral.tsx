@@ -17,6 +17,7 @@ import { ReferredUsersList } from '@/components/referral/ReferredUsersList';
 import { RewardHistory } from '@/components/referral/RewardHistory';
 import { ReferralRanking } from '@/components/referral/ReferralRanking';
 import { ReferralTierBadge } from '@/components/referral/ReferralTierBadge';
+import { openWhatsApp } from '@/lib/whatsapp';
 
 interface TierInfo {
   tier: 'none' | 'bronze' | 'silver' | 'gold';
@@ -98,7 +99,7 @@ const Referral = () => {
 
   const handleShareWhatsApp = () => {
     const text = t('referral.shareMessage', { link: referralLink });
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    openWhatsApp({ mode: 'share', text });
   };
 
   const handleNativeShare = async () => {

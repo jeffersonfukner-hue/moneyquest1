@@ -2,6 +2,7 @@ import { FaWhatsapp } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { WHATSAPP_SUPPORT_NUMBER } from '@/lib/supportConfig';
+import { openWhatsApp } from '@/lib/whatsapp';
 
 export const FloatingWhatsAppButton = () => {
   const { t } = useTranslation();
@@ -12,8 +13,12 @@ export const FloatingWhatsAppButton = () => {
     const userInfo = user 
       ? `\n\n---\n${t('support.whatsapp.userInfo')}\nEmail: ${user.email || 'N/A'}\nID: ${user.id.substring(0, 8)}...`
       : '';
-    const message = encodeURIComponent(baseMessage + userInfo);
-    window.open(`https://wa.me/${WHATSAPP_SUPPORT_NUMBER}?text=${message}`, '_blank');
+    
+    openWhatsApp({
+      mode: 'chat',
+      phoneE164: WHATSAPP_SUPPORT_NUMBER,
+      text: baseMessage + userInfo,
+    });
   };
 
   return (
