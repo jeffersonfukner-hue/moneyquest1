@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Shield } from 'lucide-react';
+import { FaInstagram } from 'react-icons/fa';
+import { SUPPORT_CONFIG } from '@/lib/supportConfig';
 
 interface PublicFooterProps {
   showSupport?: boolean;
@@ -32,6 +34,16 @@ const PublicFooter = ({ showSupport = false, className = '' }: PublicFooterProps
             </Link>
           </>
         )}
+        <span>•</span>
+        <a 
+          href={SUPPORT_CONFIG.social.instagram} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="hover:text-primary transition-colors inline-flex items-center gap-1"
+          aria-label="Instagram"
+        >
+          <FaInstagram className="w-3.5 h-3.5" />
+        </a>
       </div>
     </footer>
   );
