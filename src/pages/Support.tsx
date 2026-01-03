@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, MessageSquare, Phone, ChevronRight, Inbox } from 'lucide-react';
+import { ArrowLeft, MessageSquare, ChevronRight, Inbox, Clock } from 'lucide-react';
+import { FaWhatsapp } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useSupportTickets } from '@/hooks/useSupportTickets';
@@ -9,7 +10,7 @@ import { NewTicketDialog } from '@/components/support/NewTicketDialog';
 import { FAQSection } from '@/components/support/FAQSection';
 import { useAuth } from '@/hooks/useAuth';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { WHATSAPP_SUPPORT_NUMBER } from '@/lib/supportConfig';
+import { WHATSAPP_SUPPORT_NUMBER, SUPPORT_CONFIG } from '@/lib/supportConfig';
 
 export default function Support() {
   const navigate = useNavigate();
@@ -61,6 +62,14 @@ export default function Support() {
 
       {/* Content */}
       <main className="container py-6 space-y-6">
+        {/* Horário de atendimento */}
+        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground bg-muted/50 rounded-lg py-2 px-4">
+          <Clock className="w-4 h-4" />
+          <span>
+            {t('support.hours.label')}: {SUPPORT_CONFIG.hours.weekdays} ({t('support.hours.weekdays')})
+          </span>
+        </div>
+
         <p className="text-muted-foreground text-center">
           {t('support.chooseContact')}
         </p>
@@ -72,7 +81,7 @@ export default function Support() {
         >
           <CardContent className="p-5 flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-[#25D366] flex items-center justify-center shrink-0">
-              <Phone className="w-7 h-7 text-white" />
+              <FaWhatsapp className="w-7 h-7 text-white" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-lg">{t('support.whatsapp.title')}</p>
