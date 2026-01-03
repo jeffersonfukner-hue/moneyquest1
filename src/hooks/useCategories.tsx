@@ -38,28 +38,51 @@ export const useCategories = () => {
       if (fetchedCategories.length === 0 || !hasDefaultCategories) {
         console.warn('User missing default categories, triggering provisioning...');
         
-        try {
-          const { error: provisionError } = await supabase.functions.invoke('provision-categories', {
-            body: { user_id: user.id }
-          });
-          
-          if (provisionError) {
-            console.error('Failed to provision categories:', provisionError);
-          } else {
-            // Re-fetch after provisioning
-            const { data: refreshedData } = await supabase
-              .from('categories')
-              .select('*')
-              .eq('user_id', user.id)
-              .order('is_default', { ascending: false })
-              .order('name');
-            setCategories((refreshedData || []) as Category[]);
-            setError(null);
-            setLoading(false);
-            return;
+        // Retry logic with exponential backoff
+        const maxRetries = 3;
+        let retryCount = 0;
+        let provisionSuccess = false;
+        
+        while (retryCount < maxRetries && !provisionSuccess) {
+          try {
+            const { error: provisionError } = await supabase.functions.invoke('provision-categories', {
+              body: { user_id: user.id }
+            });
+            
+            if (!provisionError) {
+              provisionSuccess = true;
+              console.log('Categories provisioned successfully');
+            } else {
+              console.error(`Provision attempt ${retryCount + 1} failed:`, provisionError);
+              retryCount++;
+              if (retryCount < maxRetries) {
+                // Wait before retry (exponential backoff: 500ms, 1000ms, 2000ms)
+                await new Promise(resolve => setTimeout(resolve, 500 * Math.pow(2, retryCount - 1)));
+              }
+            }
+          } catch (provisionErr) {
+            console.error(`Provision attempt ${retryCount + 1} error:`, provisionErr);
+            retryCount++;
+            if (retryCount < maxRetries) {
+              await new Promise(resolve => setTimeout(resolve, 500 * Math.pow(2, retryCount - 1)));
+            }
           }
-        } catch (provisionErr) {
-          console.error('Error calling provision-categories:', provisionErr);
+        }
+        
+        if (provisionSuccess) {
+          // Re-fetch after successful provisioning
+          const { data: refreshedData } = await supabase
+            .from('categories')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('is_default', { ascending: false })
+            .order('name');
+          setCategories((refreshedData || []) as Category[]);
+          setError(null);
+          setLoading(false);
+          return;
+        } else {
+          console.error('All provision attempts failed, user may need to refresh');
         }
       }
       
