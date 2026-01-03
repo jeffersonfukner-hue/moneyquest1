@@ -356,7 +356,7 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
             </Button>
             <Button onClick={() => {
               setShowUpgradeDialog(false);
-              window.location.href = '/upgrade';
+              window.location.href = '/premium';
             }}>
               {t('subscription.upgrade')}
             </Button>
