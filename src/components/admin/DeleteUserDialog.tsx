@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { AlertTriangle, Download, Loader2 } from "lucide-react";
+import { AlertTriangle, Download, Loader2, CheckCircle2, CloudUpload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 interface DeleteUserDialogProps {
   open: boolean;
@@ -38,25 +39,53 @@ export function DeleteUserDialog({
   const { toast } = useToast();
   const [confirmEmail, setConfirmEmail] = useState("");
   const [isExporting, setIsExporting] = useState(false);
+  const [autoBackup, setAutoBackup] = useState(true);
+  const [backupComplete, setBackupComplete] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const emailMatches = confirmEmail === userEmail;
 
   useEffect(() => {
     if (!open) {
       setConfirmEmail("");
+      setBackupComplete(false);
+      setIsDeleting(false);
     }
   }, [open]);
 
-  const handleExport = async () => {
+  const exportUserData = async () => {
+    const { data, error } = await supabase.rpc('admin_export_user_data', {
+      _target_user_id: userId
+    });
+
+    if (error) throw error;
+    return data;
+  };
+
+  const saveBackupToStorage = async (data: unknown) => {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const filename = `user-backup-${userEmail.replace('@', '_at_')}-${timestamp}.json`;
+    const filePath = `deleted-users/${filename}`;
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    
+    const { error } = await supabase.storage
+      .from('admin-backups')
+      .upload(filePath, blob, {
+        contentType: 'application/json',
+        upsert: false
+      });
+
+    if (error) throw error;
+    return filePath;
+  };
+
+  const handleExportDownload = async () => {
     if (!userId) return;
     
     setIsExporting(true);
     try {
-      const { data, error } = await supabase.rpc('admin_export_user_data', {
-        _target_user_id: userId
-      });
-
-      if (error) throw error;
+      const data = await exportUserData();
 
       // Create and download JSON file
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -83,6 +112,45 @@ export function DeleteUserDialog({
       setIsExporting(false);
     }
   };
+
+  const handleConfirmDelete = async () => {
+    if (!emailMatches || !userId) return;
+
+    setIsDeleting(true);
+
+    try {
+      // Auto backup if enabled
+      if (autoBackup) {
+        toast({
+          title: t("admin.delete.backupInProgress"),
+          description: t("admin.delete.backupInProgressDesc"),
+        });
+
+        const data = await exportUserData();
+        await saveBackupToStorage(data);
+        
+        setBackupComplete(true);
+        
+        toast({
+          title: t("admin.delete.backupSuccess"),
+          description: t("admin.delete.backupSuccessDesc"),
+        });
+      }
+
+      // Proceed with deletion
+      onConfirm();
+    } catch (error) {
+      console.error('Backup/Delete error:', error);
+      toast({
+        title: t("admin.delete.backupError"),
+        description: String(error),
+        variant: "destructive",
+      });
+      setIsDeleting(false);
+    }
+  };
+
+  const isPending = isLoading || isDeleting;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -112,17 +180,41 @@ export function DeleteUserDialog({
             </p>
           </div>
 
-          {/* Export button */}
-          <div className="rounded-md border border-border bg-muted/50 p-3">
-            <p className="text-sm text-muted-foreground mb-2">
-              {t("admin.delete.exportHint")}
+          {/* Auto backup option */}
+          <div className="rounded-md border border-border bg-muted/50 p-3 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <CloudUpload className="h-4 w-4 text-muted-foreground" />
+                <Label htmlFor="auto-backup" className="text-sm font-medium cursor-pointer">
+                  {t("admin.delete.autoBackup")}
+                </Label>
+              </div>
+              <Switch
+                id="auto-backup"
+                checked={autoBackup}
+                onCheckedChange={setAutoBackup}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {t("admin.delete.autoBackupHint")}
             </p>
+            
+            {backupComplete && (
+              <div className="flex items-center gap-2 text-xs text-green-600">
+                <CheckCircle2 className="h-3 w-3" />
+                {t("admin.delete.backupComplete")}
+              </div>
+            )}
+          </div>
+
+          {/* Manual export button */}
+          <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
-              onClick={handleExport}
-              disabled={isExporting}
-              className="w-full"
+              onClick={handleExportDownload}
+              disabled={isExporting || isPending}
+              className="flex-1"
             >
               {isExporting ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -143,6 +235,7 @@ export function DeleteUserDialog({
               placeholder={userEmail}
               value={confirmEmail}
               onChange={(e) => setConfirmEmail(e.target.value)}
+              disabled={isPending}
               className={
                 confirmEmail && !emailMatches
                   ? "border-destructive focus-visible:ring-destructive"
@@ -161,16 +254,25 @@ export function DeleteUserDialog({
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
-            disabled={isLoading}
+            disabled={isPending}
           >
             {t("common.cancel")}
           </Button>
           <Button
             variant="destructive"
-            onClick={onConfirm}
-            disabled={!emailMatches || isLoading}
+            onClick={handleConfirmDelete}
+            disabled={!emailMatches || isPending}
           >
-            {isLoading ? t("common.loading") : t("admin.delete.confirmButton")}
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {autoBackup && !backupComplete 
+                  ? t("admin.delete.backingUp") 
+                  : t("common.loading")}
+              </>
+            ) : (
+              t("admin.delete.confirmButton")
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
