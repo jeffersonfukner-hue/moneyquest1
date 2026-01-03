@@ -31,7 +31,7 @@ export const ReferralBanner = ({ onDismiss }: ReferralBannerProps) => {
     <>
       <div 
         onClick={handleClick}
-        className="relative flex items-center justify-between w-full h-full px-4 cursor-pointer overflow-hidden bg-gradient-to-r from-primary/20 via-primary/15 to-primary/20 hover:from-primary/30 hover:via-primary/25 hover:to-primary/30 transition-colors"
+        className="relative flex items-center justify-between w-full h-full px-4 cursor-pointer overflow-hidden bg-gradient-to-r from-purple-100 via-purple-50 to-purple-100 dark:from-purple-900 dark:via-purple-800 dark:to-purple-900 hover:from-purple-200 hover:via-purple-100 hover:to-purple-200 dark:hover:from-purple-800 dark:hover:via-purple-700 dark:hover:to-purple-800 transition-colors"
       >
         <Gift className="w-5 h-5 text-primary shrink-0" />
         
