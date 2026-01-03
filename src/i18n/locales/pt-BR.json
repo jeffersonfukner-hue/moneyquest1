@@ -598,6 +598,11 @@
     "timeLeft": "Tempo restante",
     "progress": "Progresso",
     "expires": "Expira em",
+    "weeklyChallenges": "Desafios da Semana",
+    "weekOf": "Semana de",
+    "renewsIn": "Renova em",
+    "weeklyComplete": "Todos os desafios concluídos! Aguarde os novos!",
+    "keepGoing": "Continue assim! Faltam {{count}} desafios.",
     "items": {
       "daily_checkin": {
         "title": "Check-in Diário",

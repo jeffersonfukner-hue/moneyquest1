@@ -5,6 +5,7 @@ import { Target, Crown } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { QuestCard } from './QuestCard';
 import { QuestTimer } from './QuestTimer';
+import { WeeklyChallengesIndicator } from './WeeklyChallengesIndicator';
 import { QUEST_TYPE_CONFIG } from '@/lib/gameLogic';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { UpgradePrompt } from '@/components/subscription/UpgradePrompt';
@@ -107,7 +108,17 @@ export const QuestsPanel = ({ quests }: QuestsPanelProps) => {
                 </div>
               ) : (
                 <>
-                  {timerQuest && (
+                  {/* Weekly Challenges Indicator */}
+                  {tab.type === 'WEEKLY' && typeQuests.length > 0 && (
+                    <div className="mb-3">
+                      <WeeklyChallengesIndicator 
+                        questCount={typeQuests.length}
+                        completedCount={typeQuests.filter(q => q.is_completed).length}
+                      />
+                    </div>
+                  )}
+
+                  {timerQuest && tab.type !== 'WEEKLY' && (
                     <div className="mb-3">
                       <QuestTimer 
                         periodEndDate={timerQuest.period_end_date} 
