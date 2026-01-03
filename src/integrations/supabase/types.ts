@@ -634,6 +634,53 @@ export type Database = {
           },
         ]
       }
+      referral_fraud_analysis: {
+        Row: {
+          analysis_details: Json
+          created_at: string | null
+          id: string
+          referral_id: string | null
+          referred_id: string
+          referrer_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          risk_level: string
+          risk_score: number
+        }
+        Insert: {
+          analysis_details?: Json
+          created_at?: string | null
+          id?: string
+          referral_id?: string | null
+          referred_id: string
+          referrer_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          risk_level?: string
+          risk_score?: number
+        }
+        Update: {
+          analysis_details?: Json
+          created_at?: string | null
+          id?: string
+          referral_id?: string | null
+          referred_id?: string
+          referrer_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          risk_level?: string
+          risk_score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_fraud_analysis_referral_id_fkey"
+            columns: ["referral_id"]
+            isOneToOne: false
+            referencedRelation: "referrals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       referrals: {
         Row: {
           completed_at: string | null
@@ -1216,6 +1263,24 @@ export type Database = {
           user_id: string
         }[]
       }
+      admin_get_fraud_analysis: {
+        Args: never
+        Returns: {
+          analysis_details: Json
+          created_at: string
+          id: string
+          reasons: string[]
+          referral_id: string
+          referral_status: string
+          referred_id: string
+          referred_name: string
+          referrer_id: string
+          referrer_name: string
+          reviewed_at: string
+          risk_level: string
+          risk_score: number
+        }[]
+      }
       admin_get_suspicious_referrals: {
         Args: never
         Returns: {
@@ -1278,6 +1343,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      admin_mark_fraud_reviewed: {
+        Args: { p_analysis_id: string }
+        Returns: undefined
+      }
       admin_mark_trial_abuse_reviewed: {
         Args: { p_notification_id: string }
         Returns: undefined
@@ -1322,6 +1391,10 @@ export type Database = {
         Returns: Json
       }
       check_referral_fraud: {
+        Args: { p_referred_id: string; p_referrer_id: string }
+        Returns: Json
+      }
+      check_referral_fraud_v2: {
         Args: { p_referred_id: string; p_referrer_id: string }
         Returns: Json
       }
@@ -1385,6 +1458,10 @@ export type Database = {
       validate_referral_transactions: {
         Args: { p_user_id: string }
         Returns: boolean
+      }
+      validate_referral_transactions_v2: {
+        Args: { p_user_id: string }
+        Returns: Json
       }
     }
     Enums: {
