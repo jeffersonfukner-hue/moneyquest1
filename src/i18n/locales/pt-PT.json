@@ -1210,6 +1210,11 @@
       "confirmLabel": "Escreva o email do utilizador para confirmar",
       "emailMismatch": "O email não corresponde",
       "confirmButton": "Eliminar Permanentemente",
+      "exportHint": "Recomendamos exportar os dados do utilizador antes de eliminar:",
+      "exportButton": "Exportar Dados do Utilizador",
+      "exportSuccess": "Dados exportados com sucesso",
+      "exportSuccessDesc": "O ficheiro JSON foi descarregado",
+      "exportError": "Erro ao exportar dados",
       "success": "Utilizador eliminado com sucesso!",
       "error": "Erro ao eliminar utilizador"
     }

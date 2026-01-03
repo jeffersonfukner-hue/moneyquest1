@@ -1153,6 +1153,10 @@ export type Database = {
         Args: { _note?: string; _target_user_id: string }
         Returns: Json
       }
+      admin_export_user_data: {
+        Args: { _target_user_id: string }
+        Returns: Json
+      }
       admin_get_all_profiles: {
         Args: never
         Returns: {
