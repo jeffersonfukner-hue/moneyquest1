@@ -178,6 +178,47 @@ export type Database = {
           },
         ]
       }
+      blog_comments: {
+        Row: {
+          article_slug: string
+          content: string
+          created_at: string
+          id: string
+          is_approved: boolean
+          is_hidden: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          article_slug: string
+          content: string
+          created_at?: string
+          id?: string
+          is_approved?: boolean
+          is_hidden?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          article_slug?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_approved?: boolean
+          is_hidden?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categories: {
         Row: {
           color: string | null
