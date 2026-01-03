@@ -37,9 +37,30 @@ Allow: /
 # All other bots
 User-agent: *
 Allow: /
+
+# Protected/private routes
+Disallow: /dashboard
+Disallow: /login
+Disallow: /app
 Disallow: /api/
 Disallow: /_next/
 Disallow: /admin/
+Disallow: /super-admin/
+Disallow: /onboarding
+Disallow: /settings
+Disallow: /profile
+Disallow: /ai-coach
+Disallow: /category-goals
+Disallow: /categories
+Disallow: /leaderboard
+Disallow: /journal
+Disallow: /wallets
+Disallow: /cash-flow
+Disallow: /period-comparison
+Disallow: /support
+Disallow: /referral
+Disallow: /notifications
+Disallow: /premium-success
 
 # Sitemap
 Sitemap: https://moneyquest.app.br/sitemap.xml

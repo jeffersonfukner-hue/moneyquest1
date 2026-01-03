@@ -25,6 +25,12 @@ import Features from "./pages/Features";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 
+// SEO Pages
+import ControleFinanceiro from "./pages/ControleFinanceiro";
+import EducacaoFinanceira from "./pages/EducacaoFinanceira";
+import DesafiosFinanceiros from "./pages/DesafiosFinanceiros";
+import AppFinancasPessoais from "./pages/AppFinancasPessoais";
+
 import Onboarding from "./pages/Onboarding";
 import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
@@ -83,6 +89,11 @@ const App = () => (
                           <Route path="/features" element={<LanguageGuard><Features /></LanguageGuard>} />
                           <Route path="/terms" element={<LanguageGuard><Terms /></LanguageGuard>} />
                           <Route path="/privacy" element={<LanguageGuard><Privacy /></LanguageGuard>} />
+                          {/* SEO Landing Pages */}
+                          <Route path="/controle-financeiro" element={<ControleFinanceiro />} />
+                          <Route path="/educacao-financeira-gamificada" element={<EducacaoFinanceira />} />
+                          <Route path="/desafios-financeiros" element={<DesafiosFinanceiros />} />
+                          <Route path="/app-financas-pessoais" element={<AppFinancasPessoais />} />
                           <Route path="/onboarding" element={<Onboarding />} />
                           <Route path="/auth" element={<Navigate to="/login" replace />} />
                           <Route path="/settings" element={<Settings />} />
