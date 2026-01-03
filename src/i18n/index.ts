@@ -1,11 +1,11 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-// Force reload with admin translations v3 - support keys included
-import ptBR from './locales/pt-BR.json';
-import ptPT from './locales/pt-PT.json';
-import enUS from './locales/en-US.json';
-import esES from './locales/es-ES.json';
+// Admin translations v4 - force fresh import
+import ptBR from './locales/pt-BR.json' assert { type: 'json' };
+import ptPT from './locales/pt-PT.json' assert { type: 'json' };
+import enUS from './locales/en-US.json' assert { type: 'json' };
+import esES from './locales/es-ES.json' assert { type: 'json' };
 import { detectLanguageFromTimezone, detectLanguageFromIP, clearIPDetectionCache } from '@/lib/countryDetection';
 
 // Re-export para uso em outros módulos
