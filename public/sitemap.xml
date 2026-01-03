@@ -169,4 +169,12 @@
     <priority>0.7</priority>
   </url>
   
+  <!-- Author Pages -->
+  <url>
+    <loc>https://moneyquest.app.br/autor/equipe-moneyquest</loc>
+    <lastmod>2026-01-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
 </urlset>

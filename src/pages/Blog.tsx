@@ -2,10 +2,11 @@ import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useSEO } from '@/hooks/useSEO';
 import { blogArticles, BLOG_CATEGORIES, BlogCategory } from '@/lib/blogData';
-import { Calendar, Clock, ChevronRight, Home } from 'lucide-react';
+import { Calendar, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import BlogBreadcrumb, { getBreadcrumbSchema } from '@/components/blog/BlogBreadcrumb';
 import PublicFooter from '@/components/layout/PublicFooter';
 
 const Blog = () => {
@@ -24,8 +25,19 @@ const Blog = () => {
 
   const categories: (BlogCategory | 'all')[] = ['all', ...Object.keys(BLOG_CATEGORIES) as BlogCategory[]];
 
+  const breadcrumbItems = [{ label: 'Blog' }];
+  const breadcrumbSchema = getBreadcrumbSchema(breadcrumbItems);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
+      {/* Schema.org BreadcrumbList */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbSchema)
+        }}
+      />
+
       {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -51,15 +63,7 @@ const Blog = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        {/* Breadcrumbs */}
-        <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
-          <Link to="/" className="hover:text-foreground flex items-center gap-1">
-            <Home className="h-4 w-4" />
-            Início
-          </Link>
-          <ChevronRight className="h-4 w-4" />
-          <span className="text-foreground">Blog</span>
-        </nav>
+        <BlogBreadcrumb items={breadcrumbItems} />
 
         {/* Hero Section */}
         <section className="text-center mb-12">
