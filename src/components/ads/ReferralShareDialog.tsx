@@ -48,6 +48,16 @@ export const ReferralShareDialog = ({
     window.open(`https://web.whatsapp.com/send?text=${encodedText}`, '_blank');
   };
 
+  const handleCopyWhatsAppMessage = async () => {
+    const text = t('referral.shareMessage', { link: referralLink });
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success(t('referral.whatsAppMessageCopied', 'Mensagem copiada'));
+    } catch {
+      toast.error(t('common.error'));
+    }
+  };
+
   const handleNativeShare = async () => {
     if (navigator.share) {
       try {
@@ -123,6 +133,17 @@ export const ReferralShareDialog = ({
           >
             <Monitor className="w-3 h-3 mr-1" />
             {t('referral.openWhatsAppWeb', 'Abrir no WhatsApp Web')}
+          </Button>
+
+          {/* Copy message fallback (for blocked environments) */}
+          <Button 
+            onClick={handleCopyWhatsAppMessage} 
+            variant="ghost" 
+            size="sm"
+            className="text-xs text-muted-foreground hover:text-foreground"
+          >
+            <Copy className="w-3 h-3 mr-1" />
+            {t('referral.copyWhatsAppMessage', 'Copiar mensagem do WhatsApp')}
           </Button>
         </div>
         
