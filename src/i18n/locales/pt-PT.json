@@ -1201,6 +1201,17 @@
       "referrals": "Referidos",
       "trialAbuse": "Abuso de Trial"
     },
-    "backToApp": "Voltar à App"
+    "backToApp": "Voltar à App",
+    "delete": {
+      "title": "Eliminar Utilizador",
+      "warning": "Esta ação é permanente e não pode ser anulada. Todos os dados do utilizador serão removidos.",
+      "permanentWarning": "ATENÇÃO: Esta ação irá eliminar permanentemente o utilizador e todos os seus dados, incluindo transações, carteiras, metas e conquistas.",
+      "userInfo": "Utilizador a eliminar",
+      "confirmLabel": "Escreva o email do utilizador para confirmar",
+      "emailMismatch": "O email não corresponde",
+      "confirmButton": "Eliminar Permanentemente",
+      "success": "Utilizador eliminado com sucesso!",
+      "error": "Erro ao eliminar utilizador"
+    }
   }
 }

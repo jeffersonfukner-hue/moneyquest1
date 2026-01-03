@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { UsersTable } from '@/components/admin/UsersTable';
 import { PremiumDialog } from '@/components/admin/PremiumDialog';
+import { DeleteUserDialog } from '@/components/admin/DeleteUserDialog';
 import { useAdminData } from '@/hooks/useAdminData';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -153,22 +154,14 @@ const UsersManagement = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('admin.delete.title', 'Delete User')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('admin.delete.description', 'This will permanently delete {{user}} and all their data. This action cannot be undone.', { user: selectedUser?.email })}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive text-destructive-foreground">
-              {t('admin.delete.confirm', 'Delete Permanently')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteUserDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        userEmail={selectedUser?.email || ''}
+        userName={selectedUser?.display_name || selectedUser?.email || ''}
+        onConfirm={handleConfirmDelete}
+        isLoading={deleteUser.isPending}
+      />
     </AdminLayout>
   );
 };

@@ -1151,6 +1151,17 @@
       "success": "User blocked successfully!",
       "error": "Error blocking user"
     },
+    "delete": {
+      "title": "Delete User",
+      "warning": "This action is permanent and cannot be undone. All user data will be removed.",
+      "permanentWarning": "WARNING: This action will permanently delete the user and all their data, including transactions, wallets, goals, and achievements.",
+      "userInfo": "User to be deleted",
+      "confirmLabel": "Type the user's email to confirm",
+      "emailMismatch": "Email doesn't match",
+      "confirmButton": "Delete Permanently",
+      "success": "User deleted successfully!",
+      "error": "Error deleting user"
+    },
     "unblock": {
       "confirmTitle": "Unblock User",
       "confirmDesc": "Are you sure you want to unblock this user?",
