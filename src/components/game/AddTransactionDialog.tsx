@@ -98,7 +98,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   const errors = {
     description: !description.trim(),
     amount: !amount || parseFloat(amount) <= 0,
-    category: !category,
+    category: !category || category === '__new__',
     wallet: !walletId,
   };
   const hasErrors = errors.description || errors.amount || errors.category || errors.wallet;
