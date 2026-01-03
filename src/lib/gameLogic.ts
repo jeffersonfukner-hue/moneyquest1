@@ -137,7 +137,7 @@ export const getLevelTitle = (level: number): string => {
   return titles[key] || 'Novice Saver';
 };
 
-export const calculateStreak = (lastActiveDate: string | null): { newStreak: number; isNewDay: boolean } => {
+export const calculateStreak = (lastActiveDate: string | null, currentStreak: number = 0): { newStreak: number; isNewDay: boolean } => {
   const today = getTodayString();
   
   if (!lastActiveDate) {
@@ -153,9 +153,9 @@ export const calculateStreak = (lastActiveDate: string | null): { newStreak: num
   if (diffDays === 0) {
     return { newStreak: -1, isNewDay: false }; // Same day, no change
   } else if (diffDays === 1) {
-    return { newStreak: 1, isNewDay: true }; // Consecutive day, increment
+    return { newStreak: currentStreak + 1, isNewDay: true }; // Consecutive day, increment streak
   } else {
-    return { newStreak: 1, isNewDay: true }; // Streak broken, reset
+    return { newStreak: 1, isNewDay: true }; // Streak broken, reset to 1
   }
 };
 
