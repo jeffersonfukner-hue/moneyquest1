@@ -35,31 +35,42 @@ export const BlogPreviewCard = () => {
         </div>
       </CardHeader>
       <CardContent className="pt-0 space-y-2">
-        {recentArticles.map((article) => (
-          <Link
-            key={article.slug}
-            to={`/blog/${article.slug}`}
-            className="block p-2.5 rounded-lg bg-background/50 hover:bg-background/80 border border-transparent hover:border-border/50 transition-all group"
-          >
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-medium line-clamp-1 group-hover:text-primary transition-colors">
-                  {article.title}
-                </h4>
-                <div className="flex items-center gap-2 mt-1">
-                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
-                    {BLOG_CATEGORIES[article.category]?.name || article.category}
-                  </Badge>
-                  <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
-                    <Clock className="w-2.5 h-2.5" />
-                    {article.readTime} min
+        {recentArticles.map((article) => {
+          const categoryData = BLOG_CATEGORIES[article.category];
+          return (
+            <Link
+              key={article.slug}
+              to={`/blog/${article.slug}`}
+              className="block p-2.5 rounded-lg bg-background/50 hover:bg-background/80 border border-transparent hover:border-border/50 transition-all group"
+            >
+              <div className="flex items-start gap-2.5">
+                {/* Mini emoji thumbnail */}
+                <div className={`shrink-0 w-9 h-9 rounded-lg bg-gradient-to-br ${categoryData?.bgGradient || 'from-primary/20 to-accent/20'} flex items-center justify-center`}>
+                  <span className="text-lg group-hover:scale-110 transition-transform">
+                    {categoryData?.emoji || '📄'}
                   </span>
                 </div>
+                
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-sm font-medium line-clamp-1 group-hover:text-primary transition-colors">
+                    {article.title}
+                  </h4>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-[10px] text-muted-foreground">
+                      {categoryData?.name || article.category}
+                    </span>
+                    <span className="text-muted-foreground/50">•</span>
+                    <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
+                      <Clock className="w-2.5 h-2.5" />
+                      {article.readTime} min
+                    </span>
+                  </div>
+                </div>
+                <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0 mt-2" />
               </div>
-              <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0 mt-0.5" />
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </CardContent>
     </Card>
   );

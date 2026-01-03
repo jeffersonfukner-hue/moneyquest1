@@ -74,42 +74,69 @@ const Blog = () => {
 
         {/* Articles Grid */}
         <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-12">
-          {filteredArticles.map((article) => (
-            <Link key={article.slug} to={`/blog/${article.slug}`}>
-              <Card className="h-full hover:shadow-lg transition-all hover:border-primary/50 cursor-pointer group">
-                <CardHeader className="pb-3">
-                  <Badge 
-                    variant="secondary" 
-                    className="w-fit mb-2 bg-primary/10 text-primary"
-                  >
-                    {BLOG_CATEGORIES[article.category].name}
-                  </Badge>
-                  <h2 className="text-xl font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">
-                    {article.title}
-                  </h2>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground mb-4 line-clamp-3">
-                    {article.excerpt}
-                  </p>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      {new Date(article.publishedAt).toLocaleDateString('pt-BR', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric'
-                      })}
+          {filteredArticles.map((article) => {
+            const categoryData = BLOG_CATEGORIES[article.category];
+            return (
+              <Link key={article.slug} to={`/blog/${article.slug}`}>
+                <Card className="h-full hover:shadow-lg transition-all hover:border-primary/50 cursor-pointer group overflow-hidden">
+                  {/* Fun Thumbnail */}
+                  <div className={`relative h-32 bg-gradient-to-br ${categoryData.bgGradient} flex items-center justify-center overflow-hidden`}>
+                    {/* Floating background emojis */}
+                    <div className="absolute inset-0 opacity-20">
+                      {categoryData.iconEmojis.map((emoji, i) => (
+                        <span 
+                          key={i} 
+                          className="absolute text-2xl animate-float"
+                          style={{
+                            left: `${15 + i * 25}%`,
+                            top: `${20 + (i % 2) * 40}%`,
+                            animationDelay: `${i * 0.5}s`
+                          }}
+                        >
+                          {emoji}
+                        </span>
+                      ))}
+                    </div>
+                    {/* Main emoji */}
+                    <span className="text-5xl group-hover:scale-110 transition-transform duration-300 drop-shadow-lg relative z-10">
+                      {categoryData.emoji}
                     </span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      {article.readTime} min
-                    </span>
+                    {/* Category badge overlay */}
+                    <Badge 
+                      variant="secondary" 
+                      className="absolute bottom-2 left-2 bg-background/80 backdrop-blur-sm text-xs"
+                    >
+                      {categoryData.name}
+                    </Badge>
                   </div>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
+                  
+                  <CardHeader className="pb-2 pt-4">
+                    <h2 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">
+                      {article.title}
+                    </h2>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                      {article.excerpt}
+                    </p>
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <Calendar className="h-3 w-3" />
+                        {new Date(article.publishedAt).toLocaleDateString('pt-BR', {
+                          day: '2-digit',
+                          month: 'short'
+                        })}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {article.readTime} min
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            );
+          })}
         </section>
 
         {/* CTA Section */}

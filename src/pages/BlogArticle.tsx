@@ -262,15 +262,42 @@ const BlogArticle = () => {
           Voltar para o Blog
         </Link>
 
+        {/* Hero Image Section */}
+        <div className={`relative rounded-2xl overflow-hidden mb-8 bg-gradient-to-br ${BLOG_CATEGORIES[article.category].bgGradient}`}>
+          {/* Animated background elements */}
+          <div className="absolute inset-0 overflow-hidden">
+            {BLOG_CATEGORIES[article.category].iconEmojis.map((emoji, i) => (
+              <span 
+                key={i} 
+                className="absolute text-4xl md:text-5xl opacity-20 animate-float"
+                style={{
+                  left: `${10 + i * 22}%`,
+                  top: `${15 + (i % 2) * 50}%`,
+                  animationDelay: `${i * 0.7}s`,
+                  animationDuration: `${3 + i * 0.5}s`
+                }}
+              >
+                {emoji}
+              </span>
+            ))}
+          </div>
+          
+          {/* Main content */}
+          <div className="relative z-10 p-8 md:p-12 flex flex-col items-center text-center">
+            <span className="text-7xl md:text-8xl mb-4 drop-shadow-lg animate-bounce-slow">
+              {BLOG_CATEGORIES[article.category].emoji}
+            </span>
+            <Badge 
+              variant="secondary" 
+              className="bg-background/80 backdrop-blur-sm text-primary font-medium"
+            >
+              {BLOG_CATEGORIES[article.category].name}
+            </Badge>
+          </div>
+        </div>
+
         {/* Article Header */}
         <header className="mb-8">
-          <Badge 
-            variant="secondary" 
-            className="mb-4 bg-primary/10 text-primary"
-          >
-            {BLOG_CATEGORIES[article.category].name}
-          </Badge>
-          
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             {article.title}
           </h1>
