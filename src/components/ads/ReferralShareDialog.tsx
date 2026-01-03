@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { openWhatsApp } from '@/lib/whatsapp';
+import { openWhatsApp, openExternalUrl, buildWaMeShareUrl } from '@/lib/whatsapp';
 
 interface ReferralShareDialogProps {
   open: boolean;
@@ -44,8 +44,7 @@ export const ReferralShareDialog = ({
 
   const handleOpenWhatsAppWeb = () => {
     const text = t('referral.shareMessage', { link: referralLink });
-    const encodedText = encodeURIComponent(text);
-    window.open(`https://web.whatsapp.com/send?text=${encodedText}`, '_blank');
+    openExternalUrl(buildWaMeShareUrl({ text }));
   };
 
   const handleCopyWhatsAppMessage = async () => {
