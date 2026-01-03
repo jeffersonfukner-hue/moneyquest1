@@ -107,7 +107,7 @@ export const useTransactions = () => {
     const newXP = profile.xp + xpEarned;
     const newLevel = getLevelFromXP(newXP);
     const newLevelTitle = getLevelTitle(newLevel);
-    const { newStreak, isNewDay } = calculateStreak(profile.last_active_date);
+    const { newStreak, isNewDay } = calculateStreak(profile.last_active_date, profile.streak);
     const today = getTodayString();
 
     const profileUpdates: Record<string, unknown> = {
@@ -116,12 +116,8 @@ export const useTransactions = () => {
       level_title: newLevelTitle,
     };
 
-    if (isNewDay) {
-      profileUpdates.streak = newStreak === -1 ? profile.streak : 
-        (newStreak === 1 && profile.last_active_date && 
-         new Date(today + 'T00:00:00').getTime() - new Date(profile.last_active_date + 'T00:00:00').getTime() === 86400000)
-          ? profile.streak + 1 
-          : newStreak;
+    if (isNewDay && newStreak !== -1) {
+      profileUpdates.streak = newStreak;
       profileUpdates.last_active_date = today;
     }
 
