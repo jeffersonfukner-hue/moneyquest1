@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useMemo, useCallback } from 'react';
 import { useProfile } from '@/hooks/useProfile';
+import { useTrialStatus } from '@/hooks/useTrialStatus';
 
 export type SubscriptionPlan = 'FREE' | 'PREMIUM';
 
@@ -27,6 +28,9 @@ interface SubscriptionContextType {
   // Utility
   checkFeature: (feature: string) => boolean;
   subscriptionExpiresAt: string | null;
+  // Trial info
+  isInTrial: boolean;
+  trialExpired: boolean;
 }
 
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
@@ -50,8 +54,22 @@ const PREMIUM_FEATURES = [
 
 export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { profile, loading } = useProfile();
+  const trialStatus = useTrialStatus();
 
-  const plan: SubscriptionPlan = (profile?.subscription_plan as SubscriptionPlan) || 'FREE';
+  // Determine effective plan considering trial status
+  const basePlan: SubscriptionPlan = (profile?.subscription_plan as SubscriptionPlan) || 'FREE';
+  
+  // User is premium if:
+  // 1. Has paid subscription (PREMIUM plan with active Stripe status), OR
+  // 2. Is currently in an active trial (not expired)
+  const hasPaidSubscription = trialStatus.hasPaidSubscription;
+  const isInActiveTrial = trialStatus.isInTrial && trialStatus.phase !== 'expired';
+  
+  // If trial expired and no paid subscription, force FREE plan
+  const plan: SubscriptionPlan = hasPaidSubscription ? 'PREMIUM' : 
+                                  isInActiveTrial ? 'PREMIUM' : 
+                                  'FREE';
+  
   const isPremium = plan === 'PREMIUM';
 
   const checkFeature = useCallback((feature: string): boolean => {
@@ -79,7 +97,10 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
     canAccessUnlimitedHistory: isPremium,
     checkFeature,
     subscriptionExpiresAt: profile?.subscription_expires_at || null,
-  }), [plan, isPremium, loading, checkFeature, profile?.subscription_expires_at]);
+    // Trial info
+    isInTrial: isInActiveTrial,
+    trialExpired: trialStatus.phase === 'expired',
+  }), [plan, isPremium, loading, checkFeature, profile?.subscription_expires_at, isInActiveTrial, trialStatus.phase]);
 
   return (
     <SubscriptionContext.Provider value={value}>
