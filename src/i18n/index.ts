@@ -1,7 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-// Force reload with admin translations v2
+// Force reload with admin translations v3 - support keys included
 import ptBR from './locales/pt-BR.json';
 import ptPT from './locales/pt-PT.json';
 import enUS from './locales/en-US.json';
