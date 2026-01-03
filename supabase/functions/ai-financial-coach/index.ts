@@ -1,9 +1,18 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Input validation constants
+const MAX_USER_MESSAGE_LENGTH = 2000;
+const MAX_TRANSACTIONS = 100;
+const MAX_CONVERSATION_HISTORY = 20;
+const VALID_REQUEST_TYPES = ['spending_analysis', 'savings_tip', 'monthly_summary', 'goal_coaching', 'quick_insight', 'chat'] as const;
+const VALID_LANGUAGES = ['pt-BR', 'en-US', 'es-ES', 'pt-PT'] as const;
+const VALID_CURRENCIES = ['BRL', 'USD', 'EUR'] as const;
 
 interface Transaction {
   id: string;
@@ -27,16 +36,84 @@ interface ProfileStats {
 interface RequestBody {
   transactions: Transaction[];
   profile: ProfileStats;
-  requestType: 'spending_analysis' | 'savings_tip' | 'monthly_summary' | 'goal_coaching' | 'quick_insight' | 'chat';
+  requestType: typeof VALID_REQUEST_TYPES[number];
   userMessage?: string;
   conversationHistory?: Array<{ role: string; content: string }>;
   language: string;
   currency: string;
 }
 
+// Input validation functions
+function validateInput(body: unknown): { valid: true; data: RequestBody } | { valid: false; error: string } {
+  if (!body || typeof body !== 'object') {
+    return { valid: false, error: 'Invalid request body' };
+  }
+
+  const data = body as Record<string, unknown>;
+
+  // Validate requestType
+  if (!data.requestType || !VALID_REQUEST_TYPES.includes(data.requestType as typeof VALID_REQUEST_TYPES[number])) {
+    return { valid: false, error: `Invalid requestType. Must be one of: ${VALID_REQUEST_TYPES.join(', ')}` };
+  }
+
+  // Validate language
+  const language = data.language || 'en-US';
+  if (!VALID_LANGUAGES.includes(language as typeof VALID_LANGUAGES[number])) {
+    return { valid: false, error: `Invalid language. Must be one of: ${VALID_LANGUAGES.join(', ')}` };
+  }
+
+  // Validate currency
+  const currency = data.currency || 'USD';
+  if (!VALID_CURRENCIES.includes(currency as typeof VALID_CURRENCIES[number])) {
+    return { valid: false, error: `Invalid currency. Must be one of: ${VALID_CURRENCIES.join(', ')}` };
+  }
+
+  // Validate userMessage length
+  if (data.userMessage && typeof data.userMessage === 'string' && data.userMessage.length > MAX_USER_MESSAGE_LENGTH) {
+    return { valid: false, error: `userMessage exceeds maximum length of ${MAX_USER_MESSAGE_LENGTH} characters` };
+  }
+
+  // Validate transactions array
+  if (!Array.isArray(data.transactions)) {
+    return { valid: false, error: 'transactions must be an array' };
+  }
+  if (data.transactions.length > MAX_TRANSACTIONS) {
+    return { valid: false, error: `transactions array exceeds maximum of ${MAX_TRANSACTIONS} items` };
+  }
+
+  // Validate conversationHistory
+  if (data.conversationHistory && Array.isArray(data.conversationHistory) && data.conversationHistory.length > MAX_CONVERSATION_HISTORY) {
+    return { valid: false, error: `conversationHistory exceeds maximum of ${MAX_CONVERSATION_HISTORY} messages` };
+  }
+
+  // Validate profile object
+  if (!data.profile || typeof data.profile !== 'object') {
+    return { valid: false, error: 'profile is required and must be an object' };
+  }
+
+  const profile = data.profile as Record<string, unknown>;
+  if (typeof profile.level !== 'number' || profile.level < 1 || profile.level > 100) {
+    return { valid: false, error: 'profile.level must be a number between 1 and 100' };
+  }
+
+  return { 
+    valid: true, 
+    data: {
+      transactions: (data.transactions as Transaction[]).slice(0, MAX_TRANSACTIONS),
+      profile: data.profile as ProfileStats,
+      requestType: data.requestType as typeof VALID_REQUEST_TYPES[number],
+      userMessage: data.userMessage ? String(data.userMessage).slice(0, MAX_USER_MESSAGE_LENGTH) : undefined,
+      conversationHistory: (data.conversationHistory as Array<{ role: string; content: string }> || []).slice(0, MAX_CONVERSATION_HISTORY),
+      language: language as string,
+      currency: currency as string,
+    }
+  };
+}
+
 const getSystemPrompt = (language: string, currency: string) => {
   const languageInstructions = {
     'pt-BR': 'Responda sempre em português brasileiro.',
+    'pt-PT': 'Responda sempre em português europeu.',
     'en-US': 'Always respond in English.',
     'es-ES': 'Responde siempre en español.',
   };
@@ -118,6 +195,44 @@ serve(async (req) => {
   }
 
   try {
+    // Verify authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: 'unauthorized', message: 'Missing authorization header' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { auth: { persistSession: false } }
+    );
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
+    
+    if (userError || !user) {
+      console.error('Auth error:', userError?.message);
+      return new Response(JSON.stringify({ error: 'unauthorized', message: 'Invalid or expired token' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Parse and validate input
+    const rawBody = await req.json();
+    const validation = validateInput(rawBody);
+    
+    if (!validation.valid) {
+      console.error('Validation error:', validation.error);
+      return new Response(JSON.stringify({ error: 'validation_error', message: validation.error }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const { 
       transactions, 
       profile, 
@@ -126,7 +241,7 @@ serve(async (req) => {
       conversationHistory = [],
       language = 'en-US',
       currency = 'USD'
-    }: RequestBody = await req.json();
+    } = validation.data;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
@@ -147,7 +262,7 @@ serve(async (req) => {
       },
     ];
 
-    console.log(`AI Coach request: ${requestType}, language: ${language}, transactions: ${transactions.length}`);
+    console.log(`AI Coach request: user=${user.id}, type=${requestType}, language=${language}, transactions=${transactions.length}`);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
