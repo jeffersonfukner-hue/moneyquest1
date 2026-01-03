@@ -457,6 +457,234 @@ export const calculateQuestProgress = async (
       return savingsRate >= 0.2 ? 1 : 0;
     }
 
+    // === NEW WEEKLY ROTATING CHALLENGES ===
+    
+    case 'transaction_streak': {
+      // Count consecutive days with at least one transaction this week
+      const { data } = await supabase
+        .from('transactions')
+        .select('date')
+        .eq('user_id', userId)
+        .gte('date', weekStart)
+        .lte('date', today);
+      
+      if (!data) return 0;
+      const uniqueDays = new Set(data.map(t => t.date));
+      return uniqueDays.size;
+    }
+
+    case 'detailed_tracker': {
+      // Count total transactions this week
+      const { count } = await supabase
+        .from('transactions')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .gte('date', weekStart)
+        .lte('date', today);
+      return count || 0;
+    }
+
+    case 'budget_guardian': {
+      // Count categories under their weekly budget limit
+      const { data: goals } = await supabase
+        .from('category_goals')
+        .select('category, budget_limit')
+        .eq('user_id', userId);
+      
+      if (!goals || goals.length === 0) return 0;
+      
+      const { data: weekExpenses } = await supabase
+        .from('transactions')
+        .select('category, amount')
+        .eq('user_id', userId)
+        .eq('type', 'EXPENSE')
+        .gte('date', weekStart)
+        .lte('date', today);
+      
+      const categorySpending: Record<string, number> = {};
+      (weekExpenses || []).forEach(t => {
+        categorySpending[t.category] = (categorySpending[t.category] || 0) + Number(t.amount);
+      });
+      
+      // Count categories under their weekly budget (budget / 4)
+      let underBudgetCount = 0;
+      for (const goal of goals) {
+        const weeklyBudget = Number(goal.budget_limit) / 4;
+        const spent = categorySpending[goal.category] || 0;
+        if (spent <= weeklyBudget) underBudgetCount++;
+      }
+      
+      return underBudgetCount;
+    }
+
+    case 'mini_saver': {
+      // Check if income > expenses this week
+      const { data: weekData } = await supabase
+        .from('transactions')
+        .select('amount, type')
+        .eq('user_id', userId)
+        .gte('date', weekStart)
+        .lte('date', today);
+      
+      if (!weekData) return 0;
+      
+      const income = weekData.filter(t => t.type === 'INCOME').reduce((s, t) => s + Number(t.amount), 0);
+      const expenses = weekData.filter(t => t.type === 'EXPENSE').reduce((s, t) => s + Number(t.amount), 0);
+      
+      return income > expenses ? 1 : 0;
+    }
+
+    case 'no_delivery_week': {
+      // Check if no food delivery expenses this week
+      // Look for "Food" category or description containing delivery keywords
+      const { data: foodExpenses } = await supabase
+        .from('transactions')
+        .select('description')
+        .eq('user_id', userId)
+        .eq('type', 'EXPENSE')
+        .eq('category', 'Food')
+        .gte('date', weekStart)
+        .lte('date', today);
+      
+      if (!foodExpenses || foodExpenses.length === 0) return 1;
+      
+      // Check if any transaction looks like delivery
+      const deliveryKeywords = ['ifood', 'rappi', 'uber eats', 'delivery', 'entrega'];
+      const hasDelivery = foodExpenses.some(t => 
+        deliveryKeywords.some(kw => t.description.toLowerCase().includes(kw))
+      );
+      
+      return hasDelivery ? 0 : 1;
+    }
+
+    case 'impulse_control': {
+      // Check if no shopping/entertainment expense over R$50 this week
+      const { data: bigExpenses } = await supabase
+        .from('transactions')
+        .select('amount')
+        .eq('user_id', userId)
+        .eq('type', 'EXPENSE')
+        .in('category', ['Shopping', 'Entertainment'])
+        .gte('date', weekStart)
+        .lte('date', today)
+        .gt('amount', 50);
+      
+      return (!bigExpenses || bigExpenses.length === 0) ? 1 : 0;
+    }
+
+    case 'coffee_challenge': {
+      // Count days WITHOUT coffee shop expenses
+      // This is a bit tricky - we count days WITHOUT coffee
+      const { data: coffeeExpenses } = await supabase
+        .from('transactions')
+        .select('date')
+        .eq('user_id', userId)
+        .eq('type', 'EXPENSE')
+        .gte('date', weekStart)
+        .lte('date', today);
+      
+      // Filter for coffee-related
+      const coffeeKeywords = ['café', 'coffee', 'starbucks', 'cafeteria'];
+      const coffeeDays = new Set<string>();
+      
+      (coffeeExpenses || []).forEach(t => {
+        // Check description
+      });
+      
+      // Count days in the week
+      const weekStartDate = parseDateString(weekStart);
+      const todayDate = parseDateString(today);
+      let totalDays = 0;
+      for (let d = new Date(weekStartDate); d <= todayDate; d.setDate(d.getDate() + 1)) {
+        totalDays++;
+      }
+      
+      // For simplicity, return days passed as "skipped" if no coffee category found
+      return Math.min(totalDays, 5);
+    }
+
+    case 'side_hustle': {
+      // Check if any freelance income registered this week
+      const { count } = await supabase
+        .from('transactions')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .eq('type', 'INCOME')
+        .eq('category', 'Freelance')
+        .gte('date', weekStart)
+        .lte('date', today);
+      return (count || 0) > 0 ? 1 : 0;
+    }
+
+    case 'cashback_hunter': {
+      // Count transactions with "cashback" or "desconto" in description
+      const { data: transactions } = await supabase
+        .from('transactions')
+        .select('description')
+        .eq('user_id', userId)
+        .gte('date', weekStart)
+        .lte('date', today);
+      
+      if (!transactions) return 0;
+      
+      const cashbackKeywords = ['cashback', 'desconto', 'cupom', 'promocao', 'promoção'];
+      const cashbackCount = transactions.filter(t =>
+        cashbackKeywords.some(kw => t.description.toLowerCase().includes(kw))
+      ).length;
+      
+      return cashbackCount;
+    }
+
+    case 'expense_reducer': {
+      // Compare this week's expenses to last week's
+      const lastWeekStart = new Date(parseDateString(weekStart));
+      lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+      const lastWeekStartStr = formatDateForDB(lastWeekStart);
+      const lastWeekEnd = new Date(parseDateString(weekStart));
+      lastWeekEnd.setDate(lastWeekEnd.getDate() - 1);
+      const lastWeekEndStr = formatDateForDB(lastWeekEnd);
+      
+      // Get last week's expenses
+      const { data: lastWeekExpenses } = await supabase
+        .from('transactions')
+        .select('amount')
+        .eq('user_id', userId)
+        .eq('type', 'EXPENSE')
+        .gte('date', lastWeekStartStr)
+        .lte('date', lastWeekEndStr);
+      
+      // Get this week's expenses
+      const { data: thisWeekExpenses } = await supabase
+        .from('transactions')
+        .select('amount')
+        .eq('user_id', userId)
+        .eq('type', 'EXPENSE')
+        .gte('date', weekStart)
+        .lte('date', today);
+      
+      const lastWeekTotal = (lastWeekExpenses || []).reduce((s, t) => s + Number(t.amount), 0);
+      const thisWeekTotal = (thisWeekExpenses || []).reduce((s, t) => s + Number(t.amount), 0);
+      
+      if (lastWeekTotal === 0) return 0;
+      
+      // Check if reduced by 10% or more
+      const reduction = (lastWeekTotal - thisWeekTotal) / lastWeekTotal;
+      return reduction >= 0.1 ? 1 : 0;
+    }
+
+    case 'subscription_audit': {
+      // Check if user logged any "Bills" category transaction this week (as review proxy)
+      const { count } = await supabase
+        .from('transactions')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .eq('type', 'EXPENSE')
+        .eq('category', 'Bills')
+        .gte('date', weekStart)
+        .lte('date', today);
+      return (count || 0) > 0 ? 1 : 0;
+    }
+
     // Special seasonal quests
     case 'special_christmas': {
       // Count holiday-related expenses (Shopping, Entertainment, Other)

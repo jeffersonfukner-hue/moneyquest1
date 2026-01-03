@@ -1810,5 +1810,82 @@
         "description": "Histórias personalizadas sobre suas finanças"
       }
     }
+  },
+  "weeklyChallenges": {
+    "rotatingTitle": "Desafios da Semana",
+    "rotatingSubtitle": "Novos desafios toda segunda-feira!",
+    "weekNumber": "Semana {{week}}",
+    "weekly_balance": {
+      "title": "Balanço Semanal",
+      "description": "Registre transações em 5 dias diferentes esta semana"
+    },
+    "weekly_categories": {
+      "title": "Mestre das Categorias",
+      "description": "Use pelo menos 3 categorias de despesa diferentes"
+    },
+    "transaction_streak": {
+      "title": "Sequência de Registros",
+      "description": "Registre pelo menos uma transação todo dia esta semana"
+    },
+    "detailed_tracker": {
+      "title": "Rastreador Detalhado",
+      "description": "Registre 10 ou mais transações esta semana"
+    },
+    "savings_sprint": {
+      "title": "Sprint de Economia",
+      "description": "Economize pelo menos 20% da sua renda esta semana"
+    },
+    "category_focus": {
+      "title": "Foco na Categoria",
+      "description": "Mantenha uma categoria abaixo de 80% do orçamento semanal"
+    },
+    "budget_guardian": {
+      "title": "Guardião do Orçamento",
+      "description": "Mantenha 3 categorias dentro do limite semanal"
+    },
+    "mini_saver": {
+      "title": "Mini Poupador",
+      "description": "Economize qualquer valor esta semana (receita > despesa)"
+    },
+    "frugal_friday": {
+      "title": "Sexta Frugal",
+      "description": "Zero gastos em pelo menos uma sexta-feira"
+    },
+    "spending_freeze": {
+      "title": "Congelamento de Gastos",
+      "description": "Tenha 2 dias sem nenhum gasto esta semana"
+    },
+    "no_delivery_week": {
+      "title": "Semana Sem Delivery",
+      "description": "Sem despesas de delivery de comida esta semana"
+    },
+    "impulse_control": {
+      "title": "Controle de Impulsos",
+      "description": "Nenhuma compra/entretenimento acima de R$50 esta semana"
+    },
+    "coffee_challenge": {
+      "title": "Café em Casa",
+      "description": "Evite 5 visitas à cafeteria esta semana"
+    },
+    "income_hunter": {
+      "title": "Caçador de Renda",
+      "description": "Registre renda de 2 fontes diferentes"
+    },
+    "side_hustle": {
+      "title": "Renda Extra",
+      "description": "Registre qualquer renda freelance esta semana"
+    },
+    "cashback_hunter": {
+      "title": "Caçador de Cashback",
+      "description": "Obtenha cashback ou desconto em 3 compras"
+    },
+    "expense_reducer": {
+      "title": "Redutor de Despesas",
+      "description": "Reduza gastos totais em 10% vs semana passada"
+    },
+    "subscription_audit": {
+      "title": "Auditoria de Assinaturas",
+      "description": "Revise todas as contas recorrentes esta semana"
+    }
   }
 }
