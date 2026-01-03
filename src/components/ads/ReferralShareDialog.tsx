@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Copy, Share2, Gift, ExternalLink } from 'lucide-react';
+import { Copy, Share2, Gift, ExternalLink, Monitor } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 import { toast } from 'sonner';
 import {
@@ -40,6 +40,12 @@ export const ReferralShareDialog = ({
   const handleShareWhatsApp = () => {
     const text = t('referral.shareMessage', { link: referralLink });
     openWhatsApp({ mode: 'share', text });
+  };
+
+  const handleOpenWhatsAppWeb = () => {
+    const text = t('referral.shareMessage', { link: referralLink });
+    const encodedText = encodeURIComponent(text);
+    window.open(`https://web.whatsapp.com/send?text=${encodedText}`, '_blank');
   };
 
   const handleNativeShare = async () => {
@@ -89,21 +95,34 @@ export const ReferralShareDialog = ({
         </div>
         
         {/* Botões de compartilhamento */}
-        <div className="flex gap-3 mt-4">
+        <div className="flex flex-col gap-2 mt-4">
+          <div className="flex gap-3">
+            <Button 
+              onClick={handleShareWhatsApp} 
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+            >
+              <FaWhatsapp className="w-4 h-4 mr-2" />
+              WhatsApp
+            </Button>
+            <Button 
+              onClick={handleNativeShare} 
+              variant="outline" 
+              className="flex-1"
+            >
+              <Share2 className="w-4 h-4 mr-2" />
+              {t('referral.share')}
+            </Button>
+          </div>
+          
+          {/* WhatsApp Web fallback */}
           <Button 
-            onClick={handleShareWhatsApp} 
-            className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+            onClick={handleOpenWhatsAppWeb} 
+            variant="ghost" 
+            size="sm"
+            className="text-xs text-muted-foreground hover:text-foreground"
           >
-            <FaWhatsapp className="w-4 h-4 mr-2" />
-            WhatsApp
-          </Button>
-          <Button 
-            onClick={handleNativeShare} 
-            variant="outline" 
-            className="flex-1"
-          >
-            <Share2 className="w-4 h-4 mr-2" />
-            {t('referral.share')}
+            <Monitor className="w-3 h-3 mr-1" />
+            {t('referral.openWhatsAppWeb', 'Abrir no WhatsApp Web')}
           </Button>
         </div>
         
