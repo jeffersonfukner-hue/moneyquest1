@@ -24,7 +24,7 @@ export const PremiumInternalBanner = ({ onDismiss }: PremiumInternalBannerProps)
   return (
     <div 
       onClick={handleClick}
-      className="relative flex items-center justify-between w-full h-full px-4 cursor-pointer overflow-hidden bg-gradient-to-r from-accent/30 via-accent/20 to-accent/30 hover:from-accent/40 hover:via-accent/30 hover:to-accent/40 transition-colors"
+      className="relative flex items-center justify-between w-full h-full px-4 cursor-pointer overflow-hidden bg-gradient-to-r from-amber-100 via-amber-50 to-amber-100 dark:from-amber-900 dark:via-amber-800 dark:to-amber-900 hover:from-amber-200 hover:via-amber-100 hover:to-amber-200 dark:hover:from-amber-800 dark:hover:via-amber-700 dark:hover:to-amber-800 transition-colors"
     >
       {/* Shimmer animation */}
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer pointer-events-none" />

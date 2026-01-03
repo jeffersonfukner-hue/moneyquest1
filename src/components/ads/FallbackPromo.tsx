@@ -35,7 +35,7 @@ export const FallbackPromo = ({ onDismiss, onUpgradeClick }: FallbackPromoProps)
   return (
     <div 
       onClick={handleBannerClick}
-      className="relative flex items-center justify-between w-full h-full px-4 cursor-pointer overflow-hidden bg-gradient-to-r from-amber-500/20 via-amber-400/15 to-amber-500/20 dark:from-amber-500/10 dark:via-amber-400/5 dark:to-amber-500/10 hover:from-amber-500/30 hover:via-amber-400/25 hover:to-amber-500/30 dark:hover:from-amber-500/20 dark:hover:via-amber-400/15 dark:hover:to-amber-500/20 transition-colors"
+      className="relative flex items-center justify-between w-full h-full px-4 cursor-pointer overflow-hidden bg-gradient-to-r from-amber-100 via-amber-50 to-amber-100 dark:from-amber-900 dark:via-amber-800 dark:to-amber-900 hover:from-amber-200 hover:via-amber-100 hover:to-amber-200 dark:hover:from-amber-800 dark:hover:via-amber-700 dark:hover:to-amber-800 transition-colors"
     >
       {/* Shimmer overlay */}
       <div 

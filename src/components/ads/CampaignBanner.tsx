@@ -54,7 +54,7 @@ export const CampaignBanner = ({ campaign, onDismiss }: CampaignBannerProps) => 
   return (
     <div 
       onClick={handleClick}
-      className={`relative flex items-center justify-between w-full h-full px-4 cursor-pointer overflow-hidden bg-gradient-to-r ${campaign.bg_gradient} hover:opacity-90 transition-opacity`}
+      className={`relative flex items-center justify-between w-full h-full px-4 cursor-pointer overflow-hidden bg-gradient-to-r ${campaign.bg_gradient || 'from-blue-100 via-blue-50 to-blue-100 dark:from-blue-900 dark:via-blue-800 dark:to-blue-900'} hover:opacity-90 transition-opacity`}
     >
       <span className="text-xl shrink-0">{campaign.icon}</span>
       
