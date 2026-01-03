@@ -1,4 +1,4 @@
-import { MessageCircle } from 'lucide-react';
+import { FaWhatsapp } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -23,7 +23,7 @@ export const FloatingWhatsAppButton = () => {
       className="fixed bottom-24 right-4 z-50 w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center active:scale-95"
       aria-label={t('support.whatsapp.title')}
     >
-      <MessageCircle className="w-6 h-6" />
+      <FaWhatsapp className="w-7 h-7" />
     </button>
   );
 };
