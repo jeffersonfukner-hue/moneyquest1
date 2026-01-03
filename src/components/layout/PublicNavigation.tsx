@@ -14,7 +14,7 @@ const PublicNavigation = () => {
   const { theme, setTheme } = useTheme();
 
   const navItems = [
-    { href: '/login', label: t('nav.home', 'Início') },
+    { href: '/', label: t('nav.home', 'Início') },
     { href: '/features', label: t('nav.features', 'Funcionalidades') },
     { href: '/blog', label: 'Blog' },
   ];
@@ -28,7 +28,7 @@ const PublicNavigation = () => {
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/50">
       <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-        <Link to="/login" className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2">
           <Logo size="sm" />
         </Link>
 
