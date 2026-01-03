@@ -1561,7 +1561,8 @@
     "whatsapp": {
       "title": "Chat on WhatsApp",
       "subtitle": "Quick response",
-      "defaultMessage": "Hi, I'm reaching out from MoneyQuest."
+      "defaultMessage": "Hi, I'm reaching out from MoneyQuest and need some help.",
+      "userInfo": "User info:"
     },
     "email": {
       "title": "Send message via app",

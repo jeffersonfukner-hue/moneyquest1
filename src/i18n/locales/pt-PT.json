@@ -1011,7 +1011,8 @@
     "whatsapp": {
       "title": "Falar pelo WhatsApp",
       "subtitle": "Resposta rápida",
-      "defaultMessage": "Olá, estou a entrar em contacto pelo MoneyQuest."
+      "defaultMessage": "Olá, estou a entrar em contacto pelo MoneyQuest e preciso de ajuda.",
+      "userInfo": "Informações do utilizador:"
     },
     "email": {
       "title": "Enviar mensagem pela app",
