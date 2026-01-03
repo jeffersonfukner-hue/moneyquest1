@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { formatDistanceToNow } from 'date-fns';
@@ -9,6 +9,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { 
   MessageCircle, 
   Send, 
@@ -20,7 +27,8 @@ import {
   AlertCircle,
   Reply,
   CornerDownRight,
-  Heart
+  Heart,
+  ArrowUpDown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -28,6 +36,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 interface CommentSectionProps {
   articleSlug: string;
 }
+
+type SortOption = 'recent' | 'oldest' | 'popular';
 
 const getLocale = (lang: string) => {
   switch (lang) {
@@ -62,6 +72,7 @@ export const CommentSection = ({ articleSlug }: CommentSectionProps) => {
   const [editContent, setEditContent] = useState('');
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState('');
+  const [sortBy, setSortBy] = useState<SortOption>('recent');
 
   const handleSubmit = async () => {
     const { success } = await addComment(newComment);
@@ -139,7 +150,35 @@ export const CommentSection = ({ articleSlug }: CommentSectionProps) => {
       }));
   };
 
-  const visibleComments = filterVisible(comments);
+  // Sort comments based on selected option
+  const sortedComments = useMemo(() => {
+    const visible = filterVisible(comments);
+    
+    const sortRecursive = (commentsList: BlogComment[]): BlogComment[] => {
+      const sorted = [...commentsList].sort((a, b) => {
+        switch (sortBy) {
+          case 'popular':
+            // Sort by likes, then by date
+            if (b.likes_count !== a.likes_count) {
+              return b.likes_count - a.likes_count;
+            }
+            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+          case 'oldest':
+            return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+          case 'recent':
+          default:
+            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        }
+      });
+      
+      return sorted.map(c => ({
+        ...c,
+        replies: c.replies ? sortRecursive(c.replies) : []
+      }));
+    };
+    
+    return sortRecursive(visible);
+  }, [comments, sortBy, currentUserId]);
 
   // Recursive comment renderer
   const CommentItem = ({ comment, depth = 0 }: { comment: BlogComment; depth?: number }) => {
@@ -333,13 +372,35 @@ export const CommentSection = ({ articleSlug }: CommentSectionProps) => {
   return (
     <Card className="bg-card/50 border-border/50 mt-8">
       <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <MessageCircle className="w-5 h-5 text-primary" />
-          {t('blog.comments.title', 'Comentários')} 
-          <span className="text-sm font-normal text-muted-foreground">
-            ({totalCount})
-          </span>
-        </CardTitle>
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <MessageCircle className="w-5 h-5 text-primary" />
+            {t('blog.comments.title', 'Comentários')} 
+            <span className="text-sm font-normal text-muted-foreground">
+              ({totalCount})
+            </span>
+          </CardTitle>
+          
+          {totalCount > 1 && (
+            <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
+              <SelectTrigger className="w-[160px] h-8 text-xs">
+                <ArrowUpDown className="w-3 h-3 mr-1" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="recent">
+                  {t('blog.comments.sortRecent', 'Mais recentes')}
+                </SelectItem>
+                <SelectItem value="oldest">
+                  {t('blog.comments.sortOldest', 'Mais antigos')}
+                </SelectItem>
+                <SelectItem value="popular">
+                  {t('blog.comments.sortPopular', 'Mais curtidos')}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Comment Form */}
@@ -396,13 +457,13 @@ export const CommentSection = ({ articleSlug }: CommentSectionProps) => {
                 </div>
               </div>
             ))
-          ) : visibleComments.length === 0 ? (
+          ) : sortedComments.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-20" />
               <p>{t('blog.comments.noComments', 'Seja o primeiro a comentar!')}</p>
             </div>
           ) : (
-            visibleComments.map((comment) => (
+            sortedComments.map((comment) => (
               <CommentItem key={comment.id} comment={comment} />
             ))
           )}
