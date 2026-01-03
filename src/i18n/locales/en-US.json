@@ -1297,6 +1297,21 @@
       "singleLine": "Single Line",
       "twoLine": "Two Line",
       "noVariantData": "No variant data available yet"
+    },
+    "discount": {
+      "title": "Discount Analytics",
+      "description": "Track conversion rates for the 30% trial expiration discount",
+      "trialExpired": "Trial Expired",
+      "offerShown": "Offer Shown",
+      "converted": "Converted",
+      "conversionRate": "Conversion Rate",
+      "funnel": "Conversion Funnel",
+      "offerStatus": "Offer Status",
+      "active": "Active",
+      "expired": "Expired",
+      "notShown": "Not Shown",
+      "activeOffers": "active discount offers",
+      "activeOffersDesc": "Users with pending 48h discount window"
     }
   },
   "dailyReward": {
