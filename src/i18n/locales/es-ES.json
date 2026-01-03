@@ -1012,7 +1012,26 @@
   "narrative": {
     "loading": "Generando historia...",
     "error": "El cristal narrativo está recargando...",
-    "tapToContinue": "Toca para continuar"
+    "tapToContinue": "Toca para continuar",
+    "generatingNarrative": "Generando narrativa épica...",
+    "epicEvent": "¡Evento Épico!",
+    "questUpdate": "Actualización de Misión",
+    "loadingIncome": {
+      "0": "Contabilizando tesoros encontrados...",
+      "1": "Registrando ganancias del gremio...",
+      "2": "Calculando recompensas del viaje...",
+      "3": "Actualizando el grimorio financiero..."
+    },
+    "loadingExpense": {
+      "0": "Analizando recursos consumidos...",
+      "1": "Registrando costos de la aventura...",
+      "2": "Procesando impacto en el tesoro...",
+      "3": "Consultando el oráculo financiero..."
+    },
+    "loadingEmoji": {
+      "income": ["💰", "✨", "🏆", "📜"],
+      "expense": ["⚔️", "🛡️", "📊", "🔮"]
+    }
   },
   "admin": {
     "title": "Super Admin",

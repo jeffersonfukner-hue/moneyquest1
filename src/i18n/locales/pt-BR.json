@@ -1950,6 +1950,22 @@
     "tapToContinue": "Toque para continuar",
     "epicEvent": "Evento Épico!",
     "questUpdate": "Atualização da Missão",
+    "loadingIncome": {
+      "0": "Contabilizando tesouros encontrados...",
+      "1": "Registrando ganhos na guilda...",
+      "2": "Calculando recompensas da jornada...",
+      "3": "Atualizando o grimório financeiro..."
+    },
+    "loadingExpense": {
+      "0": "Analisando recursos consumidos...",
+      "1": "Registrando custos da aventura...",
+      "2": "Processando impacto no tesouro...",
+      "3": "Consultando o oráculo financeiro..."
+    },
+    "loadingEmoji": {
+      "income": ["💰", "✨", "🏆", "📜"],
+      "expense": ["⚔️", "🛡️", "📊", "🔮"]
+    },
     "fallback": {
       "incomeSmall": "💰 Uma pequena recompensa de {{value}} apareceu no seu inventário. Todo tesouro conta na jornada!",
       "incomeMedium": "✨ Um baú de {{value}} foi encontrado! Sua reserva de ouro cresce a cada conquista.",

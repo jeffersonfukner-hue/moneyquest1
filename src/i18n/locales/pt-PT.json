@@ -897,6 +897,26 @@
       "positive": "Impacto Positivo",
       "negative": "Impacto Negativo",
       "neutral": "Impacto Neutro"
+    },
+    "generatingNarrative": "A gerar narrativa épica...",
+    "tapToContinue": "Toque para continuar",
+    "epicEvent": "Evento Épico!",
+    "questUpdate": "Atualização da Missão",
+    "loadingIncome": {
+      "0": "A contabilizar tesouros encontrados...",
+      "1": "A registar ganhos na guilda...",
+      "2": "A calcular recompensas da jornada...",
+      "3": "A atualizar o grimório financeiro..."
+    },
+    "loadingExpense": {
+      "0": "A analisar recursos consumidos...",
+      "1": "A registar custos da aventura...",
+      "2": "A processar impacto no tesouro...",
+      "3": "A consultar o oráculo financeiro..."
+    },
+    "loadingEmoji": {
+      "income": ["💰", "✨", "🏆", "📜"],
+      "expense": ["⚔️", "🛡️", "📊", "🔮"]
     }
   },
   "journal": {
