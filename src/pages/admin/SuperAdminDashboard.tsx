@@ -9,6 +9,7 @@ import { ABTestComparisonWidget } from '@/components/admin/ABTestComparisonWidge
 import { AdMetricsWidget } from '@/components/admin/AdMetricsWidget';
 import { InternalBannerAnalyticsWidget } from '@/components/admin/InternalBannerAnalyticsWidget';
 import { DiscountConversionWidget } from '@/components/admin/DiscountConversionWidget';
+import { ReferralConversionWidget } from '@/components/admin/ReferralConversionWidget';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useAdminData } from '@/hooks/useAdminData';
 import { 
@@ -774,6 +775,9 @@ const SuperAdminDashboard = () => {
 
         {/* Discount Conversion Widget */}
         <DiscountConversionWidget />
+
+        {/* Referral Conversion Widget */}
+        <ReferralConversionWidget />
 
         {/* A/B Test Comparison Widget */}
         <ABTestComparisonWidget />
