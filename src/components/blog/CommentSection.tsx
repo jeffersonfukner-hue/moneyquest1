@@ -28,7 +28,8 @@ import {
   Reply,
   CornerDownRight,
   Heart,
-  ArrowUpDown
+  ArrowUpDown,
+  Flame
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -185,16 +186,26 @@ export const CommentSection = ({ articleSlug }: CommentSectionProps) => {
     const isReply = depth > 0;
     const maxDepth = 3; // Limit nesting depth for UI clarity
     const canReply = depth < maxDepth && isAuthenticated;
+    const isPopular = comment.likes_count >= 3; // Threshold for popular comments
 
     return (
       <div className={cn("space-y-3", isReply && "ml-6 sm:ml-10")}>
         <div 
           className={cn(
-            "flex gap-3 p-3 rounded-lg transition-colors",
+            "flex gap-3 p-3 rounded-lg transition-colors relative",
             comment.is_hidden && "bg-yellow-500/10 border border-yellow-500/30",
-            isReply && "bg-muted/30"
+            isReply && "bg-muted/30",
+            isPopular && !comment.is_hidden && "bg-accent/5 border border-accent/30 shadow-sm shadow-accent/10"
           )}
         >
+          {/* Popular Badge */}
+          {isPopular && !comment.is_hidden && (
+            <div className="absolute -top-2 right-2 flex items-center gap-1 px-2 py-0.5 bg-accent text-accent-foreground text-[10px] font-semibold rounded-full shadow-sm">
+              <Flame className="w-3 h-3" />
+              {t('blog.comments.popular', 'Popular')}
+            </div>
+          )}
+
           {isReply && (
             <CornerDownRight className="w-4 h-4 text-muted-foreground shrink-0 mt-3" />
           )}
