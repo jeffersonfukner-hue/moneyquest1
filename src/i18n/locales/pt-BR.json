@@ -341,7 +341,10 @@
     "skip": "Pular",
     "continue": "Continuar",
     "close": "Fechar",
-    "halfway": "Metade do caminho!"
+    "halfway": "Metade do caminho!",
+    "hours": "HRS",
+    "minutes": "MIN",
+    "seconds": "SEG"
   },
   "auth": {
     "login": "Entrar",
@@ -1404,7 +1407,12 @@
     "expiredFeature4": "Relatórios avançados",
     "continueFreePlan": "Continuar com plano gratuito",
     "abuseDetected": "Trial bloqueado",
-    "abuseMessage": "Detectamos que este dispositivo já utilizou o período gratuito anteriormente. O trial não está disponível para esta conta."
+    "abuseMessage": "Detectamos que este dispositivo já utilizou o período gratuito anteriormente. O trial não está disponível para esta conta.",
+    "discountTitle": "ÚLTIMA CHANCE DE ATIVAR O PREMIUM",
+    "discountMessage": "ATIVE O MONEYQUEST PREMIUM AGORA E GANHE 30% DE DESCONTO",
+    "ctaDiscount": "ATIVAR PREMIUM COM 30% OFF",
+    "discountFootnote": "OFERTA VÁLIDA APENAS PARA USUÁRIOS COM TRIAL EXPIRADO",
+    "offerExpiresIn": "OFERTA EXPIRA EM"
   },
   "journal": {
     "title": "Diário de Aventuras",

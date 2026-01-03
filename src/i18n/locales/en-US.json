@@ -342,7 +342,10 @@
     "skip": "Skip",
     "continue": "Continue",
     "close": "Close",
-    "halfway": "Halfway there!"
+    "halfway": "Halfway there!",
+    "hours": "HRS",
+    "minutes": "MIN",
+    "seconds": "SEC"
   },
   "auth": {
     "login": "Sign In",
@@ -1403,7 +1406,12 @@
     "expiredFeature4": "Advanced reports",
     "continueFreePlan": "Continue with free plan",
     "abuseDetected": "Trial blocked",
-    "abuseMessage": "We detected that this device has already used the free trial period. The trial is not available for this account."
+    "abuseMessage": "We detected that this device has already used the free trial period. The trial is not available for this account.",
+    "discountTitle": "LAST CHANCE TO ACTIVATE PREMIUM",
+    "discountMessage": "ACTIVATE MONEYQUEST PREMIUM NOW AND GET 30% OFF",
+    "ctaDiscount": "ACTIVATE PREMIUM WITH 30% OFF",
+    "discountFootnote": "OFFER VALID ONLY FOR EXPIRED TRIAL USERS",
+    "offerExpiresIn": "OFFER EXPIRES IN"
   },
   "journal": {
     "title": "Adventure Journal",

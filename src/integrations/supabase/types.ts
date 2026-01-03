@@ -450,6 +450,8 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           currency: string
+          discount_offer_expires_at: string | null
+          discount_offer_shown: boolean | null
           display_name: string | null
           financial_mood: string
           has_used_trial: boolean
@@ -486,6 +488,8 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           currency?: string
+          discount_offer_expires_at?: string | null
+          discount_offer_shown?: boolean | null
           display_name?: string | null
           financial_mood?: string
           has_used_trial?: boolean
@@ -522,6 +526,8 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           currency?: string
+          discount_offer_expires_at?: string | null
+          discount_offer_shown?: boolean | null
           display_name?: string | null
           financial_mood?: string
           has_used_trial?: boolean
@@ -1150,6 +1156,8 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           currency: string
+          discount_offer_expires_at: string | null
+          discount_offer_shown: boolean | null
           display_name: string | null
           financial_mood: string
           has_used_trial: boolean
@@ -1337,6 +1345,7 @@ export type Database = {
         Returns: boolean
       }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
+      mark_discount_offer_shown: { Args: { p_user_id: string }; Returns: Json }
       process_referral_signup:
         | {
             Args: { p_referral_code: string; p_referred_user_id: string }
