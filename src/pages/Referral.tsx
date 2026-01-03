@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Gift, Users, Clock, CheckCircle, Sparkles, Crown, Copy, MessageCircle, Share2, Trophy, History } from 'lucide-react';
+import { ArrowLeft, Gift, Users, Clock, CheckCircle, Sparkles, Crown, Copy, MessageCircle, Share2, Trophy, History, Clipboard } from 'lucide-react';
 import { toast } from 'sonner';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -102,6 +102,16 @@ const Referral = () => {
     openWhatsApp({ mode: 'share', text });
   };
 
+  const handleCopyWhatsAppMessage = async () => {
+    const text = t('referral.shareMessage', { link: referralLink });
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success(t('referral.whatsAppMessageCopied', 'Mensagem copiada'));
+    } catch {
+      toast.error(t('common.error'));
+    }
+  };
+
   const handleNativeShare = async () => {
     if (navigator.share) {
       try {
@@ -170,21 +180,34 @@ const Referral = () => {
               </div>
 
               {/* Share buttons */}
-              <div className="flex gap-2">
+              <div className="flex flex-col gap-2">
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={handleShareWhatsApp} 
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    WhatsApp
+                  </Button>
+                  <Button 
+                    onClick={handleNativeShare} 
+                    variant="outline" 
+                    className="flex-1"
+                  >
+                    <Share2 className="w-4 h-4 mr-2" />
+                    {t('referral.share')}
+                  </Button>
+                </div>
+                
+                {/* Copy WhatsApp message fallback */}
                 <Button 
-                  onClick={handleShareWhatsApp} 
-                  className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                  onClick={handleCopyWhatsAppMessage} 
+                  variant="ghost" 
+                  size="sm"
+                  className="text-xs text-muted-foreground hover:text-foreground"
                 >
-                  <MessageCircle className="w-4 h-4 mr-2" />
-                  WhatsApp
-                </Button>
-                <Button 
-                  onClick={handleNativeShare} 
-                  variant="outline" 
-                  className="flex-1"
-                >
-                  <Share2 className="w-4 h-4 mr-2" />
-                  {t('referral.share')}
+                  <Clipboard className="w-3 h-3 mr-1" />
+                  {t('referral.copyWhatsAppMessage', 'Copiar mensagem do WhatsApp')}
                 </Button>
               </div>
             </CardContent>
