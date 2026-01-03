@@ -13,6 +13,11 @@ export const INDEXABLE_ROUTES = [
   '/premium',
   '/terms',
   '/privacy',
+  '/blog',
+  '/controle-financeiro',
+  '/educacao-financeira-gamificada',
+  '/desafios-financeiros',
+  '/app-financas-pessoais',
 ] as const;
 
 export type IndexableRoute = typeof INDEXABLE_ROUTES[number];
