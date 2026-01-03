@@ -29,6 +29,7 @@ interface WhitelistedIP {
   organization: string | null;
   created_at: string;
   is_active: boolean;
+  is_cidr: boolean;
 }
 
 export function IPWhitelistWidget() {
@@ -148,15 +149,18 @@ export function IPWhitelistWidget() {
         {showAddForm && (
           <div className="p-4 border rounded-lg bg-muted/30 space-y-3">
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="space-y-1.5">
-                <Label htmlFor="ip">Endereço IP *</Label>
-                <Input
-                  id="ip"
-                  placeholder="192.168.1.1"
-                  value={newIP}
-                  onChange={(e) => setNewIP(e.target.value)}
-                />
-              </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="ip">Endereço IP ou Range CIDR *</Label>
+              <Input
+                id="ip"
+                placeholder="192.168.1.1 ou 192.168.0.0/24"
+                value={newIP}
+                onChange={(e) => setNewIP(e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">
+                Use notação CIDR para ranges (ex: 10.0.0.0/8 para toda rede 10.x.x.x)
+              </p>
+            </div>
               <div className="space-y-1.5">
                 <Label htmlFor="org">Organização</Label>
                 <Input
@@ -213,10 +217,15 @@ export function IPWhitelistWidget() {
                 >
                   <div className="flex items-center gap-3">
                     <div className="flex flex-col">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <code className="text-sm font-mono bg-muted px-2 py-0.5 rounded">
                           {item.ip_address}
                         </code>
+                        {item.is_cidr && (
+                          <Badge variant="outline" className="text-xs">
+                            Range
+                          </Badge>
+                        )}
                         {item.is_active ? (
                           <Badge variant="default" className="text-xs">
                             Ativo

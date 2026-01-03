@@ -1298,6 +1298,7 @@ export type Database = {
           id: string
           ip_address: string
           is_active: boolean
+          is_cidr: boolean
           organization: string
         }[]
       }
