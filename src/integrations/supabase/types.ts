@@ -186,6 +186,7 @@ export type Database = {
           id: string
           is_approved: boolean
           is_hidden: boolean
+          parent_id: string | null
           updated_at: string
           user_id: string
         }
@@ -196,6 +197,7 @@ export type Database = {
           id?: string
           is_approved?: boolean
           is_hidden?: boolean
+          parent_id?: string | null
           updated_at?: string
           user_id: string
         }
@@ -206,10 +208,18 @@ export type Database = {
           id?: string
           is_approved?: boolean
           is_hidden?: boolean
+          parent_id?: string | null
           updated_at?: string
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "blog_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "blog_comments"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "blog_comments_user_id_fkey"
             columns: ["user_id"]
