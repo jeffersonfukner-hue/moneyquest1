@@ -1714,6 +1714,22 @@
     "tapToContinue": "Tap to continue",
     "epicEvent": "Epic Event!",
     "questUpdate": "Quest Update",
+    "loadingIncome": {
+      "0": "Counting treasures found...",
+      "1": "Registering guild earnings...",
+      "2": "Calculating journey rewards...",
+      "3": "Updating the financial grimoire..."
+    },
+    "loadingExpense": {
+      "0": "Analyzing resources consumed...",
+      "1": "Recording adventure costs...",
+      "2": "Processing treasure impact...",
+      "3": "Consulting the financial oracle..."
+    },
+    "loadingEmoji": {
+      "income": ["💰", "✨", "🏆", "📜"],
+      "expense": ["⚔️", "🛡️", "📊", "🔮"]
+    },
     "fallback": {
       "incomeSmall": "💰 A small reward of {{value}} appeared in your inventory. Every treasure counts on the journey!",
       "incomeMedium": "✨ A chest of {{value}} was discovered! Your gold reserves grow with each conquest.",

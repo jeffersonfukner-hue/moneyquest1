@@ -11,20 +11,8 @@ import { useProfile } from '@/hooks/useProfile';
 import type { SupportedCurrency } from '@/i18n';
 import { getCategoryTranslationKey } from '@/lib/gameLogic';
 
-// Loading message variations for RPG immersion
-const INCOME_LOADING_MESSAGES = [
-  { emoji: '💰', text: 'Contabilizando tesouros encontrados...' },
-  { emoji: '✨', text: 'Registrando ganhos na guilda...' },
-  { emoji: '🏆', text: 'Calculando recompensas da jornada...' },
-  { emoji: '📜', text: 'Atualizando o grimório financeiro...' },
-];
-
-const EXPENSE_LOADING_MESSAGES = [
-  { emoji: '⚔️', text: 'Analisando recursos consumidos...' },
-  { emoji: '🛡️', text: 'Registrando custos da aventura...' },
-  { emoji: '📊', text: 'Processando impacto no tesouro...' },
-  { emoji: '🔮', text: 'Consultando o oráculo financeiro...' },
-];
+// Loading message indices for i18n
+const LOADING_MESSAGE_COUNT = 4;
 
 interface TransactionFeedbackProps {
   message: string;
@@ -55,11 +43,22 @@ export const TransactionFeedback = ({
   const [displayedNarrative, setDisplayedNarrative] = useState('');
   const [isTypewriterComplete, setIsTypewriterComplete] = useState(false);
   
-  // Random loading message - memoized to stay consistent during render
+  // Random loading message index - memoized to stay consistent during render
+  const loadingMessageIndex = useMemo(() => {
+    return Math.floor(Math.random() * LOADING_MESSAGE_COUNT);
+  }, []);
+  
+  // Get translated loading message
   const loadingMessage = useMemo(() => {
-    const messages = type === 'INCOME' ? INCOME_LOADING_MESSAGES : EXPENSE_LOADING_MESSAGES;
-    return messages[Math.floor(Math.random() * messages.length)];
-  }, [type]);
+    const messageKey = type === 'INCOME' ? 'loadingIncome' : 'loadingExpense';
+    const emojis = type === 'INCOME' 
+      ? ['💰', '✨', '🏆', '📜'] 
+      : ['⚔️', '🛡️', '📊', '🔮'];
+    return {
+      emoji: emojis[loadingMessageIndex],
+      text: t(`narrative.${messageKey}.${loadingMessageIndex}`)
+    };
+  }, [type, loadingMessageIndex, t]);
   
   // Translate category name if it's a default category
   const translationKey = getCategoryTranslationKey(category, type);
