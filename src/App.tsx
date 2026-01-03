@@ -48,6 +48,7 @@ import NotFound from "./pages/NotFound";
 import DebugI18n from "./pages/DebugI18n";
 import SuperAdminDashboard from "./pages/admin/SuperAdminDashboard";
 import UsersManagement from "./pages/admin/UsersManagement";
+import CampaignsManagement from "./pages/admin/CampaignsManagement";
 import EngagementAlerts from "./pages/admin/EngagementAlerts";
 import AdminLogs from "./pages/admin/AdminLogs";
 import SupportTickets from "./pages/admin/SupportTickets";
@@ -107,6 +108,7 @@ const App = () => (
                           {/* Admin Routes */}
                           <Route path="/super-admin" element={<AdminRoute><SuperAdminDashboard /></AdminRoute>} />
                           <Route path="/super-admin/users" element={<AdminRoute><UsersManagement /></AdminRoute>} />
+                          <Route path="/super-admin/campaigns" element={<AdminRoute><CampaignsManagement /></AdminRoute>} />
                           <Route path="/super-admin/support" element={<AdminRoute><SupportTickets /></AdminRoute>} />
                           <Route path="/super-admin/referrals" element={<AdminRoute><SuspiciousReferrals /></AdminRoute>} />
                           <Route path="/super-admin/trial-abuse" element={<AdminRoute><TrialAbuse /></AdminRoute>} />
