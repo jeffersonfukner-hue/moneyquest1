@@ -1218,7 +1218,41 @@ export type Database = {
           transaction_count: number
         }[]
       }
+      admin_get_trial_abuse_attempts: {
+        Args: never
+        Returns: {
+          blocked_user_email: string
+          blocked_user_id: string
+          blocked_user_name: string
+          created_at: string
+          fingerprint_hash: string
+          fingerprint_ip: string
+          fingerprint_timezone: string
+          fingerprint_user_agent: string
+          id: string
+          message: string
+          notification_type: string
+          other_users_with_fingerprint: number
+          reason: string
+          severity: string
+          title: string
+        }[]
+      }
       admin_get_user_email: { Args: { _user_id: string }; Returns: string }
+      admin_get_users_by_fingerprint: {
+        Args: { p_fingerprint_hash: string }
+        Returns: {
+          created_at: string
+          display_name: string
+          email: string
+          fingerprint_created_at: string
+          has_used_trial: boolean
+          subscription_plan: string
+          trial_end_date: string
+          trial_start_date: string
+          user_id: string
+        }[]
+      }
       admin_grant_bonus: {
         Args: {
           _amount: number
@@ -1226,6 +1260,10 @@ export type Database = {
           _note?: string
           _target_user_id: string
         }
+        Returns: undefined
+      }
+      admin_mark_trial_abuse_reviewed: {
+        Args: { p_notification_id: string }
         Returns: undefined
       }
       admin_reject_referral: {

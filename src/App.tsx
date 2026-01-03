@@ -52,6 +52,7 @@ import EngagementAlerts from "./pages/admin/EngagementAlerts";
 import AdminLogs from "./pages/admin/AdminLogs";
 import SupportTickets from "./pages/admin/SupportTickets";
 import SuspiciousReferrals from "./pages/admin/SuspiciousReferrals";
+import TrialAbuse from "./pages/admin/TrialAbuse";
 import { AdminRoute } from "./components/admin/AdminRoute";
 
 const queryClient = new QueryClient();
@@ -108,7 +109,9 @@ const App = () => (
                           <Route path="/super-admin/users" element={<AdminRoute><UsersManagement /></AdminRoute>} />
                           <Route path="/super-admin/support" element={<AdminRoute><SupportTickets /></AdminRoute>} />
                           <Route path="/super-admin/referrals" element={<AdminRoute><SuspiciousReferrals /></AdminRoute>} />
+                          <Route path="/super-admin/trial-abuse" element={<AdminRoute><TrialAbuse /></AdminRoute>} />
                           <Route path="/super-admin/engagement" element={<AdminRoute><EngagementAlerts /></AdminRoute>} />
+                          <Route path="/super-admin/analytics" element={<AdminRoute><SuperAdminDashboard /></AdminRoute>} />
                           <Route path="/super-admin/logs" element={<AdminRoute><AdminLogs /></AdminRoute>} />
                           <Route path="*" element={<NotFound />} />
                         </Routes>

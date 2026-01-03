@@ -1044,7 +1044,8 @@
       "analytics": "Analytics",
       "logs": "Logs de Atividade",
       "support": "Suporte",
-      "referrals": "Referrals"
+      "referrals": "Referrals",
+      "trialAbuse": "Abuso de Trial"
     },
     "backToApp": "Voltar ao App",
     "searchUsers": "Buscar usuários...",
