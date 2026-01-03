@@ -11,7 +11,7 @@ interface SEOConfig {
   noIndex?: boolean; // Can be used to override for specific pages
 }
 
-const BASE_URL = 'https://www.moneyquest.app.br';
+const BASE_URL = 'https://moneyquest.app.br';
 const DEFAULT_IMAGE = `${BASE_URL}/og-image.png`;
 const SITE_NAME = 'MoneyQuest';
 const TWITTER_HANDLE = '@moneyquestapp';
@@ -20,8 +20,24 @@ const TWITTER_HANDLE = '@moneyquestapp';
 const pageConfigs: Record<string, SEOConfig> = {
   // === PUBLIC PAGES (index, follow) ===
   '/': {
-    title: 'MoneyQuest – Controle Financeiro Inteligente',
-    description: 'MoneyQuest é um app de controle financeiro pessoal com gamificação, metas e modo premium sem anúncios.',
+    title: 'MoneyQuest – App Financeiro Gamificado',
+    description: 'MoneyQuest é um app financeiro gamificado para controlar gastos, criar hábitos financeiros, ganhar pontos, subir de nível e economizar dinheiro jogando.',
+  },
+  '/controle-financeiro': {
+    title: 'Controle Financeiro Gamificado | MoneyQuest',
+    description: 'Controle suas finanças pessoais com gamificação, ganhe pontos e economize dinheiro com o MoneyQuest. App gratuito de controle financeiro.',
+  },
+  '/educacao-financeira-gamificada': {
+    title: 'Educação Financeira Gamificada | MoneyQuest',
+    description: 'Aprenda educação financeira jogando com missões, desafios e recompensas. Desenvolva hábitos financeiros saudáveis de forma divertida.',
+  },
+  '/desafios-financeiros': {
+    title: 'Desafios Financeiros | MoneyQuest',
+    description: 'Complete desafios financeiros, ganhe recompensas e melhore seus hábitos financeiros. Missões diárias, semanais e mensais.',
+  },
+  '/app-financas-pessoais': {
+    title: 'App de Finanças Pessoais | MoneyQuest',
+    description: 'MoneyQuest é o melhor app de finanças pessoais com gamificação. Controle gastos, defina metas e economize dinheiro de forma divertida.',
   },
   '/login': {
     title: 'Entrar | MoneyQuest',
@@ -145,8 +161,8 @@ export function useSEO(customConfig?: SEOConfig) {
     const config = { ...pageConfigs[pathname], ...customConfig };
 
     // Default fallback
-    const title = config.title || `${SITE_NAME} - Gamifique suas Finanças`;
-    const description = config.description || 'Transforme o controle financeiro em uma aventura épica! Ganhe XP, complete missões e conquiste suas metas.';
+    const title = config.title || `${SITE_NAME} – App Financeiro Gamificado`;
+    const description = config.description || 'MoneyQuest é um app financeiro gamificado para controlar gastos, criar hábitos financeiros, ganhar pontos, subir de nível e economizar dinheiro jogando.';
     const image = config.image || DEFAULT_IMAGE;
     const type = config.type || 'website';
     const url = `${BASE_URL}${pathname}`;
