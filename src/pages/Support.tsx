@@ -9,8 +9,7 @@ import { NewTicketDialog } from '@/components/support/NewTicketDialog';
 import { FAQSection } from '@/components/support/FAQSection';
 import { useAuth } from '@/hooks/useAuth';
 import { AppLayout } from '@/components/layout/AppLayout';
-
-const WHATSAPP_NUMBER = '5543998650196';
+import { WHATSAPP_SUPPORT_NUMBER } from '@/lib/supportConfig';
 
 export default function Support() {
   const navigate = useNavigate();
@@ -28,7 +27,7 @@ export default function Support() {
   };
 
   const openWhatsApp = () => {
-    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${getWhatsAppMessage()}`;
+    const url = `https://wa.me/${WHATSAPP_SUPPORT_NUMBER}?text=${getWhatsAppMessage()}`;
     window.open(url, '_blank');
   };
 
