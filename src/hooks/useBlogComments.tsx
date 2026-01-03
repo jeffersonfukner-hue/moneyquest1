@@ -20,6 +20,8 @@ export interface BlogComment {
     avatar_url: string | null;
   };
   replies?: BlogComment[];
+  likes_count: number;
+  is_liked_by_user: boolean;
 }
 
 export const useBlogComments = (articleSlug: string) => {
@@ -34,7 +36,7 @@ export const useBlogComments = (articleSlug: string) => {
       setLoading(true);
       
       // Fetch comments with profile info
-      const { data, error } = await supabase
+      const { data: commentsData, error: commentsError } = await supabase
         .from('blog_comments')
         .select(`
           *,
@@ -43,12 +45,38 @@ export const useBlogComments = (articleSlug: string) => {
         .eq('article_slug', articleSlug)
         .order('created_at', { ascending: true });
 
-      if (error) throw error;
+      if (commentsError) throw commentsError;
+
+      // Fetch likes counts
+      const { data: likesData, error: likesError } = await supabase
+        .from('blog_comment_likes')
+        .select('comment_id');
+
+      if (likesError) throw likesError;
+
+      // Count likes per comment
+      const likesCount: Record<string, number> = {};
+      (likesData || []).forEach(like => {
+        likesCount[like.comment_id] = (likesCount[like.comment_id] || 0) + 1;
+      });
+
+      // Fetch user's likes if authenticated
+      let userLikes: Set<string> = new Set();
+      if (user) {
+        const { data: userLikesData } = await supabase
+          .from('blog_comment_likes')
+          .select('comment_id')
+          .eq('user_id', user.id);
+        
+        userLikes = new Set((userLikesData || []).map(l => l.comment_id));
+      }
 
       // Transform the data to match our interface
-      const transformedComments = (data || []).map(comment => ({
+      const transformedComments = (commentsData || []).map(comment => ({
         ...comment,
-        profile: comment.profile as BlogComment['profile']
+        profile: comment.profile as BlogComment['profile'],
+        likes_count: likesCount[comment.id] || 0,
+        is_liked_by_user: userLikes.has(comment.id)
       }));
 
       // Organize into tree structure
@@ -83,7 +111,7 @@ export const useBlogComments = (articleSlug: string) => {
     } finally {
       setLoading(false);
     }
-  }, [articleSlug]);
+  }, [articleSlug, user]);
 
   useEffect(() => {
     fetchComments();
@@ -213,6 +241,71 @@ export const useBlogComments = (articleSlug: string) => {
     }
   };
 
+  const toggleLike = async (commentId: string) => {
+    if (!user) {
+      toast.error(t('blog.comments.loginRequired', 'Faça login para curtir'));
+      return { success: false };
+    }
+
+    try {
+      // Check if already liked
+      const { data: existingLike } = await supabase
+        .from('blog_comment_likes')
+        .select('id')
+        .eq('comment_id', commentId)
+        .eq('user_id', user.id)
+        .single();
+
+      if (existingLike) {
+        // Unlike
+        const { error } = await supabase
+          .from('blog_comment_likes')
+          .delete()
+          .eq('comment_id', commentId)
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+      } else {
+        // Like
+        const { error } = await supabase
+          .from('blog_comment_likes')
+          .insert({
+            comment_id: commentId,
+            user_id: user.id
+          });
+
+        if (error) throw error;
+      }
+
+      // Update local state immediately for better UX
+      const updateLikesRecursive = (commentsList: BlogComment[]): BlogComment[] => {
+        return commentsList.map(comment => {
+          if (comment.id === commentId) {
+            return {
+              ...comment,
+              likes_count: existingLike ? comment.likes_count - 1 : comment.likes_count + 1,
+              is_liked_by_user: !existingLike
+            };
+          }
+          if (comment.replies) {
+            return {
+              ...comment,
+              replies: updateLikesRecursive(comment.replies)
+            };
+          }
+          return comment;
+        });
+      };
+
+      setComments(prev => updateLikesRecursive(prev));
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error toggling like:', error);
+      return { success: false };
+    }
+  };
+
   // Count total comments including replies
   const countAllComments = (commentsList: BlogComment[]): number => {
     return commentsList.reduce((count, comment) => {
@@ -227,6 +320,7 @@ export const useBlogComments = (articleSlug: string) => {
     addComment,
     deleteComment,
     updateComment,
+    toggleLike,
     refetch: fetchComments,
     isAuthenticated: !!user,
     currentUserId: user?.id,

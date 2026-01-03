@@ -19,7 +19,8 @@ import {
   LogIn,
   AlertCircle,
   Reply,
-  CornerDownRight
+  CornerDownRight,
+  Heart
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -50,6 +51,7 @@ export const CommentSection = ({ articleSlug }: CommentSectionProps) => {
     addComment, 
     deleteComment,
     updateComment,
+    toggleLike,
     isAuthenticated,
     currentUserId,
     totalCount
@@ -110,6 +112,10 @@ export const CommentSection = ({ articleSlug }: CommentSectionProps) => {
   const handleCancelReply = () => {
     setReplyingTo(null);
     setReplyContent('');
+  };
+
+  const handleToggleLike = async (commentId: string) => {
+    await toggleLike(commentId);
   };
 
   const formatDate = (dateString: string) => {
@@ -213,7 +219,30 @@ export const CommentSection = ({ articleSlug }: CommentSectionProps) => {
                   {comment.content}
                 </p>
 
-                <div className="flex gap-1 mt-2">
+                <div className="flex items-center gap-1 mt-2">
+                  {/* Like Button */}
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleToggleLike(comment.id)}
+                    className={cn(
+                      "h-7 px-2 gap-1",
+                      comment.is_liked_by_user 
+                        ? "text-red-500 hover:text-red-600" 
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    <Heart 
+                      className={cn(
+                        "w-3 h-3 transition-all",
+                        comment.is_liked_by_user && "fill-current"
+                      )} 
+                    />
+                    {comment.likes_count > 0 && (
+                      <span className="text-xs">{comment.likes_count}</span>
+                    )}
+                  </Button>
+
                   {canReply && (
                     <Button
                       size="sm"
