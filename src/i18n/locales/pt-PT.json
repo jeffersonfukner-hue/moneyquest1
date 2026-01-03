@@ -1181,5 +1181,18 @@
     "continueFreePlan": "Continuar com plano gratuito",
     "abuseDetected": "Trial bloqueado",
     "abuseMessage": "Detectámos que este dispositivo já utilizou o período gratuito anteriormente. O trial não está disponível para esta conta."
+  },
+  "admin": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "users": "Utilizadores",
+      "engagement": "Engagement",
+      "analytics": "Analytics",
+      "logs": "Logs de Actividade",
+      "support": "Suporte",
+      "referrals": "Referidos",
+      "trialAbuse": "Abuso de Trial"
+    },
+    "backToApp": "Voltar à App"
   }
 }

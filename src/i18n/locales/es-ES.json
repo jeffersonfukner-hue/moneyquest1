@@ -1023,7 +1023,10 @@
       "users": "Usuarios",
       "engagement": "Engagement",
       "analytics": "Analytics",
-      "logs": "Logs de Actividad"
+      "logs": "Logs de Actividad",
+      "support": "Soporte",
+      "referrals": "Referidos",
+      "trialAbuse": "Abuso de Trial"
     },
     "backToApp": "Volver a la App",
     "searchUsers": "Buscar usuarios...",
