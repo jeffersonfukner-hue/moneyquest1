@@ -55,7 +55,7 @@ export const RecentTransactionsCard = ({ transactions, onViewMore }: RecentTrans
                 )}
                 <div className="min-w-0 flex-1">
                   <span className="text-sm truncate text-foreground block">
-                    {transaction.description}
+                    {transaction.description.toUpperCase()}
                   </span>
                   <span className="text-xs text-muted-foreground block">
                     {format(parseDateString(transaction.date), "d MMM", { locale: dateLocale })}
