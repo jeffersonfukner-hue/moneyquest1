@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, TrendingUp, TrendingDown, Loader2, Sparkles } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -10,6 +10,21 @@ import { calculateImpact } from '@/lib/narrativeConfig';
 import { useProfile } from '@/hooks/useProfile';
 import type { SupportedCurrency } from '@/i18n';
 import { getCategoryTranslationKey } from '@/lib/gameLogic';
+
+// Loading message variations for RPG immersion
+const INCOME_LOADING_MESSAGES = [
+  { emoji: '💰', text: 'Contabilizando tesouros encontrados...' },
+  { emoji: '✨', text: 'Registrando ganhos na guilda...' },
+  { emoji: '🏆', text: 'Calculando recompensas da jornada...' },
+  { emoji: '📜', text: 'Atualizando o grimório financeiro...' },
+];
+
+const EXPENSE_LOADING_MESSAGES = [
+  { emoji: '⚔️', text: 'Analisando recursos consumidos...' },
+  { emoji: '🛡️', text: 'Registrando custos da aventura...' },
+  { emoji: '📊', text: 'Processando impacto no tesouro...' },
+  { emoji: '🔮', text: 'Consultando o oráculo financeiro...' },
+];
 
 interface TransactionFeedbackProps {
   message: string;
@@ -39,6 +54,12 @@ export const TransactionFeedback = ({
   const [isVisible, setIsVisible] = useState(false);
   const [displayedNarrative, setDisplayedNarrative] = useState('');
   const [isTypewriterComplete, setIsTypewriterComplete] = useState(false);
+  
+  // Random loading message - memoized to stay consistent during render
+  const loadingMessage = useMemo(() => {
+    const messages = type === 'INCOME' ? INCOME_LOADING_MESSAGES : EXPENSE_LOADING_MESSAGES;
+    return messages[Math.floor(Math.random() * messages.length)];
+  }, [type]);
   
   // Translate category name if it's a default category
   const translationKey = getCategoryTranslationKey(category, type);
@@ -188,13 +209,10 @@ export const TransactionFeedback = ({
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
                     <span className={`animate-pulse ${isIncome ? 'text-emerald-400' : 'text-amber-400'}`}>
-                      {isIncome ? '💰' : '⚔️'}
+                      {loadingMessage.emoji}
                     </span>
                     <span className="text-muted-foreground italic animate-pulse">
-                      {isIncome 
-                        ? t('narrative.loadingIncome', 'Contabilizando tesouros encontrados...')
-                        : t('narrative.loadingExpense', 'Analisando recursos consumidos...')
-                      }
+                      {loadingMessage.text}
                     </span>
                   </div>
                   {/* Animated loading bars with contextual theme */}
