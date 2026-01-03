@@ -18,7 +18,7 @@ import { ReferredUsersList } from '@/components/referral/ReferredUsersList';
 import { RewardHistory } from '@/components/referral/RewardHistory';
 import { ReferralRanking } from '@/components/referral/ReferralRanking';
 import { ReferralTierBadge } from '@/components/referral/ReferralTierBadge';
-import { buildWaMeShareUrl } from '@/lib/whatsapp';
+
 
 interface TierInfo {
   tier: 'none' | 'bronze' | 'silver' | 'gold';
@@ -98,8 +98,13 @@ const Referral = () => {
     }
   };
 
-  const shareText = t('referral.shareMessage', { link: referralLink });
-  const whatsappUrl = buildWaMeShareUrl({ text: shareText });
+  const handleShareWhatsApp = () => {
+    const text = t('referral.shareMessage', { link: referralLink });
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(text)}`,
+      "_blank"
+    );
+  };
 
   const handleCopyWhatsAppMessage = async () => {
     const text = t('referral.shareMessage', { link: referralLink });
@@ -181,17 +186,13 @@ const Referral = () => {
               {/* Share buttons */}
               <div className="flex flex-col gap-2">
                 <div className="flex gap-2">
-                  <a
-                    href={whatsappUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1"
+                  <Button 
+                    onClick={handleShareWhatsApp}
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white"
                   >
-                    <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
-                      <FaWhatsapp className="w-4 h-4 mr-2" />
-                      WhatsApp
-                    </Button>
-                  </a>
+                    <FaWhatsapp className="w-4 h-4 mr-2" />
+                    WhatsApp
+                  </Button>
                   <Button 
                     onClick={handleNativeShare} 
                     variant="outline" 
