@@ -20,7 +20,11 @@ export default function Support() {
   const [showNewTicketDialog, setShowNewTicketDialog] = useState(false);
 
   const getWhatsAppMessage = () => {
-    return encodeURIComponent(t('support.whatsapp.defaultMessage'));
+    const baseMessage = t('support.whatsapp.defaultMessage');
+    const userInfo = user 
+      ? `\n\n---\n${t('support.whatsapp.userInfo')}\nEmail: ${user.email || 'N/A'}\nID: ${user.id.substring(0, 8)}...`
+      : '';
+    return encodeURIComponent(baseMessage + userInfo);
   };
 
   const openWhatsApp = () => {
