@@ -491,7 +491,7 @@ const TransactionItem = ({
             
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-foreground truncate">
-                {transaction.description}
+                {transaction.description.toUpperCase()}
               </p>
               <p className="text-xs text-muted-foreground truncate">
                 {format(parseDateString(transaction.date), "d MMM yyyy", { locale: dateLocale })}
@@ -544,7 +544,7 @@ const TransactionItem = ({
           
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-foreground truncate">
-              {transaction.description}
+              {transaction.description.toUpperCase()}
             </p>
             <p className="text-xs text-muted-foreground">
               {format(parseDateString(transaction.date), "d MMM yyyy", { locale: dateLocale })}

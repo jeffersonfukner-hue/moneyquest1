@@ -126,7 +126,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   useEffect(() => {
     if (prefillData) {
       setType(prefillData.type);
-      setDescription(prefillData.description);
+      setDescription(prefillData.description.toUpperCase());
       setAmount(prefillData.amount.toString());
       setCategory(prefillData.category);
       setSelectedCurrency(prefillData.currency as SupportedCurrency);

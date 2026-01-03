@@ -86,12 +86,13 @@ export const useTransactions = () => {
 
     const xpEarned = calculateXP(transaction.amount, transaction.type);
     
-    // Insert transaction
+    // Insert transaction (ensure UPPERCASE description)
     const { error: txError } = await supabase
       .from('transactions')
       .insert({
         user_id: user.id,
         ...transaction,
+        description: transaction.description.toUpperCase(),
         xp_earned: xpEarned,
       });
 
@@ -293,7 +294,7 @@ export const useTransactions = () => {
     }
 
     const updateData: Record<string, unknown> = {};
-    if (updates.description !== undefined) updateData.description = updates.description;
+    if (updates.description !== undefined) updateData.description = updates.description.toUpperCase();
     if (updates.amount !== undefined) updateData.amount = updates.amount;
     if (updates.category !== undefined) updateData.category = updates.category;
     if (updates.type !== undefined) updateData.type = updates.type;
