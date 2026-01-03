@@ -280,6 +280,33 @@ export const useAdminData = () => {
     },
   });
 
+  // Delete user mutation (for test users)
+  const deleteUser = useMutation({
+    mutationFn: async ({ 
+      targetUserId, 
+      note 
+    }: { 
+      targetUserId: string; 
+      note?: string;
+    }) => {
+      const { data, error } = await supabase.rpc('admin_delete_user', {
+        _target_user_id: targetUserId,
+        _note: note || null
+      });
+      if (error) throw error;
+      return data as { success: boolean; deleted_email?: string; error?: string };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-analytics'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-logs'] });
+      toast({ title: `User ${data.deleted_email} deleted successfully` });
+    },
+    onError: (error) => {
+      toast({ title: 'Error deleting user', description: String(error), variant: 'destructive' });
+    },
+  });
+
   return {
     analytics,
     users,
@@ -298,6 +325,7 @@ export const useAdminData = () => {
     sendMessage,
     createTemplate,
     resetPremiumOverride,
+    deleteUser,
     refetchUsers,
   };
 };

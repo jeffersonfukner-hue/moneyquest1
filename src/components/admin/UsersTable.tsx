@@ -13,7 +13,8 @@ import {
   Search,
   ShieldAlert,
   ShieldCheck,
-  RotateCcw
+  RotateCcw,
+  Trash2
 } from 'lucide-react';
 import {
   Table,
@@ -47,6 +48,7 @@ interface UsersTableProps {
   onSendMessage: (user: AdminUser) => void;
   onGrantBonus: (user: AdminUser) => void;
   onResetOverride: (user: AdminUser) => void;
+  onDeleteUser: (user: AdminUser) => void;
 }
 
 export const UsersTable = ({
@@ -58,6 +60,7 @@ export const UsersTable = ({
   onSendMessage,
   onGrantBonus,
   onResetOverride,
+  onDeleteUser,
 }: UsersTableProps) => {
   const { t } = useTranslation();
   const [search, setSearch] = useState('');
@@ -225,6 +228,14 @@ export const UsersTable = ({
                           {t('admin.actions.block')}
                         </DropdownMenuItem>
                       )}
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem 
+                        onClick={() => onDeleteUser(user)}
+                        className="text-red-600"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        {t('admin.actions.deleteUser', 'Delete User')}
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
