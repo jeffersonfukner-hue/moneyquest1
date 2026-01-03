@@ -11,7 +11,7 @@ import { FAQSection } from '@/components/support/FAQSection';
 import { useAuth } from '@/hooks/useAuth';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { WHATSAPP_SUPPORT_NUMBER, SUPPORT_CONFIG } from '@/lib/supportConfig';
-import { openWhatsApp } from '@/lib/whatsapp';
+import { buildWaMeChatUrl } from '@/lib/whatsapp';
 
 export default function Support() {
   const navigate = useNavigate();
@@ -20,18 +20,15 @@ export default function Support() {
   const { tickets, unreadCount } = useSupportTickets();
   const [showNewTicketDialog, setShowNewTicketDialog] = useState(false);
 
-  const handleWhatsAppClick = () => {
-    const baseMessage = t('support.whatsapp.defaultMessage');
-    const userInfo = user 
-      ? `\n\n---\n${t('support.whatsapp.userInfo')}\nEmail: ${user.email || 'N/A'}\nID: ${user.id.substring(0, 8)}...`
-      : '';
-    
-    openWhatsApp({
-      mode: 'chat',
-      phoneE164: WHATSAPP_SUPPORT_NUMBER,
-      text: baseMessage + userInfo,
-    });
-  };
+  const baseMessage = t('support.whatsapp.defaultMessage');
+  const userInfo = user 
+    ? `\n\n---\n${t('support.whatsapp.userInfo')}\nEmail: ${user.email || 'N/A'}\nID: ${user.id.substring(0, 8)}...`
+    : '';
+  
+  const whatsappUrl = buildWaMeChatUrl({
+    phoneE164: WHATSAPP_SUPPORT_NUMBER,
+    text: baseMessage + userInfo,
+  });
 
   const handleNewTicket = () => {
     if (!user) {
@@ -76,21 +73,25 @@ export default function Support() {
         </p>
 
         {/* WhatsApp Option */}
-        <Card 
-          className="cursor-pointer border-2 border-[#25D366]/30 hover:border-[#25D366]/60 transition-colors bg-[#25D366]/5"
-          onClick={handleWhatsAppClick}
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block"
         >
-          <CardContent className="p-5 flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-[#25D366] flex items-center justify-center shrink-0">
-              <FaWhatsapp className="w-7 h-7 text-white" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-semibold text-lg">{t('support.whatsapp.title')}</p>
-              <p className="text-sm text-muted-foreground">{t('support.whatsapp.subtitle')}</p>
-            </div>
-            <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
-          </CardContent>
-        </Card>
+          <Card className="cursor-pointer border-2 border-[#25D366]/30 hover:border-[#25D366]/60 transition-colors bg-[#25D366]/5">
+            <CardContent className="p-5 flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-[#25D366] flex items-center justify-center shrink-0">
+                <FaWhatsapp className="w-7 h-7 text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-lg">{t('support.whatsapp.title')}</p>
+                <p className="text-sm text-muted-foreground">{t('support.whatsapp.subtitle')}</p>
+              </div>
+              <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
+            </CardContent>
+          </Card>
+        </a>
 
         {/* Internal Message Option */}
         <Card 
