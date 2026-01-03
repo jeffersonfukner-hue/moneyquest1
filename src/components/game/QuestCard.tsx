@@ -23,7 +23,12 @@ export const QuestCard = ({ quest, showTimer = false }: QuestCardProps) => {
   const progressPercent = quest.progress_target > 0 
     ? (quest.progress_current / quest.progress_target) * 100 
     : 0;
-  const hasProgress = quest.progress_target > 1;
+  
+  // Achievements always show progress (they're one-time with tracked progression)
+  // Missions (DAILY, WEEKLY, MONTHLY) only show progress if target > 1
+  const isAchievement = quest.type === 'ACHIEVEMENT';
+  const hasProgress = isAchievement || quest.progress_target > 1;
+  
   const timeInfo = getTimeUntilReset(quest.period_end_date, quest.type);
   
   // Get badge reward for special quests
