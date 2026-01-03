@@ -18,6 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { FraudAnalysisWidget } from '@/components/admin/FraudAnalysisWidget';
+import { IPWhitelistWidget } from '@/components/admin/IPWhitelistWidget';
 
 interface SuspiciousReferral {
   id: string;
@@ -151,6 +152,9 @@ const SuspiciousReferrals = () => {
             </TabsTrigger>
             <TabsTrigger value="fraud-analysis">
               AI Fraud Analysis
+            </TabsTrigger>
+            <TabsTrigger value="whitelist">
+              IP Whitelist
             </TabsTrigger>
           </TabsList>
 
@@ -314,6 +318,10 @@ const SuspiciousReferrals = () => {
 
           <TabsContent value="fraud-analysis">
             <FraudAnalysisWidget />
+          </TabsContent>
+
+          <TabsContent value="whitelist">
+            <IPWhitelistWidget />
           </TabsContent>
         </Tabs>
       </div>
