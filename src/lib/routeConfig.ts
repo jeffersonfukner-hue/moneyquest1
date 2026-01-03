@@ -88,19 +88,39 @@ export const shouldShowInternalBanners = (pathname: string): boolean => {
   return isAuthenticatedRoute(pathname);
 };
 
-// Routes where NO banner should be shown (conversion pages)
-export const NO_BANNER_ROUTES = [
+// Routes where Google Ads are blocked (but internal banners allowed)
+export const GOOGLE_ADS_BLOCKED_ROUTES = [
   '/premium',
-  '/premium-success',
   '/onboarding',
+  '/upgrade',
+] as const;
+
+// Routes where ALL banners should be hidden (post-payment celebration)
+export const NO_BANNER_ROUTES = [
+  '/premium-success',
 ] as const;
 
 /**
- * Check if a route should hide ALL banners
- * Used for conversion pages where banners would be redundant or distracting
+ * Check if a route should hide Google Ads only
+ * Internal banners are still allowed on these routes
  */
-export const shouldHideBanner = (pathname: string): boolean => {
+export const shouldHideGoogleAds = (pathname: string): boolean => {
+  return GOOGLE_ADS_BLOCKED_ROUTES.some(
+    route => pathname === route || pathname.startsWith(`${route}/`)
+  );
+};
+
+/**
+ * Check if a route should hide ALL banners
+ * Only used for /premium-success where user just paid
+ */
+export const shouldHideAllBanners = (pathname: string): boolean => {
   return NO_BANNER_ROUTES.some(
     route => pathname === route || pathname.startsWith(`${route}/`)
   );
 };
+
+/**
+ * @deprecated Use shouldHideAllBanners instead
+ */
+export const shouldHideBanner = shouldHideAllBanners;

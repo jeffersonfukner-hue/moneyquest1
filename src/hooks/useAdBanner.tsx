@@ -3,10 +3,10 @@ import { useLocation } from 'react-router-dom';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { ADSENSE_CONFIG } from '@/lib/adsenseConfig';
 import { 
-  isIndexableRoute, 
   canShowGoogleAds, 
   shouldShowInternalBanners,
-  shouldHideBanner 
+  shouldHideAllBanners,
+  shouldHideGoogleAds 
 } from '@/lib/routeConfig';
 
 export const useAdBanner = () => {
@@ -17,10 +17,10 @@ export const useAdBanner = () => {
   const [adTimedOut, setAdTimedOut] = useState(false);
 
   // Route context checks (from centralized config)
-  const isPageIndexable = isIndexableRoute(location.pathname);
   const isPublicPage = canShowGoogleAds(location.pathname);
   const isAuthenticatedPage = shouldShowInternalBanners(location.pathname);
-  const hideBannerOnRoute = shouldHideBanner(location.pathname);
+  const hideAllBanners = shouldHideAllBanners(location.pathname);
+  const hideGoogleAdsOnly = shouldHideGoogleAds(location.pathname);
 
   // Check if AdSense is properly configured
   const isAdSenseConfigured = Boolean(
@@ -28,21 +28,20 @@ export const useAdBanner = () => {
     ADSENSE_CONFIG.slots.bottomBanner
   );
 
-  // Show banner only for non-premium users
-  // On public pages: can show Google Ads or internal banners
-  // On authenticated pages: ONLY internal banners
-  // Never show on conversion pages (premium, onboarding, etc.)
-  const shouldShowBanner = !loading && !isPremium && !hideBannerOnRoute && (isPublicPage || isAuthenticatedPage);
+  // Show banner for non-premium users on any page EXCEPT /premium-success
+  // Internal banners are allowed on ALL pages (public + authenticated + conversion)
+  const shouldShowBanner = !loading && !isPremium && !hideAllBanners;
   
-  // Google Ads only allowed on public indexable pages
-  const canShowGoogleAdsOnPage = isPublicPage && isAdSenseConfigured;
+  // Google Ads only allowed on public pages that are NOT in the blocked list
+  const canShowGoogleAdsOnPage = isPublicPage && isAdSenseConfigured && !hideGoogleAdsOnly;
   
-  // Use fallback (internal banner) when:
+  // Use internal banners when:
   // - On authenticated pages (always internal only)
+  // - On conversion pages like /premium, /onboarding (Google blocked)
   // - AdSense not configured
   // - Ad failed to load
   // - Ad timed out (possible ad blocker)
-  const showInternalOnly = isAuthenticatedPage || !isAdSenseConfigured || adError || adTimedOut;
+  const showInternalOnly = isAuthenticatedPage || hideGoogleAdsOnly || !isAdSenseConfigured || adError || adTimedOut;
 
   // Reset states when route changes
   useEffect(() => {

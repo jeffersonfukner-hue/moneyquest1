@@ -66,10 +66,10 @@ export const AdBanner = () => {
   };
 
   // Render banner based on context and rotation selection
-  // Returns null if no valid banner - prevents empty container
+  // Always returns a valid banner - never null (prevents empty container)
   const renderBanner = (): React.ReactNode => {
-    // On authenticated pages: ALWAYS show internal banners only (no Google Ads)
-    if (isAuthenticatedPage || showInternalOnly) {
+    // When internal banners should be shown (authenticated pages, conversion pages, errors)
+    if (showInternalOnly) {
       logBannerDebug('Rendering internal banner', { 
         isAuthenticatedPage, 
         showInternalOnly, 
@@ -80,6 +80,7 @@ export const AdBanner = () => {
       if (currentBanner === 'internal_referral') {
         return <ReferralBanner onDismiss={handleDismissAttempt} />;
       }
+      // PremiumInternalBanner as default/fallback
       return <PremiumInternalBanner onDismiss={handleDismissAttempt} />;
     }
 
@@ -96,21 +97,18 @@ export const AdBanner = () => {
     }
 
     // Internal banner selected on public page
-    switch (currentBanner) {
-      case 'internal_referral':
-        return <ReferralBanner onDismiss={handleDismissAttempt} />;
-      case 'internal_premium':
-        return <PremiumInternalBanner onDismiss={handleDismissAttempt} />;
-      default:
-        return <FallbackPromo onDismiss={handleDismissAttempt} onUpgradeClick={handlePromoClick} />;
+    if (currentBanner === 'internal_referral') {
+      return <ReferralBanner onDismiss={handleDismissAttempt} />;
     }
+    if (currentBanner === 'internal_premium') {
+      return <PremiumInternalBanner onDismiss={handleDismissAttempt} />;
+    }
+    
+    // FallbackPromo as ultimate fallback on public pages
+    return <FallbackPromo onDismiss={handleDismissAttempt} onUpgradeClick={handlePromoClick} />;
   };
 
-  // Get banner content - if null, don't render container at all
   const bannerContent = renderBanner();
-  if (!bannerContent) {
-    return null;
-  }
 
   return (
     <>
