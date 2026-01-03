@@ -606,6 +606,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
                 <Calendar
                   mode="single"
                   selected={date}
+                  defaultMonth={date}
                   onSelect={(d) => d && setDate(d)}
                   disabled={(d) => d > new Date()}
                   initialFocus
