@@ -586,6 +586,11 @@
     "timeLeft": "Time left",
     "progress": "Progress",
     "expires": "Expires in",
+    "weeklyChallenges": "This Week's Challenges",
+    "weekOf": "Week of",
+    "renewsIn": "Renews in",
+    "weeklyComplete": "All challenges completed! Await new ones!",
+    "keepGoing": "Keep going! {{count}} challenges left.",
     "items": {
       "daily_checkin": {
         "title": "Daily Check-in",
