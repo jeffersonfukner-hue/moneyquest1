@@ -83,6 +83,7 @@ const Index = () => {
     category: string;
     amount: number;
     currency: string;
+    narrative?: string | null;
   } | null>(null);
   const lastFeedbackRef = useRef<string | null>(null);
 
@@ -125,6 +126,7 @@ const Index = () => {
           category: narrativeData.category || '',
           amount: narrativeData.amount || 0,
           currency: narrativeData.currency || profile?.currency || 'BRL',
+          narrative: narrativeData.narrative,
         });
       }
     }
@@ -198,7 +200,7 @@ const Index = () => {
               />
             )}
             
-            {/* Inline feedback */}
+            {/* Inline feedback with narrative */}
             {inlineFeedback && (
               <TransactionFeedback
                 message={inlineFeedback.message}
@@ -206,7 +208,11 @@ const Index = () => {
                 category={inlineFeedback.category}
                 amount={inlineFeedback.amount}
                 currency={inlineFeedback.currency}
-                onDismiss={() => setInlineFeedback(null)}
+                narrative={inlineFeedback.narrative}
+                onDismiss={() => {
+                  setInlineFeedback(null);
+                  clearNarrative();
+                }}
               />
             )}
             

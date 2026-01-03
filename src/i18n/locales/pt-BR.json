@@ -1887,5 +1887,30 @@
       "title": "Auditoria de Assinaturas",
       "description": "Revise todas as contas recorrentes esta semana"
     }
+  },
+  "narrative": {
+    "generatingNarrative": "Gerando narrativa épica...",
+    "tapToContinue": "Toque para continuar",
+    "epicEvent": "Evento Épico!",
+    "questUpdate": "Atualização da Missão",
+    "fallback": {
+      "incomeSmall": "💰 Uma pequena recompensa de {{value}} apareceu no seu inventário. Todo tesouro conta na jornada!",
+      "incomeMedium": "✨ Um baú de {{value}} foi encontrado! Sua reserva de ouro cresce a cada conquista.",
+      "incomeLarge": "🏆 Tesouro épico de {{value}} desbloqueado! Você está dominando a arte das finanças.",
+      "expenseSmall": "🛡️ Uma pequena investida de {{value}} foi absorvida pelo seu escudo. Defesa sólida!",
+      "expenseMedium": "⚔️ Um desafio de {{value}} testou suas defesas. Continue vigilante, herói!",
+      "expenseLarge": "💥 Um golpe pesado de {{value}} atingiu seu tesouro. Avalie sua estratégia!",
+      "expenseCritical": "🔥 Alerta crítico! {{value}} drenado das reservas. Hora de revisar a missão!"
+    },
+    "missions": {
+      "buildShield": "Construa seu Escudo Financeiro",
+      "buildShieldDesc": "Cada real economizado é um tijolo na sua fortaleza",
+      "huntTreasure": "Caça ao Tesouro Mensal",
+      "huntTreasureDesc": "Encontre formas de aumentar sua renda",
+      "defeatDragon": "Derrote o Dragão das Dívidas",
+      "defeatDragonDesc": "Elimine gastos desnecessários um por um",
+      "protectKingdom": "Proteja o Reino",
+      "protectKingdomDesc": "Mantenha suas categorias dentro do orçamento"
+    }
   }
 }
