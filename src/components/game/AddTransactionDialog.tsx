@@ -269,6 +269,9 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               onBlur={() => setTouched(prev => ({ ...prev, description: true }))}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') e.preventDefault();
+              }}
               className={cn(
                 "min-h-[48px]",
                 (touched.description || attemptedSubmit) && errors.description && 
@@ -312,6 +315,9 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 onBlur={() => setTouched(prev => ({ ...prev, amount: true }))}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') e.preventDefault();
+                }}
                 className={cn(
                   "min-h-[48px] flex-1",
                   (touched.amount || attemptedSubmit) && errors.amount && 

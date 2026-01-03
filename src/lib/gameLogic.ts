@@ -187,7 +187,17 @@ export const checkAndUpdateBadges = async (
         shouldUnlock = totalSaved >= badge.requirement_value;
         break;
       case 'COUNT':
-        shouldUnlock = transactionCount >= badge.requirement_value;
+        // Special handling for Referral badges - use referral count instead of transaction count
+        if (badge.name.toLowerCase().includes('referral')) {
+          const { count: referralCount } = await supabase
+            .from('referrals')
+            .select('*', { count: 'exact', head: true })
+            .eq('referrer_id', userId)
+            .in('status', ['completed', 'rewarded']);
+          shouldUnlock = (referralCount || 0) >= badge.requirement_value;
+        } else {
+          shouldUnlock = transactionCount >= badge.requirement_value;
+        }
         break;
     }
 
@@ -518,9 +528,20 @@ export const checkAndUpdateQuests = async (
   const today = getTodayString();
   const totalSaved = profile.total_income - profile.total_expenses;
 
+  // Calculate how many days since user created their account
+  const profileCreatedDays = Math.floor(
+    (Date.now() - new Date(profile.created_at).getTime()) / (1000 * 60 * 60 * 24)
+  );
+
   for (const quest of quests) {
     let shouldComplete = false;
     let newProgress = quest.progress_current;
+
+    // Prevent quests from completing too quickly for new users
+    // Weekly quests require at least 3 days of activity
+    // Monthly quests require at least 7 days of activity
+    if (quest.type === 'WEEKLY' && profileCreatedDays < 3) continue;
+    if (quest.type === 'MONTHLY' && profileCreatedDays < 7) continue;
 
     // Handle different quest types
     if (quest.quest_key) {
