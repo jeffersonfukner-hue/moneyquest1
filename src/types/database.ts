@@ -46,6 +46,9 @@ export interface Profile {
   trial_start_date: string | null;
   trial_end_date: string | null;
   has_used_trial: boolean;
+  // Discount offer fields
+  discount_offer_shown: boolean;
+  discount_offer_expires_at: string | null;
 }
 
 export interface Transaction {

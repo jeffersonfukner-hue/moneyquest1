@@ -35,11 +35,11 @@ serve(async (req) => {
     }
     logStep("User authenticated", { userId: user.id, email: user.email });
 
-    const { priceId } = await req.json();
+    const { priceId, promotionCode } = await req.json();
     if (!priceId) {
       throw new Error("Price ID is required");
     }
-    logStep("Price ID received", { priceId });
+    logStep("Price ID received", { priceId, promotionCode });
 
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) {
@@ -58,7 +58,8 @@ serve(async (req) => {
 
     const origin = req.headers.get("origin") || "https://lovable.dev";
     
-    const session = await stripe.checkout.sessions.create({
+    // Build checkout session options
+    const sessionOptions: any = {
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
       line_items: [
@@ -73,7 +74,26 @@ serve(async (req) => {
       metadata: {
         user_id: user.id,
       },
-    });
+    };
+
+    // Apply promotion code if provided
+    if (promotionCode) {
+      // Find the promotion code in Stripe
+      const promotionCodes = await stripe.promotionCodes.list({
+        code: promotionCode,
+        active: true,
+        limit: 1,
+      });
+
+      if (promotionCodes.data.length > 0) {
+        sessionOptions.discounts = [{ promotion_code: promotionCodes.data[0].id }];
+        logStep("Promotion code applied", { promotionCode, promotionCodeId: promotionCodes.data[0].id });
+      } else {
+        logStep("Promotion code not found or inactive", { promotionCode });
+      }
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionOptions);
 
     logStep("Checkout session created", { sessionId: session.id, url: session.url });
 

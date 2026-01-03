@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ChevronLeft, Crown, Check, Sparkles, Loader2 } from 'lucide-react';
+import { ChevronLeft, Crown, Check, Sparkles, Loader2, Clock, Zap } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,12 +19,21 @@ const Upgrade = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { isPremium, plan } = useSubscription();
-  const { refetch: refetchProfile } = useProfile();
+  const { profile, refetch: refetchProfile } = useProfile();
   const { billingCurrency, pricing, getPriceId, getFormattedPrice } = usePremiumPricing();
   
   const [isLoading, setIsLoading] = useState(false);
   const [isCheckingSubscription, setIsCheckingSubscription] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>('yearly');
+  
+  // Get discount code from URL
+  const discountCode = searchParams.get('discount');
+  const hasDiscount = discountCode === 'TRIAL30';
+
+  // Check if discount is still valid
+  const isDiscountValid = hasDiscount && profile?.discount_offer_expires_at 
+    ? new Date(profile.discount_offer_expires_at) > new Date()
+    : false;
 
   // Check subscription status on mount and after Stripe redirect
   useEffect(() => {
@@ -68,8 +77,14 @@ const Upgrade = () => {
 
     setIsLoading(true);
     try {
+      // Include discount code if valid
+      const body: { priceId: string; promotionCode?: string } = { priceId };
+      if (isDiscountValid) {
+        body.promotionCode = 'TRIAL30';
+      }
+
       const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { priceId }
+        body
       });
 
       if (error) throw error;
@@ -150,6 +165,29 @@ const Upgrade = () => {
       </header>
 
       <main className="px-4 py-6 max-w-md mx-auto space-y-6">
+        {/* Discount Banner */}
+        {isDiscountValid && (
+          <div className="bg-gradient-to-r from-accent to-accent/80 rounded-2xl p-4 text-accent-foreground relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 mb-2">
+                <Zap className="w-5 h-5" />
+                <span className="font-bold uppercase text-sm">30% OFF</span>
+              </div>
+              <p className="font-bold text-lg uppercase">
+                {t('trial.discountTitle', 'LAST CHANCE TO ACTIVATE PREMIUM')}
+              </p>
+              <p className="text-sm opacity-90 uppercase mt-1">
+                {t('trial.discountMessage', 'ACTIVATE MONEYQUEST PREMIUM NOW AND GET 30% OFF')}
+              </p>
+              <div className="flex items-center gap-2 mt-3 text-xs opacity-80">
+                <Clock className="w-4 h-4" />
+                <span className="uppercase">{t('trial.discountFootnote', 'OFFER VALID ONLY FOR EXPIRED TRIAL USERS')}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Hero Section */}
         <div className="text-center py-6">
           <div className="w-20 h-20 bg-gradient-to-br from-amber-400 to-amber-500 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-amber-500/30 animate-float">

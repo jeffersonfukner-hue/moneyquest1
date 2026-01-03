@@ -296,7 +296,10 @@
     "skip": "Saltar",
     "continue": "Continuar",
     "close": "Fechar",
-    "halfway": "Metade do caminho!"
+    "halfway": "Metade do caminho!",
+    "hours": "HRS",
+    "minutes": "MIN",
+    "seconds": "SEG"
   },
   "auth": {
     "login": "Entrar",
@@ -1180,7 +1183,12 @@
     "expiredFeature4": "Relatórios avançados",
     "continueFreePlan": "Continuar com plano gratuito",
     "abuseDetected": "Trial bloqueado",
-    "abuseMessage": "Detectámos que este dispositivo já utilizou o período gratuito anteriormente. O trial não está disponível para esta conta."
+    "abuseMessage": "Detectámos que este dispositivo já utilizou o período gratuito anteriormente. O trial não está disponível para esta conta.",
+    "discountTitle": "ÚLTIMA CHANCE DE ATIVAR O PREMIUM",
+    "discountMessage": "ATIVE O MONEYQUEST PREMIUM AGORA E GANHE 30% DE DESCONTO",
+    "ctaDiscount": "ATIVAR PREMIUM COM 30% OFF",
+    "discountFootnote": "OFERTA VÁLIDA APENAS PARA UTILIZADORES COM TRIAL EXPIRADO",
+    "offerExpiresIn": "OFERTA EXPIRA EM"
   },
   "admin": {
     "nav": {
