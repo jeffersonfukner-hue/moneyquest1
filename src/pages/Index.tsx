@@ -34,6 +34,8 @@ import { TransactionFeedback } from '@/components/game/TransactionFeedback';
 import { QuickTemplates } from '@/components/game/QuickTemplates';
 import { XPNotification } from '@/components/game/XPNotification';
 import { SessionSummaryCard } from '@/components/game/SessionSummaryCard';
+import { PersonalRewardsCard } from '@/components/game/PersonalRewardsCard';
+import { LevelUnlocksCard } from '@/components/game/LevelUnlocksCard';
 import { BottomNavigation, type TabId } from '@/components/navigation/BottomNavigation';
 import { MobileHeader } from '@/components/navigation/MobileHeader';
 import { AICoachCard } from '@/components/ai/AICoachCard';
@@ -233,7 +235,14 @@ const Index = () => {
       case 'transactions':
         return <TransactionsList transactions={transactions} onDelete={deleteTransaction} onUpdate={updateTransaction} onBatchUpdateWallet={batchUpdateWallet} onBatchDelete={batchDeleteTransactions} onDuplicate={handleDuplicateTransaction} />;
       case 'quests':
-        return <QuestsPanel quests={quests} />;
+        return (
+          <div className="space-y-4 pb-2">
+            <QuestsPanel quests={quests} />
+            <PersonalRewardsCard />
+            <LevelUnlocksCard />
+            <BadgesGrid badges={badges} />
+          </div>
+        );
       default:
         return null;
     }
