@@ -46,6 +46,7 @@ import { TrialBanner } from '@/components/trial/TrialBanner';
 import { TrialExpiredDialog } from '@/components/trial/TrialExpiredDialog';
 import { useAdBanner } from '@/hooks/useAdBanner';
 import { useReferralNotifications } from '@/hooks/useReferralNotifications';
+import { FloatingWhatsAppButton } from '@/components/support/FloatingWhatsAppButton';
 import { getFeedbackMessage } from '@/lib/feedbackMessages';
 import { TransactionTemplate } from '@/hooks/useTransactionTemplates';
 import { Gamepad2 } from 'lucide-react';
@@ -248,6 +249,8 @@ const Index = () => {
       <main className="px-4 py-3 max-w-md mx-auto relative z-10">
         {renderTabContent()}
       </main>
+
+      <FloatingWhatsAppButton />
 
       <AdBanner />
 

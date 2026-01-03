@@ -41,7 +41,7 @@ export default function Support() {
   };
 
   return (
-    <AppLayout>
+    <AppLayout showWhatsAppButton={false}>
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
         <div className="container flex items-center gap-3 py-4">

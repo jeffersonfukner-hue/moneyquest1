@@ -18,6 +18,8 @@ interface AppLayoutProps {
   showNavigation?: boolean;
   /** Whether to show the ad banner (default: true) */
   showAdBanner?: boolean;
+  /** Whether to show the floating WhatsApp button (default: true) */
+  showWhatsAppButton?: boolean;
 }
 
 export const AppLayout = ({ 
@@ -26,6 +28,7 @@ export const AppLayout = ({
   className,
   showNavigation = true,
   showAdBanner = true,
+  showWhatsAppButton = true,
 }: AppLayoutProps) => {
   const navigate = useNavigate();
   const { addTransaction } = useTransactions();
@@ -56,7 +59,7 @@ export const AppLayout = ({
     <div className={cn("min-h-screen bg-background", getBottomPadding(), className)}>
       {children}
 
-      <FloatingWhatsAppButton />
+      {showWhatsAppButton && <FloatingWhatsAppButton />}
 
       {showAdBanner && <AdBanner />}
 
