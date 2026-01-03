@@ -60,7 +60,7 @@ const PublicNavigation = () => {
                 <Moon className="w-4 h-4" />
               )}
             </button>
-            <Link to="/login">
+            <Link to="/login?mode=login">
               <Button variant="ghost" size="sm">
                 {t('auth.login', 'Entrar')}
               </Button>
@@ -115,7 +115,7 @@ const PublicNavigation = () => {
             </Link>
           ))}
           <div className="flex flex-col gap-2 pt-2 border-t border-border/50">
-            <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+            <Link to="/login?mode=login" onClick={() => setIsMenuOpen(false)}>
               <Button variant="outline" size="sm" className="w-full">
                 {t('auth.login', 'Entrar')}
               </Button>
