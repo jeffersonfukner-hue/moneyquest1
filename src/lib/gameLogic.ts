@@ -654,9 +654,10 @@ export const getTimeUntilReset = (periodEndDate: string | null, questType: Quest
   minutes: number; 
   days: number;
   displayText: string;
+  isExpired: boolean;
 } => {
   if (!periodEndDate) {
-    return { hours: 0, minutes: 0, days: 0, displayText: 'N/A' };
+    return { hours: 0, minutes: 0, days: 0, displayText: 'N/A', isExpired: false };
   }
 
   const now = new Date();
@@ -664,7 +665,7 @@ export const getTimeUntilReset = (periodEndDate: string | null, questType: Quest
   const diff = endDate.getTime() - now.getTime();
 
   if (diff <= 0) {
-    return { hours: 0, minutes: 0, days: 0, displayText: 'Resetting...' };
+    return { hours: 0, minutes: 0, days: 0, displayText: 'Resetting...', isExpired: true };
   }
 
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -680,7 +681,7 @@ export const getTimeUntilReset = (periodEndDate: string | null, questType: Quest
     displayText = `${minutes}m`;
   }
 
-  return { hours, minutes, days, displayText };
+  return { hours, minutes, days, displayText, isExpired: false };
 };
 
 export const CATEGORIES = {
