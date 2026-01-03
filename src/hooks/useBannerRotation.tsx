@@ -6,29 +6,37 @@ import {
   selectRandomInternalBanner,
   logBannerDebug 
 } from '@/lib/bannerRotationConfig';
-import { shouldShowInternalBanners } from '@/lib/routeConfig';
+import { shouldShowInternalBanners, shouldHideGoogleAds } from '@/lib/routeConfig';
 
 export const useBannerRotation = () => {
   const location = useLocation();
   const isAuthenticatedPage = shouldShowInternalBanners(location.pathname);
+  const isGoogleAdsBlocked = shouldHideGoogleAds(location.pathname);
+  
+  // Determine context: internal banners only on authenticated pages OR when Google is blocked
+  const getContext = () => {
+    if (isAuthenticatedPage || isGoogleAdsBlocked) return 'authenticated';
+    return 'public';
+  };
   
   const [currentBanner, setCurrentBanner] = useState<BannerType>(() => 
-    selectBannerType(isAuthenticatedPage ? 'authenticated' : 'public')
+    selectBannerType(getContext())
   );
   const [rotationReason, setRotationReason] = useState<string>('initial_selection');
 
   // Recalculate banner on route change
   useEffect(() => {
-    const context = isAuthenticatedPage ? 'authenticated' : 'public';
+    const context = getContext();
     const selected = selectBannerType(context);
     setCurrentBanner(selected);
     setRotationReason('route_change');
     logBannerDebug('Route change - reselected', { 
       path: location.pathname, 
       context,
+      isGoogleAdsBlocked,
       selected 
     });
-  }, [location.pathname, isAuthenticatedPage]);
+  }, [location.pathname, isAuthenticatedPage, isGoogleAdsBlocked]);
 
   // Fallback when Google Ads fails
   const handleGoogleAdError = useCallback(() => {

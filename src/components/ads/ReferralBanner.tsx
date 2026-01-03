@@ -4,6 +4,7 @@ import { Gift } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useReferral } from '@/hooks/useReferral';
 import { ReferralShareDialog } from './ReferralShareDialog';
+import { PremiumInternalBanner } from './PremiumInternalBanner';
 
 interface ReferralBannerProps {
   onDismiss?: () => void;
@@ -14,9 +15,9 @@ export const ReferralBanner = ({ onDismiss }: ReferralBannerProps) => {
   const { referralLink, stats, isLoading } = useReferral();
   const [showShareDialog, setShowShareDialog] = useState(false);
 
-  // Don't render anything while loading to prevent empty container
+  // Show PremiumInternalBanner as fallback during loading to prevent empty container
   if (isLoading) {
-    return null;
+    return <PremiumInternalBanner onDismiss={onDismiss} />;
   }
 
   const handleClick = () => {
