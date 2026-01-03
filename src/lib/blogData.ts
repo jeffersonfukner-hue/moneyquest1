@@ -26,30 +26,54 @@ export type BlogCategory =
   | 'desafios-financeiros'
   | 'habitos-financeiros';
 
-export const BLOG_CATEGORIES: Record<BlogCategory, { name: string; description: string }> = {
+export const BLOG_CATEGORIES: Record<BlogCategory, { 
+  name: string; 
+  description: string;
+  emoji: string;
+  bgGradient: string;
+  iconEmojis: string[];
+}> = {
   'controle-financeiro': {
     name: 'Controle Financeiro',
-    description: 'Dicas e estratégias para controlar suas finanças pessoais'
+    description: 'Dicas e estratégias para controlar suas finanças pessoais',
+    emoji: '💰',
+    bgGradient: 'from-emerald-500/20 to-teal-500/20',
+    iconEmojis: ['📊', '💵', '📈', '🏦']
   },
   'educacao-financeira': {
     name: 'Educação Financeira',
-    description: 'Aprenda conceitos fundamentais sobre dinheiro e investimentos'
+    description: 'Aprenda conceitos fundamentais sobre dinheiro e investimentos',
+    emoji: '📚',
+    bgGradient: 'from-blue-500/20 to-indigo-500/20',
+    iconEmojis: ['💡', '🎓', '🧠', '📖']
   },
   'gamificacao': {
     name: 'Gamificação',
-    description: 'Como jogos e recompensas podem transformar suas finanças'
+    description: 'Como jogos e recompensas podem transformar suas finanças',
+    emoji: '🎮',
+    bgGradient: 'from-purple-500/20 to-pink-500/20',
+    iconEmojis: ['🏆', '⭐', '🎯', '🎲']
   },
   'economia-dia-a-dia': {
     name: 'Economia do Dia a Dia',
-    description: 'Economize dinheiro nas atividades cotidianas'
+    description: 'Economize dinheiro nas atividades cotidianas',
+    emoji: '🛒',
+    bgGradient: 'from-orange-500/20 to-amber-500/20',
+    iconEmojis: ['🏷️', '💳', '🧾', '🛍️']
   },
   'desafios-financeiros': {
     name: 'Desafios Financeiros',
-    description: 'Desafios práticos para melhorar sua saúde financeira'
+    description: 'Desafios práticos para melhorar sua saúde financeira',
+    emoji: '⚔️',
+    bgGradient: 'from-red-500/20 to-rose-500/20',
+    iconEmojis: ['🎖️', '🔥', '💪', '🚀']
   },
   'habitos-financeiros': {
     name: 'Hábitos Financeiros',
-    description: 'Construa hábitos que transformam sua relação com o dinheiro'
+    description: 'Construa hábitos que transformam sua relação com o dinheiro',
+    emoji: '🌱',
+    bgGradient: 'from-green-500/20 to-lime-500/20',
+    iconEmojis: ['✨', '🎯', '📅', '🌟']
   }
 };
 
