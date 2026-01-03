@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Gift, Users, Clock, CheckCircle, Sparkles, Crown, Copy, MessageCircle, Share2, Trophy, History, Clipboard } from 'lucide-react';
+import { ArrowLeft, Gift, Users, Clock, CheckCircle, Sparkles, Crown, Copy, Share2, Trophy, History, Clipboard } from 'lucide-react';
+import { FaWhatsapp } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -17,7 +18,7 @@ import { ReferredUsersList } from '@/components/referral/ReferredUsersList';
 import { RewardHistory } from '@/components/referral/RewardHistory';
 import { ReferralRanking } from '@/components/referral/ReferralRanking';
 import { ReferralTierBadge } from '@/components/referral/ReferralTierBadge';
-import { openWhatsApp } from '@/lib/whatsapp';
+import { buildWaMeShareUrl } from '@/lib/whatsapp';
 
 interface TierInfo {
   tier: 'none' | 'bronze' | 'silver' | 'gold';
@@ -97,10 +98,8 @@ const Referral = () => {
     }
   };
 
-  const handleShareWhatsApp = () => {
-    const text = t('referral.shareMessage', { link: referralLink });
-    openWhatsApp({ mode: 'share', text });
-  };
+  const shareText = t('referral.shareMessage', { link: referralLink });
+  const whatsappUrl = buildWaMeShareUrl({ text: shareText });
 
   const handleCopyWhatsAppMessage = async () => {
     const text = t('referral.shareMessage', { link: referralLink });
@@ -182,13 +181,17 @@ const Referral = () => {
               {/* Share buttons */}
               <div className="flex flex-col gap-2">
                 <div className="flex gap-2">
-                  <Button 
-                    onClick={handleShareWhatsApp} 
-                    className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                  <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1"
                   >
-                    <MessageCircle className="w-4 h-4 mr-2" />
-                    WhatsApp
-                  </Button>
+                    <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+                      <FaWhatsapp className="w-4 h-4 mr-2" />
+                      WhatsApp
+                    </Button>
+                  </a>
                   <Button 
                     onClick={handleNativeShare} 
                     variant="outline" 

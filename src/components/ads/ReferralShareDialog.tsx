@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { openWhatsApp, openExternalUrl, buildWaMeShareUrl } from '@/lib/whatsapp';
+import { buildWaMeShareUrl } from '@/lib/whatsapp';
 
 interface ReferralShareDialogProps {
   open: boolean;
@@ -28,6 +28,9 @@ export const ReferralShareDialog = ({
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  const shareText = t('referral.shareMessage', { link: referralLink });
+  const whatsappUrl = buildWaMeShareUrl({ text: shareText });
+
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(referralLink);
@@ -35,16 +38,6 @@ export const ReferralShareDialog = ({
     } catch {
       toast.error(t('common.error'));
     }
-  };
-
-  const handleShareWhatsApp = () => {
-    const text = t('referral.shareMessage', { link: referralLink });
-    openWhatsApp({ mode: 'share', text });
-  };
-
-  const handleOpenWhatsAppWeb = () => {
-    const text = t('referral.shareMessage', { link: referralLink });
-    openExternalUrl(buildWaMeShareUrl({ text }));
   };
 
   const handleCopyWhatsAppMessage = async () => {
@@ -106,13 +99,17 @@ export const ReferralShareDialog = ({
         {/* Botões de compartilhamento */}
         <div className="flex flex-col gap-2 mt-4">
           <div className="flex gap-3">
-            <Button 
-              onClick={handleShareWhatsApp} 
-              className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1"
             >
-              <FaWhatsapp className="w-4 h-4 mr-2" />
-              WhatsApp
-            </Button>
+              <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+                <FaWhatsapp className="w-4 h-4 mr-2" />
+                WhatsApp
+              </Button>
+            </a>
             <Button 
               onClick={handleNativeShare} 
               variant="outline" 
@@ -124,15 +121,15 @@ export const ReferralShareDialog = ({
           </div>
           
           {/* WhatsApp Web fallback */}
-          <Button 
-            onClick={handleOpenWhatsAppWeb} 
-            variant="ghost" 
-            size="sm"
-            className="text-xs text-muted-foreground hover:text-foreground"
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center text-xs text-muted-foreground hover:text-foreground py-2"
           >
             <Monitor className="w-3 h-3 mr-1" />
             {t('referral.openWhatsAppWeb', 'Abrir no WhatsApp Web')}
-          </Button>
+          </a>
 
           {/* Copy message fallback (for blocked environments) */}
           <Button 
