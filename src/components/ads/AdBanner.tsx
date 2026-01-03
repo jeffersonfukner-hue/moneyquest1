@@ -7,6 +7,7 @@ import { AdContainer } from './AdContainer';
 import { FallbackPromo } from './FallbackPromo';
 import { ReferralBanner } from './ReferralBanner';
 import { PremiumInternalBanner } from './PremiumInternalBanner';
+import { CampaignBanner } from './CampaignBanner';
 import { PremiumBannerModal } from './PremiumBannerModal';
 import { ADSENSE_CONFIG } from '@/lib/adsenseConfig';
 import { logBannerDebug } from '@/lib/bannerRotationConfig';
@@ -26,7 +27,9 @@ export const AdBanner = () => {
     currentBanner, 
     rotationReason, 
     handleGoogleAdError,
-    isGoogleAd 
+    isGoogleAd,
+    isCampaignBanner,
+    selectedCampaign
   } = useBannerRotation();
   
   const { trackImpression, trackClick } = useABTest('adBanner');
@@ -43,10 +46,11 @@ export const AdBanner = () => {
         bannerType: currentBanner, 
         reason: rotationReason,
         isAuthenticatedPage,
-        showInternalOnly 
+        showInternalOnly,
+        campaignId: selectedCampaign?.id
       });
     }
-  }, [shouldShowBanner, trackImpression, currentBanner, rotationReason, isAuthenticatedPage, showInternalOnly]);
+  }, [shouldShowBanner, trackImpression, currentBanner, rotationReason, isAuthenticatedPage, showInternalOnly, selectedCampaign]);
 
   if (!shouldShowBanner) return null;
 
@@ -73,8 +77,14 @@ export const AdBanner = () => {
       logBannerDebug('Rendering internal banner', { 
         isAuthenticatedPage, 
         showInternalOnly, 
-        bannerType: currentBanner 
+        bannerType: currentBanner,
+        hasCampaign: !!selectedCampaign
       });
+      
+      // Campaign banner if selected and available
+      if (isCampaignBanner && selectedCampaign) {
+        return <CampaignBanner campaign={selectedCampaign} onDismiss={handleDismissAttempt} />;
+      }
       
       // Respect the rotation selection for internal banners
       if (currentBanner === 'internal_referral') {
@@ -94,6 +104,11 @@ export const AdBanner = () => {
           onError={handleGoogleError}
         />
       );
+    }
+
+    // Campaign banner if selected and available
+    if (isCampaignBanner && selectedCampaign) {
+      return <CampaignBanner campaign={selectedCampaign} onDismiss={handleDismissAttempt} />;
     }
 
     // Internal banner selected on public page

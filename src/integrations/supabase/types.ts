@@ -378,6 +378,69 @@ export type Database = {
         }
         Relationships: []
       }
+      internal_campaigns: {
+        Row: {
+          bg_gradient: string | null
+          campaign_type: string
+          created_at: string | null
+          created_by: string | null
+          cta_link: string
+          cta_text: string
+          end_date: string | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          priority: number | null
+          start_date: string | null
+          subtitle: string | null
+          target_audience: string | null
+          text_color: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          bg_gradient?: string | null
+          campaign_type: string
+          created_at?: string | null
+          created_by?: string | null
+          cta_link: string
+          cta_text: string
+          end_date?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          priority?: number | null
+          start_date?: string | null
+          subtitle?: string | null
+          target_audience?: string | null
+          text_color?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          bg_gradient?: string | null
+          campaign_type?: string
+          created_at?: string | null
+          created_by?: string | null
+          cta_link?: string
+          cta_text?: string
+          end_date?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          priority?: number | null
+          start_date?: string | null
+          subtitle?: string | null
+          target_audience?: string | null
+          text_color?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       leaderboard_participants: {
         Row: {
           avatar_icon: string
@@ -1411,6 +1474,25 @@ export type Database = {
         Args: { _note?: string; _status: string; _target_user_id: string }
         Returns: undefined
       }
+      admin_upsert_campaign: {
+        Args: {
+          p_bg_gradient?: string
+          p_campaign_type?: string
+          p_cta_link?: string
+          p_cta_text?: string
+          p_end_date?: string
+          p_icon?: string
+          p_id?: string
+          p_is_active?: boolean
+          p_name?: string
+          p_priority?: number
+          p_start_date?: string
+          p_subtitle?: string
+          p_target_audience?: string
+          p_title?: string
+        }
+        Returns: string
+      }
       archive_monthly_goals: { Args: { p_user_id: string }; Returns: undefined }
       block_trial_for_abuse: {
         Args: { p_reason: string; p_user_id: string }
@@ -1436,6 +1518,35 @@ export type Database = {
       create_default_categories: {
         Args: { p_user_id: string }
         Returns: undefined
+      }
+      get_active_campaigns: {
+        Args: { p_audience?: string }
+        Returns: {
+          bg_gradient: string | null
+          campaign_type: string
+          created_at: string | null
+          created_by: string | null
+          cta_link: string
+          cta_text: string
+          end_date: string | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          priority: number | null
+          start_date: string | null
+          subtitle: string | null
+          target_audience: string | null
+          text_color: string | null
+          title: string
+          updated_at: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "internal_campaigns"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       get_daily_reward_status: { Args: { p_user_id: string }; Returns: Json }
       get_detailed_referral_stats: {
