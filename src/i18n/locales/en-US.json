@@ -1743,5 +1743,57 @@
     "levelsAway_other": "{{count}} levels away",
     "keepPlaying": "Keep playing to unlock!",
     "premiumUnlock": "Or unlock now with Premium"
+  },
+  "premium": {
+    "required": "Premium required",
+    "ocrLocked": "Receipt reading is exclusive to Premium.",
+    "itemBreakdown": {
+      "title": "Item Breakdown",
+      "description": "See exactly where every dollar of your purchase goes"
+    },
+    "receiptOcr": {
+      "title": "Receipt Reading",
+      "description": "Photograph receipts for automatic form filling"
+    },
+    "benefits": {
+      "itemBreakdown": "Item-by-item breakdown",
+      "receiptOcr": "Automatic receipt reading",
+      "advancedInsights": "Advanced insights",
+      "bonusXp": "Bonus XP on all actions"
+    },
+    "upsell": {
+      "title": "See where your money really goes",
+      "subtitle": "Premium shows WHERE you spend, not just HOW MUCH. Stop guessing — see item by item.",
+      "cta": "Go Premium",
+      "tagline": "Turn receipts into smart financial control."
+    }
+  },
+  "breakdown": {
+    "title": "Breakdown",
+    "toggle": "Detail",
+    "balanced": "Balanced",
+    "remaining": "{{amount}} remaining",
+    "over": "Exceeds by {{amount}}",
+    "empty": "Add items to detail this expense",
+    "itemName": "Item name",
+    "addItem": "Add item",
+    "itemsTotal": "Items total"
+  },
+  "ocr": {
+    "scanReceipt": "Scan receipt",
+    "processing": "Reading...",
+    "success": "Receipt read!",
+    "itemsFound": "{{count}} items found",
+    "error": {
+      "title": "Reading error",
+      "tryAgain": "Could not read the receipt. Try another photo.",
+      "invalidType": "Invalid type",
+      "imageOnly": "Select an image (JPG, PNG, etc.)",
+      "tooLarge": "File too large",
+      "maxSize": "Maximum size: 10MB"
+    }
+  },
+  "common": {
+    "later": "Not now"
   }
 }

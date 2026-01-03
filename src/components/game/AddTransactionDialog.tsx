@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Plus, ArrowUpCircle, ArrowDownCircle, CalendarIcon, Coins, AlertCircle } from 'lucide-react';
+import { Plus, ArrowUpCircle, ArrowDownCircle, CalendarIcon, Coins, AlertCircle, List, Scan, Crown, ChevronDown, ChevronUp } from 'lucide-react';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
@@ -10,18 +10,24 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { TransactionType, SupportedCurrency } from '@/types/database';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useCategories } from '@/hooks/useCategories';
 import { useCategoryGoals } from '@/hooks/useCategoryGoals';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useAuth } from '@/hooks/useAuth';
 import { QuickAddCategoryDialog } from '@/components/categories/QuickAddCategoryDialog';
 import { QuickAddGoalPrompt } from '@/components/goals/QuickAddGoalPrompt';
 import { SUPPORTED_CURRENCIES } from '@/i18n';
 import { getCategoryTranslationKey } from '@/lib/gameLogic';
 import { WalletSelector } from '@/components/wallets/WalletSelector';
 import { useWallets } from '@/hooks/useWallets';
+import { ItemBreakdownEditor, TransactionItem } from '@/components/premium/ItemBreakdownEditor';
+import { ReceiptOCRButton } from '@/components/premium/ReceiptOCRButton';
+import { PremiumUpsellModal } from '@/components/premium/PremiumFeatureGate';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface SessionSummary {
   transactionCount: number;
@@ -61,8 +67,9 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   const { currencySymbol, currency } = useCurrency();
   const { getCategoriesByType, addCategory } = useCategories();
   const { goals, refetch: refetchGoals } = useCategoryGoals();
-  const { canAccessCategoryGoals } = useSubscription();
+  const { canAccessCategoryGoals, isPremium } = useSubscription();
   const { activeWallets, refetch: refetchWallets } = useWallets();
+  const { user } = useAuth();
   
   const [internalOpen, setInternalOpen] = useState(false);
   const [type, setType] = useState<TransactionType>('EXPENSE');
@@ -76,6 +83,12 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const descriptionInputRef = useRef<HTMLInputElement>(null);
   const [showGoalPrompt, setShowGoalPrompt] = useState(false);
+  
+  // Premium features state
+  const [showBreakdown, setShowBreakdown] = useState(false);
+  const [breakdownItems, setBreakdownItems] = useState<TransactionItem[]>([]);
+  const [showUpsellModal, setShowUpsellModal] = useState(false);
+  const [upsellFeature, setUpsellFeature] = useState<'item_breakdown' | 'receipt_ocr'>('item_breakdown');
   
   // Session tracking
   const [sessionData, setSessionData] = useState<SessionSummary>({
@@ -238,6 +251,80 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
     }
   };
 
+  // Premium feature handlers
+  const handleBreakdownToggle = async () => {
+    if (!isPremium) {
+      // Track attempt
+      if (user) {
+        await supabase.from('ab_test_events').insert({
+          user_id: user.id,
+          test_name: 'premium_features',
+          variant: 'item_breakdown',
+          event_type: 'premium_feature_attempt',
+          metadata: { feature: 'item_breakdown', blocked: true }
+        });
+      }
+      setUpsellFeature('item_breakdown');
+      setShowUpsellModal(true);
+      return;
+    }
+    setShowBreakdown(!showBreakdown);
+    if (!showBreakdown && breakdownItems.length === 0) {
+      // Add first item when opening
+      setBreakdownItems([{ id: crypto.randomUUID(), name: '', amount: parseFloat(amount) || 0 }]);
+    }
+  };
+
+  const handleOCRClick = async () => {
+    if (!isPremium) {
+      if (user) {
+        await supabase.from('ab_test_events').insert({
+          user_id: user.id,
+          test_name: 'premium_features',
+          variant: 'receipt_ocr',
+          event_type: 'premium_feature_attempt',
+          metadata: { feature: 'receipt_ocr', blocked: true }
+        });
+      }
+      setUpsellFeature('receipt_ocr');
+      setShowUpsellModal(true);
+    }
+  };
+
+  const handleOCRResult = (data: { storeName?: string; date?: string; total?: number; items: { name: string; amount: number }[]; suggestedCategory?: string }) => {
+    // Fill form with OCR results
+    if (data.storeName) {
+      setDescription(data.storeName.toUpperCase());
+    }
+    if (data.total) {
+      setAmount(data.total.toString());
+    }
+    if (data.date) {
+      const parsedDate = new Date(data.date);
+      if (!isNaN(parsedDate.getTime())) {
+        setDate(parsedDate);
+      }
+    }
+    if (data.suggestedCategory) {
+      // Try to match with existing categories
+      const matchedCat = categories.find(c => 
+        c.name.toLowerCase().includes(data.suggestedCategory!.toLowerCase()) ||
+        data.suggestedCategory!.toLowerCase().includes(c.name.toLowerCase())
+      );
+      if (matchedCat) {
+        setCategory(matchedCat.name);
+      }
+    }
+    if (data.items && data.items.length > 0) {
+      setShowBreakdown(true);
+      setBreakdownItems(data.items.map(item => ({
+        id: crypto.randomUUID(),
+        name: item.name,
+        amount: item.amount
+      })));
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       {!isControlled && (
@@ -364,6 +451,59 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
               show={(touched.amount || attemptedSubmit) && errors.amount}
               message={t('validation.amountRequired')}
             />
+
+            {/* Premium Features: OCR and Breakdown buttons */}
+            {type === 'EXPENSE' && (
+              <div className="flex gap-2 pt-1">
+                {/* OCR Button */}
+                {isPremium ? (
+                  <ReceiptOCRButton 
+                    onResult={handleOCRResult}
+                    className="flex-1"
+                  />
+                ) : (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleOCRClick}
+                    className="flex-1 gap-2 relative"
+                  >
+                    <Scan className="w-4 h-4" />
+                    {t('ocr.scanReceipt', 'Ler nota fiscal')}
+                    <Crown className="w-3 h-3 text-amber-500 absolute -top-1 -right-1" />
+                  </Button>
+                )}
+
+                {/* Breakdown Toggle */}
+                <Button
+                  type="button"
+                  variant={showBreakdown ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={handleBreakdownToggle}
+                  className={cn(
+                    "flex-1 gap-2 relative",
+                    showBreakdown && "bg-primary"
+                  )}
+                >
+                  <List className="w-4 h-4" />
+                  {t('breakdown.toggle', 'Detalhar')}
+                  {!isPremium && (
+                    <Crown className="w-3 h-3 text-amber-500 absolute -top-1 -right-1" />
+                  )}
+                </Button>
+              </div>
+            )}
+
+            {/* Item Breakdown Editor (Premium only) */}
+            {showBreakdown && isPremium && type === 'EXPENSE' && (
+              <ItemBreakdownEditor
+                items={breakdownItems}
+                onItemsChange={setBreakdownItems}
+                totalAmount={parseFloat(amount) || 0}
+                currency={selectedCurrency}
+              />
+            )}
           </div>
 
           <div className="space-y-2">
@@ -490,6 +630,13 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
           onOpenChange={setQuickAddOpen}
           onAdd={handleQuickAddCategory}
           type={type}
+        />
+
+        {/* Premium Upsell Modal */}
+        <PremiumUpsellModal
+          open={showUpsellModal}
+          onOpenChange={setShowUpsellModal}
+          feature={upsellFeature}
         />
       </DialogContent>
     </Dialog>

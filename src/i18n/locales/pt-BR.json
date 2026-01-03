@@ -1652,9 +1652,61 @@
         "multipleWallets": {
           "question": "Posso ter várias carteiras?",
           "answer": "Sim! Você pode criar quantas carteiras quiser: conta corrente, poupança, dinheiro em espécie, etc. Acesse a seção Carteiras para gerenciá-las."
-        }
-      }
     }
+  },
+  "premium": {
+    "required": "Premium necessário",
+    "ocrLocked": "A leitura de nota fiscal é exclusiva para Premium.",
+    "itemBreakdown": {
+      "title": "Detalhamento por Item",
+      "description": "Veja exatamente para onde vai cada real da sua compra"
+    },
+    "receiptOcr": {
+      "title": "Leitura de Nota Fiscal",
+      "description": "Fotografe cupons e notas fiscais para preenchimento automático"
+    },
+    "benefits": {
+      "itemBreakdown": "Detalhamento por item",
+      "receiptOcr": "Leitura automática de cupons",
+      "advancedInsights": "Insights avançados",
+      "bonusXp": "XP bônus em todas as ações"
+    },
+    "upsell": {
+      "title": "Veja onde seu dinheiro realmente vai",
+      "subtitle": "Premium mostra ONDE você gasta, não só QUANTO. Pare de adivinhar — veja item por item.",
+      "cta": "Quero ser Premium",
+      "tagline": "Transforme notas fiscais em controle financeiro inteligente."
+    }
+  },
+  "breakdown": {
+    "title": "Detalhamento",
+    "toggle": "Detalhar",
+    "balanced": "Balanceado",
+    "remaining": "Faltam {{amount}}",
+    "over": "Excede {{amount}}",
+    "empty": "Adicione itens para detalhar esta despesa",
+    "itemName": "Nome do item",
+    "addItem": "Adicionar item",
+    "itemsTotal": "Total dos itens"
+  },
+  "ocr": {
+    "scanReceipt": "Ler nota fiscal",
+    "processing": "Lendo...",
+    "success": "Nota fiscal lida!",
+    "itemsFound": "{{count}} itens encontrados",
+    "error": {
+      "title": "Erro na leitura",
+      "tryAgain": "Não foi possível ler a nota. Tente outra foto.",
+      "invalidType": "Tipo inválido",
+      "imageOnly": "Selecione uma imagem (JPG, PNG, etc.)",
+      "tooLarge": "Arquivo muito grande",
+      "maxSize": "Tamanho máximo: 10MB"
+    }
+  },
+  "common": {
+    "later": "Agora não"
+  }
+}
   },
   "legal": {
     "lastUpdated": "Última atualização",

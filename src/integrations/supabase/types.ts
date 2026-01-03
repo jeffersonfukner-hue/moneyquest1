@@ -1086,6 +1086,44 @@ export type Database = {
         }
         Relationships: []
       }
+      transaction_items: {
+        Row: {
+          amount: number
+          category: string | null
+          created_at: string
+          id: string
+          name: string
+          transaction_id: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          transaction_id: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          transaction_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transaction_items_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transaction_narratives: {
         Row: {
           amount: number
@@ -1177,6 +1215,7 @@ export type Database = {
           currency: string
           date: string
           description: string
+          has_items: boolean | null
           id: string
           type: string
           user_id: string
@@ -1190,6 +1229,7 @@ export type Database = {
           currency?: string
           date?: string
           description: string
+          has_items?: boolean | null
           id?: string
           type: string
           user_id: string
@@ -1203,6 +1243,7 @@ export type Database = {
           currency?: string
           date?: string
           description?: string
+          has_items?: boolean | null
           id?: string
           type?: string
           user_id?: string
