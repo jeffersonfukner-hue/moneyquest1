@@ -36,6 +36,7 @@ interface BlogComment {
   content: string;
   is_approved: boolean;
   is_hidden: boolean;
+  parent_id: string | null;
   created_at: string;
   updated_at: string;
   profile?: {
