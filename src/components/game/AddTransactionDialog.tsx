@@ -198,6 +198,9 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
     });
 
     if (!result.error) {
+      // Refetch wallets to update balances in the selector
+      refetchWallets();
+      
       // Update session data
       setSessionData(prev => ({
         transactionCount: prev.transactionCount + 1,

@@ -42,7 +42,7 @@ export const useTransactions = () => {
   const { generateNarrative } = useNarrativeEngine();
   const { checkBudgetAlert, showBudgetAlert } = useBudgetAlerts();
   const { convertCurrency, currency: userCurrency } = useCurrency();
-  const { updateWalletBalance, recalculateBalance } = useWallets();
+  const { updateWalletBalance, recalculateBalance, refetch: refetchWallets } = useWallets();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [celebrationData, setCelebrationData] = useState<{
@@ -461,6 +461,7 @@ export const useTransactions = () => {
     batchUpdateWallet,
     batchDeleteTransactions,
     refetch: fetchTransactions,
+    refetchWallets,
     celebrationData,
     clearCelebration,
     narrativeData,
