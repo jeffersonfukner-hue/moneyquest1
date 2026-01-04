@@ -134,9 +134,9 @@
       "conversionFunnelDesc": "Jornada do utilizador"
     },
     "risk": {
-      "low": "Baixo",
-      "medium": "Médio",
-      "high": "Alto",
+      "low": "Risco Baixo",
+      "medium": "Risco Médio",
+      "high": "Risco Alto",
       "distribution": "Distribuição de Risco",
       "distributionDesc": "Utilizadores em risco de abandono"
     },
@@ -617,7 +617,8 @@
     "minutes": "MIN",
     "seconds": "SEG",
     "anonymous": "Anónimo",
-    "actions": "Ações"
+    "actions": "Ações",
+    "noName": "Sem nome"
   },
   "auth": {
     "login": "Entrar",

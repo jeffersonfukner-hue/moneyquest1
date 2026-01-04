@@ -91,7 +91,7 @@ const EngagementAlerts = () => {
                 {atRiskUsers?.map(user => (
                   <div key={user.user_id} className="flex items-center justify-between p-3 rounded-lg border">
                     <div>
-                      <p className="font-medium">{user.display_name || 'No name'}</p>
+                      <p className="font-medium">{user.display_name || t('common.noName')}</p>
                       <p className="text-sm text-muted-foreground">
                         {user.last_active_date 
                           ? `${t('admin.engagement.lastSeen')}: ${format(new Date(user.last_active_date), 'dd/MM/yyyy')}`
