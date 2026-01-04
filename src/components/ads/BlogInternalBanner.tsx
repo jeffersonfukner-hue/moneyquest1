@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useProfile } from '@/hooks/useProfile';
 import { Crown, Sparkles, UserPlus, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -16,10 +16,17 @@ interface BlogInternalBannerProps {
  * - PREMIUM: No internal ads (respect premium experience)
  * - FREE: Upgrade to Premium CTAs
  * - VISITOR: Institutional CTAs (create account, learn about app)
+ * 
+ * Note: Uses useProfile directly instead of useSubscription to work
+ * on public routes without SubscriptionProvider
  */
 export const BlogInternalBanner = ({ position = 'inline', className = '' }: BlogInternalBannerProps) => {
   const { user } = useAuth();
-  const { isPremium } = useSubscription();
+  const { profile } = useProfile();
+  
+  // Check premium status safely without SubscriptionProvider
+  const isPremium = profile?.subscription_plan === 'PREMIUM' || 
+                    profile?.stripe_subscription_status === 'active';
 
   // Premium users: No internal promotional ads
   if (user && isPremium) {
