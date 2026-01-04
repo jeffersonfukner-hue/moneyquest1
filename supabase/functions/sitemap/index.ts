@@ -119,9 +119,13 @@ Deno.serve(async (req) => {
   <!-- DATABASE BLOG ARTICLES (Auto-generated) -->
 `;
       for (const article of dbArticles) {
-        const lastmod = article.published_at 
-          ? new Date(article.published_at).toISOString().split("T")[0]
-          : today;
+        // Ensure lastmod is never in the future
+        let lastmod = today;
+        if (article.published_at) {
+          const publishedDate = new Date(article.published_at).toISOString().split("T")[0];
+          // Use the earlier of published_at or today
+          lastmod = publishedDate <= today ? publishedDate : today;
+        }
         
         xml += `  <url>
     <loc>${DOMAIN}/blog/${article.slug}</loc>
