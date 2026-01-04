@@ -13,6 +13,7 @@ import PublicFooter from '@/components/layout/PublicFooter';
 import PublicNavigation from '@/components/layout/PublicNavigation';
 import { CommentSection } from '@/components/blog/CommentSection';
 import { BlogAdBanner } from '@/components/ads/BlogAdBanner';
+import { BlogInternalBanner } from '@/components/ads/BlogInternalBanner';
 import { useBlogAdSense } from '@/hooks/useBlogAdSense';
 
 // Custom component to render markdown-like content with in-article ad
@@ -347,7 +348,10 @@ const BlogArticle = () => {
         </div>
 
         {/* AD BANNER - Footer position (after article content) */}
-        <BlogAdBanner position="footer" className="mb-8" />
+        <BlogAdBanner position="footer" className="mb-6" />
+
+        {/* INTERNAL BANNER - Conditional by user type */}
+        <BlogInternalBanner className="mb-8" />
 
         {/* Comment Section */}
         <CommentSection articleSlug={article.slug} />
