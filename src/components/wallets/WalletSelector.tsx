@@ -64,10 +64,11 @@ export const WalletSelector = ({
   const handleOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);
     if (isOpen && isMobile && triggerRef.current) {
-      // Small delay to let the popover render
+      // Longer delay to let the popover render and position correctly
       setTimeout(() => {
-        triggerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 100);
+        // Scroll the trigger into view, leaving space for the popover above
+        triggerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }, 150);
     }
   };
 
