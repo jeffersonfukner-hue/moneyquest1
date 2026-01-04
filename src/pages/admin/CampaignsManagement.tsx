@@ -37,27 +37,27 @@ interface Campaign {
   created_at: string;
 }
 
-const CAMPAIGN_TYPES = [
-  { value: 'seasonal', label: 'Sazonal', icon: '🎄' },
-  { value: 'promo', label: 'Promoção', icon: '🎉' },
-  { value: 'discount', label: 'Desconto', icon: '💰' },
-  { value: 'feature', label: 'Feature', icon: '✨' },
+const getCampaignTypes = (t: (key: string) => string) => [
+  { value: 'seasonal', label: t('admin.campaigns.types.seasonal'), icon: '🎄' },
+  { value: 'promo', label: t('admin.campaigns.types.promo'), icon: '🎉' },
+  { value: 'discount', label: t('admin.campaigns.types.discount'), icon: '💰' },
+  { value: 'feature', label: t('admin.campaigns.types.feature'), icon: '✨' },
 ];
 
-const TARGET_AUDIENCES = [
-  { value: 'all', label: 'Todos' },
-  { value: 'free', label: 'Usuários Free' },
-  { value: 'premium', label: 'Usuários Premium' },
-  { value: 'trial', label: 'Em Trial' },
+const getTargetAudiences = (t: (key: string) => string) => [
+  { value: 'all', label: t('admin.campaigns.audiences.all') },
+  { value: 'free', label: t('admin.campaigns.audiences.free') },
+  { value: 'premium', label: t('admin.campaigns.audiences.premium') },
+  { value: 'trial', label: t('admin.campaigns.audiences.trial') },
 ];
 
-const GRADIENT_PRESETS = [
-  { value: 'from-primary/20 via-primary/15 to-primary/20', label: 'Primary', preview: 'bg-gradient-to-r from-primary/20 via-primary/15 to-primary/20' },
-  { value: 'from-orange-500/30 via-red-500/20 to-orange-500/30', label: 'Black Friday', preview: 'bg-gradient-to-r from-orange-500/30 via-red-500/20 to-orange-500/30' },
-  { value: 'from-green-500/30 via-red-500/20 to-green-500/30', label: 'Natal', preview: 'bg-gradient-to-r from-green-500/30 via-red-500/20 to-green-500/30' },
-  { value: 'from-purple-500/30 via-blue-500/20 to-purple-500/30', label: 'Ano Novo', preview: 'bg-gradient-to-r from-purple-500/30 via-blue-500/20 to-purple-500/30' },
-  { value: 'from-yellow-500/30 via-green-500/20 to-yellow-500/30', label: 'Carnaval', preview: 'bg-gradient-to-r from-yellow-500/30 via-green-500/20 to-yellow-500/30' },
-  { value: 'from-blue-500/30 via-cyan-500/20 to-blue-500/30', label: 'Tech', preview: 'bg-gradient-to-r from-blue-500/30 via-cyan-500/20 to-blue-500/30' },
+const getGradientPresets = (t: (key: string) => string) => [
+  { value: 'from-primary/20 via-primary/15 to-primary/20', label: t('admin.campaigns.gradients.primary'), preview: 'bg-gradient-to-r from-primary/20 via-primary/15 to-primary/20' },
+  { value: 'from-orange-500/30 via-red-500/20 to-orange-500/30', label: t('admin.campaigns.gradients.blackFriday'), preview: 'bg-gradient-to-r from-orange-500/30 via-red-500/20 to-orange-500/30' },
+  { value: 'from-green-500/30 via-red-500/20 to-green-500/30', label: t('admin.campaigns.gradients.christmas'), preview: 'bg-gradient-to-r from-green-500/30 via-red-500/20 to-green-500/30' },
+  { value: 'from-purple-500/30 via-blue-500/20 to-purple-500/30', label: t('admin.campaigns.gradients.newYear'), preview: 'bg-gradient-to-r from-purple-500/30 via-blue-500/20 to-purple-500/30' },
+  { value: 'from-yellow-500/30 via-green-500/20 to-yellow-500/30', label: t('admin.campaigns.gradients.carnival'), preview: 'bg-gradient-to-r from-yellow-500/30 via-green-500/20 to-yellow-500/30' },
+  { value: 'from-blue-500/30 via-cyan-500/20 to-blue-500/30', label: t('admin.campaigns.gradients.tech'), preview: 'bg-gradient-to-r from-blue-500/30 via-cyan-500/20 to-blue-500/30' },
 ];
 
 const defaultFormData = {
@@ -83,6 +83,11 @@ const CampaignsManagement = () => {
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
   const [formData, setFormData] = useState(defaultFormData);
   const [previewOpen, setPreviewOpen] = useState(false);
+
+  // Translated config arrays
+  const CAMPAIGN_TYPES = getCampaignTypes(t);
+  const TARGET_AUDIENCES = getTargetAudiences(t);
+  const GRADIENT_PRESETS = getGradientPresets(t);
 
   // Fetch campaigns
   const { data: campaigns, isLoading } = useQuery({
@@ -126,10 +131,10 @@ const CampaignsManagement = () => {
       queryClient.invalidateQueries({ queryKey: ['campaigns'] });
       setDialogOpen(false);
       resetForm();
-      toast.success(editingCampaign ? 'Campanha atualizada!' : 'Campanha criada!');
+      toast.success(editingCampaign ? t('admin.campaigns.updated') : t('admin.campaigns.created'));
     },
     onError: (error) => {
-      toast.error('Erro ao salvar campanha: ' + error.message);
+      toast.error(t('admin.campaigns.saveError') + ': ' + error.message);
     },
   });
 
@@ -146,10 +151,10 @@ const CampaignsManagement = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-campaigns'] });
       queryClient.invalidateQueries({ queryKey: ['campaigns'] });
-      toast.success('Status atualizado!');
+      toast.success(t('admin.campaigns.statusUpdated'));
     },
     onError: (error) => {
-      toast.error('Erro ao atualizar status: ' + error.message);
+      toast.error(t('admin.campaigns.saveError') + ': ' + error.message);
     },
   });
 
@@ -166,10 +171,10 @@ const CampaignsManagement = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-campaigns'] });
       queryClient.invalidateQueries({ queryKey: ['campaigns'] });
-      toast.success('Campanha excluída!');
+      toast.success(t('admin.campaigns.deleted'));
     },
     onError: (error) => {
-      toast.error('Erro ao excluir campanha: ' + error.message);
+      toast.error(t('admin.campaigns.saveError') + ': ' + error.message);
     },
   });
 
@@ -239,12 +244,12 @@ const CampaignsManagement = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl lg:text-3xl font-display font-bold">Campanhas</h1>
-            <p className="text-muted-foreground">Gerencie banners promocionais e campanhas sazonais</p>
+            <h1 className="text-2xl lg:text-3xl font-display font-bold">{t('admin.campaigns.title')}</h1>
+            <p className="text-muted-foreground">{t('admin.campaigns.subtitle')}</p>
           </div>
           <Button onClick={() => { resetForm(); setDialogOpen(true); }}>
             <Plus className="w-4 h-4 mr-2" />
-            Nova Campanha
+            {t('admin.campaigns.newCampaign')}
           </Button>
         </div>
 
@@ -252,11 +257,11 @@ const CampaignsManagement = () => {
           <TabsList>
             <TabsTrigger value="campaigns">
               <Plus className="w-4 h-4 mr-2" />
-              Campanhas
+              {t('admin.campaigns.tabs.campaigns')}
             </TabsTrigger>
             <TabsTrigger value="analytics">
               <BarChart3 className="w-4 h-4 mr-2" />
-              Analytics
+              {t('admin.campaigns.tabs.analytics')}
             </TabsTrigger>
           </TabsList>
 
@@ -267,7 +272,7 @@ const CampaignsManagement = () => {
           <Card>
             <CardContent className="pt-4">
               <div className="text-2xl font-bold">{campaigns?.length || 0}</div>
-              <p className="text-sm text-muted-foreground">Total</p>
+              <p className="text-sm text-muted-foreground">{t('admin.campaigns.total')}</p>
             </CardContent>
           </Card>
           <Card>
@@ -275,7 +280,7 @@ const CampaignsManagement = () => {
               <div className="text-2xl font-bold text-green-500">
                 {campaigns?.filter(c => c.is_active && isDateActive(c)).length || 0}
               </div>
-              <p className="text-sm text-muted-foreground">Ativas</p>
+              <p className="text-sm text-muted-foreground">{t('admin.campaigns.active')}</p>
             </CardContent>
           </Card>
           <Card>
@@ -283,7 +288,7 @@ const CampaignsManagement = () => {
               <div className="text-2xl font-bold text-yellow-500">
                 {campaigns?.filter(c => c.campaign_type === 'seasonal').length || 0}
               </div>
-              <p className="text-sm text-muted-foreground">Sazonais</p>
+              <p className="text-sm text-muted-foreground">{t('admin.campaigns.seasonal')}</p>
             </CardContent>
           </Card>
           <Card>
@@ -291,7 +296,7 @@ const CampaignsManagement = () => {
               <div className="text-2xl font-bold text-blue-500">
                 {campaigns?.filter(c => c.campaign_type === 'discount').length || 0}
               </div>
-              <p className="text-sm text-muted-foreground">Descontos</p>
+              <p className="text-sm text-muted-foreground">{t('admin.campaigns.discounts')}</p>
             </CardContent>
           </Card>
         </div>
@@ -316,7 +321,7 @@ const CampaignsManagement = () => {
                         <div className="flex items-center gap-2 flex-wrap">
                           <h3 className="font-semibold truncate">{campaign.name}</h3>
                           <Badge variant={fullyActive ? 'default' : 'secondary'}>
-                            {fullyActive ? 'Ativa' : 'Inativa'}
+                            {fullyActive ? t('admin.campaigns.activeStatus') : t('admin.campaigns.inactive')}
                           </Badge>
                           <Badge variant="outline">
                             {typeInfo.icon} {typeInfo.label}
@@ -347,7 +352,7 @@ const CampaignsManagement = () => {
                             )}
                             {!dateActive && (
                               <Badge variant="destructive" className="ml-2 text-xs">
-                                Fora do período
+                                {t('admin.campaigns.outsidePeriod')}
                               </Badge>
                             )}
                           </div>
@@ -401,7 +406,7 @@ const CampaignsManagement = () => {
                         variant="ghost"
                         size="icon"
                         onClick={() => {
-                          if (confirm('Excluir esta campanha?')) {
+                          if (confirm(t('admin.campaigns.deleteConfirm'))) {
                             deleteMutation.mutate(campaign.id);
                           }
                         }}
@@ -423,10 +428,10 @@ const CampaignsManagement = () => {
           {campaigns?.length === 0 && (
             <Card>
               <CardContent className="p-8 text-center">
-                <p className="text-muted-foreground">Nenhuma campanha criada ainda.</p>
+                <p className="text-muted-foreground">{t('admin.campaigns.noCampaigns')}</p>
                 <Button className="mt-4" onClick={() => { resetForm(); setDialogOpen(true); }}>
                   <Plus className="w-4 h-4 mr-2" />
-                  Criar primeira campanha
+                  {t('admin.campaigns.createFirst')}
                 </Button>
               </CardContent>
             </Card>
@@ -445,14 +450,14 @@ const CampaignsManagement = () => {
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingCampaign ? 'Editar Campanha' : 'Nova Campanha'}
+              {editingCampaign ? t('admin.campaigns.editCampaign') : t('admin.campaigns.newCampaign')}
             </DialogTitle>
           </DialogHeader>
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Nome interno</Label>
+                <Label htmlFor="name">{t('admin.campaigns.form.internalName')}</Label>
                 <Input
                   id="name"
                   value={formData.name}
@@ -463,7 +468,7 @@ const CampaignsManagement = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="type">Tipo</Label>
+                <Label htmlFor="type">{t('admin.campaigns.form.type')}</Label>
                 <Select
                   value={formData.campaign_type}
                   onValueChange={(value) => setFormData({ ...formData, campaign_type: value })}
@@ -484,7 +489,7 @@ const CampaignsManagement = () => {
 
             <div className="grid grid-cols-4 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="icon">Ícone</Label>
+                <Label htmlFor="icon">{t('admin.campaigns.form.icon')}</Label>
                 <Input
                   id="icon"
                   value={formData.icon}
@@ -495,7 +500,7 @@ const CampaignsManagement = () => {
               </div>
               
               <div className="col-span-3 space-y-2">
-                <Label htmlFor="title">Título</Label>
+                <Label htmlFor="title">{t('admin.campaigns.form.titleField')}</Label>
                 <Input
                   id="title"
                   value={formData.title}
@@ -507,7 +512,7 @@ const CampaignsManagement = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="subtitle">Subtítulo (opcional)</Label>
+              <Label htmlFor="subtitle">{t('admin.campaigns.form.subtitleField')}</Label>
               <Input
                 id="subtitle"
                 value={formData.subtitle}
@@ -518,7 +523,7 @@ const CampaignsManagement = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="cta_text">Texto do botão</Label>
+                <Label htmlFor="cta_text">{t('admin.campaigns.form.buttonText')}</Label>
                 <Input
                   id="cta_text"
                   value={formData.cta_text}
@@ -529,7 +534,7 @@ const CampaignsManagement = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="cta_link">Link do botão</Label>
+                <Label htmlFor="cta_link">{t('admin.campaigns.form.buttonLink')}</Label>
                 <Input
                   id="cta_link"
                   value={formData.cta_link}
@@ -541,7 +546,7 @@ const CampaignsManagement = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>Gradiente de fundo</Label>
+              <Label>{t('admin.campaigns.form.backgroundGradient')}</Label>
               <div className="grid grid-cols-3 gap-2">
                 {GRADIENT_PRESETS.map((gradient) => (
                   <button
@@ -563,7 +568,7 @@ const CampaignsManagement = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="target">Público-alvo</Label>
+                <Label htmlFor="target">{t('admin.campaigns.form.targetAudience')}</Label>
                 <Select
                   value={formData.target_audience}
                   onValueChange={(value) => setFormData({ ...formData, target_audience: value })}
@@ -582,7 +587,7 @@ const CampaignsManagement = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="priority">Prioridade (0-100)</Label>
+                <Label htmlFor="priority">{t('admin.campaigns.form.priority')}</Label>
                 <Input
                   id="priority"
                   type="number"
@@ -596,7 +601,7 @@ const CampaignsManagement = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="start_date">Data de início (opcional)</Label>
+                <Label htmlFor="start_date">{t('admin.campaigns.form.startDate')}</Label>
                 <Input
                   id="start_date"
                   type="datetime-local"
@@ -606,7 +611,7 @@ const CampaignsManagement = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="end_date">Data de término (opcional)</Label>
+                <Label htmlFor="end_date">{t('admin.campaigns.form.endDate')}</Label>
                 <Input
                   id="end_date"
                   type="datetime-local"
@@ -622,13 +627,13 @@ const CampaignsManagement = () => {
                 checked={formData.is_active}
                 onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
               />
-              <Label htmlFor="is_active">Ativar campanha</Label>
+              <Label htmlFor="is_active">{t('admin.campaigns.form.activateCampaign')}</Label>
             </div>
 
             {/* Preview */}
             <Card>
               <CardHeader className="py-3">
-                <CardTitle className="text-sm">Preview do Banner</CardTitle>
+                <CardTitle className="text-sm">{t('admin.campaigns.form.bannerPreview')}</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
                 <div 
@@ -650,10 +655,10 @@ const CampaignsManagement = () => {
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-                Cancelar
+                {t('admin.campaigns.form.cancel')}
               </Button>
               <Button type="submit" disabled={upsertMutation.isPending}>
-                {upsertMutation.isPending ? 'Salvando...' : (editingCampaign ? 'Atualizar' : 'Criar')}
+                {upsertMutation.isPending ? t('admin.campaigns.form.saving') : (editingCampaign ? t('admin.campaigns.form.update') : t('admin.campaigns.form.create'))}
               </Button>
             </DialogFooter>
           </form>
@@ -664,7 +669,7 @@ const CampaignsManagement = () => {
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Preview do Banner</DialogTitle>
+            <DialogTitle>{t('admin.campaigns.form.bannerPreview')}</DialogTitle>
           </DialogHeader>
           <div className="rounded-lg overflow-hidden border">
             <div 

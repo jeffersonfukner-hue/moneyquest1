@@ -250,6 +250,8 @@
       "newCampaign": "Nueva Campaña",
       "editCampaign": "Editar Campaña",
       "active": "Activas",
+      "inactive": "Inactiva",
+      "activeStatus": "Activa",
       "seasonal": "Estacionales",
       "discounts": "Descuentos",
       "total": "Total",
@@ -266,7 +268,51 @@
       "deleted": "¡Campaña eliminada!",
       "saveError": "Error al guardar campaña",
       "outsidePeriod": "Fuera del período",
-      "analytics": "Analíticas"
+      "analytics": "Analíticas",
+      "tabs": {
+        "campaigns": "Campañas",
+        "analytics": "Analíticas"
+      },
+      "form": {
+        "internalName": "Nombre interno",
+        "type": "Tipo",
+        "icon": "Icono",
+        "titleField": "Título",
+        "subtitleField": "Subtítulo (opcional)",
+        "buttonText": "Texto del botón",
+        "buttonLink": "Enlace del botón",
+        "backgroundGradient": "Gradiente de fondo",
+        "targetAudience": "Público objetivo",
+        "priority": "Prioridad (0-100)",
+        "startDate": "Fecha de inicio (opcional)",
+        "endDate": "Fecha de fin (opcional)",
+        "activateCampaign": "Activar campaña",
+        "bannerPreview": "Vista previa del Banner",
+        "cancel": "Cancelar",
+        "saving": "Guardando...",
+        "update": "Actualizar",
+        "create": "Crear"
+      },
+      "types": {
+        "seasonal": "Estacional",
+        "promo": "Promoción",
+        "discount": "Descuento",
+        "feature": "Feature"
+      },
+      "audiences": {
+        "all": "Todos",
+        "free": "Usuarios Free",
+        "premium": "Usuarios Premium",
+        "trial": "En Trial"
+      },
+      "gradients": {
+        "primary": "Primary",
+        "blackFriday": "Black Friday",
+        "christmas": "Navidad",
+        "newYear": "Año Nuevo",
+        "carnival": "Carnaval",
+        "tech": "Tech"
+      }
     }
   },
   "languageSelection": {
