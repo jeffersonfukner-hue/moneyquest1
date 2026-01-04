@@ -80,6 +80,7 @@ const LazyScoringAudit = lazy(() => import("./pages/admin/ScoringAudit"));
 const LazyOnboardingGuard = lazy(() => import("@/components/auth/OnboardingGuard").then(m => ({ default: m.OnboardingGuard })));
 const LazyAdminRoute = lazy(() => import("./components/admin/AdminRoute").then(m => ({ default: m.AdminRoute })));
 const LazyFingerprintCapture = lazy(() => import("@/components/auth/FingerprintCapture").then(m => ({ default: m.FingerprintCapture })));
+const LazyAuthGuard = lazy(() => import("@/components/auth/AuthGuard").then(m => ({ default: m.AuthGuard })));
 
 // Lazy load heavy context providers - only needed for authenticated routes
 const LazyFinancialMoodProvider = lazy(() => import("@/contexts/FinancialMoodContext").then(m => ({ default: m.FinancialMoodProvider })));
@@ -104,18 +105,20 @@ const PageLoader = () => (
 // Wrapper for authenticated routes with full providers
 const AuthenticatedWrapper = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<PageLoader />}>
-    <LazyFingerprintCapture />
-    <LazyCurrencyProvider>
-      <LazySubscriptionProvider>
-        <LazyFinancialMoodProvider>
-          <LazySeasonalThemeProvider>
-            <LazySEOProvider>
-              {children}
-            </LazySEOProvider>
-          </LazySeasonalThemeProvider>
-        </LazyFinancialMoodProvider>
-      </LazySubscriptionProvider>
-    </LazyCurrencyProvider>
+    <LazyAuthGuard>
+      <LazyFingerprintCapture />
+      <LazyCurrencyProvider>
+        <LazySubscriptionProvider>
+          <LazyFinancialMoodProvider>
+            <LazySeasonalThemeProvider>
+              <LazySEOProvider>
+                {children}
+              </LazySEOProvider>
+            </LazySeasonalThemeProvider>
+          </LazyFinancialMoodProvider>
+        </LazySubscriptionProvider>
+      </LazyCurrencyProvider>
+    </LazyAuthGuard>
   </Suspense>
 );
 
