@@ -18,7 +18,7 @@ export function PWAInstallCard() {
   const [isVisible, setIsVisible] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
-
+  const [isIOSNotSafari, setIsIOSNotSafari] = useState(false);
   useEffect(() => {
     // Check if already installed
     if (window.matchMedia("(display-mode: standalone)").matches) {
@@ -29,6 +29,13 @@ export function PWAInstallCard() {
     // Check if iOS
     const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     setIsIOS(isIOSDevice);
+
+    // Check if iOS but NOT Safari (Safari has 'Safari' in UA but not 'CriOS', 'FxiOS', 'EdgiOS', etc.)
+    if (isIOSDevice) {
+      const isSafari = /Safari/.test(navigator.userAgent) && 
+                       !/CriOS|FxiOS|EdgiOS|OPiOS/.test(navigator.userAgent);
+      setIsIOSNotSafari(!isSafari);
+    }
 
     // Check if dismissed recently
     const dismissedAt = localStorage.getItem(DISMISS_KEY);
@@ -115,15 +122,23 @@ export function PWAInstallCard() {
 
             {isIOS ? (
               <div className="mt-2 p-2 bg-white/10 rounded-lg">
-                <div className="flex items-center gap-2 text-primary-foreground text-xs font-medium">
-                  <span className="flex items-center justify-center w-6 h-6 bg-white/20 rounded">1</span>
-                  <span>{t("pwa.iosTapShare", "Toque no ícone")}</span>
-                  <Share className="h-4 w-4" />
-                </div>
-                <div className="flex items-center gap-2 text-primary-foreground text-xs font-medium mt-1.5">
-                  <span className="flex items-center justify-center w-6 h-6 bg-white/20 rounded">2</span>
-                  <span>{t("pwa.addToHomeScreen", "Adicionar à Tela de Início")}</span>
-                </div>
+                {isIOSNotSafari ? (
+                  <p className="text-primary-foreground text-xs font-medium">
+                    ⚠️ {t("pwa.openInSafari", "Abra este site no Safari para instalar o app")}
+                  </p>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-2 text-primary-foreground text-xs font-medium">
+                      <span className="flex items-center justify-center w-6 h-6 bg-white/20 rounded">1</span>
+                      <span>{t("pwa.iosTapShare", "Toque no ícone")}</span>
+                      <Share className="h-4 w-4" />
+                    </div>
+                    <div className="flex items-center gap-2 text-primary-foreground text-xs font-medium mt-1.5">
+                      <span className="flex items-center justify-center w-6 h-6 bg-white/20 rounded">2</span>
+                      <span>{t("pwa.addToHomeScreen", "Adicionar à Tela de Início")}</span>
+                    </div>
+                  </>
+                )}
               </div>
             ) : (
               <Button
