@@ -56,12 +56,19 @@ export const useProfile = () => {
         
         const syncSubscription = async (retryCount = 0): Promise<void> => {
           try {
+            // Refresh session before calling edge function to ensure valid token
+            const { data: refreshedSession } = await supabase.auth.refreshSession();
+            if (!refreshedSession?.session?.access_token) {
+              console.log('Session refresh failed, skipping subscription sync');
+              return;
+            }
+            
             const { error: syncError } = await supabase.functions.invoke('check-subscription');
             
             // If auth error and haven't retried, wait and retry once
             if (syncError?.message?.includes('Auth session missing') && retryCount === 0) {
               console.log('Session sync delay, retrying subscription check...');
-              await new Promise(resolve => setTimeout(resolve, 1500));
+              await new Promise(resolve => setTimeout(resolve, 2000));
               return syncSubscription(1);
             }
             
@@ -77,11 +84,13 @@ export const useProfile = () => {
               }
             }
           } catch (e) {
-            console.error('Subscription sync failed:', e);
+            // Silently fail - subscription sync is not critical for app functionality
+            console.log('Subscription sync skipped:', e);
           }
         };
         
-        syncSubscription();
+        // Delay initial sync to allow session to stabilize
+        setTimeout(() => syncSubscription(), 500);
       }
     }
     setLoading(false);
