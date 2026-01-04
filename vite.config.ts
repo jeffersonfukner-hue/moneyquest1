@@ -4,6 +4,9 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from "vite-plugin-pwa";
 
+// Asset version for cache busting PWA icons
+const ASSET_VERSION = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   define: {
@@ -41,19 +44,19 @@ export default defineConfig(({ mode }) => ({
         lang: "pt-BR",
         icons: [
           {
-            src: "/pwa-192x192.png",
+            src: `/pwa-192x192.png?v=${ASSET_VERSION}`,
             sizes: "192x192",
             type: "image/png",
             purpose: "any",
           },
           {
-            src: "/pwa-512x512.png",
+            src: `/pwa-512x512.png?v=${ASSET_VERSION}`,
             sizes: "512x512",
             type: "image/png",
             purpose: "any",
           },
           {
-            src: "/maskable-icon.png",
+            src: `/maskable-icon.png?v=${ASSET_VERSION}`,
             sizes: "512x512",
             type: "image/png",
             purpose: "maskable",
@@ -62,6 +65,7 @@ export default defineConfig(({ mode }) => ({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,ico,png,svg,webp,woff2}"],
+        globIgnores: ["**/pwa-*.png", "**/maskable-icon.png", "**/apple-touch-icon.png"],
       },
     })
   ].filter(Boolean),
