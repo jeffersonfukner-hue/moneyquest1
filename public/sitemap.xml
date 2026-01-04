@@ -175,10 +175,102 @@
     <priority>0.7</priority>
   </url>
   
+  <!-- New Blog Articles from Database -->
+  <url>
+    <loc>https://moneyquest.app.br/blog/controlar-gastos-mensais-organizar-financas</loc>
+    <lastmod>2026-01-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://moneyquest.app.br/blog/planilha-orcamento-pessoal-como-montar-usar</loc>
+    <lastmod>2026-01-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://moneyquest.app.br/blog/erros-que-fazem-perder-dinheiro-todo-mes</loc>
+    <lastmod>2026-01-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://moneyquest.app.br/blog/como-funciona-fatura-cartao-credito-evitar-juros</loc>
+    <lastmod>2026-01-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://moneyquest.app.br/blog/diferenca-limite-total-disponivel-cartao</loc>
+    <lastmod>2026-01-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://moneyquest.app.br/blog/parcelamento-cartao-quando-vale-pena-evitar</loc>
+    <lastmod>2026-01-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://moneyquest.app.br/blog/como-sair-endividamento-sem-comprometer-salario</loc>
+    <lastmod>2026-01-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://moneyquest.app.br/blog/renegociacao-dividas-o-que-analisar-acordo</loc>
+    <lastmod>2026-01-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://moneyquest.app.br/blog/organizar-contas-atrasadas-retomar-controle</loc>
+    <lastmod>2026-01-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://moneyquest.app.br/blog/educacao-financeira-iniciantes-por-onde-comecar</loc>
+    <lastmod>2026-01-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://moneyquest.app.br/blog/aplicativos-controle-financeiro-como-escolher</loc>
+    <lastmod>2026-01-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://moneyquest.app.br/blog/vantagens-acompanhar-gastos-tempo-real</loc>
+    <lastmod>2026-01-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://moneyquest.app.br/blog/criar-habito-acompanhar-gastos-sem-planilhas</loc>
+    <lastmod>2026-01-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://moneyquest.app.br/blog/controle-financeiro-pessoal-manter-consistencia</loc>
+    <lastmod>2026-01-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://moneyquest.app.br/blog/economizar-dinheiro-ganhando-pouco</loc>
+    <lastmod>2026-01-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
   <!-- Author Pages -->
   <url>
     <loc>https://moneyquest.app.br/autor/equipe-moneyquest</loc>
-    <lastmod>2026-01-03</lastmod>
+    <lastmod>2026-01-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
