@@ -22,35 +22,40 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let settled = false;
+    let initialized = false;
 
-    const finish = (nextSession: Session | null) => {
-      if (settled) return;
-      settled = true;
-      setSession(nextSession);
-      setUser(nextSession?.user ?? null);
+    const markInitialized = () => {
+      if (initialized) return;
+      initialized = true;
       setLoading(false);
     };
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, nextSession) => {
-      finish(nextSession);
+      // Always reflect latest auth state
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
+
+      // Only end the initial loading gate once
+      markInitialized();
     });
 
     // Defensive: avoid infinite loading if getSession hangs/fails due to network/CORS.
     const timeoutId = window.setTimeout(() => {
-      finish(null);
+      markInitialized();
     }, 4000);
 
     supabase.auth
       .getSession()
       .then(({ data: { session: nextSession } }) => {
         window.clearTimeout(timeoutId);
-        finish(nextSession);
+        setSession(nextSession);
+        setUser(nextSession?.user ?? null);
+        markInitialized();
       })
       .catch((error) => {
         console.error('Auth getSession failed:', error);
         window.clearTimeout(timeoutId);
-        finish(null);
+        markInitialized();
       });
 
     return () => {
