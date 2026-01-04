@@ -1086,6 +1086,84 @@ export type Database = {
         }
         Relationships: []
       }
+      traffic_logs: {
+        Row: {
+          browser: string | null
+          city: string | null
+          country: string | null
+          created_at: string | null
+          device_type: string | null
+          error_code: number | null
+          id: string
+          is_bounce: boolean | null
+          language: string | null
+          os: string | null
+          page_title: string | null
+          page_url: string
+          referrer: string | null
+          screen_resolution: string | null
+          session_id: string
+          time_on_page: number | null
+          timezone: string | null
+          user_id: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
+        }
+        Insert: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          device_type?: string | null
+          error_code?: number | null
+          id?: string
+          is_bounce?: boolean | null
+          language?: string | null
+          os?: string | null
+          page_title?: string | null
+          page_url: string
+          referrer?: string | null
+          screen_resolution?: string | null
+          session_id: string
+          time_on_page?: number | null
+          timezone?: string | null
+          user_id?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Update: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          device_type?: string | null
+          error_code?: number | null
+          id?: string
+          is_bounce?: boolean | null
+          language?: string | null
+          os?: string | null
+          page_title?: string | null
+          page_url?: string
+          referrer?: string | null
+          screen_resolution?: string | null
+          session_id?: string
+          time_on_page?: number | null
+          timezone?: string | null
+          user_id?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Relationships: []
+      }
       transaction_items: {
         Row: {
           amount: number
@@ -1588,6 +1666,10 @@ export type Database = {
           organization: string
         }[]
       }
+      admin_get_suspicious_access: {
+        Args: { p_end_date?: string; p_start_date?: string }
+        Returns: Json
+      }
       admin_get_suspicious_referrals: {
         Args: never
         Returns: {
@@ -1605,6 +1687,22 @@ export type Database = {
           suspicion_reason: string
           transaction_count: number
         }[]
+      }
+      admin_get_top_pages: {
+        Args: { p_end_date?: string; p_limit?: number; p_start_date?: string }
+        Returns: Json
+      }
+      admin_get_traffic_analytics: {
+        Args: { p_end_date?: string; p_start_date?: string }
+        Returns: Json
+      }
+      admin_get_traffic_errors: {
+        Args: { p_end_date?: string; p_start_date?: string }
+        Returns: Json
+      }
+      admin_get_traffic_sources: {
+        Args: { p_end_date?: string; p_start_date?: string }
+        Returns: Json
       }
       admin_get_trial_abuse_attempts: {
         Args: never
