@@ -5,13 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { 
   Eye, Users, Clock, Monitor, Smartphone, Tablet, 
   Globe, AlertTriangle, RefreshCw, TrendingUp, ArrowUpRight,
-  BarChart3, PieChart as PieChartIcon, MapPin, Link2
+  BarChart3, PieChart as PieChartIcon, MapPin, Link2, Info
 } from 'lucide-react';
 import { 
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
@@ -140,6 +141,14 @@ export default function TrafficAnalytics() {
             </Button>
           </div>
         </div>
+
+        {/* Internal Users Notice */}
+        <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
+          <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+          <AlertDescription className="text-blue-800 dark:text-blue-200">
+            {t('admin.traffic.internalNotice', 'Dados de desenvolvedores e administradores não são considerados nas métricas.')}
+          </AlertDescription>
+        </Alert>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

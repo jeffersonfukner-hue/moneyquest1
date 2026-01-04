@@ -3,6 +3,9 @@ import { useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 
+// Internal user email to exclude from analytics
+const INTERNAL_EMAILS = ['jeffersonfukner@outlook.com'];
+
 // Generate or retrieve session ID
 const getSessionId = (): string => {
   let sessionId = sessionStorage.getItem('traffic_session_id');
@@ -65,6 +68,32 @@ const EXCLUDED_ROUTES = [
   '/admin',
 ];
 
+// Check if user is internal (developer/admin)
+const checkIsInternalUser = async (userId: string | undefined, userEmail: string | undefined): Promise<boolean> => {
+  // Check by email
+  if (userEmail && INTERNAL_EMAILS.includes(userEmail.toLowerCase())) {
+    return true;
+  }
+  
+  // Check by role in database
+  if (userId) {
+    try {
+      const { data } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .in('role', ['super_admin', 'admin'])
+        .maybeSingle();
+      
+      if (data) return true;
+    } catch {
+      // Silently fail
+    }
+  }
+  
+  return false;
+};
+
 export const useTrafficTracking = () => {
   const location = useLocation();
   const { user } = useAuth();
@@ -78,11 +107,8 @@ export const useTrafficTracking = () => {
     }
 
     const trackPageView = async () => {
-      // Track time on previous page before logging new page
-      if (lastPath.current && lastPath.current !== location.pathname) {
-        const timeOnPage = Math.round((Date.now() - pageLoadTime.current) / 1000);
-        // We could update the previous log here if needed
-      }
+      // Check if internal user
+      const isInternal = await checkIsInternalUser(user?.id, user?.email);
 
       pageLoadTime.current = Date.now();
       lastPath.current = location.pathname;
@@ -104,6 +130,7 @@ export const useTrafficTracking = () => {
           language: navigator.language,
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           screen_resolution: `${window.screen.width}x${window.screen.height}`,
+          is_internal_user: isInternal,
         });
       } catch (error) {
         // Silently fail - don't impact user experience
@@ -112,7 +139,7 @@ export const useTrafficTracking = () => {
     };
 
     trackPageView();
-  }, [location.pathname, user?.id]);
+  }, [location.pathname, user?.id, user?.email]);
 
   // Track time on page when user leaves
   useEffect(() => {

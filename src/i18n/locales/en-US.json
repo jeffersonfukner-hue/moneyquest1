@@ -41,7 +41,8 @@
       "viewsByDay": "Views by Day",
       "viewsByHour": "Views by Hour",
       "viewsByDevice": "Devices",
-      "topPages": "Top Pages"
+      "topPages": "Top Pages",
+      "internalNotice": "Developer and admin data is not included in these metrics."
     },
     "backToApp": "Back to App",
     "dashboard": "Super Admin Dashboard",
