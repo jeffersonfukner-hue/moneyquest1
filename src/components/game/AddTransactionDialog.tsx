@@ -341,7 +341,15 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
           </Button>
         </DialogTrigger>
       )}
-      <DialogContent className="sm:max-w-md w-[calc(100%-2rem)] max-w-[calc(100%-2rem)] sm:w-full border-border">
+      <DialogContent 
+        className="sm:max-w-md w-[calc(100%-2rem)] max-w-[calc(100%-2rem)] sm:w-full border-border max-h-[85vh] overflow-y-auto"
+        onOpenAutoFocus={(e) => {
+          // On mobile, prevent auto-focus to avoid immediate keyboard
+          if (window.innerWidth < 640) {
+            e.preventDefault();
+          }
+        }}
+      >
         <DialogHeader>
           <DialogTitle className="font-display text-xl text-primary">{t('transactions.addTransaction')}</DialogTitle>
         </DialogHeader>
