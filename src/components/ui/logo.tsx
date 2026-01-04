@@ -14,12 +14,13 @@ interface LogoProps {
 
 // Explicit dimensions for each size to prevent layout shift (CLS)
 // Width and height are critical for Core Web Vitals
+// Logo is horizontal (approx 3:1 ratio)
 const sizeConfig: Record<LogoSize, { className: string; width: number; height: number }> = {
-  xs: { className: 'h-6 w-6', width: 24, height: 24 },
-  sm: { className: 'h-8 w-8', width: 32, height: 32 },
-  md: { className: 'h-12 w-12', width: 48, height: 48 },
-  lg: { className: 'h-16 w-16', width: 64, height: 64 },
-  xl: { className: 'h-24 w-24', width: 96, height: 96 },
+  xs: { className: 'h-6', width: 72, height: 24 },
+  sm: { className: 'h-8', width: 96, height: 32 },
+  md: { className: 'h-12', width: 144, height: 48 },
+  lg: { className: 'h-16', width: 192, height: 64 },
+  xl: { className: 'h-20', width: 240, height: 80 },
 };
 
 export const Logo = ({ 
@@ -59,7 +60,7 @@ export const Logo = ({
           )}
           // Inline styles for immediate render without CSS blocking
           style={{
-            aspectRatio: '1 / 1',
+            aspectRatio: '3 / 1',
             maxWidth: '100%',
             height: 'auto',
           }}
