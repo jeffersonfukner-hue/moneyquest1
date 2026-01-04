@@ -127,6 +127,14 @@ export const shouldHideAllBanners = (pathname: string): boolean => {
 };
 
 /**
+ * Check if Google Ads can be shown on blog pages
+ * More restrictive - ONLY blog pages, for non-authenticated users
+ */
+export const canShowBlogAds = (pathname: string): boolean => {
+  return pathname === '/blog' || pathname.startsWith('/blog/');
+};
+
+/**
  * @deprecated Use shouldHideAllBanners instead
  */
 export const shouldHideBanner = shouldHideAllBanners;
