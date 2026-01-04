@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { ExchangeRate, SupportedCurrency } from '@/types/database';
 
@@ -9,13 +9,42 @@ const FALLBACK_RATES: Record<string, Record<string, number>> = {
   EUR: { BRL: 6.30, USD: 1.09, EUR: 1 },
 };
 
+// Routes that are public and should defer exchange rate fetching
+const PUBLIC_ROUTES = [
+  '/',
+  '/blog',
+  '/about',
+  '/features',
+  '/terms',
+  '/privacy',
+  '/controle-financeiro',
+  '/educacao-financeira-gamificada',
+  '/desafios-financeiros',
+  '/app-financas-pessoais',
+  '/login',
+  '/signup',
+  '/select-language',
+];
+
+const isPublicRoute = () => {
+  const pathname = window.location.pathname;
+  return PUBLIC_ROUTES.some(route => 
+    pathname === route || pathname.startsWith('/blog/')
+  );
+};
+
 export const useExchangeRates = () => {
   const [rates, setRates] = useState<ExchangeRate[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const hasFetched = useRef(false);
 
   const fetchRates = useCallback(async () => {
+    // Skip if already fetched
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+    
     try {
       setLoading(true);
       setError(null);
@@ -47,7 +76,21 @@ export const useExchangeRates = () => {
   }, []);
 
   useEffect(() => {
-    fetchRates();
+    // For public routes, defer the fetch to not block LCP
+    if (isPublicRoute()) {
+      // Use requestIdleCallback or setTimeout
+      const win = window as typeof globalThis & { 
+        requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      };
+      if (typeof win.requestIdleCallback === 'function') {
+        win.requestIdleCallback(() => fetchRates(), { timeout: 5000 });
+      } else {
+        setTimeout(fetchRates, 3000);
+      }
+    } else {
+      // Fetch immediately for authenticated routes
+      fetchRates();
+    }
   }, [fetchRates]);
 
   const getRate = useCallback((from: SupportedCurrency, to: SupportedCurrency): number => {

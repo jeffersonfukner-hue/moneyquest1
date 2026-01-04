@@ -8,14 +8,17 @@ interface LogoProps {
   className?: string;
   animated?: boolean;
   shine?: boolean;
+  /** Priority loading for LCP optimization */
+  priority?: boolean;
 }
 
-const sizeClasses: Record<LogoSize, string> = {
-  xs: 'h-6',
-  sm: 'h-8',
-  md: 'h-12',
-  lg: 'h-16',
-  xl: 'h-24',
+// Explicit dimensions for each size to prevent layout shift (CLS)
+const sizeConfig: Record<LogoSize, { className: string; width: number; height: number }> = {
+  xs: { className: 'h-6', width: 24, height: 24 },
+  sm: { className: 'h-8', width: 32, height: 32 },
+  md: { className: 'h-12', width: 48, height: 48 },
+  lg: { className: 'h-16', width: 64, height: 64 },
+  xl: { className: 'h-24', width: 96, height: 96 },
 };
 
 export const Logo = ({ 
@@ -23,7 +26,10 @@ export const Logo = ({
   className,
   animated = false,
   shine = false,
+  priority = false,
 }: LogoProps) => {
+  const config = sizeConfig[size];
+  
   return (
     <div className={cn('flex items-center', className)}>
       <div className={cn(
@@ -33,9 +39,14 @@ export const Logo = ({
         <img 
           src={logoImage} 
           alt="MoneyQuest" 
+          width={config.width}
+          height={config.height}
+          loading={priority ? 'eager' : 'lazy'}
+          decoding={priority ? 'sync' : 'async'}
+          fetchPriority={priority ? 'high' : 'auto'}
           className={cn(
             'object-contain relative z-10',
-            sizeClasses[size],
+            config.className,
             animated && 'animate-float'
           )}
         />
@@ -45,7 +56,7 @@ export const Logo = ({
             <div 
               className={cn(
                 'absolute inset-0 blur-xl opacity-60 z-0 animate-pulse-glow',
-                sizeClasses[size]
+                config.className
               )}
               style={{
                 background: 'radial-gradient(circle, hsl(var(--primary) / 0.4) 0%, transparent 70%)',

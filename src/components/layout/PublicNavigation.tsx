@@ -30,7 +30,7 @@ const PublicNavigation = () => {
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/50">
       <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <Logo size="sm" />
+          <Logo size="sm" priority />
         </Link>
 
         {/* Desktop Navigation */}

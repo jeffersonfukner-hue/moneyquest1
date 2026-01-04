@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import { trackTrafficError } from "@/hooks/useTrafficTracking";
+import { trackTrafficError } from "@/hooks/useDeferredTracking";
 
 const NotFound = () => {
   const location = useLocation();
