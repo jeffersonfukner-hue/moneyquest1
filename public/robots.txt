@@ -62,5 +62,5 @@ Disallow: /referral
 Disallow: /notifications
 Disallow: /premium-success
 
-# Sitemap
-Sitemap: https://moneyquest.app.br/sitemap.xml
+# Sitemap dinâmico (Edge Function)
+Sitemap: https://dybbailvbaaovkstgpoh.supabase.co/functions/v1/sitemap
