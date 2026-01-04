@@ -7,6 +7,7 @@
 // These are the ONLY pages where Google AdSense can be displayed
 export const INDEXABLE_ROUTES = [
   '/',
+  '/about',
   '/login',
   '/signup',
   '/features',

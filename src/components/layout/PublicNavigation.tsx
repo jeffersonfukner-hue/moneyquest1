@@ -15,6 +15,7 @@ const PublicNavigation = () => {
 
   const navItems = [
     { href: '/', label: t('nav.home', 'Início') },
+    { href: '/about', label: t('nav.about', 'Sobre') },
     { href: '/features', label: t('nav.features', 'Funcionalidades') },
     { href: '/blog', label: 'Blog' },
   ];
