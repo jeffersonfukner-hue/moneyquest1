@@ -6,12 +6,16 @@ import { Menu, X, Sun, Moon } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useAuth } from '@/hooks/useAuth';
 
 const PublicNavigation = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const { user } = useAuth();
+
+  const isLoggedIn = !!user;
 
   const navItems = [
     { href: '/', label: t('nav.home', 'Início') },
@@ -33,12 +37,20 @@ const PublicNavigation = () => {
           <Link to="/" className="flex items-center gap-2">
             <Logo size="xs" variant="full" priority />
           </Link>
-          {/* Mobile Login Button next to logo */}
-          <Link to="/login?mode=login" className="md:hidden">
-            <Button variant="outline" size="sm">
-              {t('auth.login', 'Entrar')}
-            </Button>
-          </Link>
+          {/* Mobile: Back to App or Login Button next to logo */}
+          {isLoggedIn ? (
+            <Link to="/" className="md:hidden">
+              <Button variant="outline" size="sm">
+                {t('blog.backToApp', 'Voltar ao App')}
+              </Button>
+            </Link>
+          ) : (
+            <Link to="/login?mode=login" className="md:hidden">
+              <Button variant="outline" size="sm">
+                {t('auth.login', 'Entrar')}
+              </Button>
+            </Link>
+          )}
         </div>
 
         {/* Desktop Navigation */}
@@ -69,16 +81,26 @@ const PublicNavigation = () => {
                 <Moon className="w-4 h-4" />
               )}
             </button>
-            <Link to="/login?mode=login">
-              <Button variant="ghost" size="sm">
-                {t('auth.login', 'Entrar')}
-              </Button>
-            </Link>
-            <Link to="/signup">
-              <Button variant="gold" size="sm">
-                {t('landing.cta.startFree', 'Começar Grátis')}
-              </Button>
-            </Link>
+            {isLoggedIn ? (
+              <Link to="/">
+                <Button variant="gold" size="sm">
+                  {t('blog.backToApp', 'Voltar ao App')}
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link to="/login?mode=login">
+                  <Button variant="ghost" size="sm">
+                    {t('auth.login', 'Entrar')}
+                  </Button>
+                </Link>
+                <Link to="/signup">
+                  <Button variant="gold" size="sm">
+                    {t('landing.cta.startFree', 'Começar Grátis')}
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </nav>
 
@@ -124,16 +146,26 @@ const PublicNavigation = () => {
             </Link>
           ))}
           <div className="flex flex-col gap-2 pt-2 border-t border-border/50">
-            <Link to="/login?mode=login" onClick={() => setIsMenuOpen(false)}>
-              <Button variant="outline" size="sm" className="w-full">
-                {t('auth.login', 'Entrar')}
-              </Button>
-            </Link>
-            <Link to="/signup" onClick={() => setIsMenuOpen(false)}>
-              <Button variant="gold" size="sm" className="w-full">
-                {t('landing.cta.startFree', 'Começar Grátis')}
-              </Button>
-            </Link>
+            {isLoggedIn ? (
+              <Link to="/" onClick={() => setIsMenuOpen(false)}>
+                <Button variant="gold" size="sm" className="w-full">
+                  {t('blog.backToApp', 'Voltar ao App')}
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link to="/login?mode=login" onClick={() => setIsMenuOpen(false)}>
+                  <Button variant="outline" size="sm" className="w-full">
+                    {t('auth.login', 'Entrar')}
+                  </Button>
+                </Link>
+                <Link to="/signup" onClick={() => setIsMenuOpen(false)}>
+                  <Button variant="gold" size="sm" className="w-full">
+                    {t('landing.cta.startFree', 'Começar Grátis')}
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </nav>
       )}
