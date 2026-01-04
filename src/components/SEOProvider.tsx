@@ -1,13 +1,16 @@
 import { useSEO } from '@/hooks/useSEO';
-import { useTrafficTracking } from '@/hooks/useTrafficTracking';
+import { useDeferredTracking } from '@/hooks/useDeferredTracking';
 
 interface SEOProviderProps {
   children: React.ReactNode;
 }
 
+/**
+ * SEO Provider with deferred tracking for authenticated routes.
+ */
 export function SEOProvider({ children }: SEOProviderProps) {
   useSEO();
-  useTrafficTracking();
+  useDeferredTracking();
   return <>{children}</>;
 }
 

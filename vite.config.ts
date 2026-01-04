@@ -15,4 +15,26 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Core vendor chunk - minimal
+          'vendor-core': ['react', 'react-dom', 'react-router-dom'],
+          // UI components chunk
+          'vendor-ui': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-tooltip', '@radix-ui/react-popover'],
+          // Charts chunk - heavy, lazy loaded
+          'vendor-charts': ['recharts'],
+          // Form handling
+          'vendor-forms': ['react-hook-form', '@hookform/resolvers', 'zod'],
+          // i18n - needed for public pages
+          'vendor-i18n': ['i18next', 'react-i18next'],
+          // Date utilities
+          'vendor-date': ['date-fns'],
+        },
+      },
+    },
+    // Increase chunk size warning limit
+    chunkSizeWarningLimit: 500,
+  },
 }));
