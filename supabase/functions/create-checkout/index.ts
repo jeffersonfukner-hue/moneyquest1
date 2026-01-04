@@ -25,12 +25,29 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
-    const authHeader = req.headers.get("Authorization")!;
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      logStep("ERROR - No authorization header");
+      throw new Error("Auth session missing!");
+    }
+    
     const token = authHeader.replace("Bearer ", "");
-    const { data } = await supabaseClient.auth.getUser(token);
+    if (!token || token === "null" || token === "undefined") {
+      logStep("ERROR - Invalid token", { token: token?.substring(0, 20) });
+      throw new Error("Invalid auth token");
+    }
+    
+    const { data, error: authError } = await supabaseClient.auth.getUser(token);
+    
+    if (authError) {
+      logStep("ERROR - Auth failed", { error: authError.message });
+      throw new Error(`Authentication failed: ${authError.message}`);
+    }
+    
     const user = data.user;
     
     if (!user?.email) {
+      logStep("ERROR - No user or email", { userId: user?.id });
       throw new Error("User not authenticated or email not available");
     }
     logStep("User authenticated", { userId: user.id, email: user.email });
