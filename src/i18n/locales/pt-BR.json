@@ -1896,6 +1896,7 @@
     "streakBonus": "Bônus de Sequência",
     "day": "Dia",
     "days": "dias",
+    "dayStreak": "dias seguidos",
     "streak": "Sequência de Dias",
     "currentStreak": "Sequência Atual",
     "multiplier": "Multiplicador",
