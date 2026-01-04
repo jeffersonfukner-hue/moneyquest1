@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-import { useProfile } from '@/hooks/useProfile';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { Crown, Sparkles, UserPlus, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -17,24 +17,60 @@ interface BlogInternalBannerProps {
  * - FREE: Upgrade to Premium CTAs
  * - VISITOR: Institutional CTAs (create account, learn about app)
  * 
- * Note: Uses useProfile directly instead of useSubscription to work
- * on public routes without SubscriptionProvider
+ * Note: Uses direct Supabase calls instead of context hooks to work
+ * on public routes without breaking PWA or SSR scenarios
  */
 export const BlogInternalBanner = ({ position = 'inline', className = '' }: BlogInternalBannerProps) => {
-  const { user } = useAuth();
-  const { profile } = useProfile();
+  const [userState, setUserState] = useState<'visitor' | 'free' | 'premium' | 'loading'>('loading');
   
-  // Check premium status safely without SubscriptionProvider
-  const isPremium = profile?.subscription_plan === 'PREMIUM' || 
-                    profile?.stripe_subscription_status === 'active';
+  useEffect(() => {
+    let mounted = true;
+    
+    const checkUserStatus = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session?.user) {
+          if (mounted) setUserState('visitor');
+          return;
+        }
+        
+        // User is logged in, check premium status
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('subscription_plan, stripe_subscription_status')
+          .eq('id', session.user.id)
+          .maybeSingle();
+        
+        if (!mounted) return;
+        
+        const isPremium = profile?.subscription_plan === 'PREMIUM' || 
+                          profile?.stripe_subscription_status === 'active';
+        
+        setUserState(isPremium ? 'premium' : 'free');
+      } catch (error) {
+        // On error, default to visitor (show institutional CTA)
+        if (mounted) setUserState('visitor');
+      }
+    };
+    
+    checkUserStatus();
+    
+    return () => { mounted = false; };
+  }, []);
+
+  // Don't render anything while loading to prevent flash
+  if (userState === 'loading') {
+    return null;
+  }
 
   // Premium users: No internal promotional ads
-  if (user && isPremium) {
+  if (userState === 'premium') {
     return null;
   }
 
   // FREE logged-in users: Premium upgrade CTAs
-  if (user && !isPremium) {
+  if (userState === 'free') {
     return (
       <div className={`rounded-xl overflow-hidden ${className}`}>
         <div className="bg-gradient-to-r from-amber-500 to-orange-500 p-4 md:p-6">
