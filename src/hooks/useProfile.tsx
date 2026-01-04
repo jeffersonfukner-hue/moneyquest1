@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Profile } from '@/types/database';
 import { useAuth } from './useAuth';
@@ -13,7 +13,7 @@ const getBrowserTimezone = (): string => {
 };
 
 export const useProfile = () => {
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const subscriptionCheckDone = useRef(false);
@@ -50,26 +50,38 @@ export const useProfile = () => {
       setProfile(profileData);
 
       // Sync subscription status with Stripe (only once per session)
-      // Only attempt if we have a valid session with access token
-      const { data: sessionData } = await supabase.auth.getSession();
-      if (!subscriptionCheckDone.current && sessionData?.session?.access_token) {
+      // Use session from context to ensure we have a valid token
+      if (!subscriptionCheckDone.current && session?.access_token) {
         subscriptionCheckDone.current = true;
-        try {
-          const { error: syncError } = await supabase.functions.invoke('check-subscription');
-          if (!syncError) {
-            // Refetch profile after subscription sync
-            const { data: updatedData } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', user.id)
-              .maybeSingle();
-            if (updatedData) {
-              setProfile(updatedData as unknown as Profile);
+        
+        const syncSubscription = async (retryCount = 0): Promise<void> => {
+          try {
+            const { error: syncError } = await supabase.functions.invoke('check-subscription');
+            
+            // If auth error and haven't retried, wait and retry once
+            if (syncError?.message?.includes('Auth session missing') && retryCount === 0) {
+              console.log('Session sync delay, retrying subscription check...');
+              await new Promise(resolve => setTimeout(resolve, 1500));
+              return syncSubscription(1);
             }
+            
+            if (!syncError) {
+              // Refetch profile after subscription sync
+              const { data: updatedData } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .maybeSingle();
+              if (updatedData) {
+                setProfile(updatedData as unknown as Profile);
+              }
+            }
+          } catch (e) {
+            console.error('Subscription sync failed:', e);
           }
-        } catch (e) {
-          console.error('Subscription sync failed:', e);
-        }
+        };
+        
+        syncSubscription();
       }
     }
     setLoading(false);
@@ -77,7 +89,7 @@ export const useProfile = () => {
 
   useEffect(() => {
     fetchProfile();
-  }, [user]);
+  }, [user, session?.access_token]);
 
   // Realtime subscription for profile updates
   useEffect(() => {
