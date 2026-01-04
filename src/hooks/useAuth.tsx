@@ -40,9 +40,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
 
     // Defensive: avoid infinite loading if getSession hangs/fails due to network/CORS.
+    // Reduced from 4s to 1.5s for faster UX
     const timeoutId = window.setTimeout(() => {
       markInitialized();
-    }, 4000);
+    }, 1500);
 
     supabase.auth
       .getSession()
