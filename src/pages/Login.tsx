@@ -100,9 +100,25 @@ const Login = () => {
         title: t('auth.welcomeBack'), 
         description: t('auth.questBegin')
       });
-      // Navigation handled by useEffect when user state updates
+      // Keep loading=true - navigation handled by useEffect when user state updates
     }
   };
+
+  // Show full-screen loader during login transition
+  if (loading && !user) {
+    const isTransitioning = email !== ''; // User submitted form
+    if (isTransitioning) {
+      return (
+        <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20 flex flex-col items-center justify-center gap-4">
+          <Logo size="lg" animated shine />
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Loader2 className="h-5 w-5 animate-spin text-primary" />
+            <span className="text-sm">{t('auth.loggingIn')}</span>
+          </div>
+        </div>
+      );
+    }
+  }
 
   const renderLandingMode = () => (
     <div className="space-y-8">

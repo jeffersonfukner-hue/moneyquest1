@@ -912,7 +912,8 @@
     "noAccount": "Não tem conta?",
     "backToLogin": "Voltar para login",
     "logoutConfirmTitle": "Sair da conta?",
-    "logoutConfirmDescription": "Tem certeza que deseja sair da sua conta?"
+    "logoutConfirmDescription": "Tem certeza que deseja sair da sua conta?",
+    "loggingIn": "Entrando..."
   },
   "landing": {
     "hero": {

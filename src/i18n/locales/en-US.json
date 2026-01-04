@@ -913,7 +913,8 @@
     "noAccount": "Don't have an account?",
     "backToLogin": "Back to login",
     "logoutConfirmTitle": "Sign out?",
-    "logoutConfirmDescription": "Are you sure you want to sign out of your account?"
+    "logoutConfirmDescription": "Are you sure you want to sign out of your account?",
+    "loggingIn": "Signing in..."
   },
   "landing": {
     "hero": {
