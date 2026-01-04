@@ -13,27 +13,32 @@ import { SEOProviderPublic } from "@/components/SEOProviderPublic";
 import '@/i18n';
 import { Gamepad2 } from 'lucide-react';
 
-// ===== PUBLIC PAGES - Loaded immediately for fast LCP =====
-import Index from "./pages/Index";
+// ===== CRITICAL PUBLIC PAGES - Loaded immediately for fast LCP =====
+// Only the absolute minimum for first paint
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import LanguageSelection from "./pages/LanguageSelection";
-import Features from "./pages/Features";
-import About from "./pages/About";
-import Terms from "./pages/Terms";
-import Privacy from "./pages/Privacy";
-import NotFound from "./pages/NotFound";
 
-// SEO Pages - Also public, loaded immediately
-import ControleFinanceiro from "./pages/ControleFinanceiro";
-import EducacaoFinanceira from "./pages/EducacaoFinanceira";
-import DesafiosFinanceiros from "./pages/DesafiosFinanceiros";
-import AppFinancasPessoais from "./pages/AppFinancasPessoais";
-import Blog from "./pages/Blog";
-import BlogArticle from "./pages/BlogArticle";
-import Author from "./pages/Author";
-import SitemapRedirect from "./pages/SitemapRedirect";
-import ReferralRedirect from "./pages/ReferralRedirect";
+// ===== LAZY LOADED - Public pages (non-critical) =====
+const LazyIndex = lazy(() => import("./pages/Index"));
+const LazyLanguageSelection = lazy(() => import("./pages/LanguageSelection"));
+const LazyFeatures = lazy(() => import("./pages/Features"));
+const LazyAbout = lazy(() => import("./pages/About"));
+const LazyTerms = lazy(() => import("./pages/Terms"));
+const LazyPrivacy = lazy(() => import("./pages/Privacy"));
+const LazyNotFound = lazy(() => import("./pages/NotFound"));
+
+// ===== LAZY LOADED - SEO Landing Pages =====
+const LazyControleFinanceiro = lazy(() => import("./pages/ControleFinanceiro"));
+const LazyEducacaoFinanceira = lazy(() => import("./pages/EducacaoFinanceira"));
+const LazyDesafiosFinanceiros = lazy(() => import("./pages/DesafiosFinanceiros"));
+const LazyAppFinancasPessoais = lazy(() => import("./pages/AppFinancasPessoais"));
+
+// ===== LAZY LOADED - Blog =====
+const LazyBlog = lazy(() => import("./pages/Blog"));
+const LazyBlogArticle = lazy(() => import("./pages/BlogArticle"));
+const LazyAuthor = lazy(() => import("./pages/Author"));
+const LazySitemapRedirect = lazy(() => import("./pages/SitemapRedirect"));
+const LazyReferralRedirect = lazy(() => import("./pages/ReferralRedirect"));
 
 // ===== LAZY LOADED - App pages (authenticated) =====
 const LazyOnboarding = lazy(() => import("./pages/Onboarding"));
@@ -134,14 +139,14 @@ const App = () => (
                 <Routes>
                   {/* ===== PUBLIC ROUTES - Fast loading, minimal providers ===== */}
                   <Route path="/select-language" element={
-                    <SEOProviderPublic><LanguageSelection /></SEOProviderPublic>
+                    <SEOProviderPublic><Suspense fallback={<PageLoader />}><LazyLanguageSelection /></Suspense></SEOProviderPublic>
                   } />
                   
                   {/* Home - Special case, needs onboarding guard */}
                   <Route path="/" element={
                     <AuthenticatedWrapper>
                       <Suspense fallback={<PageLoader />}>
-                        <LazyOnboardingGuard><Index /></LazyOnboardingGuard>
+                        <LazyOnboardingGuard><LazyIndex /></LazyOnboardingGuard>
                       </Suspense>
                     </AuthenticatedWrapper>
                   } />
@@ -155,47 +160,47 @@ const App = () => (
                     <SEOProviderPublic><LanguageGuard><Signup /></LanguageGuard></SEOProviderPublic>
                   } />
                   <Route path="/features" element={
-                    <SEOProviderPublic><LanguageGuard><Features /></LanguageGuard></SEOProviderPublic>
+                    <SEOProviderPublic><LanguageGuard><Suspense fallback={<PageLoader />}><LazyFeatures /></Suspense></LanguageGuard></SEOProviderPublic>
                   } />
                   <Route path="/about" element={
-                    <SEOProviderPublic><LanguageGuard><About /></LanguageGuard></SEOProviderPublic>
+                    <SEOProviderPublic><LanguageGuard><Suspense fallback={<PageLoader />}><LazyAbout /></Suspense></LanguageGuard></SEOProviderPublic>
                   } />
                   <Route path="/terms" element={
-                    <SEOProviderPublic><LanguageGuard><Terms /></LanguageGuard></SEOProviderPublic>
+                    <SEOProviderPublic><LanguageGuard><Suspense fallback={<PageLoader />}><LazyTerms /></Suspense></LanguageGuard></SEOProviderPublic>
                   } />
                   <Route path="/privacy" element={
-                    <SEOProviderPublic><LanguageGuard><Privacy /></LanguageGuard></SEOProviderPublic>
+                    <SEOProviderPublic><LanguageGuard><Suspense fallback={<PageLoader />}><LazyPrivacy /></Suspense></LanguageGuard></SEOProviderPublic>
                   } />
                   
                   {/* SEO Landing Pages */}
                   <Route path="/controle-financeiro" element={
-                    <SEOProviderPublic><ControleFinanceiro /></SEOProviderPublic>
+                    <SEOProviderPublic><Suspense fallback={<PageLoader />}><LazyControleFinanceiro /></Suspense></SEOProviderPublic>
                   } />
                   <Route path="/educacao-financeira-gamificada" element={
-                    <SEOProviderPublic><EducacaoFinanceira /></SEOProviderPublic>
+                    <SEOProviderPublic><Suspense fallback={<PageLoader />}><LazyEducacaoFinanceira /></Suspense></SEOProviderPublic>
                   } />
                   <Route path="/desafios-financeiros" element={
-                    <SEOProviderPublic><DesafiosFinanceiros /></SEOProviderPublic>
+                    <SEOProviderPublic><Suspense fallback={<PageLoader />}><LazyDesafiosFinanceiros /></Suspense></SEOProviderPublic>
                   } />
                   <Route path="/app-financas-pessoais" element={
-                    <SEOProviderPublic><AppFinancasPessoais /></SEOProviderPublic>
+                    <SEOProviderPublic><Suspense fallback={<PageLoader />}><LazyAppFinancasPessoais /></Suspense></SEOProviderPublic>
                   } />
                   
                   {/* Blog */}
                   <Route path="/blog" element={
-                    <SEOProviderPublic><Blog /></SEOProviderPublic>
+                    <SEOProviderPublic><Suspense fallback={<PageLoader />}><LazyBlog /></Suspense></SEOProviderPublic>
                   } />
                   <Route path="/blog/:slug" element={
-                    <SEOProviderPublic><BlogArticle /></SEOProviderPublic>
+                    <SEOProviderPublic><Suspense fallback={<PageLoader />}><LazyBlogArticle /></Suspense></SEOProviderPublic>
                   } />
                   <Route path="/autor/:slug" element={
-                    <SEOProviderPublic><Author /></SEOProviderPublic>
+                    <SEOProviderPublic><Suspense fallback={<PageLoader />}><LazyAuthor /></Suspense></SEOProviderPublic>
                   } />
-                  <Route path="/sitemap.xml" element={<SitemapRedirect />} />
+                  <Route path="/sitemap.xml" element={<Suspense fallback={null}><LazySitemapRedirect /></Suspense>} />
                   
                   {/* Referral redirect - public */}
                   <Route path="/r/:code" element={
-                    <SEOProviderPublic><ReferralRedirect /></SEOProviderPublic>
+                    <SEOProviderPublic><Suspense fallback={<PageLoader />}><LazyReferralRedirect /></Suspense></SEOProviderPublic>
                   } />
                   
                   {/* ===== AUTHENTICATED ROUTES - Lazy loaded ===== */}
@@ -358,7 +363,7 @@ const App = () => (
                   } />
                   
                   {/* 404 */}
-                  <Route path="*" element={<SEOProviderPublic><NotFound /></SEOProviderPublic>} />
+                  <Route path="*" element={<SEOProviderPublic><Suspense fallback={<PageLoader />}><LazyNotFound /></Suspense></SEOProviderPublic>} />
                 </Routes>
               </BrowserRouter>
             </LanguageProvider>
