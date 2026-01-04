@@ -212,7 +212,13 @@
       "highRisk": "Alto Risco",
       "mediumRisk": "Risco Médio",
       "lowRisk": "Baixo Risco",
-      "daysInactive": "dias inativo"
+      "daysInactive": "dias inativo",
+      "highDesc": "Utilizadores inativos há mais de 30 dias",
+      "mediumDesc": "Utilizadores inativos há 7-30 dias",
+      "lowDesc": "Utilizadores inativos há 3-7 dias",
+      "atRiskList": "Utilizadores em Risco",
+      "lastSeen": "Último acesso",
+      "neverActive": "Nunca acedeu"
     },
     "comments": {
       "title": "Moderação de Comentários",
@@ -224,7 +230,43 @@
       "approve": "Aprovar",
       "hide": "Ocultar",
       "delete": "Eliminar",
-      "noComments": "Nenhum comentário encontrado"
+      "noComments": "Nenhum comentário encontrado",
+      "user": "Utilizador",
+      "article": "Artigo",
+      "content": "Conteúdo",
+      "status": "Estado",
+      "date": "Data",
+      "actions": "Ações",
+      "refresh": "Atualizar",
+      "statusHidden": "Oculto",
+      "statusPending": "Pendente",
+      "statusApproved": "Aprovado",
+      "hiddenSuccess": "Comentário ocultado",
+      "deletedSuccess": "Comentário eliminado"
+    },
+    "campaigns": {
+      "title": "Campanhas",
+      "subtitle": "Gira banners promocionais e campanhas sazonais",
+      "newCampaign": "Nova Campanha",
+      "editCampaign": "Editar Campanha",
+      "active": "Ativas",
+      "seasonal": "Sazonais",
+      "discounts": "Descontos",
+      "total": "Total",
+      "noCampaigns": "Nenhuma campanha criada ainda.",
+      "createFirst": "Criar primeira campanha",
+      "preview": "Pré-visualizar",
+      "activate": "Ativar",
+      "deactivate": "Desativar",
+      "delete": "Eliminar",
+      "deleteConfirm": "Eliminar esta campanha?",
+      "updated": "Campanha atualizada!",
+      "created": "Campanha criada!",
+      "statusUpdated": "Estado atualizado!",
+      "deleted": "Campanha eliminada!",
+      "saveError": "Erro ao guardar campanha",
+      "outsidePeriod": "Fora do período",
+      "analytics": "Analíticas"
     }
   },
   "languageSelection": {
@@ -527,7 +569,9 @@
     "halfway": "Metade do caminho!",
     "hours": "HRS",
     "minutes": "MIN",
-    "seconds": "SEG"
+    "seconds": "SEG",
+    "anonymous": "Anónimo",
+    "actions": "Ações"
   },
   "auth": {
     "login": "Entrar",

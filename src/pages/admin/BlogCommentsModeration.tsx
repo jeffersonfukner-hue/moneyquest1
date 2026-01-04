@@ -78,10 +78,10 @@ export default function BlogCommentsModeration() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-blog-comments'] });
-      toast.success('Comentário aprovado');
+      toast.success(t('admin.comments.approved', 'Comentário aprovado'));
     },
     onError: () => {
-      toast.error('Erro ao aprovar comentário');
+      toast.error(t('common.error', 'Erro ao aprovar comentário'));
     }
   });
 
@@ -96,10 +96,10 @@ export default function BlogCommentsModeration() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-blog-comments'] });
-      toast.success('Comentário ocultado');
+      toast.success(t('admin.comments.hiddenSuccess', 'Comentário ocultado'));
     },
     onError: () => {
-      toast.error('Erro ao ocultar comentário');
+      toast.error(t('common.error', 'Erro ao ocultar comentário'));
     }
   });
 
@@ -114,10 +114,10 @@ export default function BlogCommentsModeration() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-blog-comments'] });
-      toast.success('Comentário excluído');
+      toast.success(t('admin.comments.deletedSuccess', 'Comentário excluído'));
     },
     onError: () => {
-      toast.error('Erro ao excluir comentário');
+      toast.error(t('common.error', 'Erro ao excluir comentário'));
     }
   });
 
@@ -129,31 +129,31 @@ export default function BlogCommentsModeration() {
 
   const getStatusBadge = (comment: BlogComment) => {
     if (comment.is_hidden) {
-      return <Badge variant="destructive" className="gap-1"><EyeOff className="w-3 h-3" /> Oculto</Badge>;
+      return <Badge variant="destructive" className="gap-1"><EyeOff className="w-3 h-3" /> {t('admin.comments.statusHidden', 'Oculto')}</Badge>;
     }
     if (!comment.is_approved) {
-      return <Badge variant="secondary" className="gap-1"><AlertTriangle className="w-3 h-3" /> Pendente</Badge>;
+      return <Badge variant="secondary" className="gap-1"><AlertTriangle className="w-3 h-3" /> {t('admin.comments.statusPending', 'Pendente')}</Badge>;
     }
-    return <Badge className="gap-1 bg-green-500"><CheckCircle className="w-3 h-3" /> Aprovado</Badge>;
+    return <Badge className="gap-1 bg-green-500"><CheckCircle className="w-3 h-3" /> {t('admin.comments.statusApproved', 'Aprovado')}</Badge>;
   };
 
   const CommentsTable = ({ commentsList }: { commentsList: BlogComment[] }) => (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Usuário</TableHead>
-          <TableHead>Artigo</TableHead>
-          <TableHead className="max-w-md">Conteúdo</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Data</TableHead>
-          <TableHead className="text-right">Ações</TableHead>
+          <TableHead>{t('admin.comments.user', 'Usuário')}</TableHead>
+          <TableHead>{t('admin.comments.article', 'Artigo')}</TableHead>
+          <TableHead className="max-w-md">{t('admin.comments.content', 'Conteúdo')}</TableHead>
+          <TableHead>{t('admin.comments.status', 'Status')}</TableHead>
+          <TableHead>{t('admin.comments.date', 'Data')}</TableHead>
+          <TableHead className="text-right">{t('admin.comments.actions', 'Ações')}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {commentsList.length === 0 ? (
           <TableRow>
             <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-              Nenhum comentário encontrado
+              {t('admin.comments.noComments', 'Nenhum comentário encontrado')}
             </TableCell>
           </TableRow>
         ) : (
@@ -163,7 +163,7 @@ export default function BlogCommentsModeration() {
                 <div className="flex items-center gap-2">
                   <span className="text-lg">{comment.profile?.avatar_icon || '👤'}</span>
                   <span className="text-sm font-medium">
-                    {comment.profile?.display_name || 'Anônimo'}
+                    {comment.profile?.display_name || t('common.anonymous', 'Anônimo')}
                   </span>
                 </div>
               </TableCell>
@@ -187,7 +187,7 @@ export default function BlogCommentsModeration() {
                       size="icon"
                       onClick={() => approveMutation.mutate(comment.id)}
                       disabled={approveMutation.isPending}
-                      title="Aprovar"
+                      title={t('admin.comments.approve', 'Aprovar')}
                     >
                       <CheckCircle className="w-4 h-4 text-green-500" />
                     </Button>
@@ -198,7 +198,7 @@ export default function BlogCommentsModeration() {
                       size="icon"
                       onClick={() => hideMutation.mutate(comment.id)}
                       disabled={hideMutation.isPending}
-                      title="Ocultar"
+                      title={t('admin.comments.hide', 'Ocultar')}
                     >
                       <EyeOff className="w-4 h-4 text-orange-500" />
                     </Button>
@@ -208,7 +208,7 @@ export default function BlogCommentsModeration() {
                     size="icon"
                     onClick={() => deleteMutation.mutate(comment.id)}
                     disabled={deleteMutation.isPending}
-                    title="Excluir"
+                    title={t('admin.comments.delete', 'Excluir')}
                   >
                     <Trash2 className="w-4 h-4 text-destructive" />
                   </Button>
@@ -226,14 +226,14 @@ export default function BlogCommentsModeration() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Moderação de Comentários</h1>
+            <h1 className="text-2xl font-bold">{t('admin.comments.title', 'Moderação de Comentários')}</h1>
             <p className="text-muted-foreground">
-              Revise e modere comentários do blog
+              {t('admin.comments.subtitle', 'Revise e modere comentários do blog')}
             </p>
           </div>
           <Button variant="outline" onClick={() => refetch()} disabled={isLoading}>
             <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-            Atualizar
+            {t('admin.comments.refresh', 'Atualizar')}
           </Button>
         </div>
 
@@ -247,7 +247,7 @@ export default function BlogCommentsModeration() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{pendingComments.length}</p>
-                  <p className="text-sm text-muted-foreground">Pendentes</p>
+                  <p className="text-sm text-muted-foreground">{t('admin.comments.pending', 'Pendentes')}</p>
                 </div>
               </div>
             </CardContent>
@@ -261,7 +261,7 @@ export default function BlogCommentsModeration() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{approvedComments.length}</p>
-                  <p className="text-sm text-muted-foreground">Aprovados</p>
+                  <p className="text-sm text-muted-foreground">{t('admin.comments.approved', 'Aprovados')}</p>
                 </div>
               </div>
             </CardContent>
@@ -275,7 +275,7 @@ export default function BlogCommentsModeration() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{hiddenComments.length}</p>
-                  <p className="text-sm text-muted-foreground">Ocultos</p>
+                  <p className="text-sm text-muted-foreground">{t('admin.comments.hidden', 'Ocultos')}</p>
                 </div>
               </div>
             </CardContent>
@@ -289,7 +289,7 @@ export default function BlogCommentsModeration() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{allComments.length}</p>
-                  <p className="text-sm text-muted-foreground">Total</p>
+                  <p className="text-sm text-muted-foreground">{t('admin.comments.total', 'Total')}</p>
                 </div>
               </div>
             </CardContent>
@@ -301,7 +301,7 @@ export default function BlogCommentsModeration() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <MessageSquare className="w-5 h-5" />
-              Comentários
+              {t('blog.comments.title', 'Comentários')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -309,19 +309,19 @@ export default function BlogCommentsModeration() {
               <TabsList className="mb-4">
                 <TabsTrigger value="pending" className="gap-2">
                   <AlertTriangle className="w-4 h-4" />
-                  Pendentes ({pendingComments.length})
+                  {t('admin.comments.pending', 'Pendentes')} ({pendingComments.length})
                 </TabsTrigger>
                 <TabsTrigger value="approved" className="gap-2">
                   <CheckCircle className="w-4 h-4" />
-                  Aprovados ({approvedComments.length})
+                  {t('admin.comments.approved', 'Aprovados')} ({approvedComments.length})
                 </TabsTrigger>
                 <TabsTrigger value="hidden" className="gap-2">
                   <EyeOff className="w-4 h-4" />
-                  Ocultos ({hiddenComments.length})
+                  {t('admin.comments.hidden', 'Ocultos')} ({hiddenComments.length})
                 </TabsTrigger>
                 <TabsTrigger value="all" className="gap-2">
                   <MessageSquare className="w-4 h-4" />
-                  Todos ({allComments.length})
+                  {t('admin.comments.total', 'Todos')} ({allComments.length})
                 </TabsTrigger>
               </TabsList>
 

@@ -212,7 +212,13 @@
       "highRisk": "Alto Riesgo",
       "mediumRisk": "Riesgo Medio",
       "lowRisk": "Bajo Riesgo",
-      "daysInactive": "días inactivo"
+      "daysInactive": "días inactivo",
+      "highDesc": "Usuarios inactivos hace más de 30 días",
+      "mediumDesc": "Usuarios inactivos hace 7-30 días",
+      "lowDesc": "Usuarios inactivos hace 3-7 días",
+      "atRiskList": "Usuarios en Riesgo",
+      "lastSeen": "Último acceso",
+      "neverActive": "Nunca accedió"
     },
     "comments": {
       "title": "Moderación de Comentarios",
@@ -224,7 +230,43 @@
       "approve": "Aprobar",
       "hide": "Ocultar",
       "delete": "Eliminar",
-      "noComments": "Ningún comentario encontrado"
+      "noComments": "Ningún comentario encontrado",
+      "user": "Usuario",
+      "article": "Artículo",
+      "content": "Contenido",
+      "status": "Estado",
+      "date": "Fecha",
+      "actions": "Acciones",
+      "refresh": "Actualizar",
+      "statusHidden": "Oculto",
+      "statusPending": "Pendiente",
+      "statusApproved": "Aprobado",
+      "hiddenSuccess": "Comentario ocultado",
+      "deletedSuccess": "Comentario eliminado"
+    },
+    "campaigns": {
+      "title": "Campañas",
+      "subtitle": "Gestiona banners promocionales y campañas estacionales",
+      "newCampaign": "Nueva Campaña",
+      "editCampaign": "Editar Campaña",
+      "active": "Activas",
+      "seasonal": "Estacionales",
+      "discounts": "Descuentos",
+      "total": "Total",
+      "noCampaigns": "Ninguna campaña creada aún.",
+      "createFirst": "Crear primera campaña",
+      "preview": "Vista previa",
+      "activate": "Activar",
+      "deactivate": "Desactivar",
+      "delete": "Eliminar",
+      "deleteConfirm": "¿Eliminar esta campaña?",
+      "updated": "¡Campaña actualizada!",
+      "created": "¡Campaña creada!",
+      "statusUpdated": "¡Estado actualizado!",
+      "deleted": "¡Campaña eliminada!",
+      "saveError": "Error al guardar campaña",
+      "outsidePeriod": "Fuera del período",
+      "analytics": "Analíticas"
     }
   },
   "languageSelection": {
@@ -553,7 +595,9 @@
     "halfway": "¡A mitad de camino!",
     "hours": "HRS",
     "minutes": "MIN",
-    "seconds": "SEG"
+    "seconds": "SEG",
+    "anonymous": "Anónimo",
+    "actions": "Acciones"
   },
   "auth": {
     "login": "Iniciar Sesión",
