@@ -90,7 +90,8 @@ const Upgrade = () => {
       if (error) throw error;
 
       if (data?.url) {
-        window.open(data.url, '_blank');
+        // Use location.href to keep navigation inside PWA instead of opening external browser
+        window.location.href = data.url;
       }
     } catch (error) {
       console.error('Error creating checkout:', error);
@@ -108,7 +109,8 @@ const Upgrade = () => {
       if (error) throw error;
 
       if (data?.url) {
-        window.open(data.url, '_blank');
+        // Use location.href to keep navigation inside PWA instead of opening external browser
+        window.location.href = data.url;
       }
     } catch (error) {
       console.error('Error opening customer portal:', error);
