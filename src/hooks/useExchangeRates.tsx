@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import type { ExchangeRate, SupportedCurrency } from '@/types/database';
 
 // Fallback rates in case database is empty or fetch fails
@@ -9,33 +10,10 @@ const FALLBACK_RATES: Record<string, Record<string, number>> = {
   EUR: { BRL: 6.30, USD: 1.09, EUR: 1 },
 };
 
-// Routes that are public and should defer exchange rate fetching
-const PUBLIC_ROUTES = [
-  '/',
-  '/blog',
-  '/about',
-  '/features',
-  '/terms',
-  '/privacy',
-  '/controle-financeiro',
-  '/educacao-financeira-gamificada',
-  '/desafios-financeiros',
-  '/app-financas-pessoais',
-  '/login',
-  '/signup',
-  '/select-language',
-];
-
-const isPublicRoute = () => {
-  const pathname = window.location.pathname;
-  return PUBLIC_ROUTES.some(route => 
-    pathname === route || pathname.startsWith('/blog/')
-  );
-};
-
 export const useExchangeRates = () => {
+  const { user } = useAuth();
   const [rates, setRates] = useState<ExchangeRate[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Start false - no loading until authenticated
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [error, setError] = useState<string | null>(null);
   const hasFetched = useRef(false);
@@ -76,22 +54,23 @@ export const useExchangeRates = () => {
   }, []);
 
   useEffect(() => {
-    // For public routes, defer the fetch to not block LCP
-    if (isPublicRoute()) {
-      // Use requestIdleCallback or setTimeout
-      const win = window as typeof globalThis & { 
-        requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
-      };
-      if (typeof win.requestIdleCallback === 'function') {
-        win.requestIdleCallback(() => fetchRates(), { timeout: 5000 });
-      } else {
-        setTimeout(fetchRates, 3000);
-      }
-    } else {
-      // Fetch immediately for authenticated routes
-      fetchRates();
+    // CRITICAL: Only fetch exchange rates when user is authenticated
+    // This prevents Supabase calls on first load for public pages
+    if (!user) {
+      hasFetched.current = false; // Reset so we fetch when user logs in
+      return;
     }
-  }, [fetchRates]);
+
+    // User is authenticated, fetch rates (deferred for performance)
+    const win = window as typeof globalThis & { 
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+    };
+    if (typeof win.requestIdleCallback === 'function') {
+      win.requestIdleCallback(() => fetchRates(), { timeout: 5000 });
+    } else {
+      setTimeout(fetchRates, 1000);
+    }
+  }, [user, fetchRates]);
 
   const getRate = useCallback((from: SupportedCurrency, to: SupportedCurrency): number => {
     if (from === to) return 1;
