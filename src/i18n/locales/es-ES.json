@@ -893,7 +893,8 @@
     "noAccount": "¿No tienes cuenta?",
     "backToLogin": "Volver al inicio de sesión",
     "logoutConfirmTitle": "¿Cerrar sesión?",
-    "logoutConfirmDescription": "¿Estás seguro de que deseas cerrar tu sesión?"
+    "logoutConfirmDescription": "¿Estás seguro de que deseas cerrar tu sesión?",
+    "loggingIn": "Iniciando sesión..."
   },
   "landing": {
     "hero": {
