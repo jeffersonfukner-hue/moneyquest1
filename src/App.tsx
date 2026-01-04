@@ -10,6 +10,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { LanguageGuard } from "@/components/auth/LanguageGuard";
 import { SEOProviderPublic } from "@/components/SEOProviderPublic";
+import { PWAInstallBanner } from "@/components/pwa/PWAInstallBanner";
 import '@/i18n';
 import { Gamepad2 } from 'lucide-react';
 
@@ -135,6 +136,7 @@ const App = () => (
             <LanguageProvider>
               <Toaster />
               <Sonner />
+              <PWAInstallBanner />
               <BrowserRouter>
                 <Routes>
                   {/* ===== PUBLIC ROUTES - Fast loading, minimal providers ===== */}
