@@ -85,7 +85,13 @@ export const useTransactions = () => {
   ) => {
     if (!user || !profile) return { error: new Error('Not authenticated') };
 
-    const xpEarned = calculateXP(transaction.amount, transaction.type);
+    // Check daily XP limit before calculating XP
+    const { data: xpLimitCheck } = await supabase
+      .rpc('check_transaction_xp_limit', { p_user_id: user.id });
+    
+    const limitResult = xpLimitCheck as { can_earn_xp: boolean; current_count: number; limit: number } | null;
+    const canEarnXp = limitResult?.can_earn_xp ?? true;
+    const xpEarned = canEarnXp ? calculateXP(transaction.amount, transaction.type) : 0;
     
     // Insert transaction (ensure UPPERCASE description)
     const { error: txError } = await supabase
@@ -109,8 +115,8 @@ export const useTransactions = () => {
     const { newStreak, isNewDay } = calculateStreak(profile.last_active_date, profile.streak);
     const today = getTodayString();
 
-    // Apply 7-day streak bonus (+50 XP when reaching exactly 7)
-    if (isNewDay && newStreak === 7) {
+    // Apply 7-day streak bonus (+50 XP when reaching exactly 7) - only if can earn XP
+    if (canEarnXp && isNewDay && newStreak === 7) {
       totalXpEarned += XP_VALUES.STREAK_7_DAYS;
     }
 
@@ -153,25 +159,29 @@ export const useTransactions = () => {
       .update(profileUpdates)
       .eq('id', user.id);
 
-    // Record XP change in history
-    await supabase.from('xp_history').insert({
-      user_id: user.id,
-      xp_before: profile.xp,
-      xp_after: newXP,
-      xp_change: totalXpEarned,
-      source: 'transaction',
-      description: `${transaction.type}: ${transaction.description}${isNewDay && newStreak === 7 ? ' (+50 streak bonus)' : ''}`
-    });
+    // Record XP change in history (only if XP was earned)
+    if (totalXpEarned > 0) {
+      await supabase.from('xp_history').insert({
+        user_id: user.id,
+        xp_before: profile.xp,
+        xp_after: newXP,
+        xp_change: totalXpEarned,
+        source: 'transaction',
+        description: `${transaction.type}: ${transaction.description}${isNewDay && newStreak === 7 ? ' (+50 streak bonus)' : ''}`
+      });
+    }
 
-    // Check for level up
-    const didLevelUp = newLevel > profile.level;
+    // Check for level up (only if XP was earned)
+    const didLevelUp = totalXpEarned > 0 && newLevel > profile.level;
     if (didLevelUp) {
       playSound('levelUp');
       // Level up toast is now handled by XPNotification component
     }
 
     // Play XP sound (no toast - handled by XPNotification and SessionSummaryCard)
-    playSound('xpGain');
+    if (totalXpEarned > 0) {
+      playSound('xpGain');
+    }
 
     // Check quests and badges
     const transactionCount = transactions.length + 1;

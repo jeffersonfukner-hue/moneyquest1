@@ -19,7 +19,7 @@ const ScoringAudit = () => {
   const { t } = useTranslation();
 
   const xpActions = [
-    { action: 'transaction', xp: 5, type: 'recurring', limit: 'none', cooldown: 'none' },
+    { action: 'transaction', xp: 5, type: 'recurring', limit: '15/day', cooldown: 'reset 00:00' },
     { action: 'dailyReward', xp: '10-25', type: 'daily', limit: '1/day', cooldown: '24h' },
     { action: 'questDaily', xp: '10-30', type: 'daily', limit: 'varies', cooldown: 'reset' },
     { action: 'questWeekly', xp: '50-100', type: 'weekly', limit: 'varies', cooldown: 'weekly' },
@@ -29,7 +29,7 @@ const ScoringAudit = () => {
   ];
 
   const originMapping = [
-    { action: 'transaction', layer: 'Frontend', file: 'useTransactions.tsx', function: 'addTransaction', event: 'insert' },
+    { action: 'transaction', layer: 'Backend', file: 'check_transaction_xp_limit()', function: 'RPC + useTransactions', event: 'insert' },
     { action: 'dailyReward', layer: 'Backend', file: 'claim_daily_reward()', function: 'RPC', event: 'user_action' },
     { action: 'quest', layer: 'Frontend', file: 'gameLogic.ts', function: 'checkAndUpdateQuests', event: 'auto_check' },
     { action: 'badge', layer: 'Frontend', file: 'gameLogic.ts', function: 'checkAndUpdateBadges', event: 'auto_check' },
@@ -40,6 +40,7 @@ const ScoringAudit = () => {
     { name: 'profiles', fields: 'xp, level, level_title, streak, last_active_date', role: 'Main XP storage' },
     { name: 'xp_history', fields: 'user_id, xp_change, xp_before, xp_after, source, description', role: 'Audit trail' },
     { name: 'daily_rewards', fields: 'user_id, current_streak, last_claim_date, total_claims', role: 'Daily reward tracking' },
+    { name: 'daily_transaction_xp_limits', fields: 'user_id, transaction_date, transactions_with_xp', role: 'Anti-spam limit' },
     { name: 'reward_history', fields: 'user_id, xp_earned, streak_day, multiplier, reward_type', role: 'Reward history' },
     { name: 'quests', fields: 'user_id, quest_key, progress_current, progress_target, is_completed', role: 'Quest progress' },
     { name: 'badges', fields: 'user_id, name, is_unlocked, unlocked_at', role: 'Badge unlocks' },
@@ -248,13 +249,14 @@ const ScoringAudit = () => {
                   <li>• badge</li>
                   <li>• daily_reward</li>
                   <li>• admin_bonus</li>
+                  <li>• transaction_limit_reached</li>
                 </ul>
               </div>
               <div className="border rounded-lg p-4">
-                <h4 className="font-medium text-amber-600 dark:text-amber-400">⚠ {t('admin.scoringAudit.history.notImplemented')}</h4>
+                <h4 className="font-medium text-green-600 dark:text-green-400">✓ {t('admin.scoringAudit.history.implemented')}</h4>
                 <ul className="text-sm text-muted-foreground mt-2 space-y-1">
-                  <li>• {t('admin.scoringAudit.history.noReversal')}</li>
-                  <li>• {t('admin.scoringAudit.history.noSpamProtection')}</li>
+                  <li>• {t('admin.scoringAudit.history.spamProtection')}</li>
+                  <li>• {t('admin.scoringAudit.history.dailyLimit')}</li>
                 </ul>
               </div>
             </div>
@@ -263,11 +265,11 @@ const ScoringAudit = () => {
 
         {/* Alerts */}
         <div className="space-y-3">
-          <Alert variant="destructive">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>{t('admin.scoringAudit.alerts.spamTitle')}</AlertTitle>
+          <Alert>
+            <Info className="h-4 w-4" />
+            <AlertTitle>{t('admin.scoringAudit.alerts.spamProtectedTitle')}</AlertTitle>
             <AlertDescription>
-              {t('admin.scoringAudit.alerts.spamDesc')}
+              {t('admin.scoringAudit.alerts.spamProtectedDesc')}
             </AlertDescription>
           </Alert>
 
