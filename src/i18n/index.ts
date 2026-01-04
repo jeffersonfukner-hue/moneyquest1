@@ -1,7 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-// Admin translations v8 - verified logs, support, and analytics i18n coverage
+// Admin translations v9 - complete i18n for campaign analytics, referral conversion, and fraud widgets
 import ptBR from './locales/pt-BR.json';
 import ptPT from './locales/pt-PT.json';
 import enUS from './locales/en-US.json';

@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { BarChart3, Eye, MousePointer, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -29,6 +30,8 @@ interface CampaignAnalyticsWidgetProps {
 }
 
 export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetProps) => {
+  const { t } = useTranslation();
+
   // Fetch campaign events
   const { data: events, isLoading } = useQuery({
     queryKey: ['campaign-analytics'],
@@ -139,7 +142,7 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
           <CardContent className="pt-4">
             <div className="flex items-center gap-2">
               <Eye className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Impressões</span>
+              <span className="text-sm text-muted-foreground">{t('admin.campaignAnalytics.impressions')}</span>
             </div>
             <div className="text-2xl font-bold mt-1">{totals.impressions.toLocaleString()}</div>
           </CardContent>
@@ -148,7 +151,7 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
           <CardContent className="pt-4">
             <div className="flex items-center gap-2">
               <MousePointer className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Cliques</span>
+              <span className="text-sm text-muted-foreground">{t('admin.campaignAnalytics.clicks')}</span>
             </div>
             <div className="text-2xl font-bold mt-1">{totals.clicks.toLocaleString()}</div>
           </CardContent>
@@ -157,7 +160,7 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
           <CardContent className="pt-4">
             <div className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">CTR Geral</span>
+              <span className="text-sm text-muted-foreground">{t('admin.campaignAnalytics.ctrOverall')}</span>
             </div>
             <div className="text-2xl font-bold mt-1">{overallCtr}%</div>
           </CardContent>
@@ -166,7 +169,7 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
           <CardContent className="pt-4">
             <div className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Campanhas Ativas</span>
+              <span className="text-sm text-muted-foreground">{t('admin.campaignAnalytics.activeCampaigns')}</span>
             </div>
             <div className="text-2xl font-bold mt-1">{campaignStats.length}</div>
           </CardContent>
@@ -178,8 +181,8 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
         {/* Bar Chart - Impressions & Clicks */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Performance por Campanha</CardTitle>
-            <CardDescription>Últimos 30 dias</CardDescription>
+            <CardTitle className="text-base">{t('admin.campaignAnalytics.performanceByCampaign')}</CardTitle>
+            <CardDescription>{t('admin.campaignAnalytics.last30Days')}</CardDescription>
           </CardHeader>
           <CardContent>
             {chartData.length > 0 ? (
@@ -202,8 +205,8 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
                           return (
                             <div className="bg-popover border border-border rounded-lg shadow-lg p-3">
                               <p className="font-medium">{data.fullName}</p>
-                              <p className="text-sm">Impressões: {data.impressions}</p>
-                              <p className="text-sm">Cliques: {data.clicks}</p>
+                              <p className="text-sm">{t('admin.campaignAnalytics.impressions')}: {data.impressions}</p>
+                              <p className="text-sm">{t('admin.campaignAnalytics.clicks')}: {data.clicks}</p>
                               <p className="text-sm text-primary">CTR: {data.ctr.toFixed(2)}%</p>
                             </div>
                           );
@@ -211,14 +214,14 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
                         return null;
                       }}
                     />
-                    <Bar dataKey="impressions" fill="hsl(var(--muted-foreground))" name="Impressões" radius={[0, 4, 4, 0]} />
-                    <Bar dataKey="clicks" fill="hsl(var(--primary))" name="Cliques" radius={[0, 4, 4, 0]} />
+                    <Bar dataKey="impressions" fill="hsl(var(--muted-foreground))" name={t('admin.campaignAnalytics.impressions')} radius={[0, 4, 4, 0]} />
+                    <Bar dataKey="clicks" fill="hsl(var(--primary))" name={t('admin.campaignAnalytics.clicks')} radius={[0, 4, 4, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             ) : (
               <div className="h-64 flex items-center justify-center text-muted-foreground">
-                Nenhum dado de campanha disponível
+                {t('admin.campaignAnalytics.noCampaignData')}
               </div>
             )}
           </CardContent>
@@ -227,8 +230,8 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
         {/* Pie Chart - Type Distribution */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Distribuição por Tipo</CardTitle>
-            <CardDescription>Impressões por tipo de campanha</CardDescription>
+            <CardTitle className="text-base">{t('admin.campaignAnalytics.typeDistribution')}</CardTitle>
+            <CardDescription>{t('admin.campaignAnalytics.impressionsByType')}</CardDescription>
           </CardHeader>
           <CardContent>
             {typeDistribution.length > 0 ? (
@@ -256,7 +259,7 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
               </div>
             ) : (
               <div className="h-64 flex items-center justify-center text-muted-foreground">
-                Nenhum dado disponível
+                {t('admin.campaignAnalytics.noData')}
               </div>
             )}
           </CardContent>
@@ -266,7 +269,7 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
       {/* Detailed Table */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Detalhamento por Campanha</CardTitle>
+          <CardTitle className="text-base">{t('admin.campaignAnalytics.breakdown')}</CardTitle>
         </CardHeader>
         <CardContent>
           {campaignStats.length > 0 ? (
@@ -274,10 +277,10 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left py-2 px-2">Campanha</th>
-                    <th className="text-left py-2 px-2">Tipo</th>
-                    <th className="text-right py-2 px-2">Impressões</th>
-                    <th className="text-right py-2 px-2">Cliques</th>
+                    <th className="text-left py-2 px-2">{t('admin.campaignAnalytics.campaign')}</th>
+                    <th className="text-left py-2 px-2">{t('admin.campaignAnalytics.type')}</th>
+                    <th className="text-right py-2 px-2">{t('admin.campaignAnalytics.impressions')}</th>
+                    <th className="text-right py-2 px-2">{t('admin.campaignAnalytics.clicks')}</th>
                     <th className="text-right py-2 px-2">CTR</th>
                   </tr>
                 </thead>
@@ -304,9 +307,9 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
             </div>
           ) : (
             <div className="py-8 text-center text-muted-foreground">
-              Nenhuma campanha com dados de analytics ainda.
+              {t('admin.campaignAnalytics.noAnalyticsYet')}
               <br />
-              <span className="text-xs">Ative uma campanha para começar a coletar métricas.</span>
+              <span className="text-xs">{t('admin.campaignAnalytics.activateToCollect')}</span>
             </div>
           )}
         </CardContent>
