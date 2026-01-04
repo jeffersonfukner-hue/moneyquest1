@@ -1,10 +1,14 @@
-import logoImage from '@/assets/logo.webp';
+import logoFull from '@/assets/logo.webp';
+import logoIcon from '@/assets/logo-icon.webp';
 import { cn } from '@/lib/utils';
 
 type LogoSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+type LogoVariant = 'full' | 'icon';
 
 interface LogoProps {
   size?: LogoSize;
+  /** 'full' shows logo with text, 'icon' shows shield only */
+  variant?: LogoVariant;
   className?: string;
   animated?: boolean;
   shine?: boolean;
@@ -12,10 +16,8 @@ interface LogoProps {
   priority?: boolean;
 }
 
-// Explicit dimensions for each size to prevent layout shift (CLS)
-// Width and height are critical for Core Web Vitals
-// Logo is horizontal (approx 3:1 ratio)
-const sizeConfig: Record<LogoSize, { className: string; width: number; height: number }> = {
+// Dimensions for full horizontal logo (approx 3:1 ratio)
+const fullSizeConfig: Record<LogoSize, { className: string; width: number; height: number }> = {
   xs: { className: 'h-6', width: 72, height: 24 },
   sm: { className: 'h-8', width: 96, height: 32 },
   md: { className: 'h-12', width: 144, height: 48 },
@@ -23,14 +25,27 @@ const sizeConfig: Record<LogoSize, { className: string; width: number; height: n
   xl: { className: 'h-20', width: 240, height: 80 },
 };
 
+// Dimensions for icon-only logo (square 1:1 ratio)
+const iconSizeConfig: Record<LogoSize, { className: string; width: number; height: number }> = {
+  xs: { className: 'h-6 w-6', width: 24, height: 24 },
+  sm: { className: 'h-8 w-8', width: 32, height: 32 },
+  md: { className: 'h-10 w-10', width: 40, height: 40 },
+  lg: { className: 'h-12 w-12', width: 48, height: 48 },
+  xl: { className: 'h-16 w-16', width: 64, height: 64 },
+};
+
 export const Logo = ({ 
   size = 'md', 
+  variant = 'full',
   className,
   animated = false,
   shine = false,
   priority = false,
 }: LogoProps) => {
-  const config = sizeConfig[size];
+  const isIcon = variant === 'icon';
+  const config = isIcon ? iconSizeConfig[size] : fullSizeConfig[size];
+  const logoSrc = isIcon ? logoIcon : logoFull;
+  const aspectRatio = isIcon ? '1 / 1' : '3 / 1';
   
   return (
     <div className={cn('flex items-center', className)}>
@@ -46,7 +61,7 @@ export const Logo = ({
           - decoding async for non-blocking
         */}
         <img 
-          src={logoImage} 
+          src={logoSrc} 
           alt="MoneyQuest"
           width={config.width}
           height={config.height}
@@ -58,9 +73,8 @@ export const Logo = ({
             config.className,
             animated && 'animate-float'
           )}
-          // Inline styles for immediate render without CSS blocking
           style={{
-            aspectRatio: '3 / 1',
+            aspectRatio,
             maxWidth: '100%',
             height: 'auto',
           }}
