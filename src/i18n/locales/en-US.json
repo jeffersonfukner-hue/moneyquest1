@@ -1,5 +1,23 @@
 {
   "admin": {
+    "oauth": {
+      "title": "Google OAuth Configuration",
+      "description": "Configure Google login by following the steps below",
+      "requiresConfig": "Requires Configuration",
+      "securityNote": "Google OAuth credentials must be configured directly in the Lovable Cloud panel for security reasons. Never store Client Secret in code.",
+      "step1Title": "Google Cloud Console",
+      "jsOrigins": "Authorized JavaScript Origins:",
+      "redirectUrl": "Authorized Redirect URLs:",
+      "openGoogleConsole": "Open Google Cloud Console",
+      "step2Title": "Lovable Cloud Auth Settings",
+      "siteUrl": "Site URL:",
+      "lovableRedirects": "Redirect URLs:",
+      "step2Instructions": "Access Users → Auth Settings → Google Settings in Lovable Cloud and configure the Site URL and Redirect URLs.",
+      "step3Title": "Enter Credentials",
+      "step3Instructions": "In Lovable Cloud (Users → Auth Settings → Google Settings), enter:",
+      "clientId": "Client ID (from Google Cloud Console)",
+      "clientSecret": "Client Secret (from Google Cloud Console)"
+    },
     "nav": {
       "dashboard": "Dashboard",
       "users": "Users",

@@ -10,6 +10,7 @@ import { AdMetricsWidget } from '@/components/admin/AdMetricsWidget';
 import { InternalBannerAnalyticsWidget } from '@/components/admin/InternalBannerAnalyticsWidget';
 import { DiscountConversionWidget } from '@/components/admin/DiscountConversionWidget';
 import { ReferralConversionWidget } from '@/components/admin/ReferralConversionWidget';
+import GoogleOAuthConfigWidget from '@/components/admin/GoogleOAuthConfigWidget';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useAdminData } from '@/hooks/useAdminData';
 import { 
@@ -296,6 +297,9 @@ const SuperAdminDashboard = () => {
 
         {/* Retention Alerts */}
         <RetentionAlerts />
+
+        {/* OAuth Configuration Guide */}
+        <GoogleOAuthConfigWidget />
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
