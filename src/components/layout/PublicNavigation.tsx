@@ -31,7 +31,7 @@ const PublicNavigation = () => {
       <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link to="/" className="flex items-center gap-2">
-            <Logo size="sm" priority />
+            <Logo size="xs" variant="full" priority />
           </Link>
           {/* Mobile Login Button next to logo */}
           <Link to="/login?mode=login" className="md:hidden">
