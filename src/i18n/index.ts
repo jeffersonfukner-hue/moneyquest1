@@ -1,7 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-// Admin translations v10 - added internalBanners, discount, modal, abTest, adMetrics to all locales
+// Admin translations v11 - added traffic analytics menu and widget translations
 import ptBR from './locales/pt-BR.json';
 import ptPT from './locales/pt-PT.json';
 import enUS from './locales/en-US.json';
