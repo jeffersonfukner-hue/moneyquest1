@@ -13,6 +13,7 @@ import { SEOProviderPublic } from "@/components/SEOProviderPublic";
 import { PWAInstallBanner } from "@/components/pwa/PWAInstallBanner";
 import '@/i18n';
 import { Gamepad2 } from 'lucide-react';
+import { AuthStatusIndicator } from '@/components/debug/AuthStatusIndicator';
 
 // ===== CRITICAL PUBLIC PAGES - Loaded immediately for fast LCP =====
 // Only the absolute minimum for first paint
@@ -141,6 +142,7 @@ const App = () => (
               <Toaster />
               <Sonner />
               <PWAInstallBanner />
+              <AuthStatusIndicator />
               <BrowserRouter>
                 <Routes>
                   {/* ===== PUBLIC ROUTES - Fast loading, minimal providers ===== */}
