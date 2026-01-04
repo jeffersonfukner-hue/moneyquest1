@@ -7,7 +7,6 @@ import {
   Command,
   CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
@@ -19,6 +18,7 @@ import {
 import { Wallet } from '@/types/wallet';
 import { SupportedCurrency } from '@/types/database';
 import { AddWalletDialog } from './AddWalletDialog';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface WalletSelectorProps {
   wallets: Wallet[];
@@ -38,6 +38,7 @@ export const WalletSelector = ({
   required = false,
 }: WalletSelectorProps) => {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
   const [open, setOpen] = useState(false);
   const [showAddDialog, setShowAddDialog] = useState(false);
 
@@ -85,10 +86,14 @@ export const WalletSelector = ({
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0" align="start">
+        <PopoverContent 
+          className="w-[var(--radix-popover-trigger-width)] p-0" 
+          align="start"
+          side={isMobile ? "top" : "bottom"}
+          sideOffset={4}
+        >
           <Command>
-            <CommandInput placeholder={t('wallets.searchWallet')} />
-            <CommandList>
+            <CommandList className="max-h-[200px]">
               <CommandEmpty>{t('wallets.noWalletsFound')}</CommandEmpty>
               <CommandGroup>
                 {wallets.map((wallet) => (
