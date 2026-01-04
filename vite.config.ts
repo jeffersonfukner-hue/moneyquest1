@@ -23,6 +23,7 @@ export default defineConfig(({ mode }) => ({
       filename: "sw.ts",
       registerType: "prompt",
       injectRegister: "auto",
+      manifestFilename: "manifest.webmanifest",
       includeAssets: ["favicon.ico", "apple-touch-icon.png", "pwa-512x512.png", "pwa-192x192.png"],
       manifest: {
         name: "MoneyQuest",
@@ -30,7 +31,9 @@ export default defineConfig(({ mode }) => ({
         description: "App financeiro gamificado para controle de gastos, desafios e recompensas.",
         theme_color: "#3D2A5D",
         background_color: "#1a1625",
-        display: "standalone",
+        // IMPORTANT: display mode only affects the *installed* app. Browsing via URL stays as web.
+        // Using minimal-ui reduces the chance of Chrome pushing users into an app-like experience.
+        display: "minimal-ui",
         orientation: "portrait",
         scope: "/",
         start_url: "/",
@@ -58,7 +61,7 @@ export default defineConfig(({ mode }) => ({
         ],
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,ico,png,svg,webp,woff2}"]
+        globPatterns: ["**/*.{js,css,ico,png,svg,webp,woff2}"],
       },
     })
   ].filter(Boolean),
