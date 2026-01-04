@@ -19,9 +19,7 @@ const staticPages = [
   { loc: "/desafios-financeiros", priority: "0.9", changefreq: "weekly" },
   { loc: "/app-financas-pessoais", priority: "0.9", changefreq: "weekly" },
   
-  // Conversion pages
-  { loc: "/signup", priority: "0.9", changefreq: "monthly" },
-  { loc: "/login", priority: "0.8", changefreq: "monthly" },
+  // Premium page
   { loc: "/premium", priority: "0.9", changefreq: "weekly" },
   
   // Features & Info
