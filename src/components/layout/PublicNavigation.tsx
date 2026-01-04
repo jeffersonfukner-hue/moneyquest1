@@ -2,17 +2,23 @@ import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/ui/logo';
-import { Menu, X, Sun, Moon } from 'lucide-react';
+import { Menu, X, Sun, Moon, Monitor } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/hooks/useAuth';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const PublicNavigation = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const { user } = useAuth();
 
   const isLoggedIn = !!user;
@@ -26,8 +32,10 @@ const PublicNavigation = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
+  const getThemeIcon = (size: 'sm' | 'md' = 'sm') => {
+    const className = size === 'sm' ? 'w-4 h-4' : 'w-5 h-5';
+    if (theme === 'system') return <Monitor className={className} />;
+    return resolvedTheme === 'dark' ? <Sun className={className} /> : <Moon className={className} />;
   };
 
   return (
@@ -70,17 +78,33 @@ const PublicNavigation = () => {
             </Link>
           ))}
           <div className="flex items-center gap-2">
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-              aria-label={theme === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro'}
-            >
-              {theme === 'dark' ? (
-                <Sun className="w-4 h-4" />
-              ) : (
-                <Moon className="w-4 h-4" />
-              )}
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                  aria-label={t('settings.theme', 'Tema')}
+                >
+                  {getThemeIcon('sm')}
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setTheme('light')} className="gap-2">
+                  <Sun className="w-4 h-4" />
+                  {t('settings.themeLight', 'Claro')}
+                  {theme === 'light' && <span className="ml-auto text-primary">✓</span>}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme('dark')} className="gap-2">
+                  <Moon className="w-4 h-4" />
+                  {t('settings.themeDark', 'Escuro')}
+                  {theme === 'dark' && <span className="ml-auto text-primary">✓</span>}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme('system')} className="gap-2">
+                  <Monitor className="w-4 h-4" />
+                  {t('settings.themeSystem', 'Sistema')}
+                  {theme === 'system' && <span className="ml-auto text-primary">✓</span>}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             {isLoggedIn ? (
               <Link to="/">
                 <Button variant="gold" size="sm">
@@ -106,17 +130,33 @@ const PublicNavigation = () => {
 
         {/* Mobile Actions */}
         <div className="flex md:hidden items-center gap-2">
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-            aria-label={theme === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro'}
-          >
-            {theme === 'dark' ? (
-              <Sun className="w-5 h-5" />
-            ) : (
-              <Moon className="w-5 h-5" />
-            )}
-          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                aria-label={t('settings.theme', 'Tema')}
+              >
+                {getThemeIcon('md')}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setTheme('light')} className="gap-2">
+                <Sun className="w-4 h-4" />
+                {t('settings.themeLight', 'Claro')}
+                {theme === 'light' && <span className="ml-auto text-primary">✓</span>}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme('dark')} className="gap-2">
+                <Moon className="w-4 h-4" />
+                {t('settings.themeDark', 'Escuro')}
+                {theme === 'dark' && <span className="ml-auto text-primary">✓</span>}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme('system')} className="gap-2">
+                <Monitor className="w-4 h-4" />
+                {t('settings.themeSystem', 'Sistema')}
+                {theme === 'system' && <span className="ml-auto text-primary">✓</span>}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <button
             className="p-2 text-muted-foreground hover:text-foreground"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
