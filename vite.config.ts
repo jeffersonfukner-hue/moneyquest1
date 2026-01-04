@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "apple-touch-icon.png", "logo.png"],
+      includeAssets: ["favicon.ico", "apple-touch-icon.png", "pwa-512x512.png", "pwa-192x192.png"],
       manifest: {
         name: "MoneyQuest",
         short_name: "MoneyQuest",
@@ -30,21 +30,22 @@ export default defineConfig(({ mode }) => ({
         lang: "pt-BR",
         icons: [
           {
-            src: "/android-chrome-192x192.png",
+            src: "/pwa-192x192.png",
             sizes: "192x192",
             type: "image/png",
-            purpose: "any maskable"
+            purpose: "any"
           },
           {
-            src: "/android-chrome-512x512.png",
+            src: "/pwa-512x512.png",
             sizes: "512x512",
             type: "image/png",
-            purpose: "any maskable"
+            purpose: "any"
           },
           {
-            src: "/apple-touch-icon.png",
-            sizes: "180x180",
-            type: "image/png"
+            src: "/maskable-icon.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable"
           }
         ]
       },

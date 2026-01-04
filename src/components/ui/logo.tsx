@@ -1,4 +1,4 @@
-import logoFull from '@/assets/logo.webp';
+import logoSquare from '@/assets/logo-square.webp';
 import logoIcon from '@/assets/logo-icon.webp';
 import { cn } from '@/lib/utils';
 
@@ -7,7 +7,7 @@ type LogoVariant = 'full' | 'icon';
 
 interface LogoProps {
   size?: LogoSize;
-  /** 'full' shows logo with text, 'icon' shows shield only */
+  /** 'full' shows square logo with shield + text below, 'icon' shows shield only */
   variant?: LogoVariant;
   className?: string;
   animated?: boolean;
@@ -16,13 +16,13 @@ interface LogoProps {
   priority?: boolean;
 }
 
-// Dimensions for full horizontal logo (approx 3:1 ratio)
+// Dimensions for full square logo with text below (1:1 ratio)
 const fullSizeConfig: Record<LogoSize, { className: string; width: number; height: number }> = {
-  xs: { className: 'h-6', width: 72, height: 24 },
-  sm: { className: 'h-8', width: 96, height: 32 },
-  md: { className: 'h-12', width: 144, height: 48 },
-  lg: { className: 'h-16', width: 192, height: 64 },
-  xl: { className: 'h-20', width: 240, height: 80 },
+  xs: { className: 'h-10 w-10', width: 40, height: 40 },
+  sm: { className: 'h-12 w-12', width: 48, height: 48 },
+  md: { className: 'h-16 w-16', width: 64, height: 64 },
+  lg: { className: 'h-20 w-20', width: 80, height: 80 },
+  xl: { className: 'h-24 w-24', width: 96, height: 96 },
 };
 
 // Dimensions for icon-only logo (square 1:1 ratio)
@@ -44,8 +44,8 @@ export const Logo = ({
 }: LogoProps) => {
   const isIcon = variant === 'icon';
   const config = isIcon ? iconSizeConfig[size] : fullSizeConfig[size];
-  const logoSrc = isIcon ? logoIcon : logoFull;
-  const aspectRatio = isIcon ? '1 / 1' : '3 / 1';
+  const logoSrc = isIcon ? logoIcon : logoSquare;
+  const aspectRatio = '1 / 1';
   
   return (
     <div className={cn('flex items-center', className)}>
