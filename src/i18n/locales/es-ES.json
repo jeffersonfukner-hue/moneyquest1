@@ -134,9 +134,9 @@
       "conversionFunnelDesc": "Viaje del usuario"
     },
     "risk": {
-      "low": "Bajo",
-      "medium": "Medio",
-      "high": "Alto",
+      "low": "Riesgo Bajo",
+      "medium": "Riesgo Medio",
+      "high": "Riesgo Alto",
       "distribution": "Distribución de Riesgo",
       "distributionDesc": "Usuarios en riesgo de abandono"
     },
@@ -643,7 +643,8 @@
     "minutes": "MIN",
     "seconds": "SEG",
     "anonymous": "Anónimo",
-    "actions": "Acciones"
+    "actions": "Acciones",
+    "noName": "Sin nombre"
   },
   "auth": {
     "login": "Iniciar Sesión",
