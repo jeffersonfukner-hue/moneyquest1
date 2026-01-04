@@ -94,14 +94,14 @@ const Login = () => {
         description: getTranslatedError(error.message), 
         variant: 'destructive' 
       });
+      setLoading(false);
     } else {
       toast({ 
         title: t('auth.welcomeBack'), 
         description: t('auth.questBegin')
       });
-      navigate('/');
+      // Navigation handled by useEffect when user state updates
     }
-    setLoading(false);
   };
 
   const renderLandingMode = () => (
