@@ -19,8 +19,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        display: ['Fredoka', 'sans-serif'],
+        // System font stack as fallback for instant text rendering
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        display: ['Fredoka', 'ui-rounded', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
