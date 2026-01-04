@@ -1,4 +1,5 @@
-import { Settings, Shield } from 'lucide-react';
+import { useState } from 'react';
+import { Settings, Shield, LogOut } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -7,8 +8,19 @@ import { SeasonalThemeIndicator } from '@/components/game/SeasonalThemeIndicator
 import { Button } from '@/components/ui/button';
 import { useProfile } from '@/hooks/useProfile';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { useAuth } from '@/hooks/useAuth';
 import { AvatarDisplay } from '@/components/profile/AvatarDisplay';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface MobileHeaderProps {
   onSettingsClick: () => void;
@@ -19,50 +31,85 @@ export const MobileHeader = ({ onSettingsClick, onProfileClick }: MobileHeaderPr
   const { t } = useTranslation();
   const { profile } = useProfile();
   const { isSuperAdmin } = useAdminAuth();
+  const { signOut } = useAuth();
   const navigate = useNavigate();
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/login');
+  };
 
   return (
-    <header className="sticky top-0 z-40 bg-background border-b border-border safe-area-top">
-      <div className="flex items-center justify-between h-14 px-4 max-w-md mx-auto">
-        <Logo size="sm" variant="icon" />
-        
-        <div className="flex items-center gap-1">
-          <SeasonalThemeIndicator />
-          <SoundToggle />
-          <NotificationBell />
-          {isSuperAdmin && (
+    <>
+      <header className="sticky top-0 z-40 bg-background border-b border-border safe-area-top">
+        <div className="flex items-center justify-between h-14 px-4 max-w-md mx-auto">
+          <Logo size="sm" variant="icon" />
+          
+          <div className="flex items-center gap-1">
+            <SeasonalThemeIndicator />
+            <SoundToggle />
+            <NotificationBell />
+            {isSuperAdmin && (
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => navigate('/super-admin')}
+                aria-label={t('admin.title')}
+                className="min-h-[44px] min-w-[44px] text-primary hover:text-primary/80 hover:bg-primary/10"
+              >
+                <Shield className="w-5 h-5" />
+              </Button>
+            )}
+            <button 
+              onClick={onProfileClick}
+              className="flex items-center hover:opacity-80 transition-opacity min-h-[44px] min-w-[44px] justify-center"
+              aria-label={t('settings.profile')}
+            >
+              <AvatarDisplay
+                avatarUrl={profile?.avatar_url}
+                avatarIcon={profile?.avatar_icon || '🎮'}
+                size="sm"
+              />
+            </button>
             <Button 
               variant="ghost" 
               size="icon" 
-              onClick={() => navigate('/super-admin')}
-              aria-label={t('admin.title')}
+              onClick={onSettingsClick}
+              aria-label={t('navigation.settings')}
               className="min-h-[44px] min-w-[44px] text-primary hover:text-primary/80 hover:bg-primary/10"
             >
-              <Shield className="w-5 h-5" />
+              <Settings className="w-5 h-5" />
             </Button>
-          )}
-          <button 
-            onClick={onProfileClick}
-            className="flex items-center hover:opacity-80 transition-opacity min-h-[44px] min-w-[44px] justify-center"
-            aria-label={t('settings.profile')}
-          >
-            <AvatarDisplay
-              avatarUrl={profile?.avatar_url}
-              avatarIcon={profile?.avatar_icon || '🎮'}
-              size="sm"
-            />
-          </button>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={onSettingsClick}
-            aria-label={t('navigation.settings')}
-            className="min-h-[44px] min-w-[44px] text-primary hover:text-primary/80 hover:bg-primary/10"
-          >
-            <Settings className="w-5 h-5" />
-          </Button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setShowLogoutDialog(true)}
+              aria-label={t('auth.signOut')}
+              className="min-h-[44px] min-w-[44px] text-destructive hover:text-destructive/80 hover:bg-destructive/10"
+            >
+              <LogOut className="w-5 h-5" />
+            </Button>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('settings.signOutConfirmTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('settings.signOutConfirmDescription')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleSignOut} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              {t('auth.signOut')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
