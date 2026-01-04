@@ -101,7 +101,7 @@ const scheduleIdleTask = (callback: () => void, timeout = 3000): number => {
  */
 export const useDeferredTracking = () => {
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const pageLoadTime = useRef<number>(Date.now());
   const hasTracked = useRef<Set<string>>(new Set());
 
@@ -175,10 +175,19 @@ export const useDeferredTracking = () => {
     // Don't track admin routes
     if (isExcludedRoute(pathname)) return;
     
+    // CRITICAL: Don't track on public routes unless user is authenticated
+    // This prevents Supabase calls on first load for unauthenticated users
+    if (isPublicRoute(pathname) && !user) {
+      return; // Skip tracking entirely for public routes without auth
+    }
+    
+    // Wait for auth to finish loading before tracking
+    if (authLoading) return;
+    
     pageLoadTime.current = Date.now();
 
-    // For public routes, defer tracking to not block LCP
-    if (isPublicRoute(pathname)) {
+    // For public routes with authenticated user, defer tracking
+    if (isPublicRoute(pathname) && user) {
       const taskId = scheduleIdleTask(trackPageView);
       return () => {
         const win = window as typeof globalThis & { cancelIdleCallback?: (id: number) => void };
@@ -188,11 +197,11 @@ export const useDeferredTracking = () => {
           clearTimeout(taskId);
         }
       };
-    } else {
+    } else if (user) {
       // Track immediately for authenticated routes
       trackPageView();
     }
-  }, [location.pathname, isPublicRoute, isExcludedRoute, trackPageView]);
+  }, [location.pathname, user, authLoading, isPublicRoute, isExcludedRoute, trackPageView]);
 
   // Track time on page when user leaves
   useEffect(() => {
