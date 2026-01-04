@@ -36,6 +36,26 @@ const Upgrade = () => {
     ? new Date(profile.discount_offer_expires_at) > new Date()
     : false;
 
+  const isStandalone = window.matchMedia?.('(display-mode: standalone)')?.matches;
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+  const shouldForceExternalBrowser = Boolean(isStandalone && isIOS);
+
+  const openCheckoutUrl = (url: string, preOpenedWindow?: Window | null) => {
+    // iOS PWA (standalone) often blocks async navigation to external domains.
+    // Opening a blank window synchronously on click and then setting its location works reliably.
+    if (preOpenedWindow && !preOpenedWindow.closed) {
+      try {
+        preOpenedWindow.location.href = url;
+        return;
+      } catch {
+        // fall through
+      }
+    }
+
+    window.location.href = url;
+  };
+
   // Check subscription status on mount and after Stripe redirect
   useEffect(() => {
     const success = searchParams.get('success');
@@ -70,11 +90,14 @@ const Upgrade = () => {
 
   const handleSubscribe = async () => {
     const priceId = getPriceId(billingPeriod);
-    
+
     if (!priceId) {
       toast.error(t('subscription.setupRequired') || 'Stripe products need to be configured. Please contact support.');
       return;
     }
+
+    // iOS PWA: open a blank tab/window synchronously (user gesture) so the redirect isn't blocked
+    const preOpened = shouldForceExternalBrowser ? window.open('about:blank', '_blank') : null;
 
     setIsLoading(true);
     try {
@@ -91,19 +114,23 @@ const Upgrade = () => {
       if (error) throw error;
 
       if (data?.url) {
-        // Show fullscreen loading before redirect
         setIsRedirecting(true);
-        // Use location.href to keep navigation inside PWA instead of opening external browser
-        window.location.href = data.url;
+        openCheckoutUrl(data.url, preOpened);
+      } else {
+        throw new Error('Missing checkout URL');
       }
     } catch (error) {
       console.error('Error creating checkout:', error);
       toast.error(t('subscription.checkoutError') || 'Failed to start checkout. Please try again.');
+      try { preOpened?.close(); } catch {}
       setIsLoading(false);
     }
   };
 
   const handleManageSubscription = async () => {
+    // iOS PWA: open a blank tab/window synchronously (user gesture) so the redirect isn't blocked
+    const preOpened = shouldForceExternalBrowser ? window.open('about:blank', '_blank') : null;
+
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('customer-portal');
@@ -111,14 +138,15 @@ const Upgrade = () => {
       if (error) throw error;
 
       if (data?.url) {
-        // Show fullscreen loading before redirect
         setIsRedirecting(true);
-        // Use location.href to keep navigation inside PWA instead of opening external browser
-        window.location.href = data.url;
+        openCheckoutUrl(data.url, preOpened);
+      } else {
+        throw new Error('Missing portal URL');
       }
     } catch (error) {
       console.error('Error opening customer portal:', error);
       toast.error(t('subscription.portalError') || 'Failed to open subscription management. Please try again.');
+      try { preOpened?.close(); } catch {}
       setIsLoading(false);
     }
   };
