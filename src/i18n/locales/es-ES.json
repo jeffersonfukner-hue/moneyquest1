@@ -21,6 +21,7 @@
     "nav": {
       "dashboard": "Panel",
       "users": "Usuarios",
+      "traffic": "Tráfico",
       "campaigns": "Campañas",
       "support": "Soporte",
       "comments": "Comentarios",
@@ -29,6 +30,18 @@
       "engagement": "Engagement",
       "analytics": "Analíticas",
       "logs": "Logs"
+    },
+    "traffic": {
+      "title": "Análisis de Tráfico",
+      "subtitle": "Monitoree accesos, comportamiento y orígenes del tráfico",
+      "totalViews": "Total de Accesos",
+      "uniqueUsers": "Usuarios Únicos",
+      "avgTime": "Tiempo Promedio",
+      "bounceRate": "Tasa de Rebote",
+      "viewsByDay": "Accesos por Día",
+      "viewsByHour": "Accesos por Hora",
+      "viewsByDevice": "Dispositivos",
+      "topPages": "Páginas Más Visitadas"
     },
     "backToApp": "Volver a la App",
     "dashboard": "Panel Super Admin",
