@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Settings, Shield, LogOut } from 'lucide-react';
+import { Settings, Shield, LogOut, Sun, Moon } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { useProfile } from '@/hooks/useProfile';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from '@/contexts/ThemeContext';
 import { AvatarDisplay } from '@/components/profile/AvatarDisplay';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
 import {
@@ -32,12 +33,17 @@ export const MobileHeader = ({ onSettingsClick, onProfileClick }: MobileHeaderPr
   const { profile } = useProfile();
   const { isSuperAdmin } = useAdminAuth();
   const { signOut } = useAuth();
+  const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
     navigate('/login');
+  };
+
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
   };
 
   return (
@@ -48,6 +54,19 @@ export const MobileHeader = ({ onSettingsClick, onProfileClick }: MobileHeaderPr
             <Logo size="xs" variant="full" />
             <SeasonalThemeIndicator />
             <SoundToggle />
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={toggleTheme}
+              aria-label={theme === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro'}
+              className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-5 h-5" />
+              ) : (
+                <Moon className="w-5 h-5" />
+              )}
+            </Button>
             <NotificationBell />
             {isSuperAdmin && (
               <Button 
