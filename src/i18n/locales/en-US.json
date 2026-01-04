@@ -1758,6 +1758,20 @@
       "notShown": "Not Shown",
       "activeOffers": "active discount offers",
       "activeOffersDesc": "Users with pending 48h discount window"
+    },
+    "internalBanners": {
+      "title": "Internal Banner Analytics",
+      "description": "Performance comparison between Premium and Referral",
+      "avgCtr": "Average CTR",
+      "bestPerformer": "Best Performer",
+      "conversionRate": "Conversion Rate",
+      "clickDistribution": "Click Distribution",
+      "clicksTrend": "Clicks Trend",
+      "noData": "No data available",
+      "premium": "Premium",
+      "referral": "Referral",
+      "premiumDesc": "Upgrade to Premium",
+      "referralDesc": "Referral program"
     }
   },
   "dailyReward": {
