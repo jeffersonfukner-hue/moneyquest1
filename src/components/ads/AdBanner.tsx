@@ -128,7 +128,7 @@ export const AdBanner = () => {
   return (
     <>
       <div 
-        className="fixed left-0 right-0 z-40 safe-area-inset-bottom animate-slide-up-fade overflow-hidden shadow-[0_-2px_10px_rgba(0,0,0,0.1)] dark:shadow-[0_-2px_10px_rgba(0,0,0,0.3)]"
+        className="fixed left-0 right-0 z-40 safe-area-inset-bottom animate-slide-up-fade overflow-hidden bg-background shadow-[0_-2px_10px_rgba(0,0,0,0.1)] dark:shadow-[0_-2px_10px_rgba(0,0,0,0.3)]"
         style={{ bottom: 'calc(64px + env(safe-area-inset-bottom, 0px))' }}
       >
         <div className="max-w-md mx-auto h-[60px] flex items-center w-full">

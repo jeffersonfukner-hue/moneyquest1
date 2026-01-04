@@ -8,16 +8,19 @@ import {
 } from '@/lib/bannerRotationConfig';
 import { shouldShowInternalBanners, shouldHideGoogleAds } from '@/lib/routeConfig';
 import { useCampaigns, Campaign } from '@/hooks/useCampaigns';
+import { useAuth } from '@/hooks/useAuth';
 
 export const useBannerRotation = () => {
   const location = useLocation();
+  const { user } = useAuth();
+  const isUserAuthenticated = !!user;
   const isAuthenticatedPage = shouldShowInternalBanners(location.pathname);
   const isGoogleAdsBlocked = shouldHideGoogleAds(location.pathname);
   const { campaigns, hasCampaigns, getRandomCampaign, isLoading: campaignsLoading } = useCampaigns();
   
-  // Determine context: internal banners only on authenticated pages OR when Google is blocked
+  // Determine context: internal banners only when logged in, on authenticated pages, or when Google is blocked
   const getContext = () => {
-    if (isAuthenticatedPage || isGoogleAdsBlocked) return 'authenticated';
+    if (isUserAuthenticated || isAuthenticatedPage || isGoogleAdsBlocked) return 'authenticated';
     return 'public';
   };
   
