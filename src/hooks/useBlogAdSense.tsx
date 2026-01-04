@@ -1,24 +1,23 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
 import { ADSENSE_CONFIG } from '@/lib/adsenseConfig';
 
 /**
- * Hook to load AdSense script ONLY on blog pages for non-authenticated users
+ * Hook to load AdSense script ONLY on blog pages
+ * Shows ads for ALL users (visitors, free, and premium) on blog pages
+ * This is editorial content, separate from the financial app
  */
 export const useBlogAdSense = () => {
   const location = useLocation();
-  const { user } = useAuth();
   const [scriptLoaded, setScriptLoaded] = useState(false);
 
-  // Only load on blog pages
+  // Only load on blog pages - editorial content is always monetizable
   const isBlogPage = location.pathname === '/blog' || location.pathname.startsWith('/blog/');
   
-  // Never load for authenticated users
-  const isUserAuthenticated = !!user;
-  
-  // Can load if: on blog page AND not logged in AND AdSense configured
-  const canLoad = isBlogPage && !isUserAuthenticated && !!ADSENSE_CONFIG.client;
+  // Can load if: on blog page AND AdSense configured
+  // Note: We show ads to ALL users on blog (visitors, free, premium)
+  // Blog is editorial content, not part of the financial app
+  const canLoad = isBlogPage && !!ADSENSE_CONFIG.client;
 
   useEffect(() => {
     if (!canLoad) {
