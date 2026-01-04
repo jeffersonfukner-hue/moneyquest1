@@ -29,7 +29,87 @@
       "trialAbuse": "Trial Abuse",
       "engagement": "Engagement",
       "analytics": "Analytics",
+      "scoringAudit": "Scoring Audit",
       "logs": "Logs"
+    },
+    "scoringAudit": {
+      "title": "Scoring System Audit",
+      "description": "Complete overview of the currently implemented XP system",
+      "readOnlyTitle": "Read-Only Mode",
+      "readOnlyDescription": "This screen displays the current system state. No changes will be made.",
+      "xpValues": {
+        "title": "XP Values per Action",
+        "description": "All actions that generate points in the system",
+        "action": "Action",
+        "xp": "XP",
+        "type": "Type",
+        "limit": "Limit",
+        "cooldown": "Cooldown"
+      },
+      "actions": {
+        "transaction": "Transaction",
+        "dailyReward": "Daily Reward",
+        "questDaily": "Daily Quest",
+        "questWeekly": "Weekly Quest",
+        "questMonthly": "Monthly Quest",
+        "badge": "Badge/Achievement",
+        "adminBonus": "Admin Bonus",
+        "quest": "Quest"
+      },
+      "types": {
+        "recurring": "Recurring",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "unique": "Unique",
+        "manual": "Manual"
+      },
+      "origin": {
+        "title": "Scoring Origin",
+        "description": "Where each score is applied in the code",
+        "action": "Action",
+        "layer": "Layer",
+        "file": "File",
+        "function": "Function",
+        "event": "Event"
+      },
+      "tables": {
+        "title": "Database Tables",
+        "description": "Data structure related to scoring",
+        "name": "Table",
+        "fields": "Fields",
+        "role": "Role"
+      },
+      "streak": {
+        "title": "Streak Rules",
+        "description": "How the consecutive days system works",
+        "calculation": "Streak Calculation",
+        "calculationDesc": "Comparison between last_active_date and current date. Same day keeps it. Previous day increments. Otherwise resets to 1.",
+        "break": "Streak Break",
+        "breakDesc": "Skipping a day (not accessing the app for 24h+) resets the streak to 1.",
+        "multipliers": "Daily Reward Multipliers"
+      },
+      "history": {
+        "title": "History System",
+        "description": "How XP is tracked and audited",
+        "tracked": "Tracked",
+        "who": "Who earned",
+        "when": "When",
+        "source": "Source",
+        "amount": "Amount (xp_change)",
+        "sources": "XP Sources",
+        "notImplemented": "Not Implemented",
+        "noReversal": "XP Reversal",
+        "noSpamProtection": "Spam Protection"
+      },
+      "alerts": {
+        "spamTitle": "No Spam Protection",
+        "spamDesc": "Users can add unlimited transactions and earn +5 XP each. No daily limit, cooldown, or validation.",
+        "reversalTitle": "XP Is Never Reversed",
+        "reversalDesc": "When a transaction is deleted or edited, the earned XP remains. No rollback mechanism exists.",
+        "fixedXpTitle": "Fixed XP per Transaction",
+        "fixedXpDesc": "All transactions give +5 XP, regardless of value. No distinction between $1 or $10,000."
+      }
     },
     "traffic": {
       "title": "Traffic Analytics",

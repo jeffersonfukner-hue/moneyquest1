@@ -29,7 +29,87 @@
       "trialAbuse": "Abuso de Trial",
       "engagement": "Engagement",
       "analytics": "Analíticas",
+      "scoringAudit": "Auditoría XP",
       "logs": "Logs"
+    },
+    "scoringAudit": {
+      "title": "Auditoría del Sistema de Puntuación",
+      "description": "Vista completa del sistema de XP actualmente implementado",
+      "readOnlyTitle": "Modo Solo Lectura",
+      "readOnlyDescription": "Esta pantalla muestra el estado actual del sistema. No se realizarán cambios.",
+      "xpValues": {
+        "title": "Valores de XP por Acción",
+        "description": "Todas las acciones que generan puntos en el sistema",
+        "action": "Acción",
+        "xp": "XP",
+        "type": "Tipo",
+        "limit": "Límite",
+        "cooldown": "Cooldown"
+      },
+      "actions": {
+        "transaction": "Transacción",
+        "dailyReward": "Recompensa Diaria",
+        "questDaily": "Misión Diaria",
+        "questWeekly": "Misión Semanal",
+        "questMonthly": "Misión Mensual",
+        "badge": "Insignia/Logro",
+        "adminBonus": "Bonus Admin",
+        "quest": "Misión"
+      },
+      "types": {
+        "recurring": "Recurrente",
+        "daily": "Diario",
+        "weekly": "Semanal",
+        "monthly": "Mensual",
+        "unique": "Único",
+        "manual": "Manual"
+      },
+      "origin": {
+        "title": "Origen de la Puntuación",
+        "description": "Dónde se aplica cada puntuación en el código",
+        "action": "Acción",
+        "layer": "Capa",
+        "file": "Archivo",
+        "function": "Función",
+        "event": "Evento"
+      },
+      "tables": {
+        "title": "Tablas de Base de Datos",
+        "description": "Estructura de datos relacionada con la puntuación",
+        "name": "Tabla",
+        "fields": "Campos",
+        "role": "Función"
+      },
+      "streak": {
+        "title": "Reglas de Racha",
+        "description": "Cómo funciona el sistema de días consecutivos",
+        "calculation": "Cálculo de Racha",
+        "calculationDesc": "Comparación entre last_active_date y fecha actual. Mismo día mantiene. Día anterior incrementa. Sino reinicia a 1.",
+        "break": "Ruptura de Racha",
+        "breakDesc": "Saltar un día (no acceder a la app por 24h+) reinicia la racha a 1.",
+        "multipliers": "Multiplicadores de Recompensa Diaria"
+      },
+      "history": {
+        "title": "Sistema de Historial",
+        "description": "Cómo se rastrea y audita el XP",
+        "tracked": "Rastreado",
+        "who": "Quién ganó",
+        "when": "Cuándo",
+        "source": "Fuente",
+        "amount": "Cantidad (xp_change)",
+        "sources": "Fuentes de XP",
+        "notImplemented": "No Implementado",
+        "noReversal": "Reversión de XP",
+        "noSpamProtection": "Protección contra spam"
+      },
+      "alerts": {
+        "spamTitle": "Sin Protección Contra Spam",
+        "spamDesc": "Los usuarios pueden agregar transacciones ilimitadas y ganar +5 XP cada una. Sin límite diario, cooldown o validación.",
+        "reversalTitle": "El XP Nunca se Revierte",
+        "reversalDesc": "Cuando se elimina o edita una transacción, el XP ganado permanece. No existe mecanismo de reversión.",
+        "fixedXpTitle": "XP Fijo por Transacción",
+        "fixedXpDesc": "Todas las transacciones dan +5 XP, sin importar el valor. Sin distinción entre $1 o $10,000."
+      }
     },
     "traffic": {
       "title": "Análisis de Tráfico",

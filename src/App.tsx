@@ -67,6 +67,7 @@ const LazySuspiciousReferrals = lazy(() => import("./pages/admin/SuspiciousRefer
 const LazyTrialAbuse = lazy(() => import("./pages/admin/TrialAbuse"));
 const LazyBlogCommentsModeration = lazy(() => import("./pages/admin/BlogCommentsModeration"));
 const LazyTrafficAnalytics = lazy(() => import("./pages/admin/TrafficAnalytics"));
+const LazyScoringAudit = lazy(() => import("./pages/admin/ScoringAudit"));
 
 // ===== LAZY LOADED - Heavy providers (only for authenticated routes) =====
 const LazyOnboardingGuard = lazy(() => import("@/components/auth/OnboardingGuard").then(m => ({ default: m.OnboardingGuard })));
@@ -348,6 +349,11 @@ const App = () => (
                   <Route path="/super-admin/logs" element={
                     <AuthenticatedWrapper>
                       <AdminWrapper><Suspense fallback={<PageLoader />}><LazyAdminLogs /></Suspense></AdminWrapper>
+                    </AuthenticatedWrapper>
+                  } />
+                  <Route path="/super-admin/scoring-audit" element={
+                    <AuthenticatedWrapper>
+                      <AdminWrapper><Suspense fallback={<PageLoader />}><LazyScoringAudit /></Suspense></AdminWrapper>
                     </AuthenticatedWrapper>
                   } />
                   
