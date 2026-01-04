@@ -51,7 +51,7 @@ const LanguageSelection: React.FC = () => {
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
       {/* Logo */}
       <div className="mb-8 flex flex-col items-center">
-        <Logo size="lg" />
+        <Logo size="lg" priority />
         <h1 className="text-2xl font-bold text-foreground mt-4">MoneyQuest</h1>
       </div>
 

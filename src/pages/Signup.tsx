@@ -237,7 +237,7 @@ const Signup = () => {
 
       {/* Hero Section */}
       <section className="text-center space-y-4 animate-fade-in">
-        <Logo size="xl" animated shine className="justify-center" />
+        <Logo size="xl" animated shine priority className="justify-center" />
         <div className="space-y-2 pt-4">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
             {t('landing.hero.title')}
