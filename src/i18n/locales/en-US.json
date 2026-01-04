@@ -250,6 +250,8 @@
       "newCampaign": "New Campaign",
       "editCampaign": "Edit Campaign",
       "active": "Active",
+      "inactive": "Inactive",
+      "activeStatus": "Active",
       "seasonal": "Seasonal",
       "discounts": "Discounts",
       "total": "Total",
@@ -266,7 +268,51 @@
       "deleted": "Campaign deleted!",
       "saveError": "Error saving campaign",
       "outsidePeriod": "Outside period",
-      "analytics": "Analytics"
+      "analytics": "Analytics",
+      "tabs": {
+        "campaigns": "Campaigns",
+        "analytics": "Analytics"
+      },
+      "form": {
+        "internalName": "Internal name",
+        "type": "Type",
+        "icon": "Icon",
+        "titleField": "Title",
+        "subtitleField": "Subtitle (optional)",
+        "buttonText": "Button text",
+        "buttonLink": "Button link",
+        "backgroundGradient": "Background gradient",
+        "targetAudience": "Target audience",
+        "priority": "Priority (0-100)",
+        "startDate": "Start date (optional)",
+        "endDate": "End date (optional)",
+        "activateCampaign": "Activate campaign",
+        "bannerPreview": "Banner Preview",
+        "cancel": "Cancel",
+        "saving": "Saving...",
+        "update": "Update",
+        "create": "Create"
+      },
+      "types": {
+        "seasonal": "Seasonal",
+        "promo": "Promo",
+        "discount": "Discount",
+        "feature": "Feature"
+      },
+      "audiences": {
+        "all": "All",
+        "free": "Free Users",
+        "premium": "Premium Users",
+        "trial": "On Trial"
+      },
+      "gradients": {
+        "primary": "Primary",
+        "blackFriday": "Black Friday",
+        "christmas": "Christmas",
+        "newYear": "New Year",
+        "carnival": "Carnival",
+        "tech": "Tech"
+      }
     }
   },
   "languageSelection": {

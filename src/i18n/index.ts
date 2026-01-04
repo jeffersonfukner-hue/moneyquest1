@@ -1,7 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-// Admin translations v5 - complete audit with engagement/comments/campaigns
+// Admin translations v6 - full i18n audit with CampaignsManagement internationalized
 import ptBR from './locales/pt-BR.json';
 import ptPT from './locales/pt-PT.json';
 import enUS from './locales/en-US.json';
