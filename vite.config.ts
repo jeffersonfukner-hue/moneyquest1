@@ -90,10 +90,7 @@ export default defineConfig(({ mode }) => ({
           if (id.includes('@radix-ui/')) {
             return 'vendor-ui';
           }
-          // Charts - heavy, only for reports/dashboard
-          if (id.includes('recharts') || id.includes('d3-')) {
-            return 'vendor-charts';
-          }
+          // Charts (recharts/d3) - let Vite handle bundling to avoid TDZ issues
           // Forms - for auth and data entry
           if (id.includes('react-hook-form') || id.includes('@hookform/') || id.includes('zod')) {
             return 'vendor-forms';

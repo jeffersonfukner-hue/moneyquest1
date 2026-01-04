@@ -42,7 +42,8 @@ function handleChunkError(event: Event) {
     message.includes("Loading chunk") ||
     message.includes("ChunkLoadError") ||
     message.includes("Failed to fetch dynamically imported module") ||
-    message.includes("error loading dynamically imported module")
+    message.includes("error loading dynamically imported module") ||
+    (message.includes("Cannot access") && message.includes("before initialization"))
   ) {
     console.warn("[MoneyQuest] Chunk load error detected. Forcing reload...");
     clearCachesAndReload();
