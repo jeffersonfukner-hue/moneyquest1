@@ -114,10 +114,16 @@ export function PWAInstallCard() {
             </p>
 
             {isIOS ? (
-              <div className="flex items-center gap-2 mt-2 text-primary-foreground/90 text-xs">
-                <Share className="h-4 w-4" />
-                <span>→</span>
-                <span>{t("pwa.addToHomeScreen", "Adicionar à Tela de Início")}</span>
+              <div className="mt-2 p-2 bg-white/10 rounded-lg">
+                <div className="flex items-center gap-2 text-primary-foreground text-xs font-medium">
+                  <span className="flex items-center justify-center w-6 h-6 bg-white/20 rounded">1</span>
+                  <span>{t("pwa.iosTapShare", "Toque no ícone")}</span>
+                  <Share className="h-4 w-4" />
+                </div>
+                <div className="flex items-center gap-2 text-primary-foreground text-xs font-medium mt-1.5">
+                  <span className="flex items-center justify-center w-6 h-6 bg-white/20 rounded">2</span>
+                  <span>{t("pwa.addToHomeScreen", "Adicionar à Tela de Início")}</span>
+                </div>
               </div>
             ) : (
               <Button
