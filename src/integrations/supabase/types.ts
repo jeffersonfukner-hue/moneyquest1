@@ -464,6 +464,33 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_transaction_xp_limits: {
+        Row: {
+          created_at: string
+          id: string
+          transaction_date: string
+          transactions_with_xp: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          transaction_date: string
+          transactions_with_xp?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          transaction_date?: string
+          transactions_with_xp?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       exchange_rates: {
         Row: {
           base_currency: string
@@ -1831,6 +1858,7 @@ export type Database = {
         Args: { p_referred_id: string; p_referrer_id: string }
         Returns: Json
       }
+      check_transaction_xp_limit: { Args: { p_user_id: string }; Returns: Json }
       claim_daily_reward: { Args: { p_user_id: string }; Returns: Json }
       complete_referral_reward: {
         Args: { p_referred_user_id: string }

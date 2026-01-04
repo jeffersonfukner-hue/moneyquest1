@@ -98,13 +98,13 @@
         "source": "Fuente",
         "amount": "Cantidad (xp_change)",
         "sources": "Fuentes de XP",
-        "notImplemented": "No Implementado",
-        "noReversal": "Reversión de XP",
-        "noSpamProtection": "Protección contra spam"
+        "implemented": "Implementado",
+        "spamProtection": "Protección anti-spam (15/día)",
+        "dailyLimit": "Límite controlado por backend"
       },
       "alerts": {
-        "spamTitle": "Sin Protección Contra Spam",
-        "spamDesc": "Los usuarios pueden agregar transacciones ilimitadas y ganar +5 XP cada una. Sin límite diario, cooldown o validación.",
+        "spamProtectedTitle": "Protección Anti-Spam Activa",
+        "spamProtectedDesc": "Límite de 15 transacciones con XP por día. A partir de la 16ª, la transacción se crea normalmente pero sin XP. Se reinicia a las 00:00 en la zona horaria del usuario.",
         "reversalTitle": "El XP Nunca se Revierte",
         "reversalDesc": "Cuando se elimina o edita una transacción, el XP ganado permanece. No existe mecanismo de reversión.",
         "fixedXpTitle": "XP Fijo por Transacción",

@@ -98,13 +98,13 @@
         "source": "Source",
         "amount": "Amount (xp_change)",
         "sources": "XP Sources",
-        "notImplemented": "Not Implemented",
-        "noReversal": "XP Reversal",
-        "noSpamProtection": "Spam Protection"
+        "implemented": "Implemented",
+        "spamProtection": "Anti-spam protection (15/day)",
+        "dailyLimit": "Backend-controlled limit"
       },
       "alerts": {
-        "spamTitle": "No Spam Protection",
-        "spamDesc": "Users can add unlimited transactions and earn +5 XP each. No daily limit, cooldown, or validation.",
+        "spamProtectedTitle": "Anti-Spam Protection Active",
+        "spamProtectedDesc": "Limit of 15 transactions with XP per day. From the 16th, transaction is created normally but without XP. Resets at 00:00 in user's timezone.",
         "reversalTitle": "XP Is Never Reversed",
         "reversalDesc": "When a transaction is deleted or edited, the earned XP remains. No rollback mechanism exists.",
         "fixedXpTitle": "Fixed XP per Transaction",
