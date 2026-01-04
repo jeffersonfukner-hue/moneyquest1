@@ -10,19 +10,32 @@ const DOMAIN = "https://moneyquest.app.br";
 
 // Static pages with their priorities and change frequencies
 const staticPages = [
+  // Homepage - highest priority
   { loc: "/", priority: "1.0", changefreq: "daily" },
+  
+  // SEO Landing Pages - high priority for organic traffic
   { loc: "/controle-financeiro", priority: "0.9", changefreq: "weekly" },
   { loc: "/educacao-financeira-gamificada", priority: "0.9", changefreq: "weekly" },
   { loc: "/desafios-financeiros", priority: "0.9", changefreq: "weekly" },
   { loc: "/app-financas-pessoais", priority: "0.9", changefreq: "weekly" },
-  { loc: "/login", priority: "0.8", changefreq: "monthly" },
+  
+  // Conversion pages
   { loc: "/signup", priority: "0.9", changefreq: "monthly" },
-  { loc: "/features", priority: "0.8", changefreq: "weekly" },
+  { loc: "/login", priority: "0.8", changefreq: "monthly" },
   { loc: "/premium", priority: "0.9", changefreq: "weekly" },
-  { loc: "/terms", priority: "0.5", changefreq: "monthly" },
-  { loc: "/privacy", priority: "0.5", changefreq: "monthly" },
-  { loc: "/blog", priority: "0.8", changefreq: "weekly" },
+  
+  // Features & Info
+  { loc: "/features", priority: "0.8", changefreq: "weekly" },
+  
+  // Blog main page
+  { loc: "/blog", priority: "0.9", changefreq: "daily" },
+  
+  // Author pages
   { loc: "/autor/equipe-moneyquest", priority: "0.6", changefreq: "monthly" },
+  
+  // Legal pages
+  { loc: "/terms", priority: "0.4", changefreq: "yearly" },
+  { loc: "/privacy", priority: "0.4", changefreq: "yearly" },
 ];
 
 // Static blog articles from blogData.ts
