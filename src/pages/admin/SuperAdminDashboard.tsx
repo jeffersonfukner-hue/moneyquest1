@@ -10,6 +10,7 @@ import { AdMetricsWidget } from '@/components/admin/AdMetricsWidget';
 import { InternalBannerAnalyticsWidget } from '@/components/admin/InternalBannerAnalyticsWidget';
 import { DiscountConversionWidget } from '@/components/admin/DiscountConversionWidget';
 import { ReferralConversionWidget } from '@/components/admin/ReferralConversionWidget';
+import { ServiceWorkerStatusWidget } from '@/components/admin/ServiceWorkerStatusWidget';
 import GoogleOAuthConfigWidget from '@/components/admin/GoogleOAuthConfigWidget';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useAdminData } from '@/hooks/useAdminData';
@@ -788,6 +789,9 @@ const SuperAdminDashboard = () => {
 
         {/* Modal Conversion Widget */}
         <ModalConversionWidget />
+
+        {/* Service Worker & Build Status */}
+        <ServiceWorkerStatusWidget />
       </div>
     </AdminLayout>
   );
