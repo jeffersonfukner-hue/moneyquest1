@@ -15,7 +15,8 @@ import {
   Fingerprint,
   Megaphone,
   MessageSquareText,
-  Activity
+  Activity,
+  Calculator
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -36,6 +37,7 @@ const navItems = [
   { path: '/super-admin/trial-abuse', icon: Fingerprint, labelKey: 'admin.nav.trialAbuse' },
   { path: '/super-admin/engagement', icon: AlertTriangle, labelKey: 'admin.nav.engagement' },
   { path: '/super-admin/analytics', icon: BarChart3, labelKey: 'admin.nav.analytics' },
+  { path: '/super-admin/scoring-audit', icon: Calculator, labelKey: 'admin.nav.scoringAudit' },
   { path: '/super-admin/logs', icon: ScrollText, labelKey: 'admin.nav.logs' },
 ];
 
