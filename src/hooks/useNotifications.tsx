@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 export interface Notification {
   id: string;
-  type: 'message' | 'support' | 'referral' | 'reward';
+  type: 'message' | 'support' | 'referral' | 'reward' | 'blog';
   title: string;
   content: string;
   isRead: boolean;
@@ -66,14 +66,21 @@ export const useNotifications = () => {
 
     // System messages
     messages?.forEach(msg => {
+      const getMessageType = (): Notification['type'] => {
+        if (msg.message_type === 'reward') return 'reward';
+        if (msg.message_type === 'blog') return 'blog';
+        if (msg.message_type === 'referral') return 'referral';
+        return 'message';
+      };
+      
       combined.push({
         id: msg.id,
-        type: msg.message_type === 'reward' ? 'reward' : 'message',
+        type: getMessageType(),
         title: msg.title,
         content: msg.content,
         isRead: msg.is_read || false,
         createdAt: msg.created_at,
-        link: '/my-messages',
+        link: msg.message_type === 'blog' ? '/blog' : '/my-messages',
       });
     });
 
