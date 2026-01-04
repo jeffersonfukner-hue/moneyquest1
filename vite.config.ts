@@ -18,23 +18,51 @@ export default defineConfig(({ mode }) => ({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Core vendor chunk - minimal
-          'vendor-core': ['react', 'react-dom', 'react-router-dom'],
-          // UI components chunk
-          'vendor-ui': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-tooltip', '@radix-ui/react-popover'],
-          // Charts chunk - heavy, lazy loaded
-          'vendor-charts': ['recharts'],
-          // Form handling
-          'vendor-forms': ['react-hook-form', '@hookform/resolvers', 'zod'],
-          // i18n - needed for public pages
-          'vendor-i18n': ['i18next', 'react-i18next'],
+        manualChunks: (id) => {
+          // Core vendor - absolute minimum for first load
+          if (id.includes('react-dom') || id.includes('react/') || id.includes('react-router-dom')) {
+            return 'vendor-core';
+          }
+          // Supabase client - needed for auth
+          if (id.includes('@supabase/')) {
+            return 'vendor-supabase';
+          }
+          // i18n - needed for language support
+          if (id.includes('i18next') || id.includes('react-i18next')) {
+            return 'vendor-i18n';
+          }
+          // UI components - Radix primitives
+          if (id.includes('@radix-ui/')) {
+            return 'vendor-ui';
+          }
+          // Charts - heavy, only for reports/dashboard
+          if (id.includes('recharts') || id.includes('d3-')) {
+            return 'vendor-charts';
+          }
+          // Forms - for auth and data entry
+          if (id.includes('react-hook-form') || id.includes('@hookform/') || id.includes('zod')) {
+            return 'vendor-forms';
+          }
           // Date utilities
-          'vendor-date': ['date-fns'],
+          if (id.includes('date-fns')) {
+            return 'vendor-date';
+          }
+          // TanStack Query
+          if (id.includes('@tanstack/')) {
+            return 'vendor-query';
+          }
+          // Framer motion / animations (if present)
+          if (id.includes('framer-motion')) {
+            return 'vendor-motion';
+          }
+          // Canvas confetti (gamification)
+          if (id.includes('canvas-confetti')) {
+            return 'vendor-effects';
+          }
         },
       },
     },
     // Increase chunk size warning limit
-    chunkSizeWarningLimit: 500,
+    chunkSizeWarningLimit: 300,
   },
 }));
