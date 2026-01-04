@@ -11,6 +11,12 @@ import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 declare const self: ServiceWorkerGlobalScope;
 
 // Take control immediately on update
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
 self.skipWaiting();
 clientsClaim();
 cleanupOutdatedCaches();
