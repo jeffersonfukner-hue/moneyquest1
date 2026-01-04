@@ -1,11 +1,14 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { trackTrafficError } from "@/hooks/useTrafficTracking";
 
 const NotFound = () => {
   const location = useLocation();
 
   useEffect(() => {
     console.error("404 Error: User attempted to access non-existent route:", location.pathname);
+    // Track 404 error for analytics
+    trackTrafficError(404, location.pathname);
   }, [location.pathname]);
 
   return (

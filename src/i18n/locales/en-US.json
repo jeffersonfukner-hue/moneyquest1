@@ -21,6 +21,7 @@
     "nav": {
       "dashboard": "Dashboard",
       "users": "Users",
+      "traffic": "Traffic",
       "campaigns": "Campaigns",
       "support": "Support",
       "comments": "Comments",
@@ -29,6 +30,18 @@
       "engagement": "Engagement",
       "analytics": "Analytics",
       "logs": "Logs"
+    },
+    "traffic": {
+      "title": "Traffic Analytics",
+      "subtitle": "Monitor page views, user behavior and traffic sources",
+      "totalViews": "Total Views",
+      "uniqueUsers": "Unique Users",
+      "avgTime": "Avg. Time",
+      "bounceRate": "Bounce Rate",
+      "viewsByDay": "Views by Day",
+      "viewsByHour": "Views by Hour",
+      "viewsByDevice": "Devices",
+      "topPages": "Top Pages"
     },
     "backToApp": "Back to App",
     "dashboard": "Super Admin Dashboard",
