@@ -1,4 +1,4 @@
-import logoImage from '@/assets/logo.png';
+import logoImage from '@/assets/logo.webp';
 import { cn } from '@/lib/utils';
 
 type LogoSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
