@@ -22,21 +22,41 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
-      }
-    );
+    let settled = false;
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    const finish = (nextSession: Session | null) => {
+      if (settled) return;
+      settled = true;
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
       setLoading(false);
+    };
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, nextSession) => {
+      finish(nextSession);
     });
 
-    return () => subscription.unsubscribe();
+    // Defensive: avoid infinite loading if getSession hangs/fails due to network/CORS.
+    const timeoutId = window.setTimeout(() => {
+      finish(null);
+    }, 4000);
+
+    supabase.auth
+      .getSession()
+      .then(({ data: { session: nextSession } }) => {
+        window.clearTimeout(timeoutId);
+        finish(nextSession);
+      })
+      .catch((error) => {
+        console.error('Auth getSession failed:', error);
+        window.clearTimeout(timeoutId);
+        finish(null);
+      });
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signUp = async (email: string, password: string) => {
