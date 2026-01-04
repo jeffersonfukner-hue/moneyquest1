@@ -10,6 +10,7 @@ import BlogBreadcrumb, { getBreadcrumbSchema } from '@/components/blog/BlogBread
 import PublicFooter from '@/components/layout/PublicFooter';
 import PublicNavigation from '@/components/layout/PublicNavigation';
 import { BlogAdBanner } from '@/components/ads/BlogAdBanner';
+import { BlogInternalBanner } from '@/components/ads/BlogInternalBanner';
 import { useBlogAdSense } from '@/hooks/useBlogAdSense';
 
 const Blog = () => {
@@ -144,7 +145,10 @@ const Blog = () => {
           })}
         </section>
 
-        {/* AD BANNER - Between articles and CTA */}
+        {/* INTERNAL BANNER - Conditional by user type */}
+        <BlogInternalBanner className="mb-8" />
+
+        {/* AD BANNER - Google AdSense (all users) */}
         <BlogAdBanner position="footer" className="mb-8" />
 
         {/* CTA Section */}
