@@ -85,7 +85,7 @@ export const MobileHeader = ({ onSettingsClick, onProfileClick }: MobileHeaderPr
               variant="ghost" 
               size="icon" 
               onClick={() => setShowLogoutDialog(true)}
-              aria-label={t('auth.signOut')}
+              aria-label={t('auth.logout')}
               className="min-h-[44px] min-w-[44px] text-destructive hover:text-destructive/80 hover:bg-destructive/10"
             >
               <LogOut className="w-5 h-5" />
@@ -97,15 +97,15 @@ export const MobileHeader = ({ onSettingsClick, onProfileClick }: MobileHeaderPr
       <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('settings.signOutConfirmTitle')}</AlertDialogTitle>
+            <AlertDialogTitle>{t('auth.logoutConfirmTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('settings.signOutConfirmDescription')}
+              {t('auth.logoutConfirmDescription')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={handleSignOut} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              {t('auth.signOut')}
+              {t('auth.logout')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
