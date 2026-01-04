@@ -26,7 +26,7 @@ import { LazySpendingByCategoryChart } from '@/components/game/LazySpendingByCat
 import { MonthlySavingsWidget } from '@/components/game/MonthlySavingsWidget';
 import { MonthlyComparisonWidget } from '@/components/game/MonthlyComparisonWidget';
 import { AddTransactionDialog, SessionSummary, PrefillData } from '@/components/game/AddTransactionDialog';
-import { MoodIndicator } from '@/components/game/MoodIndicator';
+import { PWAInstallCard } from '@/components/pwa/PWAInstallCard';
 import { QuestCelebration } from '@/components/game/QuestCelebration';
 import { SeasonalDecorations } from '@/components/game/SeasonalDecorations';
 import { NarrativeEvent } from '@/components/game/NarrativeEvent';
@@ -180,10 +180,8 @@ const Index = () => {
       case 'home':
         return (
           <div className="space-y-2 pb-2">
-            {/* Mood indicator at top for visibility */}
-            <div className="flex justify-center sm:justify-start">
-              <MoodIndicator />
-            </div>
+            {/* PWA Install Card at top */}
+            <PWAInstallCard />
             
             {/* Trial Premium Banner */}
             <TrialBanner />
