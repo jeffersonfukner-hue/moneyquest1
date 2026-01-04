@@ -1,11 +1,11 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-// Admin translations v4 - force fresh import
-import ptBR from './locales/pt-BR.json' assert { type: 'json' };
-import ptPT from './locales/pt-PT.json' assert { type: 'json' };
-import enUS from './locales/en-US.json' assert { type: 'json' };
-import esES from './locales/es-ES.json' assert { type: 'json' };
+// Admin translations v5 - complete audit with engagement/comments/campaigns
+import ptBR from './locales/pt-BR.json';
+import ptPT from './locales/pt-PT.json';
+import enUS from './locales/en-US.json';
+import esES from './locales/es-ES.json';
 import { detectLanguageFromTimezone, detectLanguageFromIP, clearIPDetectionCache } from '@/lib/countryDetection';
 
 // Re-export para uso em outros módulos

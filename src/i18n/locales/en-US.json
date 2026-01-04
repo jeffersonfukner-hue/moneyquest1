@@ -212,7 +212,13 @@
       "highRisk": "High Risk",
       "mediumRisk": "Medium Risk",
       "lowRisk": "Low Risk",
-      "daysInactive": "days inactive"
+      "daysInactive": "days inactive",
+      "highDesc": "Users inactive for more than 30 days",
+      "mediumDesc": "Users inactive for 7-30 days",
+      "lowDesc": "Users inactive for 3-7 days",
+      "atRiskList": "At Risk Users",
+      "lastSeen": "Last seen",
+      "neverActive": "Never accessed"
     },
     "comments": {
       "title": "Comment Moderation",
@@ -224,7 +230,43 @@
       "approve": "Approve",
       "hide": "Hide",
       "delete": "Delete",
-      "noComments": "No comments found"
+      "noComments": "No comments found",
+      "user": "User",
+      "article": "Article",
+      "content": "Content",
+      "status": "Status",
+      "date": "Date",
+      "actions": "Actions",
+      "refresh": "Refresh",
+      "statusHidden": "Hidden",
+      "statusPending": "Pending",
+      "statusApproved": "Approved",
+      "hiddenSuccess": "Comment hidden",
+      "deletedSuccess": "Comment deleted"
+    },
+    "campaigns": {
+      "title": "Campaigns",
+      "subtitle": "Manage promotional banners and seasonal campaigns",
+      "newCampaign": "New Campaign",
+      "editCampaign": "Edit Campaign",
+      "active": "Active",
+      "seasonal": "Seasonal",
+      "discounts": "Discounts",
+      "total": "Total",
+      "noCampaigns": "No campaigns created yet.",
+      "createFirst": "Create first campaign",
+      "preview": "Preview",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this campaign?",
+      "updated": "Campaign updated!",
+      "created": "Campaign created!",
+      "statusUpdated": "Status updated!",
+      "deleted": "Campaign deleted!",
+      "saveError": "Error saving campaign",
+      "outsidePeriod": "Outside period",
+      "analytics": "Analytics"
     }
   },
   "languageSelection": {
@@ -573,7 +615,9 @@
     "halfway": "Halfway there!",
     "hours": "HRS",
     "minutes": "MIN",
-    "seconds": "SEC"
+    "seconds": "SEC",
+    "anonymous": "Anonymous",
+    "actions": "Actions"
   },
   "auth": {
     "login": "Sign In",
