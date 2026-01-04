@@ -66,7 +66,13 @@ export const BottomNavigation = ({ activeTab, onTabChange, onAddClick }: BottomN
           return (
             <button
               key={tab.id}
-              onClick={() => onTabChange(tab.id)}
+              onClick={() => {
+                if (tab.id === 'home') {
+                  navigate('/dashboard');
+                } else {
+                  onTabChange(tab.id);
+                }
+              }}
               className={cn(
                 "flex flex-col items-center justify-center gap-1 min-w-[64px] min-h-[48px] rounded-lg transition-colors",
                 isActive 

@@ -45,6 +45,7 @@ export const AUTHENTICATED_ROUTES = [
   '/support',
   '/onboarding',
   '/upgrade',
+  '/premium',
   '/premium-success',
   '/my-messages',
 ] as const;

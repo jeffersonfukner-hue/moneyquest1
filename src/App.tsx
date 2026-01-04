@@ -21,6 +21,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 
 // ===== LAZY LOADED - Public pages (non-critical) =====
+const LazyHome = lazy(() => import("./pages/Home"));
 const LazyIndex = lazy(() => import("./pages/Index"));
 const LazyLanguageSelection = lazy(() => import("./pages/LanguageSelection"));
 const LazyFeatures = lazy(() => import("./pages/Features"));
@@ -150,8 +151,19 @@ const App = () => (
                     <SEOProviderPublic><Suspense fallback={<PageLoader />}><LazyLanguageSelection /></Suspense></SEOProviderPublic>
                   } />
                   
-                  {/* Home - Special case, needs onboarding guard */}
+                  {/* Home - Public landing page for SEO and AdSense */}
                   <Route path="/" element={
+                    <SEOProviderPublic>
+                      <LanguageGuard>
+                        <Suspense fallback={<PageLoader />}>
+                          <LazyHome />
+                        </Suspense>
+                      </LanguageGuard>
+                    </SEOProviderPublic>
+                  } />
+                  
+                  {/* Dashboard - Authenticated app */}
+                  <Route path="/dashboard" element={
                     <AuthenticatedWrapper>
                       <Suspense fallback={<PageLoader />}>
                         <LazyOnboardingGuard><LazyIndex /></LazyOnboardingGuard>
