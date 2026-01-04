@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { CashFlowChart } from '@/components/reports/CashFlowChart';
+import { LazyCashFlowChart } from '@/components/reports/LazyCashFlowChart';
 import { PremiumCashFlowReport } from '@/components/reports/PremiumCashFlowReport';
 import { PremiumCashFlowTeaser } from '@/components/reports/PremiumCashFlowTeaser';
 import { WalletFilter } from '@/components/wallets/WalletFilter';
@@ -82,7 +82,7 @@ const CashFlow = () => {
                 <Loader2 className="w-8 h-8 animate-spin text-primary" />
               </div>
             ) : (
-              <CashFlowChart 
+              <LazyCashFlowChart 
                 transactions={transactions} 
                 walletFilter={walletFilter} 
               />

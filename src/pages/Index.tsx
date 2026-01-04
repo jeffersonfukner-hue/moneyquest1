@@ -22,7 +22,7 @@ import { QuestsPanel } from '@/components/game/QuestsPanel';
 import { BadgesGrid } from '@/components/game/BadgesGrid';
 import { TransactionsList } from '@/components/game/TransactionsList';
 import { RecentTransactionsCard } from '@/components/game/RecentTransactionsCard';
-import { SpendingByCategoryChart } from '@/components/game/SpendingByCategoryChart';
+import { LazySpendingByCategoryChart } from '@/components/game/LazySpendingByCategoryChart';
 import { MonthlySavingsWidget } from '@/components/game/MonthlySavingsWidget';
 import { MonthlyComparisonWidget } from '@/components/game/MonthlyComparisonWidget';
 import { AddTransactionDialog, SessionSummary, PrefillData } from '@/components/game/AddTransactionDialog';
@@ -230,7 +230,7 @@ const Index = () => {
             <PeriodComparisonWidget />
             <MonthlySavingsWidget transactions={transactions} />
             <MonthlyComparisonWidget transactions={transactions} />
-            <SpendingByCategoryChart transactions={transactions} />
+            <LazySpendingByCategoryChart transactions={transactions} />
             
             {/* Social & AI at bottom */}
             <LeaderboardCard />
