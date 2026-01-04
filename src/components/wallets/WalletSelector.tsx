@@ -111,9 +111,8 @@ export const WalletSelector = ({
             if (isMobile) e.preventDefault();
           }}
         >
-          <Command>
-            {!isMobile && <CommandInput placeholder={t('wallets.searchWallet')} />}
-            <CommandList className="max-h-[200px]">
+          <Command className="flex flex-col">
+            <CommandList className="max-h-[200px] order-1">
               <CommandEmpty>{t('wallets.noWalletsFound')}</CommandEmpty>
               <CommandGroup>
                 {wallets.map((wallet) => (
@@ -152,6 +151,10 @@ export const WalletSelector = ({
                 </CommandItem>
               </CommandGroup>
             </CommandList>
+            <CommandInput 
+              placeholder={t('wallets.searchWallet')} 
+              className="order-2 border-t"
+            />
           </Command>
         </PopoverContent>
       </Popover>
