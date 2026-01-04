@@ -1759,6 +1759,20 @@
       "notShown": "Não Exibidas",
       "activeOffers": "ofertas de desconto ativas",
       "activeOffersDesc": "Usuários com janela de 48h de desconto pendente"
+    },
+    "internalBanners": {
+      "title": "Analytics de Banners Internos",
+      "description": "Comparação de performance entre Premium e Referral",
+      "avgCtr": "CTR Médio",
+      "bestPerformer": "Melhor Performance",
+      "conversionRate": "Taxa de Conversão",
+      "clickDistribution": "Distribuição de Cliques",
+      "clicksTrend": "Tendência de Cliques",
+      "noData": "Sem dados disponíveis",
+      "premium": "Premium",
+      "referral": "Referral",
+      "premiumDesc": "Upgrade para Premium",
+      "referralDesc": "Programa de indicação"
     }
   },
   "dailyReward": {

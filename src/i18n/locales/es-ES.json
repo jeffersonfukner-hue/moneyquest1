@@ -1737,6 +1737,35 @@
       "singleLine": "Una Línea",
       "twoLine": "Dos Líneas",
       "noVariantData": "Aún no hay datos de variantes disponibles"
+    },
+    "discount": {
+      "title": "Analytics de Descuento",
+      "description": "Rastrea tasas de conversión para el descuento del 30% al expirar el trial",
+      "trialExpired": "Trial Expirado",
+      "offerShown": "Oferta Mostrada",
+      "converted": "Convertido",
+      "conversionRate": "Tasa de Conversión",
+      "funnel": "Embudo de Conversión",
+      "offerStatus": "Estado de las Ofertas",
+      "active": "Activas",
+      "expired": "Expiradas",
+      "notShown": "No Mostradas",
+      "activeOffers": "ofertas de descuento activas",
+      "activeOffersDesc": "Usuarios con ventana de 48h de descuento pendiente"
+    },
+    "internalBanners": {
+      "title": "Analytics de Banners Internos",
+      "description": "Comparación de rendimiento entre Premium y Referral",
+      "avgCtr": "CTR Promedio",
+      "bestPerformer": "Mejor Rendimiento",
+      "conversionRate": "Tasa de Conversión",
+      "clickDistribution": "Distribución de Clics",
+      "clicksTrend": "Tendencia de Clics",
+      "noData": "Sin datos disponibles",
+      "premium": "Premium",
+      "referral": "Referral",
+      "premiumDesc": "Actualizar a Premium",
+      "referralDesc": "Programa de referencias"
     }
   },
   "dailyReward": {
