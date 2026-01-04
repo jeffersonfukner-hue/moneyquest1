@@ -33,6 +33,7 @@ import AppFinancasPessoais from "./pages/AppFinancasPessoais";
 import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
 import Author from "./pages/Author";
+import SitemapRedirect from "./pages/SitemapRedirect";
 
 import Onboarding from "./pages/Onboarding";
 import Settings from "./pages/Settings";
@@ -102,6 +103,7 @@ const App = () => (
                           <Route path="/blog" element={<Blog />} />
                           <Route path="/blog/:slug" element={<BlogArticle />} />
                           <Route path="/autor/:slug" element={<Author />} />
+                          <Route path="/sitemap.xml" element={<SitemapRedirect />} />
                           <Route path="/onboarding" element={<Onboarding />} />
                           <Route path="/auth" element={<Navigate to="/login" replace />} />
                           <Route path="/settings" element={<Settings />} />
