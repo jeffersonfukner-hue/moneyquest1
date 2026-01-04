@@ -9,8 +9,13 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import BlogBreadcrumb, { getBreadcrumbSchema } from '@/components/blog/BlogBreadcrumb';
 import PublicFooter from '@/components/layout/PublicFooter';
 import PublicNavigation from '@/components/layout/PublicNavigation';
+import { BlogAdBanner } from '@/components/ads/BlogAdBanner';
+import { useBlogAdSense } from '@/hooks/useBlogAdSense';
 
 const Blog = () => {
+  // Load AdSense script for blog pages
+  useBlogAdSense();
+
   useSEO({
     title: 'Blog | MoneyQuest - Dicas de Finanças e Gamificação',
     description: 'Aprenda sobre controle financeiro, educação financeira gamificada, desafios e hábitos para transformar sua vida financeira.',
@@ -138,6 +143,9 @@ const Blog = () => {
             );
           })}
         </section>
+
+        {/* AD BANNER - Between articles and CTA */}
+        <BlogAdBanner position="footer" className="mb-8" />
 
         {/* CTA Section */}
         <section className="bg-gradient-to-r from-primary/10 to-gold/10 rounded-2xl p-8 md:p-12 text-center">

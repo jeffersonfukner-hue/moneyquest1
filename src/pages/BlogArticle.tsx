@@ -12,8 +12,10 @@ import AuthorCard from '@/components/blog/AuthorCard';
 import PublicFooter from '@/components/layout/PublicFooter';
 import PublicNavigation from '@/components/layout/PublicNavigation';
 import { CommentSection } from '@/components/blog/CommentSection';
+import { BlogAdBanner } from '@/components/ads/BlogAdBanner';
+import { useBlogAdSense } from '@/hooks/useBlogAdSense';
 
-// Custom component to render markdown-like content
+// Custom component to render markdown-like content with in-article ad
 const ArticleContent = ({ content }: { content: string }) => {
   // Process content to convert markdown to HTML
   const processContent = (text: string): React.ReactNode[] => {
@@ -24,6 +26,8 @@ const ArticleContent = ({ content }: { content: string }) => {
     let listType: 'ul' | 'ol' | null = null;
     let inTable = false;
     let tableRows: string[][] = [];
+    let paragraphCount = 0;
+    const AD_INSERT_AFTER_PARAGRAPH = 3; // Insert ad after 3rd paragraph
     
     const flushList = () => {
       if (currentList.length > 0) {
@@ -84,6 +88,16 @@ const ArticleContent = ({ content }: { content: string }) => {
       text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">$1</a>');
       // Emojis are preserved
       return text;
+    };
+
+    const maybeInsertAd = () => {
+      if (paragraphCount === AD_INSERT_AFTER_PARAGRAPH) {
+        elements.push(
+          <div key={`ad-in-article-${elements.length}`} className="my-8">
+            <BlogAdBanner position="in-article" />
+          </div>
+        );
+      }
     };
 
     for (let i = 0; i < lines.length; i++) {
@@ -159,6 +173,7 @@ const ArticleContent = ({ content }: { content: string }) => {
       // Paragraph
       else if (line.trim()) {
         flushList();
+        paragraphCount++;
         elements.push(
           <p 
             key={elements.length} 
@@ -166,6 +181,8 @@ const ArticleContent = ({ content }: { content: string }) => {
             dangerouslySetInnerHTML={{ __html: processInline(line) }}
           />
         );
+        // Insert in-article ad after 3rd paragraph
+        maybeInsertAd();
       }
     }
 
@@ -181,6 +198,9 @@ const ArticleContent = ({ content }: { content: string }) => {
 const BlogArticle = () => {
   const { slug } = useParams<{ slug: string }>();
   const article = slug ? getArticleBySlug(slug) : undefined;
+
+  // Load AdSense script for blog pages
+  useBlogAdSense();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -318,10 +338,16 @@ const BlogArticle = () => {
           </div>
         </header>
 
+        {/* AD BANNER - Header position (below article header) */}
+        <BlogAdBanner position="header" className="mb-6" />
+
         {/* Article Content */}
-        <div className="bg-card rounded-lg border p-6 md:p-10 mb-8">
+        <div className="bg-card rounded-lg border p-6 md:p-10 mb-6">
           <ArticleContent content={article.content} />
         </div>
+
+        {/* AD BANNER - Footer position (after article content) */}
+        <BlogAdBanner position="footer" className="mb-8" />
 
         {/* Comment Section */}
         <CommentSection articleSlug={article.slug} />
