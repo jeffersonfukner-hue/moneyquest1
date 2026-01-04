@@ -23,6 +23,7 @@ const Upgrade = () => {
   const { billingCurrency, pricing, getPriceId, getFormattedPrice } = usePremiumPricing();
   
   const [isLoading, setIsLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [isCheckingSubscription, setIsCheckingSubscription] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>('yearly');
   
@@ -90,13 +91,14 @@ const Upgrade = () => {
       if (error) throw error;
 
       if (data?.url) {
+        // Show fullscreen loading before redirect
+        setIsRedirecting(true);
         // Use location.href to keep navigation inside PWA instead of opening external browser
         window.location.href = data.url;
       }
     } catch (error) {
       console.error('Error creating checkout:', error);
       toast.error(t('subscription.checkoutError') || 'Failed to start checkout. Please try again.');
-    } finally {
       setIsLoading(false);
     }
   };
@@ -109,13 +111,14 @@ const Upgrade = () => {
       if (error) throw error;
 
       if (data?.url) {
+        // Show fullscreen loading before redirect
+        setIsRedirecting(true);
         // Use location.href to keep navigation inside PWA instead of opening external browser
         window.location.href = data.url;
       }
     } catch (error) {
       console.error('Error opening customer portal:', error);
       toast.error(t('subscription.portalError') || 'Failed to open subscription management. Please try again.');
-    } finally {
       setIsLoading(false);
     }
   };
@@ -147,6 +150,29 @@ const Upgrade = () => {
   const periodLabel = billingPeriod === 'monthly' 
     ? t('subscription.perMonth') 
     : t('subscription.perYear');
+
+  // Fullscreen loading overlay during redirect
+  if (isRedirecting) {
+    return (
+      <div className="fixed inset-0 z-50 bg-background flex flex-col items-center justify-center gap-6">
+        <div className="relative">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-accent to-accent/60 flex items-center justify-center animate-pulse">
+            <Crown className="w-10 h-10 text-accent-foreground" />
+          </div>
+          <div className="absolute inset-0 rounded-full border-4 border-accent/30 animate-ping" />
+        </div>
+        <div className="text-center space-y-2">
+          <h2 className="text-xl font-bold text-foreground">
+            {t('subscription.redirecting', 'Redirecionando para pagamento...')}
+          </h2>
+          <p className="text-muted-foreground text-sm">
+            {t('subscription.pleaseWait', 'Por favor, aguarde')}
+          </p>
+        </div>
+        <Loader2 className="w-6 h-6 animate-spin text-accent" />
+      </div>
+    );
+  }
 
   return (
     <AppLayout showAdBanner={false}>
