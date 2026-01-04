@@ -29,9 +29,17 @@ const PublicNavigation = () => {
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/50">
       <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
-          <Logo size="sm" priority />
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-2">
+            <Logo size="sm" priority />
+          </Link>
+          {/* Mobile Login Button next to logo */}
+          <Link to="/login?mode=login" className="md:hidden">
+            <Button variant="outline" size="sm">
+              {t('auth.login', 'Entrar')}
+            </Button>
+          </Link>
+        </div>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
