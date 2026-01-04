@@ -22,6 +22,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import LanguageSelection from "./pages/LanguageSelection";
 import Features from "./pages/Features";
+import About from "./pages/About";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 
@@ -92,6 +93,7 @@ const App = () => (
                           <Route path="/login" element={<LanguageGuard><Login /></LanguageGuard>} />
                           <Route path="/signup" element={<LanguageGuard><Signup /></LanguageGuard>} />
                           <Route path="/features" element={<LanguageGuard><Features /></LanguageGuard>} />
+                          <Route path="/about" element={<LanguageGuard><About /></LanguageGuard>} />
                           <Route path="/terms" element={<LanguageGuard><Terms /></LanguageGuard>} />
                           <Route path="/privacy" element={<LanguageGuard><Privacy /></LanguageGuard>} />
                           {/* SEO Landing Pages */}

@@ -18,7 +18,11 @@ const PublicFooter = ({ showSupport = false, className = '' }: PublicFooterProps
         <Shield className="w-3.5 h-3.5" />
         {t('landing.security.dataProtected')}
       </p>
-      <div className="flex items-center justify-center gap-3 text-xs text-muted-foreground">
+      <div className="flex items-center justify-center gap-3 text-xs text-muted-foreground flex-wrap">
+        <Link to="/about" className="hover:text-primary transition-colors">
+          {t('nav.about', 'Sobre')}
+        </Link>
+        <span>•</span>
         <Link to="/terms" className="hover:text-primary transition-colors">
           {t('legal.terms.title')}
         </Link>

@@ -24,6 +24,7 @@ const staticPages = [
   
   // Features & Info
   { loc: "/features", priority: "0.8", changefreq: "weekly" },
+  { loc: "/about", priority: "0.8", changefreq: "monthly" },
   
   // Blog main page
   { loc: "/blog", priority: "0.9", changefreq: "daily" },
