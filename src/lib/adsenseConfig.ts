@@ -11,10 +11,10 @@ export const ADSENSE_CONFIG = {
     // Legacy slots (kept for compatibility)
     bottomBanner: '2872498277',
     inFeed: '',
-    // Blog-specific slots - use same slot for now, can be customized later
-    blogHeader: '2872498277',      // Below article title
-    blogInArticle: '2872498277',   // Mid-content (in-article format)
-    blogFooter: '2872498277',      // After article content
+    // Blog-specific slots
+    blogHeader: '5164222337',      // Below article title
+    blogInArticle: '7048999707',   // Mid-content (in-article format)
+    blogFooter: '4210233313',      // After article content
   },
   // Ad detection timeout (ms) - fallback to promo if ad doesn't load
   adLoadTimeout: 3000,
