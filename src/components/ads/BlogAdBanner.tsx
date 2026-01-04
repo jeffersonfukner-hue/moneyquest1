@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
 import { ADSENSE_CONFIG } from '@/lib/adsenseConfig';
 
 interface BlogAdBannerProps {
@@ -26,19 +25,24 @@ const AD_CONFIG = {
   },
 };
 
+/**
+ * BlogAdBanner - Displays Google AdSense ads on blog pages
+ * 
+ * IMPORTANT: This component shows ads to ALL users on blog pages:
+ * - Visitors (not logged in)
+ * - Free users (logged in)
+ * - Premium users (logged in)
+ * 
+ * Blog is editorial content, separate from the financial app.
+ * Financial app routes have their own ad logic that respects premium status.
+ */
 export const BlogAdBanner = ({ position, className = '' }: BlogAdBannerProps) => {
-  const { user } = useAuth();
   const adRef = useRef<HTMLModElement>(null);
   const [adLoaded, setAdLoaded] = useState(false);
   const [adError, setAdError] = useState(false);
   const initAttempted = useRef(false);
 
   const config = AD_CONFIG[position];
-
-  // CRITICAL: Never render ads for logged-in users
-  if (user) {
-    return null;
-  }
 
   // Check if AdSense is configured
   if (!ADSENSE_CONFIG.client || !config.slot) {
