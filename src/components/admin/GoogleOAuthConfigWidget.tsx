@@ -12,7 +12,7 @@ const GoogleOAuthConfigWidget = () => {
   const jsOrigins = [
     'https://moneyquest.app.br',
     'https://www.moneyquest.app.br',
-    'https://moneyquest.lovable.app',
+    'https://moneyquest1.lovable.app',
   ];
 
   const googleRedirectUrl = 'https://dybbailvbaaovkstgpoh.supabase.co/auth/v1/callback';
@@ -20,8 +20,8 @@ const GoogleOAuthConfigWidget = () => {
   const lovableRedirectUrls = [
     'https://moneyquest.app.br',
     'https://www.moneyquest.app.br',
-    'https://moneyquest.lovable.app',
-    'https://preview--moneyquest.lovable.app',
+    'https://moneyquest1.lovable.app',
+    'https://preview--moneyquest1.lovable.app',
   ];
 
   const handleCopy = async (text: string, fieldId: string) => {
