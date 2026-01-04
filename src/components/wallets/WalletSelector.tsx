@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Check, ChevronsUpDown, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -7,6 +7,7 @@ import {
   Command,
   CommandEmpty,
   CommandGroup,
+  CommandInput,
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
@@ -41,6 +42,7 @@ export const WalletSelector = ({
   const isMobile = useIsMobile();
   const [open, setOpen] = useState(false);
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   const formatBalance = useCallback((amount: number, currency: SupportedCurrency) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -58,11 +60,23 @@ export const WalletSelector = ({
     setShowAddDialog(false);
   };
 
+  // Scroll element into view when popover opens on mobile
+  const handleOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+    if (isOpen && isMobile && triggerRef.current) {
+      // Small delay to let the popover render
+      setTimeout(() => {
+        triggerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    }
+  };
+
   return (
     <>
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover open={open} onOpenChange={handleOpenChange}>
         <PopoverTrigger asChild>
           <Button
+            ref={triggerRef}
             variant="outline"
             role="combobox"
             aria-expanded={open}
@@ -91,8 +105,13 @@ export const WalletSelector = ({
           align="start"
           side={isMobile ? "top" : "bottom"}
           sideOffset={4}
+          onOpenAutoFocus={(e) => {
+            // Prevent auto-focus on mobile to avoid keyboard
+            if (isMobile) e.preventDefault();
+          }}
         >
           <Command>
+            {!isMobile && <CommandInput placeholder={t('wallets.searchWallet')} />}
             <CommandList className="max-h-[200px]">
               <CommandEmpty>{t('wallets.noWalletsFound')}</CommandEmpty>
               <CommandGroup>
