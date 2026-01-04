@@ -41,7 +41,8 @@
       "viewsByDay": "Accesos por Día",
       "viewsByHour": "Accesos por Hora",
       "viewsByDevice": "Dispositivos",
-      "topPages": "Páginas Más Visitadas"
+      "topPages": "Páginas Más Visitadas",
+      "internalNotice": "Los datos de desarrolladores y administradores no se incluyen en estas métricas."
     },
     "backToApp": "Volver a la App",
     "dashboard": "Panel Super Admin",
