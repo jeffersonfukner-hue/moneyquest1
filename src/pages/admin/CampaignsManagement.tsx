@@ -337,18 +337,18 @@ const CampaignsManagement = () => {
                         )}
                         
                         <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                          <span>CTA: {campaign.cta_text} → {campaign.cta_link}</span>
-                          <span>Prioridade: {campaign.priority}</span>
+                          <span>{t('admin.campaignForm.cta')}: {campaign.cta_text} → {campaign.cta_link}</span>
+                          <span>{t('admin.campaignForm.priority')}: {campaign.priority}</span>
                         </div>
                         
                         {(campaign.start_date || campaign.end_date) && (
                           <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
                             <Calendar className="w-3 h-3" />
                             {campaign.start_date && (
-                              <span>Início: {format(new Date(campaign.start_date), 'dd/MM/yyyy HH:mm')}</span>
+                              <span>{t('admin.campaignForm.start')}: {format(new Date(campaign.start_date), 'dd/MM/yyyy HH:mm')}</span>
                             )}
                             {campaign.end_date && (
-                              <span>• Fim: {format(new Date(campaign.end_date), 'dd/MM/yyyy HH:mm')}</span>
+                              <span>• {t('admin.campaignForm.end')}: {format(new Date(campaign.end_date), 'dd/MM/yyyy HH:mm')}</span>
                             )}
                             {!dateActive && (
                               <Badge variant="destructive" className="ml-2 text-xs">
@@ -376,7 +376,7 @@ const CampaignsManagement = () => {
                           });
                           setPreviewOpen(true);
                         }}
-                        title="Preview"
+                        title={t('admin.campaignForm.preview')}
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
@@ -387,7 +387,7 @@ const CampaignsManagement = () => {
                           id: campaign.id, 
                           is_active: !campaign.is_active 
                         })}
-                        title={campaign.is_active ? 'Desativar' : 'Ativar'}
+                        title={campaign.is_active ? t('admin.campaignForm.deactivate') : t('admin.campaignForm.activate')}
                       >
                         {campaign.is_active ? (
                           <PowerOff className="w-4 h-4 text-red-500" />
