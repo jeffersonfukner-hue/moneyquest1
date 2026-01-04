@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, Component, ReactNode } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Transaction } from '@/types/database';
@@ -10,6 +10,25 @@ const CashFlowChart = lazy(() =>
 interface LazyCashFlowChartProps {
   transactions: Transaction[];
   walletFilter?: string | null;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
+class ChartErrorBoundary extends Component<{ children: ReactNode }, ErrorBoundaryState> {
+  state: ErrorBoundaryState = { hasError: false };
+
+  static getDerivedStateFromError(): ErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return null; // Silently hide if chart fails
+    }
+    return this.props.children;
+  }
 }
 
 const ChartSkeleton = () => (
@@ -35,8 +54,10 @@ const ChartSkeleton = () => (
 
 export const LazyCashFlowChart = ({ transactions, walletFilter }: LazyCashFlowChartProps) => {
   return (
-    <Suspense fallback={<ChartSkeleton />}>
-      <CashFlowChart transactions={transactions} walletFilter={walletFilter} />
-    </Suspense>
+    <ChartErrorBoundary>
+      <Suspense fallback={<ChartSkeleton />}>
+        <CashFlowChart transactions={transactions} walletFilter={walletFilter} />
+      </Suspense>
+    </ChartErrorBoundary>
   );
 };
