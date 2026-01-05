@@ -115,7 +115,7 @@ export const ScheduledTransactionDialog = ({ open, onOpenChange }: ScheduledTran
       type: data.type,
       category: data.category,
       currency: (profile?.currency || 'BRL') as SupportedCurrency,
-      wallet_id: data.wallet_id || null,
+      wallet_id: data.wallet_id === 'none' ? null : data.wallet_id || null,
       frequency: data.frequency,
       day_of_week: data.frequency === 'weekly' ? data.day_of_week : undefined,
       day_of_month: ['monthly', 'yearly'].includes(data.frequency) ? data.day_of_month : undefined,
@@ -256,7 +256,7 @@ export const ScheduledTransactionDialog = ({ open, onOpenChange }: ScheduledTran
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="">{t('scheduled.noWallet')}</SelectItem>
+                      <SelectItem value="none">{t('scheduled.noWallet')}</SelectItem>
                       {activeWallets.map((wallet) => (
                         <SelectItem key={wallet.id} value={wallet.id}>
                           <div className="flex items-center gap-2">
