@@ -25,8 +25,34 @@ const Home = () => {
     }
   }, [user, loading, navigate]);
 
-  // Don't render landing while checking auth or redirecting
-  if (loading || user) {
+  // Show H1 immediately during loading for LCP optimization
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20 flex flex-col">
+        <PublicNavigation />
+        <div className="flex-1 flex items-center justify-center px-6 pb-8">
+          <div className="w-full max-w-sm">
+            <div className="space-y-8">
+              <section className="text-center space-y-4">
+                <Logo size="xl" animated shine priority className="justify-center" />
+                <div className="space-y-2 pt-4">
+                  <h1 className="text-3xl font-bold tracking-tight text-foreground">
+                    {t('landing.hero.title', { defaultValue: 'Control your money like a game' })}
+                  </h1>
+                  <p className="text-base text-muted-foreground leading-relaxed">
+                    {t('landing.hero.subtitle', { defaultValue: 'Track expenses, complete challenges, and level up your finances' })}
+                  </p>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect authenticated users to dashboard
+  if (user) {
     return null;
   }
 

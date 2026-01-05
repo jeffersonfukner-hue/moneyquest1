@@ -35,9 +35,9 @@ if (typeof window !== 'undefined') {
 // Only the absolute minimum for first paint
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Home from "./pages/Home"; // Eagerly loaded for LCP optimization
 
 // ===== LAZY LOADED - Public pages (non-critical) =====
-const LazyHome = lazy(() => import("./pages/Home"));
 const LazyIndex = lazy(() => import("./pages/Index"));
 const LazyLanguageSelection = lazy(() => import("./pages/LanguageSelection"));
 const LazyFeatures = lazy(() => import("./pages/Features"));
@@ -167,13 +167,11 @@ const App = () => (
                     <SEOProviderPublic><Suspense fallback={<PageLoader />}><LazyLanguageSelection /></Suspense></SEOProviderPublic>
                   } />
                   
-                  {/* Home - Public landing page for SEO and AdSense */}
+                  {/* Home - Public landing page for SEO and AdSense - Eagerly loaded for LCP */}
                   <Route path="/" element={
                     <SEOProviderPublic>
                       <LanguageGuard>
-                        <Suspense fallback={<PageLoader />}>
-                          <LazyHome />
-                        </Suspense>
+                        <Home />
                       </LanguageGuard>
                     </SEOProviderPublic>
                   } />

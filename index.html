@@ -24,14 +24,25 @@
     <!-- Preload critical logo for LCP -->
     <link rel="preload" href="/src/assets/logo-square.webp" as="image" type="image/webp">
     
-    <!-- Critical CSS for faster FCP - inline minimal styles for above-the-fold -->
+    <!-- Critical CSS for faster FCP/LCP - inline minimal styles for above-the-fold -->
     <style>
-      :root{--background:260 15% 97%;--foreground:0 0% 12%;--primary:263 37% 27%;--muted-foreground:0 0% 40%}
-      .dark{--background:262 32% 8%;--foreground:210 20% 95%;--muted-foreground:215 20% 65%}
-      *{box-sizing:border-box}
-      html{font-family:Inter,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
-      body{margin:0;background:hsl(var(--background));color:hsl(var(--foreground));min-height:100vh}
+      :root{--background:260 15% 97%;--foreground:0 0% 12%;--primary:263 37% 27%;--muted-foreground:0 0% 40%;--border:0 0% 90%;--muted:260 15% 95%}
+      .dark{--background:262 32% 8%;--foreground:210 20% 95%;--muted-foreground:215 20% 65%;--border:215 20% 20%;--muted:262 32% 12%}
+      *{box-sizing:border-box;margin:0;padding:0}
+      html{font-family:Inter,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;font-synthesis:weight style}
+      body{background:hsl(var(--background));color:hsl(var(--foreground));min-height:100vh}
       #root{min-height:100vh;display:flex;flex-direction:column}
+      /* Critical H1/layout styles for LCP */
+      h1{font-size:1.875rem;font-weight:700;letter-spacing:-0.025em;line-height:1.2;color:hsl(var(--foreground))}
+      .text-3xl{font-size:1.875rem;line-height:2.25rem}
+      .font-bold{font-weight:700}
+      .tracking-tight{letter-spacing:-0.025em}
+      .text-foreground{color:hsl(var(--foreground))}
+      .text-center{text-align:center}
+      .flex{display:flex}.flex-col{flex-direction:column}.items-center{align-items:center}.justify-center{justify-content:center}
+      .min-h-screen{min-height:100vh}.flex-1{flex:1 1 0%}.px-6{padding-left:1.5rem;padding-right:1.5rem}.pb-8{padding-bottom:2rem}
+      .max-w-sm{max-width:24rem}.w-full{width:100%}.space-y-8>:not([hidden])~:not([hidden]){margin-top:2rem}.space-y-4>:not([hidden])~:not([hidden]){margin-top:1rem}
+      .bg-background{background:hsl(var(--background))}.bg-gradient-to-b{background:linear-gradient(to bottom,var(--tw-gradient-stops))}
       .animate-fade-in{animation:fadeIn .3s ease-out both}
       @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
     </style>
