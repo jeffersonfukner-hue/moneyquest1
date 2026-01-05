@@ -1540,6 +1540,51 @@ export type Database = {
         }
         Relationships: []
       }
+      web_vitals_logs: {
+        Row: {
+          browser: string | null
+          country: string | null
+          created_at: string
+          device_type: string | null
+          id: string
+          metric_name: string
+          metric_value: number
+          navigation_type: string | null
+          page_url: string
+          rating: string
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          browser?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          id?: string
+          metric_name: string
+          metric_value: number
+          navigation_type?: string | null
+          page_url: string
+          rating: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          browser?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          id?: string
+          metric_name?: string
+          metric_value?: number
+          navigation_type?: string | null
+          page_url?: string
+          rating?: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       xp_history: {
         Row: {
           created_at: string | null
@@ -1765,6 +1810,10 @@ export type Database = {
           trial_start_date: string
           user_id: string
         }[]
+      }
+      admin_get_web_vitals_summary: {
+        Args: { p_end_date?: string; p_start_date?: string }
+        Returns: Json
       }
       admin_grant_bonus: {
         Args: {
