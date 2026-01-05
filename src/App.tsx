@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,6 +14,22 @@ import { PWAInstallBanner } from "@/components/pwa/PWAInstallBanner";
 import '@/i18n';
 import { Gamepad2 } from 'lucide-react';
 import { AuthStatusIndicator } from '@/components/debug/AuthStatusIndicator';
+
+// Prefetch common chunks after initial load for faster navigation
+const prefetchCommonChunks = () => {
+  if ('requestIdleCallback' in window) {
+    (window as any).requestIdleCallback(() => {
+      // Prefetch likely navigation targets
+      import('./pages/Features');
+      import('./pages/Blog');
+    }, { timeout: 5000 });
+  }
+};
+
+// Execute prefetch after initial render
+if (typeof window !== 'undefined') {
+  window.addEventListener('load', prefetchCommonChunks, { once: true });
+}
 
 // ===== CRITICAL PUBLIC PAGES - Loaded immediately for fast LCP =====
 // Only the absolute minimum for first paint
