@@ -1492,6 +1492,57 @@ export type Database = {
         }
         Relationships: []
       }
+      wallet_transfers: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          date: string
+          description: string | null
+          from_wallet_id: string
+          id: string
+          to_wallet_id: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          date?: string
+          description?: string | null
+          from_wallet_id: string
+          id?: string
+          to_wallet_id: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          date?: string
+          description?: string | null
+          from_wallet_id?: string
+          id?: string
+          to_wallet_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallet_transfers_from_wallet_id_fkey"
+            columns: ["from_wallet_id"]
+            isOneToOne: false
+            referencedRelation: "wallets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wallet_transfers_to_wallet_id_fkey"
+            columns: ["to_wallet_id"]
+            isOneToOne: false
+            referencedRelation: "wallets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       wallets: {
         Row: {
           color: string | null

@@ -1,12 +1,13 @@
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MoreHorizontal, Pencil, Power, PowerOff } from 'lucide-react';
+import { MoreHorizontal, Pencil, Power, PowerOff, ArrowLeftRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Wallet } from '@/types/wallet';
@@ -17,9 +18,10 @@ interface WalletCardProps {
   wallet: Wallet;
   onEdit: (wallet: Wallet) => void;
   onToggleActive: (wallet: Wallet) => void;
+  onTransfer?: (wallet: Wallet) => void;
 }
 
-export const WalletCard = ({ wallet, onEdit, onToggleActive }: WalletCardProps) => {
+export const WalletCard = ({ wallet, onEdit, onToggleActive, onTransfer }: WalletCardProps) => {
   const { t } = useTranslation();
 
   const formatBalance = useCallback((amount: number, currency: SupportedCurrency) => {
@@ -69,6 +71,13 @@ export const WalletCard = ({ wallet, onEdit, onToggleActive }: WalletCardProps) 
               <Pencil className="mr-2 h-4 w-4" />
               {t('common.edit')}
             </DropdownMenuItem>
+            {wallet.is_active && onTransfer && (
+              <DropdownMenuItem onClick={() => onTransfer(wallet)}>
+                <ArrowLeftRight className="mr-2 h-4 w-4" />
+                {t('wallets.transfer')}
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => onToggleActive(wallet)}>
               {wallet.is_active ? (
                 <>

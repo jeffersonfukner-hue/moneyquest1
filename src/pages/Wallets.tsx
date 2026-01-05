@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, Wallet as WalletIcon, ArrowLeft } from 'lucide-react';
+import { Plus, Wallet as WalletIcon, ArrowLeft, ArrowLeftRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -9,6 +9,7 @@ import { WalletCard } from '@/components/wallets/WalletCard';
 import { AddWalletDialog } from '@/components/wallets/AddWalletDialog';
 import { EditWalletDialog } from '@/components/wallets/EditWalletDialog';
 import { WalletBalancesWidget } from '@/components/wallets/WalletBalancesWidget';
+import { TransferDialog } from '@/components/wallets/TransferDialog';
 import { Wallet } from '@/types/wallet';
 import { AppLayout } from '@/components/layout/AppLayout';
 
@@ -17,7 +18,14 @@ const WalletsPage = () => {
   const navigate = useNavigate();
   const { activeWallets, inactiveWallets, deleteWallet, reactivateWallet, loading } = useWallets();
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showTransferDialog, setShowTransferDialog] = useState(false);
+  const [transferFromWallet, setTransferFromWallet] = useState<Wallet | undefined>();
   const [editingWallet, setEditingWallet] = useState<Wallet | null>(null);
+
+  const handleOpenTransfer = (wallet?: Wallet) => {
+    setTransferFromWallet(wallet);
+    setShowTransferDialog(true);
+  };
 
   const handleToggleActive = async (wallet: Wallet) => {
     if (wallet.is_active) {
@@ -60,14 +68,25 @@ const WalletsPage = () => {
         {/* Balances Overview */}
         <WalletBalancesWidget wallets={activeWallets} />
 
-        {/* Add Wallet Button */}
-        <Button 
-          onClick={() => setShowAddDialog(true)} 
-          className="w-full"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          {t('wallets.addWallet')}
-        </Button>
+        {/* Action Buttons */}
+        <div className="flex gap-2">
+          <Button 
+            onClick={() => setShowAddDialog(true)} 
+            className="flex-1"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            {t('wallets.addWallet')}
+          </Button>
+          <Button 
+            onClick={() => handleOpenTransfer()} 
+            variant="outline"
+            className="flex-1"
+            disabled={activeWallets.length < 2}
+          >
+            <ArrowLeftRight className="mr-2 h-4 w-4" />
+            {t('wallets.transfer')}
+          </Button>
+        </div>
 
         {/* Wallets Tabs */}
         <Tabs defaultValue="active" className="w-full">
@@ -95,6 +114,7 @@ const WalletsPage = () => {
                   wallet={wallet}
                   onEdit={setEditingWallet}
                   onToggleActive={handleToggleActive}
+                  onTransfer={handleOpenTransfer}
                 />
               ))
             )}
@@ -114,6 +134,7 @@ const WalletsPage = () => {
                   wallet={wallet}
                   onEdit={setEditingWallet}
                   onToggleActive={handleToggleActive}
+                  onTransfer={handleOpenTransfer}
                 />
               ))
             )}
@@ -130,6 +151,12 @@ const WalletsPage = () => {
         wallet={editingWallet}
         open={!!editingWallet}
         onOpenChange={(open) => !open && setEditingWallet(null)}
+      />
+
+      <TransferDialog
+        open={showTransferDialog}
+        onOpenChange={setShowTransferDialog}
+        preselectedWallet={transferFromWallet}
       />
     </AppLayout>
   );

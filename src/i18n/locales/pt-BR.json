@@ -786,7 +786,22 @@
       "investment": "Investimentos",
       "cash": "Dinheiro",
       "other": "Outro"
-    }
+    },
+    "transfer": "Transferir",
+    "transferBetweenAccounts": "Transferir entre contas",
+    "fromWallet": "De",
+    "toWallet": "Para",
+    "transferAmount": "Valor da transferência",
+    "transferSuccess": "Transferência realizada com sucesso!",
+    "sameWalletError": "Selecione carteiras diferentes",
+    "insufficientBalance": "Saldo insuficiente",
+    "recentTransfers": "Transferências recentes",
+    "currencyWarning": "Atenção: transferência entre moedas diferentes",
+    "transferDescriptionPlaceholder": "Ex: Reserva de emergência",
+    "noTransfers": "Nenhuma transferência realizada",
+    "inactiveTab": "Inativas",
+    "deactivate": "Desativar",
+    "reactivate": "Reativar"
   },
   "premiumCashFlow": {
     "title": "Relatório de Fluxo de Caixa Premium",
