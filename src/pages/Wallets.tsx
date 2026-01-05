@@ -38,6 +38,7 @@ import { CreditCardInvoicesPanel } from '@/components/creditCards/CreditCardInvo
 import { LoanCard } from '@/components/loans/LoanCard';
 import { AddLoanDialog } from '@/components/loans/AddLoanDialog';
 import { LoanInstallmentsPanel } from '@/components/loans/LoanInstallmentsPanel';
+import { LoanDetailsPanel } from '@/components/loans/LoanDetailsPanel';
 import { Wallet } from '@/types/wallet';
 import { AppLayout } from '@/components/layout/AppLayout';
 
@@ -59,6 +60,7 @@ const WalletsPage = () => {
   const [editingLoan, setEditingLoan] = useState<Loan | null>(null);
   const [viewingInvoicesCard, setViewingInvoicesCard] = useState<CreditCardType | null>(null);
   const [viewingInstallmentsLoan, setViewingInstallmentsLoan] = useState<Loan | null>(null);
+  const [viewingDetailsLoan, setViewingDetailsLoan] = useState<Loan | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -370,6 +372,7 @@ const WalletsPage = () => {
                             onEdit={setEditingLoan}
                             onDelete={deleteLoan}
                             onViewInstallments={setViewingInstallmentsLoan}
+                            onViewDetails={setViewingDetailsLoan}
                           />
                         ))}
                       </div>
@@ -392,6 +395,7 @@ const WalletsPage = () => {
                             onEdit={setEditingLoan}
                             onDelete={deleteLoan}
                             onViewInstallments={setViewingInstallmentsLoan}
+                            onViewDetails={setViewingDetailsLoan}
                           />
                         ))}
                       </div>
@@ -452,6 +456,18 @@ const WalletsPage = () => {
               loan={viewingInstallmentsLoan}
               onPayInstallment={payInstallment}
               onClose={() => setViewingInstallmentsLoan(null)}
+            />
+          </div>
+        </div>
+      )}
+
+      {viewingDetailsLoan && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="w-full max-w-lg my-8">
+            <LoanDetailsPanel
+              loan={viewingDetailsLoan}
+              onBack={() => setViewingDetailsLoan(null)}
+              onPayInstallment={payInstallment}
             />
           </div>
         </div>
