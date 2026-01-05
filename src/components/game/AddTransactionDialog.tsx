@@ -54,6 +54,7 @@ interface AddTransactionDialogProps {
     date: string;
     currency: string;
     wallet_id: string;
+    items?: Array<{ name: string; amount: number }>;
   }) => Promise<{ error: Error | null; xpEarned?: number }>;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -187,6 +188,17 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
 
     setLoading(true);
     const parsedAmount = parseFloat(amount);
+    
+    // Validate breakdown items sum if breakdown is enabled
+    if (showBreakdown && breakdownItems.length > 0) {
+      const itemsTotal = breakdownItems.reduce((sum, item) => sum + (item.amount || 0), 0);
+      const difference = Math.abs(parsedAmount - itemsTotal);
+      if (difference > 0.01) {
+        setLoading(false);
+        return;
+      }
+    }
+    
     const result = await onAdd({
       description,
       amount: parsedAmount,
@@ -195,6 +207,13 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
       date: format(date, 'yyyy-MM-dd'),
       currency: selectedCurrency,
       wallet_id: walletId!,
+      // Include breakdown items if enabled (Premium only)
+      ...(showBreakdown && breakdownItems.length > 0 && {
+        items: breakdownItems.filter(item => item.name && item.amount > 0).map(item => ({
+          name: item.name,
+          amount: item.amount,
+        })),
+      }),
     });
 
     if (!result.error) {
@@ -214,6 +233,8 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
       setAmount('');
       setCategory('');
       setSelectedCurrency(currency);
+      setShowBreakdown(false);
+      setBreakdownItems([]);
       // Wallet and date are intentionally kept for multiple transactions
       setTouched({ description: false, amount: false, category: false, wallet: false });
       setAttemptedSubmit(false);

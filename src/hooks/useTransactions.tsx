@@ -81,7 +81,14 @@ export const useTransactions = () => {
   }, [user]);
 
   const addTransaction = async (
-    transaction: Omit<Transaction, 'id' | 'user_id' | 'xp_earned' | 'created_at' | 'currency'> & { currency: string; wallet_id: string }
+    transaction: Omit<Transaction, 'id' | 'user_id' | 'xp_earned' | 'created_at' | 'currency'> & { 
+      currency: string; 
+      wallet_id?: string;
+      credit_card_id?: string;
+      source_type?: 'account' | 'card';
+      transaction_subtype?: 'debit' | 'credit' | 'card_expense' | 'invoice_payment';
+      items?: Array<{ name: string; amount: number }>;
+    }
   ) => {
     if (!user || !profile) return { error: new Error('Not authenticated') };
 
@@ -93,17 +100,41 @@ export const useTransactions = () => {
     const canEarnXp = limitResult?.can_earn_xp ?? true;
     const xpEarned = canEarnXp ? calculateXP(transaction.amount, transaction.type) : 0;
     
+    // Bonus XP for item breakdown (Premium feature)
+    const breakdownBonusXp = transaction.items && transaction.items.length > 0 ? 5 : 0;
+    const totalXpForTx = xpEarned + (canEarnXp ? breakdownBonusXp : 0);
+    
+    // Extract items before inserting
+    const { items, ...txData } = transaction;
+    
     // Insert transaction (ensure UPPERCASE description)
-    const { error: txError } = await supabase
+    const { data: insertedTx, error: txError } = await supabase
       .from('transactions')
       .insert({
         user_id: user.id,
-        ...transaction,
-        description: transaction.description.toUpperCase(),
-        xp_earned: xpEarned,
-      });
+        ...txData,
+        description: txData.description.toUpperCase(),
+        xp_earned: totalXpForTx,
+        has_items: items && items.length > 0,
+        source_type: txData.source_type || 'account',
+        transaction_subtype: txData.transaction_subtype || (txData.type === 'INCOME' ? 'credit' : 'debit'),
+      })
+      .select('id')
+      .single();
 
     if (txError) return { error: txError };
+
+    // Save breakdown items if provided
+    if (items && items.length > 0 && insertedTx) {
+      const itemsToInsert = items.map(item => ({
+        transaction_id: insertedTx.id,
+        user_id: user.id,
+        name: item.name,
+        amount: item.amount,
+      }));
+      
+      await supabase.from('transaction_items').insert(itemsToInsert);
+    }
 
     // Update wallet balance
     if (transaction.wallet_id) {
@@ -111,7 +142,7 @@ export const useTransactions = () => {
     }
 
     // Calculate new profile values
-    let totalXpEarned = xpEarned;
+    let totalXpEarned = totalXpForTx;
     const { newStreak, isNewDay } = calculateStreak(profile.last_active_date, profile.streak);
     const today = getTodayString();
 
