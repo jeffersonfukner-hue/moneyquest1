@@ -843,7 +843,9 @@
       "thursday": "Quinta",
       "friday": "Sexta",
       "saturday": "Sábado"
-    }
+    },
+    "dragToReorder": "Arraste para reordenar",
+    "reorderError": "Erro ao reordenar carteiras"
   },
   "premiumCashFlow": {
     "title": "Relatório de Fluxo de Caixa Premium",

@@ -1618,6 +1618,7 @@ export type Database = {
           created_at: string | null
           currency: string
           current_balance: number
+          display_order: number
           icon: string | null
           id: string
           initial_balance: number
@@ -1633,6 +1634,7 @@ export type Database = {
           created_at?: string | null
           currency?: string
           current_balance?: number
+          display_order?: number
           icon?: string | null
           id?: string
           initial_balance?: number
@@ -1648,6 +1650,7 @@ export type Database = {
           created_at?: string | null
           currency?: string
           current_balance?: number
+          display_order?: number
           icon?: string | null
           id?: string
           initial_balance?: number

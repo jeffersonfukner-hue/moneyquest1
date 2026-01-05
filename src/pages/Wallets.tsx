@@ -1,11 +1,27 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus, Wallet as WalletIcon, ArrowLeft, ArrowLeftRight, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useWallets } from '@/hooks/useWallets';
 import { WalletCard } from '@/components/wallets/WalletCard';
+import { SortableWalletCard } from '@/components/wallets/SortableWalletCard';
 import { AddWalletDialog } from '@/components/wallets/AddWalletDialog';
 import { EditWalletDialog } from '@/components/wallets/EditWalletDialog';
 import { WalletBalancesWidget } from '@/components/wallets/WalletBalancesWidget';
@@ -19,12 +35,23 @@ import { AppLayout } from '@/components/layout/AppLayout';
 const WalletsPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { activeWallets, inactiveWallets, deleteWallet, reactivateWallet, loading } = useWallets();
+  const { activeWallets, inactiveWallets, deleteWallet, reactivateWallet, reorderWallets, loading } = useWallets();
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showTransferDialog, setShowTransferDialog] = useState(false);
   const [showScheduledDialog, setShowScheduledDialog] = useState(false);
   const [transferFromWallet, setTransferFromWallet] = useState<Wallet | undefined>();
   const [editingWallet, setEditingWallet] = useState<Wallet | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const handleOpenTransfer = (wallet?: Wallet) => {
     setTransferFromWallet(wallet);
@@ -38,6 +65,18 @@ const WalletsPage = () => {
       await reactivateWallet(wallet.id);
     }
   };
+
+  const handleDragEnd = useCallback(async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = activeWallets.findIndex((w) => w.id === active.id);
+      const newIndex = activeWallets.findIndex((w) => w.id === over.id);
+      
+      const newOrder = arrayMove(activeWallets, oldIndex, newIndex);
+      await reorderWallets(newOrder.map(w => w.id));
+    }
+  }, [activeWallets, reorderWallets]);
 
   if (loading) {
     return (
@@ -128,15 +167,31 @@ const WalletsPage = () => {
                 </p>
               </div>
             ) : (
-              activeWallets.map(wallet => (
-                <WalletCard
-                  key={wallet.id}
-                  wallet={wallet}
-                  onEdit={setEditingWallet}
-                  onToggleActive={handleToggleActive}
-                  onTransfer={handleOpenTransfer}
-                />
-              ))
+              <>
+                <p className="text-xs text-muted-foreground text-center">
+                  {t('wallets.dragToReorder')}
+                </p>
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext
+                    items={activeWallets.map(w => w.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {activeWallets.map(wallet => (
+                      <SortableWalletCard
+                        key={wallet.id}
+                        wallet={wallet}
+                        onEdit={setEditingWallet}
+                        onToggleActive={handleToggleActive}
+                        onTransfer={handleOpenTransfer}
+                      />
+                    ))}
+                  </SortableContext>
+                </DndContext>
+              </>
             )}
           </TabsContent>
 

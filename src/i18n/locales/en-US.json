@@ -844,7 +844,9 @@
       "thursday": "Thursday",
       "friday": "Friday",
       "saturday": "Saturday"
-    }
+    },
+    "dragToReorder": "Drag to reorder",
+    "reorderError": "Failed to reorder wallets"
   },
   "premiumCashFlow": {
     "title": "Premium Cash Flow Report",
