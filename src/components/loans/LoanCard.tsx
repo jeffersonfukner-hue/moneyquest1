@@ -1,4 +1,4 @@
-import { Landmark, Calendar, TrendingDown, MoreVertical, Pencil, Trash2 } from 'lucide-react';
+import { Landmark, Calendar, TrendingDown, MoreVertical, Pencil, Trash2, List } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -18,6 +18,7 @@ interface LoanCardProps {
   loan: Loan;
   onEdit: (loan: Loan) => void;
   onDelete: (id: string) => void;
+  onViewInstallments: (loan: Loan) => void;
 }
 
 const LOAN_TYPE_LABELS: Record<Loan['tipo_emprestimo'], { label: string; icon: string }> = {
@@ -28,7 +29,7 @@ const LOAN_TYPE_LABELS: Record<Loan['tipo_emprestimo'], { label: string; icon: s
   parcelamento: { label: 'Parcelamento', icon: '🛒' },
 };
 
-export const LoanCard = ({ loan, onEdit, onDelete }: LoanCardProps) => {
+export const LoanCard = ({ loan, onEdit, onDelete, onViewInstallments }: LoanCardProps) => {
   const { formatCurrency, currency: userCurrency } = useCurrency();
 
   // Helper para formatar com moeda específica
@@ -99,6 +100,10 @@ export const LoanCard = ({ loan, onEdit, onDelete }: LoanCardProps) => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => onViewInstallments(loan)}>
+                  <List className="mr-2 h-4 w-4" />
+                  Ver Parcelas
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onEdit(loan)}>
                   <Pencil className="mr-2 h-4 w-4" />
                   Editar

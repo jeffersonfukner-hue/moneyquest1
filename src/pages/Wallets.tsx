@@ -37,6 +37,7 @@ import { EditCreditCardDialog } from '@/components/creditCards/EditCreditCardDia
 import { CreditCardInvoicesPanel } from '@/components/creditCards/CreditCardInvoicesPanel';
 import { LoanCard } from '@/components/loans/LoanCard';
 import { AddLoanDialog } from '@/components/loans/AddLoanDialog';
+import { LoanInstallmentsPanel } from '@/components/loans/LoanInstallmentsPanel';
 import { Wallet } from '@/types/wallet';
 import { AppLayout } from '@/components/layout/AppLayout';
 
@@ -45,7 +46,7 @@ const WalletsPage = () => {
   const navigate = useNavigate();
   const { activeWallets, inactiveWallets, wallets, deleteWallet, reactivateWallet, reorderWallets, loading, refetch: refetchWallets } = useWallets();
   const { creditCards, addCreditCard, updateCreditCard, deleteCreditCard, loading: cardsLoading } = useCreditCards();
-  const { loans, activeLoans, paidLoans, addLoan, updateLoan, deleteLoan, loading: loansLoading, totalSaldoDevedor, totalParcelasMensais } = useLoans();
+  const { loans, activeLoans, paidLoans, addLoan, updateLoan, deleteLoan, payInstallment, loading: loansLoading, totalSaldoDevedor, totalParcelasMensais } = useLoans();
   
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showAddCardDialog, setShowAddCardDialog] = useState(false);
@@ -57,6 +58,7 @@ const WalletsPage = () => {
   const [editingCard, setEditingCard] = useState<CreditCardType | null>(null);
   const [editingLoan, setEditingLoan] = useState<Loan | null>(null);
   const [viewingInvoicesCard, setViewingInvoicesCard] = useState<CreditCardType | null>(null);
+  const [viewingInstallmentsLoan, setViewingInstallmentsLoan] = useState<Loan | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -367,6 +369,7 @@ const WalletsPage = () => {
                             loan={loan}
                             onEdit={setEditingLoan}
                             onDelete={deleteLoan}
+                            onViewInstallments={setViewingInstallmentsLoan}
                           />
                         ))}
                       </div>
@@ -388,6 +391,7 @@ const WalletsPage = () => {
                             loan={loan}
                             onEdit={setEditingLoan}
                             onDelete={deleteLoan}
+                            onViewInstallments={setViewingInstallmentsLoan}
                           />
                         ))}
                       </div>
@@ -440,6 +444,18 @@ const WalletsPage = () => {
         onOpenChange={setShowAddLoanDialog}
         onAdd={addLoan}
       />
+
+      {viewingInstallmentsLoan && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-lg">
+            <LoanInstallmentsPanel
+              loan={viewingInstallmentsLoan}
+              onPayInstallment={payInstallment}
+              onClose={() => setViewingInstallmentsLoan(null)}
+            />
+          </div>
+        </div>
+      )}
     </AppLayout>
   );
 };
