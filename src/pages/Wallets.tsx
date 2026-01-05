@@ -39,6 +39,7 @@ import { LoanCard } from '@/components/loans/LoanCard';
 import { AddLoanDialog } from '@/components/loans/AddLoanDialog';
 import { LoanInstallmentsPanel } from '@/components/loans/LoanInstallmentsPanel';
 import { LoanDetailsPanel } from '@/components/loans/LoanDetailsPanel';
+import { LoanBudgetAlert } from '@/components/loans/LoanBudgetAlert';
 import { Wallet } from '@/types/wallet';
 import { AppLayout } from '@/components/layout/AppLayout';
 
@@ -327,6 +328,9 @@ const WalletsPage = () => {
               </div>
             ) : (
               <>
+                {/* Alerta de comprometimento de renda */}
+                <LoanBudgetAlert />
+
                 {/* Resumo dos empréstimos */}
                 {activeLoans.length > 0 && (
                   <div className="grid grid-cols-2 gap-2 p-3 bg-muted/30 rounded-lg">
