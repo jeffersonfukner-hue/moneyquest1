@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
-import { ArrowRight, Clock, RefreshCw } from 'lucide-react';
+import { ArrowRight, Clock, RefreshCw, Repeat } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -40,6 +40,8 @@ const scheduledTransferSchema = z.object({
   frequency: z.enum(['daily', 'weekly', 'monthly']),
   day_of_week: z.number().optional(),
   day_of_month: z.number().optional(),
+  has_limit: z.boolean().optional(),
+  total_occurrences: z.number().min(1).optional(),
 });
 
 type ScheduledTransferFormData = z.infer<typeof scheduledTransferSchema>;
@@ -76,12 +78,15 @@ export const ScheduledTransferDialog = ({ open, onOpenChange }: ScheduledTransfe
       frequency: 'monthly',
       day_of_week: 1,
       day_of_month: 5,
+      has_limit: false,
+      total_occurrences: 12,
     },
   });
 
   const watchFromWallet = form.watch('from_wallet_id');
   const watchToWallet = form.watch('to_wallet_id');
   const watchFrequency = form.watch('frequency');
+  const watchHasLimit = form.watch('has_limit');
 
   const fromWallet = activeWallets.find(w => w.id === watchFromWallet);
   const toWallet = activeWallets.find(w => w.id === watchToWallet);
@@ -94,6 +99,15 @@ export const ScheduledTransferDialog = ({ open, onOpenChange }: ScheduledTransfe
       currency: currency,
       minimumFractionDigits: 2,
     }).format(amount);
+  };
+
+  const getFrequencyLabel = () => {
+    switch (watchFrequency) {
+      case 'daily': return 'dias';
+      case 'weekly': return 'semanas';
+      case 'monthly': return 'meses';
+      default: return 'vezes';
+    }
   };
 
   const onSubmit = async (data: ScheduledTransferFormData) => {
@@ -110,6 +124,7 @@ export const ScheduledTransferDialog = ({ open, onOpenChange }: ScheduledTransfe
       frequency: data.frequency,
       day_of_week: data.frequency === 'weekly' ? data.day_of_week : undefined,
       day_of_month: data.frequency === 'monthly' ? data.day_of_month : undefined,
+      total_occurrences: data.has_limit ? data.total_occurrences : null,
     };
 
     const success = await createScheduledTransfer(transferData);
@@ -335,6 +350,55 @@ export const ScheduledTransferDialog = ({ open, onOpenChange }: ScheduledTransfe
                 </FormItem>
               )}
             />
+
+            {/* Occurrence Limit */}
+            <div className="space-y-3 pt-2 border-t border-border">
+              <FormField
+                control={form.control}
+                name="has_limit"
+                render={({ field }) => (
+                  <FormItem className="flex items-center gap-3">
+                    <FormControl>
+                      <input
+                        type="checkbox"
+                        checked={field.value}
+                        onChange={field.onChange}
+                        className="h-4 w-4 rounded border-input"
+                      />
+                    </FormControl>
+                    <FormLabel className="!mt-0 font-normal flex items-center gap-2">
+                      <Repeat className="h-4 w-4" />
+                      Limitar número de repetições
+                    </FormLabel>
+                  </FormItem>
+                )}
+              />
+
+              {watchHasLimit && (
+                <FormField
+                  control={form.control}
+                  name="total_occurrences"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Repetir por quantos {getFrequencyLabel()}?</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min={1}
+                          max={120}
+                          {...field}
+                          onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
+                        />
+                      </FormControl>
+                      <p className="text-xs text-muted-foreground">
+                        Após {field.value || 1} execuções, a transferência será desativada automaticamente.
+                      </p>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+            </div>
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? t('common.loading') : t('wallets.createScheduledTransfer')}

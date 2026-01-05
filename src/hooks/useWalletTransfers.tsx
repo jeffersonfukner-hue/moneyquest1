@@ -33,6 +33,8 @@ export interface ScheduledTransfer {
   next_run_date: string;
   last_run_date: string | null;
   is_active: boolean;
+  total_occurrences: number | null;
+  remaining_occurrences: number | null;
   created_at: string;
 }
 
@@ -55,6 +57,7 @@ export interface CreateScheduledTransferData {
   frequency: 'daily' | 'weekly' | 'monthly';
   day_of_week?: number;
   day_of_month?: number;
+  total_occurrences?: number | null;
 }
 
 export interface TransferFilters {
@@ -241,6 +244,8 @@ export const useWalletTransfers = () => {
           day_of_week: frequency === 'weekly' ? day_of_week : null,
           day_of_month: frequency === 'monthly' ? day_of_month : null,
           next_run_date: nextRunDate.toISOString().split('T')[0],
+          total_occurrences: data.total_occurrences || null,
+          remaining_occurrences: data.total_occurrences || null,
         });
 
       if (error) throw error;

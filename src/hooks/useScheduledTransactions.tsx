@@ -21,6 +21,8 @@ export interface ScheduledTransaction {
   next_run_date: string;
   last_run_date: string | null;
   is_active: boolean;
+  total_occurrences: number | null;
+  remaining_occurrences: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -36,6 +38,7 @@ export interface CreateScheduledTransactionData {
   day_of_week?: number;
   day_of_month?: number;
   month_of_year?: number;
+  total_occurrences?: number | null;
 }
 
 export interface UpdateScheduledTransactionData extends Partial<CreateScheduledTransactionData> {
@@ -117,6 +120,8 @@ export const useScheduledTransactions = () => {
           day_of_month: ['monthly', 'yearly'].includes(data.frequency) ? data.day_of_month : null,
           month_of_year: data.frequency === 'yearly' ? data.month_of_year : null,
           next_run_date: nextRunDate.toISOString().split('T')[0],
+          total_occurrences: data.total_occurrences || null,
+          remaining_occurrences: data.total_occurrences || null,
         });
 
       if (error) throw error;
