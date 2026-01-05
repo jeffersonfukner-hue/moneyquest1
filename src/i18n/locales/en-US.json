@@ -2063,6 +2063,7 @@
   },
   "journal": {
     "title": "Adventure Journal",
+    "subtitle": "Your epic financial journey",
     "questStats": "Quest Statistics",
     "combatEncounters": "Combat Encounters",
     "treasuresFound": "Treasures Found",

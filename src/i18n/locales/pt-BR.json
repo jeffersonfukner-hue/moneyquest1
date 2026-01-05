@@ -2065,6 +2065,7 @@
   },
   "journal": {
     "title": "Diário de Aventuras",
+    "subtitle": "Sua jornada financeira épica",
     "questStats": "Estatísticas da Jornada",
     "combatEncounters": "Encontros de Combate",
     "treasuresFound": "Tesouros Encontrados",
