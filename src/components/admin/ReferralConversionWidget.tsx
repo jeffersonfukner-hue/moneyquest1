@@ -1,10 +1,34 @@
 import { useQuery } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
 import { Share2, Users, CheckCircle, TrendingUp, ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
+
+const LABELS = {
+  title: 'Conversão de Indicações',
+  description: 'Acompanhe o funil de indicação e métodos de compartilhamento',
+  shares: 'Compartilhamentos',
+  signups: 'Cadastros',
+  converted: 'Convertidos',
+  conversionRate: 'Taxa de Conversão',
+  funnel: 'Funil de Conversão',
+  dropOff: 'desistência',
+  shareMethods: 'Métodos de Compartilhamento',
+  noShareData: 'Nenhum dado de compartilhamento',
+  whatsappClicks: 'Cliques no WhatsApp (Suporte)',
+  total: 'Total',
+  clicks: 'cliques',
+  shareLabels: {
+    whatsapp: 'WhatsApp',
+    copy_link: 'Copiar Link',
+    native_share: 'Compartilhar Nativo',
+    copy_whatsapp_message: 'Copiar Mensagem WhatsApp',
+    floating_button: 'Botão Flutuante',
+    support_page: 'Página de Suporte',
+    referral_share: 'Compartilhar Indicação',
+  },
+};
 
 interface ShareStats {
   variant: string;
@@ -18,8 +42,6 @@ interface ReferralStats {
 }
 
 export const ReferralConversionWidget = () => {
-  const { t } = useTranslation();
-
   // Fetch share events from ab_test_events
   const { data: shareData, isLoading: sharesLoading } = useQuery({
     queryKey: ['admin-referral-shares'],
@@ -83,9 +105,7 @@ export const ReferralConversionWidget = () => {
   const { data: referralStats, isLoading: referralsLoading } = useQuery({
     queryKey: ['admin-referral-stats'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('referrals')
-        .select('status');
+      const { data, error } = await supabase.from('referrals').select('status');
 
       if (error) throw error;
 
@@ -108,31 +128,32 @@ export const ReferralConversionWidget = () => {
   const totalReferrals = referralStats?.total_referrals || 0;
   const conversionRate = totalShares > 0 ? ((totalReferrals / totalShares) * 100).toFixed(1) : '0.0';
 
-  // Get variant label from i18n
+  // Get variant label
   const getVariantLabel = (variant: string): string => {
     const labelMap: Record<string, string> = {
-      'whatsapp': t('admin.referralConversion.shareLabels.whatsapp'),
-      'copy_link': t('admin.referralConversion.shareLabels.copyLink'),
-      'native_share': t('admin.referralConversion.shareLabels.nativeShare'),
-      'copy_whatsapp_message': t('admin.referralConversion.shareLabels.copyWhatsappMessage'),
-      'floating_button': t('admin.referralConversion.shareLabels.floatingButton'),
-      'support_page': t('admin.referralConversion.shareLabels.supportPage'),
-      'referral_share': t('admin.referralConversion.shareLabels.referralShare'),
+      whatsapp: LABELS.shareLabels.whatsapp,
+      copy_link: LABELS.shareLabels.copy_link,
+      native_share: LABELS.shareLabels.native_share,
+      copy_whatsapp_message: LABELS.shareLabels.copy_whatsapp_message,
+      floating_button: LABELS.shareLabels.floating_button,
+      support_page: LABELS.shareLabels.support_page,
+      referral_share: LABELS.shareLabels.referral_share,
     };
     return labelMap[variant] || variant;
   };
 
   // Prepare chart data for share methods
-  const shareMethodData = shareData?.byVariant.map((item) => ({
-    name: getVariantLabel(item.variant),
-    value: item.clicks,
-  })) || [];
+  const shareMethodData =
+    shareData?.byVariant.map((item) => ({
+      name: getVariantLabel(item.variant),
+      value: item.clicks,
+    })) || [];
 
   // Funnel data
   const funnelData = [
-    { name: t('admin.referralConversion.shares'), value: totalShares, fill: '#3b82f6' },
-    { name: t('admin.referralConversion.signups'), value: totalReferrals, fill: '#22c55e' },
-    { name: t('admin.referralConversion.converted'), value: referralStats?.completed_referrals || 0, fill: '#8b5cf6' },
+    { name: LABELS.shares, value: totalShares, fill: '#3b82f6' },
+    { name: LABELS.signups, value: totalReferrals, fill: '#22c55e' },
+    { name: LABELS.converted, value: referralStats?.completed_referrals || 0, fill: '#8b5cf6' },
   ];
 
   const COLORS = ['#3b82f6', '#22c55e', '#eab308', '#ef4444', '#8b5cf6'];
@@ -156,11 +177,9 @@ export const ReferralConversionWidget = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Share2 className="w-5 h-5 text-primary" />
-          {t('admin.referralConversion.title')}
+          {LABELS.title}
         </CardTitle>
-        <CardDescription>
-          {t('admin.referralConversion.description')}
-        </CardDescription>
+        <CardDescription>{LABELS.description}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Stats Overview */}
@@ -168,22 +187,22 @@ export const ReferralConversionWidget = () => {
           <div className="text-center p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
             <Share2 className="w-6 h-6 text-blue-500 mx-auto mb-2" />
             <p className="text-2xl font-bold text-foreground">{totalShares}</p>
-            <p className="text-xs text-muted-foreground">{t('admin.referralConversion.shares')}</p>
+            <p className="text-xs text-muted-foreground">{LABELS.shares}</p>
           </div>
           <div className="text-center p-4 bg-green-500/10 rounded-lg border border-green-500/20">
             <Users className="w-6 h-6 text-green-500 mx-auto mb-2" />
             <p className="text-2xl font-bold text-foreground">{totalReferrals}</p>
-            <p className="text-xs text-muted-foreground">{t('admin.referralConversion.signups')}</p>
+            <p className="text-xs text-muted-foreground">{LABELS.signups}</p>
           </div>
           <div className="text-center p-4 bg-purple-500/10 rounded-lg border border-purple-500/20">
             <CheckCircle className="w-6 h-6 text-purple-500 mx-auto mb-2" />
             <p className="text-2xl font-bold text-foreground">{referralStats?.completed_referrals || 0}</p>
-            <p className="text-xs text-muted-foreground">{t('admin.referralConversion.converted')}</p>
+            <p className="text-xs text-muted-foreground">{LABELS.converted}</p>
           </div>
           <div className="text-center p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
             <TrendingUp className="w-6 h-6 text-amber-500 mx-auto mb-2" />
             <p className="text-2xl font-bold text-foreground">{conversionRate}%</p>
-            <p className="text-xs text-muted-foreground">{t('admin.referralConversion.conversionRate')}</p>
+            <p className="text-xs text-muted-foreground">{LABELS.conversionRate}</p>
           </div>
         </div>
 
@@ -191,15 +210,16 @@ export const ReferralConversionWidget = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Funnel Visualization */}
           <div>
-            <h4 className="text-sm font-medium mb-4">{t('admin.referralConversion.funnel')}</h4>
+            <h4 className="text-sm font-medium mb-4">{LABELS.funnel}</h4>
             <div className="space-y-3">
               {funnelData.map((item, index) => {
-                const maxValue = Math.max(...funnelData.map(d => d.value)) || 1;
+                const maxValue = Math.max(...funnelData.map((d) => d.value)) || 1;
                 const width = (item.value / maxValue) * 100;
                 const nextItem = funnelData[index + 1];
-                const dropRate = nextItem && item.value > 0 
-                  ? ((item.value - nextItem.value) / item.value * 100).toFixed(1)
-                  : null;
+                const dropRate =
+                  nextItem && item.value > 0
+                    ? (((item.value - nextItem.value) / item.value) * 100).toFixed(1)
+                    : null;
 
                 return (
                   <div key={item.name}>
@@ -208,11 +228,11 @@ export const ReferralConversionWidget = () => {
                       <span className="text-muted-foreground">{item.value}</span>
                     </div>
                     <div className="h-8 bg-muted rounded-lg overflow-hidden">
-                      <div 
+                      <div
                         className="h-full rounded-lg transition-all duration-500 flex items-center justify-end pr-2"
-                        style={{ 
-                          width: `${Math.max(width, 5)}%`, 
-                          backgroundColor: item.fill 
+                        style={{
+                          width: `${Math.max(width, 5)}%`,
+                          backgroundColor: item.fill,
                         }}
                       >
                         {width > 20 && (
@@ -225,7 +245,7 @@ export const ReferralConversionWidget = () => {
                     {dropRate && (
                       <div className="flex items-center justify-center text-xs text-muted-foreground mt-1">
                         <ArrowRight className="w-3 h-3 mr-1" />
-                        {dropRate}% {t('admin.referralConversion.dropOff')}
+                        {dropRate}% {LABELS.dropOff}
                       </div>
                     )}
                   </div>
@@ -236,7 +256,7 @@ export const ReferralConversionWidget = () => {
 
           {/* Share Methods Distribution */}
           <div>
-            <h4 className="text-sm font-medium mb-4">{t('admin.referralConversion.shareMethods')}</h4>
+            <h4 className="text-sm font-medium mb-4">{LABELS.shareMethods}</h4>
             {shareMethodData.length > 0 ? (
               <div className="h-48">
                 <ResponsiveContainer width="100%" height="100%">
@@ -254,26 +274,26 @@ export const ReferralConversionWidget = () => {
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip 
-                      formatter={(value: number) => [`${value} ${t('admin.campaignAnalytics.clicks').toLowerCase()}`, '']}
-                    />
+                    <Tooltip formatter={(value: number) => [`${value} ${LABELS.clicks}`, '']} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
             ) : (
               <div className="h-48 flex items-center justify-center text-muted-foreground">
-                {t('admin.referralConversion.noShareData')}
+                {LABELS.noShareData}
               </div>
             )}
             {/* Legend */}
             <div className="flex flex-wrap justify-center gap-3 mt-2">
               {shareMethodData.map((item, index) => (
                 <div key={item.name} className="flex items-center gap-1 text-xs">
-                  <div 
-                    className="w-2 h-2 rounded-full" 
+                  <div
+                    className="w-2 h-2 rounded-full"
                     style={{ backgroundColor: COLORS[index % COLORS.length] }}
                   />
-                  <span>{item.name}: {item.value}</span>
+                  <span>
+                    {item.name}: {item.value}
+                  </span>
                 </div>
               ))}
             </div>
@@ -283,10 +303,10 @@ export const ReferralConversionWidget = () => {
         {/* WhatsApp Support Clicks */}
         {whatsappSupportData && whatsappSupportData.total > 0 && (
           <div className="pt-4 border-t border-border">
-            <h4 className="text-sm font-medium mb-3">{t('admin.referralConversion.whatsappClicks')}</h4>
+            <h4 className="text-sm font-medium mb-3">{LABELS.whatsappClicks}</h4>
             <div className="flex flex-wrap gap-3">
               {whatsappSupportData.byVariant.map((item) => (
-                <div 
+                <div
                   key={item.variant}
                   className="px-3 py-2 bg-green-500/10 rounded-lg border border-green-500/20"
                 >
@@ -296,7 +316,7 @@ export const ReferralConversionWidget = () => {
               ))}
               <div className="px-3 py-2 bg-muted rounded-lg">
                 <span className="text-sm font-medium text-foreground">{whatsappSupportData.total}</span>
-                <span className="text-xs text-muted-foreground ml-2">{t('admin.referralConversion.total')}</span>
+                <span className="text-xs text-muted-foreground ml-2">{LABELS.total}</span>
               </div>
             </div>
           </div>
