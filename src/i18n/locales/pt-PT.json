@@ -1077,6 +1077,13 @@
     "saveChanges": "Guardar Alterações",
     "updated": "Transação atualizada!",
     "duplicate": "Duplicar",
+    "selectSource": "Escolha onde registar esta transação:",
+    "bankAccount": "Conta Bancária",
+    "bankAccountDesc": "Receitas e despesas da conta",
+    "creditCard": "Cartão de Crédito",
+    "creditCardDesc": "Compras no cartão de crédito",
+    "cardExpense": "Gasto no Cartão",
+    "cardExpenseHint": "A registar gasto no cartão de crédito",
     "categories": {
       "salary": "Ordenado",
       "freelance": "Freelance",

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Plus, ArrowUpCircle, ArrowDownCircle, CalendarIcon, Coins, AlertCircle, List, Scan, Crown, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, ArrowUpCircle, ArrowDownCircle, CalendarIcon, Coins, AlertCircle, List, Scan, Crown, ChevronDown, ChevronUp, Wallet, CreditCard } from 'lucide-react';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
@@ -45,6 +45,9 @@ export interface PrefillData {
   wallet_id: string | null;
 }
 
+// Source type for transaction destination
+type SourceType = 'account' | 'card';
+
 interface AddTransactionDialogProps {
   onAdd: (transaction: {
     description: string;
@@ -54,6 +57,8 @@ interface AddTransactionDialogProps {
     date: string;
     currency: string;
     wallet_id: string;
+    source_type?: string;
+    transaction_subtype?: string;
     items?: Array<{ name: string; amount: number }>;
   }) => Promise<{ error: Error | null; xpEarned?: number }>;
   open?: boolean;
@@ -73,6 +78,8 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   const { user } = useAuth();
   
   const [internalOpen, setInternalOpen] = useState(false);
+  // First choice: account or credit card
+  const [sourceType, setSourceType] = useState<SourceType | null>(null);
   const [type, setType] = useState<TransactionType>('EXPENSE');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
@@ -159,22 +166,50 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   
   // Handle dialog close and session complete
   const handleOpenChange = (newOpen: boolean) => {
-    if (!newOpen && sessionData.transactionCount > 0) {
-      // Dialog is closing and we have transactions in session
-      onSessionComplete?.(sessionData);
-      // Reset session data
-      setSessionData({
-        transactionCount: 0,
-        totalExpense: 0,
-        totalIncome: 0,
-        xpGained: 0,
-      });
+    if (!newOpen) {
+      // Reset source selection when dialog closes
+      setSourceType(null);
+      setType('EXPENSE');
+      setCategory('');
+      
+      if (sessionData.transactionCount > 0) {
+        // Dialog is closing and we have transactions in session
+        onSessionComplete?.(sessionData);
+        // Reset session data
+        setSessionData({
+          transactionCount: 0,
+          totalExpense: 0,
+          totalIncome: 0,
+          xpGained: 0,
+        });
+      }
     }
     if (isControlled) {
       onOpenChange?.(newOpen);
     } else {
       setInternalOpen(newOpen);
     }
+  };
+
+  // Handle source type selection
+  const handleSourceTypeSelect = (source: SourceType) => {
+    setSourceType(source);
+    if (source === 'card') {
+      // For credit card, always expense
+      setType('EXPENSE');
+    }
+    setCategory('');
+  };
+
+  // Go back to source selection
+  const handleBackToSourceSelection = () => {
+    setSourceType(null);
+    setType('EXPENSE');
+    setCategory('');
+    setDescription('');
+    setAmount('');
+    setTouched({ description: false, amount: false, category: false, wallet: false });
+    setAttemptedSubmit(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -199,6 +234,9 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
       }
     }
     
+    // Determine source_type and transaction_subtype based on selection
+    const isCardExpense = sourceType === 'card';
+    
     const result = await onAdd({
       description,
       amount: parsedAmount,
@@ -207,8 +245,13 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
       date: format(date, 'yyyy-MM-dd'),
       currency: selectedCurrency,
       wallet_id: walletId!,
-      // Include breakdown items if enabled (Premium only)
-      ...(showBreakdown && breakdownItems.length > 0 && {
+      // Set source_type and transaction_subtype for card expenses
+      ...(isCardExpense && {
+        source_type: 'card',
+        transaction_subtype: 'card_expense',
+      }),
+      // Include breakdown items if enabled (Premium only) - only for card expenses
+      ...(showBreakdown && breakdownItems.length > 0 && isCardExpense && {
         items: breakdownItems.filter(item => item.name && item.amount > 0).map(item => ({
           name: item.name,
           amount: item.amount,
@@ -372,42 +415,112 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
         }}
       >
         <DialogHeader>
-          <DialogTitle className="font-display text-xl text-primary">{t('transactions.addTransaction')}</DialogTitle>
+          <DialogTitle className="font-display text-xl text-primary">
+            {sourceType === null 
+              ? t('transactions.addTransaction')
+              : sourceType === 'card' 
+                ? t('transactions.cardExpense', 'Gasto no Cartão')
+                : t('transactions.addTransaction')
+            }
+          </DialogTitle>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              variant={type === 'INCOME' ? 'default' : 'outline'}
-              className={cn(
-                "flex-1 min-h-[48px]",
-                type === 'INCOME' && 'bg-success hover:bg-success/90 text-white'
-              )}
-              onClick={() => {
-                setType('INCOME');
-                setCategory('');
-              }}
-            >
-              <ArrowUpCircle className="w-4 h-4 mr-2" />
-              {t('transactions.income')}
-            </Button>
-            <Button
-              type="button"
-              variant={type === 'EXPENSE' ? 'default' : 'outline'}
-              className={cn(
-                "flex-1 min-h-[48px]",
-                type === 'EXPENSE' && 'bg-destructive hover:bg-destructive/90 text-white'
-              )}
-              onClick={() => {
-                setType('EXPENSE');
-                setCategory('');
-              }}
-            >
-              <ArrowDownCircle className="w-4 h-4 mr-2" />
-              {t('transactions.expense')}
-            </Button>
+        {/* Step 1: Source Selection */}
+        {sourceType === null ? (
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              {t('transactions.selectSource', 'Escolha onde registrar esta transação:')}
+            </p>
+            <div className="grid grid-cols-1 gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                className="h-auto py-4 flex flex-col items-center gap-2 hover:border-primary hover:bg-primary/5"
+                onClick={() => handleSourceTypeSelect('account')}
+              >
+                <Wallet className="w-8 h-8 text-primary" />
+                <div className="text-center">
+                  <p className="font-medium">{t('transactions.bankAccount', 'Conta Bancária')}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t('transactions.bankAccountDesc', 'Receitas e despesas da conta')}
+                  </p>
+                </div>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="h-auto py-4 flex flex-col items-center gap-2 hover:border-amber-500 hover:bg-amber-500/5"
+                onClick={() => handleSourceTypeSelect('card')}
+              >
+                <CreditCard className="w-8 h-8 text-amber-600" />
+                <div className="text-center">
+                  <p className="font-medium">{t('transactions.creditCard', 'Cartão de Crédito')}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t('transactions.creditCardDesc', 'Compras no cartão de crédito')}
+                  </p>
+                </div>
+              </Button>
+            </div>
           </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Back button */}
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground -ml-2"
+              onClick={handleBackToSourceSelection}
+            >
+              <ChevronUp className="w-4 h-4 mr-1 rotate-[-90deg]" />
+              {t('common.back', 'Voltar')}
+            </Button>
+
+            {/* Account flow: show income/expense toggle */}
+            {sourceType === 'account' && (
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant={type === 'INCOME' ? 'default' : 'outline'}
+                  className={cn(
+                    "flex-1 min-h-[48px]",
+                    type === 'INCOME' && 'bg-success hover:bg-success/90 text-white'
+                  )}
+                  onClick={() => {
+                    setType('INCOME');
+                    setCategory('');
+                  }}
+                >
+                  <ArrowUpCircle className="w-4 h-4 mr-2" />
+                  {t('transactions.income')}
+                </Button>
+                <Button
+                  type="button"
+                  variant={type === 'EXPENSE' ? 'default' : 'outline'}
+                  className={cn(
+                    "flex-1 min-h-[48px]",
+                    type === 'EXPENSE' && 'bg-destructive hover:bg-destructive/90 text-white'
+                  )}
+                  onClick={() => {
+                    setType('EXPENSE');
+                    setCategory('');
+                  }}
+                >
+                  <ArrowDownCircle className="w-4 h-4 mr-2" />
+                  {t('transactions.expense')}
+                </Button>
+              </div>
+            )}
+
+            {/* Credit Card flow: always expense, show indicator */}
+            {sourceType === 'card' && (
+              <div className="flex items-center gap-2 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                <CreditCard className="w-5 h-5 text-amber-600" />
+                <span className="text-sm text-amber-700 dark:text-amber-400">
+                  {t('transactions.cardExpenseHint', 'Registrando gasto no cartão de crédito')}
+                </span>
+              </div>
+            )}
 
           <div className="space-y-2">
             <Label htmlFor="description" className="flex items-center gap-1">
@@ -484,10 +597,10 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
               message={t('validation.amountRequired')}
             />
 
-            {/* Premium Features: OCR and Breakdown buttons */}
+            {/* Premium Features: OCR button for all expenses, Breakdown only for card */}
             {type === 'EXPENSE' && (
               <div className="flex gap-2 pt-1">
-                {/* OCR Button */}
+                {/* OCR Button - available for all expense types */}
                 {isPremium ? (
                   <ReceiptOCRButton 
                     onResult={handleOCRResult}
@@ -507,28 +620,30 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
                   </Button>
                 )}
 
-                {/* Breakdown Toggle */}
-                <Button
-                  type="button"
-                  variant={showBreakdown ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={handleBreakdownToggle}
-                  className={cn(
-                    "flex-1 gap-2 relative",
-                    showBreakdown && "bg-primary"
-                  )}
-                >
-                  <List className="w-4 h-4" />
-                  {t('breakdown.toggle', 'Detalhar')}
-                  {!isPremium && (
-                    <Crown className="w-3 h-3 text-amber-500 absolute -top-1 -right-1" />
-                  )}
-                </Button>
+                {/* Breakdown Toggle - only for credit card expenses */}
+                {sourceType === 'card' && (
+                  <Button
+                    type="button"
+                    variant={showBreakdown ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={handleBreakdownToggle}
+                    className={cn(
+                      "flex-1 gap-2 relative",
+                      showBreakdown && "bg-primary"
+                    )}
+                  >
+                    <List className="w-4 h-4" />
+                    {t('breakdown.toggle', 'Detalhar')}
+                    {!isPremium && (
+                      <Crown className="w-3 h-3 text-amber-500 absolute -top-1 -right-1" />
+                    )}
+                  </Button>
+                )}
               </div>
             )}
 
-            {/* Item Breakdown Editor (Premium only) */}
-            {showBreakdown && isPremium && type === 'EXPENSE' && (
+            {/* Item Breakdown Editor (Premium only, card expenses only) */}
+            {showBreakdown && isPremium && sourceType === 'card' && (
               <ItemBreakdownEditor
                 items={breakdownItems}
                 onItemsChange={setBreakdownItems}
@@ -656,7 +771,8 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
           >
             {loading ? t('common.loading') : `${t('common.add')} 🎮`}
           </Button>
-        </form>
+          </form>
+        )}
 
         <QuickAddCategoryDialog
           open={quickAddOpen}
