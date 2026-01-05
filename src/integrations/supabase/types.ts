@@ -2344,6 +2344,14 @@ export type Database = {
         Args: { p_fingerprint_hash: string }
         Returns: Json
       }
+      check_loan_badges: {
+        Args: { p_user_id: string }
+        Returns: {
+          badge_icon: string
+          badge_name: string
+          unlocked: boolean
+        }[]
+      }
       check_referral_fraud: {
         Args: { p_referred_id: string; p_referrer_id: string }
         Returns: Json
@@ -2420,6 +2428,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      initialize_loan_badges: {
+        Args: { p_user_id: string }
+        Returns: undefined
       }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
       mark_discount_offer_shown: { Args: { p_user_id: string }; Returns: Json }

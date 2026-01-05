@@ -313,6 +313,9 @@ export const useLoans = () => {
           : `Parcela ${installmentNumber} registrada. Faltam ${loan.quantidade_parcelas - newParcelasPagas}.`,
       });
 
+      // Check for badge unlocks
+      await checkLoanBadges();
+
       return true;
     } catch (error) {
       console.error('Error paying installment:', error);
@@ -322,6 +325,40 @@ export const useLoans = () => {
         variant: 'destructive',
       });
       return false;
+    }
+  };
+
+  // Check and unlock loan badges
+  const checkLoanBadges = async (): Promise<{ name: string; icon: string }[]> => {
+    if (!user) return [];
+
+    try {
+      const { data, error } = await supabase.rpc('check_loan_badges', {
+        p_user_id: user.id
+      });
+
+      if (error) {
+        console.error('Error checking loan badges:', error);
+        return [];
+      }
+
+      const unlockedBadges = (data || []).filter((b: { unlocked: boolean }) => b.unlocked);
+      
+      // Show toast for each unlocked badge
+      unlockedBadges.forEach((badge: { badge_name: string; badge_icon: string }) => {
+        toast({
+          title: `${badge.badge_icon} Conquista Desbloqueada!`,
+          description: badge.badge_name,
+        });
+      });
+
+      return unlockedBadges.map((b: { badge_name: string; badge_icon: string }) => ({
+        name: b.badge_name,
+        icon: b.badge_icon
+      }));
+    } catch (error) {
+      console.error('Error checking loan badges:', error);
+      return [];
     }
   };
 
@@ -369,6 +406,11 @@ export const useLoans = () => {
           : `${installmentsToPay} parcela(s) antecipada(s) com sucesso.`,
       });
 
+      // Check for badge unlocks if loan was paid off
+      if (newStatus === 'quitado') {
+        await checkLoanBadges();
+      }
+
       return true;
     } catch (error) {
       console.error('Error prepaying installments:', error);
@@ -413,6 +455,9 @@ export const useLoans = () => {
         title: '🎉 Empréstimo quitado!',
         description: 'Parabéns por quitar essa dívida!',
       });
+
+      // Check for badge unlocks
+      await checkLoanBadges();
 
       return true;
     } catch (error) {
