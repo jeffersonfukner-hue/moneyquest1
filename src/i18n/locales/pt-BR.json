@@ -2612,6 +2612,8 @@
     "transactionActivated": "Transação recorrente ativada",
     "transactionPaused": "Transação recorrente pausada",
     "transactionDeleted": "Transação recorrente excluída",
+    "transactionUpdated": "Transação recorrente atualizada",
+    "editTransaction": "Editar Transação Recorrente",
     "createTransaction": "Criar Transação Recorrente",
     "descriptionPlaceholder": "Ex: Salário, Aluguel, Netflix...",
     "noWallet": "Sem carteira específica",

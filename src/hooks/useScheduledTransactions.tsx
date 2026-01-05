@@ -38,6 +38,10 @@ export interface CreateScheduledTransactionData {
   month_of_year?: number;
 }
 
+export interface UpdateScheduledTransactionData extends Partial<CreateScheduledTransactionData> {
+  id: string;
+}
+
 export const useScheduledTransactions = () => {
   const { user } = useAuth();
   const { t } = useTranslation();
@@ -128,6 +132,74 @@ export const useScheduledTransactions = () => {
     }
   };
 
+  const updateScheduledTransaction = async (data: UpdateScheduledTransactionData): Promise<boolean> => {
+    if (!user) return false;
+
+    // Calculate next run date if frequency changed
+    const today = new Date();
+    let nextRunDate: Date | null = null;
+
+    if (data.frequency) {
+      nextRunDate = new Date();
+      if (data.frequency === 'daily') {
+        nextRunDate.setDate(today.getDate() + 1);
+      } else if (data.frequency === 'weekly' && data.day_of_week !== undefined) {
+        const daysUntilNext = (data.day_of_week - today.getDay() + 7) % 7 || 7;
+        nextRunDate.setDate(today.getDate() + daysUntilNext);
+      } else if (data.frequency === 'monthly' && data.day_of_month !== undefined) {
+        nextRunDate.setDate(data.day_of_month);
+        if (nextRunDate <= today) {
+          nextRunDate.setMonth(nextRunDate.getMonth() + 1);
+        }
+      } else if (data.frequency === 'yearly' && data.day_of_month !== undefined && data.month_of_year !== undefined) {
+        nextRunDate.setMonth(data.month_of_year - 1);
+        nextRunDate.setDate(data.day_of_month);
+        if (nextRunDate <= today) {
+          nextRunDate.setFullYear(nextRunDate.getFullYear() + 1);
+        }
+      }
+    }
+
+    try {
+      const updateData: Record<string, any> = {
+        updated_at: new Date().toISOString(),
+      };
+
+      if (data.description !== undefined) updateData.description = data.description;
+      if (data.amount !== undefined) updateData.amount = data.amount;
+      if (data.type !== undefined) updateData.type = data.type;
+      if (data.category !== undefined) updateData.category = data.category;
+      if (data.currency !== undefined) updateData.currency = data.currency;
+      if (data.wallet_id !== undefined) updateData.wallet_id = data.wallet_id || null;
+      if (data.frequency !== undefined) {
+        updateData.frequency = data.frequency;
+        updateData.day_of_week = data.frequency === 'weekly' ? data.day_of_week : null;
+        updateData.day_of_month = ['monthly', 'yearly'].includes(data.frequency) ? data.day_of_month : null;
+        updateData.month_of_year = data.frequency === 'yearly' ? data.month_of_year : null;
+        if (nextRunDate) {
+          updateData.next_run_date = nextRunDate.toISOString().split('T')[0];
+        }
+      }
+
+      const { error } = await supabase
+        .from('scheduled_transactions')
+        .update(updateData)
+        .eq('id', data.id)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      toast.success(t('scheduled.transactionUpdated'));
+      await fetchScheduledTransactions();
+      
+      return true;
+    } catch (error) {
+      console.error('Error updating scheduled transaction:', error);
+      toast.error(t('common.error'));
+      return false;
+    }
+  };
+
   const toggleScheduledTransaction = async (id: string, isActive: boolean): Promise<boolean> => {
     try {
       const { error } = await supabase
@@ -172,6 +244,7 @@ export const useScheduledTransactions = () => {
     scheduledTransactions,
     loading,
     createScheduledTransaction,
+    updateScheduledTransaction,
     toggleScheduledTransaction,
     deleteScheduledTransaction,
     fetchScheduledTransactions,

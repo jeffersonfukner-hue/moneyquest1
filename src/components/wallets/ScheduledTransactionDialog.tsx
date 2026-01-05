@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -30,7 +30,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useWallets } from '@/hooks/useWallets';
 import { useCategories } from '@/hooks/useCategories';
-import { useScheduledTransactions, CreateScheduledTransactionData } from '@/hooks/useScheduledTransactions';
+import { useScheduledTransactions, CreateScheduledTransactionData, ScheduledTransaction } from '@/hooks/useScheduledTransactions';
 import { useProfile } from '@/hooks/useProfile';
 import { SupportedCurrency } from '@/types/database';
 
@@ -51,6 +51,7 @@ type ScheduledTransactionFormData = z.infer<typeof scheduledTransactionSchema>;
 interface ScheduledTransactionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  editTransaction?: ScheduledTransaction | null;
 }
 
 const DAYS_OF_WEEK = [
@@ -78,13 +79,15 @@ const MONTHS = [
   { value: 12, label: 'december' },
 ];
 
-export const ScheduledTransactionDialog = ({ open, onOpenChange }: ScheduledTransactionDialogProps) => {
+export const ScheduledTransactionDialog = ({ open, onOpenChange, editTransaction }: ScheduledTransactionDialogProps) => {
   const { t } = useTranslation();
   const { activeWallets } = useWallets();
   const { categories } = useCategories();
   const { profile } = useProfile();
-  const { createScheduledTransaction } = useScheduledTransactions();
+  const { createScheduledTransaction, updateScheduledTransaction } = useScheduledTransactions();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const isEditMode = !!editTransaction;
 
   const form = useForm<ScheduledTransactionFormData>({
     resolver: zodResolver(scheduledTransactionSchema),
@@ -101,6 +104,35 @@ export const ScheduledTransactionDialog = ({ open, onOpenChange }: ScheduledTran
     },
   });
 
+  // Reset form when dialog opens with edit data
+  useEffect(() => {
+    if (open && editTransaction) {
+      form.reset({
+        description: editTransaction.description,
+        amount: editTransaction.amount,
+        type: editTransaction.type,
+        category: editTransaction.category,
+        wallet_id: editTransaction.wallet_id || 'none',
+        frequency: editTransaction.frequency,
+        day_of_week: editTransaction.day_of_week ?? 1,
+        day_of_month: editTransaction.day_of_month ?? 5,
+        month_of_year: editTransaction.month_of_year ?? 1,
+      });
+    } else if (open && !editTransaction) {
+      form.reset({
+        description: '',
+        amount: 0,
+        type: 'EXPENSE',
+        category: '',
+        wallet_id: '',
+        frequency: 'monthly',
+        day_of_week: 1,
+        day_of_month: 5,
+        month_of_year: 1,
+      });
+    }
+  }, [open, editTransaction, form]);
+
   const watchType = form.watch('type');
   const watchFrequency = form.watch('frequency');
 
@@ -109,20 +141,38 @@ export const ScheduledTransactionDialog = ({ open, onOpenChange }: ScheduledTran
   const onSubmit = async (data: ScheduledTransactionFormData) => {
     setIsSubmitting(true);
     
-    const transactionData: CreateScheduledTransactionData = {
-      description: data.description,
-      amount: data.amount,
-      type: data.type,
-      category: data.category,
-      currency: (profile?.currency || 'BRL') as SupportedCurrency,
-      wallet_id: data.wallet_id === 'none' ? null : data.wallet_id || null,
-      frequency: data.frequency,
-      day_of_week: data.frequency === 'weekly' ? data.day_of_week : undefined,
-      day_of_month: ['monthly', 'yearly'].includes(data.frequency) ? data.day_of_month : undefined,
-      month_of_year: data.frequency === 'yearly' ? data.month_of_year : undefined,
-    };
+    let success = false;
 
-    const success = await createScheduledTransaction(transactionData);
+    if (isEditMode && editTransaction) {
+      success = await updateScheduledTransaction({
+        id: editTransaction.id,
+        description: data.description,
+        amount: data.amount,
+        type: data.type,
+        category: data.category,
+        currency: (profile?.currency || 'BRL') as SupportedCurrency,
+        wallet_id: data.wallet_id === 'none' ? null : data.wallet_id || null,
+        frequency: data.frequency,
+        day_of_week: data.frequency === 'weekly' ? data.day_of_week : undefined,
+        day_of_month: ['monthly', 'yearly'].includes(data.frequency) ? data.day_of_month : undefined,
+        month_of_year: data.frequency === 'yearly' ? data.month_of_year : undefined,
+      });
+    } else {
+      const transactionData: CreateScheduledTransactionData = {
+        description: data.description,
+        amount: data.amount,
+        type: data.type,
+        category: data.category,
+        currency: (profile?.currency || 'BRL') as SupportedCurrency,
+        wallet_id: data.wallet_id === 'none' ? null : data.wallet_id || null,
+        frequency: data.frequency,
+        day_of_week: data.frequency === 'weekly' ? data.day_of_week : undefined,
+        day_of_month: ['monthly', 'yearly'].includes(data.frequency) ? data.day_of_month : undefined,
+        month_of_year: data.frequency === 'yearly' ? data.month_of_year : undefined,
+      };
+
+      success = await createScheduledTransaction(transactionData);
+    }
     
     setIsSubmitting(false);
 
@@ -138,7 +188,7 @@ export const ScheduledTransactionDialog = ({ open, onOpenChange }: ScheduledTran
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Clock className="h-5 w-5" />
-            {t('scheduled.addTransaction')}
+            {isEditMode ? t('scheduled.editTransaction') : t('scheduled.addTransaction')}
           </DialogTitle>
         </DialogHeader>
 
@@ -383,7 +433,7 @@ export const ScheduledTransactionDialog = ({ open, onOpenChange }: ScheduledTran
             )}
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? t('common.loading') : t('scheduled.createTransaction')}
+              {isSubmitting ? t('common.loading') : (isEditMode ? t('common.save') : t('scheduled.createTransaction'))}
             </Button>
           </form>
         </Form>
