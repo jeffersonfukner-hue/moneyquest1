@@ -280,7 +280,7 @@ export function IPWhitelistWidget() {
             <AlertDialogTitle>Remover IP da whitelist?</AlertDialogTitle>
             <AlertDialogDescription>
               Este IP voltará a ser considerado na análise de fraude de
-              referrals.
+              indicações.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

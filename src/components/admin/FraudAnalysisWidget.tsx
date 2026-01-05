@@ -1,24 +1,71 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  AlertTriangle, 
-  Shield, 
-  ShieldAlert, 
-  ShieldX, 
+import {
+  AlertTriangle,
+  Shield,
+  ShieldAlert,
+  ShieldX,
   CheckCircle2,
   Eye,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+
+const LABELS = {
+  title: 'Análise de Fraude (IA)',
+  description: 'Identifique padrões de abuso e priorize revisões de indicações suspeitas',
+  critical: 'crítico',
+  pending: 'pendente',
+  noAlerts: 'Nenhum alerta de fraude no momento',
+  systemWorking: 'O sistema está monitorando e registrando eventos automaticamente.',
+  by: 'por',
+  reviewed: 'Revisado',
+  review: 'Marcar como revisado',
+  more: 'mais',
+  sections: {
+    fingerprint: 'Análise de Fingerprint',
+    transaction: 'Padrões de Transações',
+    timing: 'Análise de Tempo',
+    allFactors: 'Fatores de Risco',
+  },
+  fields: {
+    count: 'Quantidade',
+    avgInterval: 'Intervalo médio',
+    roundPercent: 'Valores redondos',
+    sameHourPercent: 'Mesmo horário',
+    accountAge: 'Idade da conta',
+    timeToComplete: 'Tempo até completar',
+  },
+  yes: 'Sim',
+  no: 'Não',
+  toasts: {
+    markError: 'Erro ao marcar como revisado',
+    marked: 'Marcado como revisado',
+  },
+  risk: {
+    low: 'Baixo',
+    medium: 'Médio',
+    high: 'Alto',
+    critical: 'Crítico',
+  },
+  reasons: {
+    same_device_fingerprint: 'Mesmo fingerprint',
+    same_ip_within_24h: 'Mesmo IP (24h)',
+    similar_user_agent: 'User-Agent semelhante',
+    fast_completion: 'Conclusão muito rápida',
+    round_amounts: 'Valores muito redondos',
+    same_hour_pattern: 'Padrão de horário repetido',
+    high_referrer_rate: 'Alta taxa de suspeitas do indicador',
+  } as Record<string, string>,
+};
 
 interface FraudAnalysis {
   id: string;
@@ -60,21 +107,18 @@ interface FraudAnalysis {
 }
 
 export const FraudAnalysisWidget = () => {
-  const { t } = useTranslation();
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const riskLevelConfig = {
-    low: { icon: Shield, color: 'text-green-500', bg: 'bg-green-500/10', label: t('admin.fraud.riskLevels.low') },
-    medium: { icon: AlertTriangle, color: 'text-yellow-500', bg: 'bg-yellow-500/10', label: t('admin.fraud.riskLevels.medium') },
-    high: { icon: ShieldAlert, color: 'text-orange-500', bg: 'bg-orange-500/10', label: t('admin.fraud.riskLevels.high') },
-    critical: { icon: ShieldX, color: 'text-red-500', bg: 'bg-red-500/10', label: t('admin.fraud.riskLevels.critical') },
+    low: { icon: Shield, color: 'text-green-500', bg: 'bg-green-500/10', label: LABELS.risk.low },
+    medium: { icon: AlertTriangle, color: 'text-yellow-500', bg: 'bg-yellow-500/10', label: LABELS.risk.medium },
+    high: { icon: ShieldAlert, color: 'text-orange-500', bg: 'bg-orange-500/10', label: LABELS.risk.high },
+    critical: { icon: ShieldX, color: 'text-red-500', bg: 'bg-red-500/10', label: LABELS.risk.critical },
   };
 
   const getReasonLabel = (reason: string): string => {
-    const key = `admin.fraud.reasons.${reason}` as const;
-    const translation = t(key);
-    // If translation key not found, return the reason as-is
-    return translation !== key ? translation : reason.replace(/_/g, ' ');
+    if (LABELS.reasons[reason]) return LABELS.reasons[reason];
+    return reason.replace(/_/g, ' ');
   };
 
   const { data: analyses, isLoading, refetch } = useQuery({
@@ -89,15 +133,15 @@ export const FraudAnalysisWidget = () => {
   const handleMarkReviewed = async (analysisId: string) => {
     const { error } = await supabase.rpc('admin_mark_fraud_reviewed', { p_analysis_id: analysisId });
     if (error) {
-      toast.error(t('admin.fraud.markReviewedError'));
+      toast.error(LABELS.toasts.markError);
       return;
     }
-    toast.success(t('admin.fraud.markedAsReviewed'));
+    toast.success(LABELS.toasts.marked);
     refetch();
   };
 
-  const pendingCount = analyses?.filter(a => !a.reviewed_at).length || 0;
-  const criticalCount = analyses?.filter(a => a.risk_level === 'critical' && !a.reviewed_at).length || 0;
+  const pendingCount = analyses?.filter((a) => !a.reviewed_at).length || 0;
+  const criticalCount = analyses?.filter((a) => a.risk_level === 'critical' && !a.reviewed_at).length || 0;
 
   if (isLoading) {
     return (
@@ -108,7 +152,7 @@ export const FraudAnalysisWidget = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {[1, 2, 3].map(i => (
+            {[1, 2, 3].map((i) => (
               <Skeleton key={i} className="h-20 w-full" />
             ))}
           </div>
@@ -123,21 +167,19 @@ export const FraudAnalysisWidget = () => {
         <div>
           <CardTitle className="flex items-center gap-2">
             <ShieldAlert className="h-5 w-5 text-orange-500" />
-            {t('admin.fraud.title')}
+            {LABELS.title}
           </CardTitle>
-          <CardDescription>
-            {t('admin.fraud.description')}
-          </CardDescription>
+          <CardDescription>{LABELS.description}</CardDescription>
         </div>
         <div className="flex items-center gap-2">
           {criticalCount > 0 && (
             <Badge variant="destructive" className="animate-pulse">
-              {criticalCount} {t('admin.fraud.critical')}
+              {criticalCount} {LABELS.critical}
             </Badge>
           )}
           {pendingCount > 0 && (
             <Badge variant="outline">
-              {pendingCount} {t('admin.fraud.pending')}
+              {pendingCount} {LABELS.pending}
             </Badge>
           )}
         </div>
@@ -146,75 +188,68 @@ export const FraudAnalysisWidget = () => {
         {!analyses || analyses.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             <Shield className="h-12 w-12 mx-auto mb-3 opacity-50" />
-            <p>{t('admin.fraud.noAlerts')}</p>
-            <p className="text-sm">{t('admin.fraud.systemWorking')}</p>
+            <p>{LABELS.noAlerts}</p>
+            <p className="text-sm">{LABELS.systemWorking}</p>
           </div>
         ) : (
           <ScrollArea className="h-[400px] pr-4">
             <div className="space-y-3">
-              {analyses.map(analysis => {
-                const config = riskLevelConfig[analysis.risk_level as keyof typeof riskLevelConfig] || riskLevelConfig.low;
+              {analyses.map((analysis) => {
+                const config =
+                  riskLevelConfig[analysis.risk_level as keyof typeof riskLevelConfig] || riskLevelConfig.low;
                 const RiskIcon = config.icon;
                 const isExpanded = expandedId === analysis.id;
 
                 return (
                   <div
                     key={analysis.id}
-                    className={cn(
-                      "border rounded-lg p-4 transition-all",
-                      analysis.reviewed_at ? "opacity-60" : "",
-                      config.bg
-                    )}
+                    className={cn('border rounded-lg p-4 transition-all', analysis.reviewed_at ? 'opacity-60' : '', config.bg)}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-3">
-                        <div className={cn("p-2 rounded-full", config.bg)}>
-                          <RiskIcon className={cn("h-5 w-5", config.color)} />
+                        <div className={cn('p-2 rounded-full', config.bg)}>
+                          <RiskIcon className={cn('h-5 w-5', config.color)} />
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
                             <span className="font-medium">{analysis.referred_name}</span>
                             <span className="text-muted-foreground">→</span>
-                            <span className="text-sm text-muted-foreground">{t('admin.fraud.by')} {analysis.referrer_name}</span>
+                            <span className="text-sm text-muted-foreground">
+                              {LABELS.by} {analysis.referrer_name}
+                            </span>
                           </div>
                           <div className="flex items-center gap-2 mt-1">
-                            <Badge variant="outline" className={cn("text-xs", config.color)}>
+                            <Badge variant="outline" className={cn('text-xs', config.color)}>
                               Score: {analysis.risk_score}/100
                             </Badge>
                             <Badge variant="outline" className="text-xs">
                               {analysis.referral_status}
                             </Badge>
+                            <Badge variant="outline" className="text-xs">
+                              {config.label}
+                            </Badge>
                             {analysis.reviewed_at && (
                               <Badge variant="secondary" className="text-xs">
                                 <CheckCircle2 className="h-3 w-3 mr-1" />
-                                {t('admin.fraud.reviewed')}
+                                {LABELS.reviewed}
                               </Badge>
                             )}
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setExpandedId(isExpanded ? null : analysis.id)}
-                        >
+                        <Button variant="ghost" size="sm" onClick={() => setExpandedId(isExpanded ? null : analysis.id)}>
                           {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                         </Button>
                         {!analysis.reviewed_at && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleMarkReviewed(analysis.id)}
-                          >
+                          <Button variant="outline" size="sm" onClick={() => handleMarkReviewed(analysis.id)}>
                             <Eye className="h-4 w-4 mr-1" />
-                            {t('admin.fraud.review')}
+                            {LABELS.review}
                           </Button>
                         )}
                       </div>
                     </div>
 
-                    {/* Reasons summary */}
                     <div className="flex flex-wrap gap-1 mt-3">
                       {analysis.reasons.slice(0, 3).map((reason, i) => (
                         <Badge key={i} variant="secondary" className="text-xs">
@@ -223,52 +258,52 @@ export const FraudAnalysisWidget = () => {
                       ))}
                       {analysis.reasons.length > 3 && (
                         <Badge variant="secondary" className="text-xs">
-                          +{analysis.reasons.length - 3} {t('admin.fraud.more')}
+                          +{analysis.reasons.length - 3} {LABELS.more}
                         </Badge>
                       )}
                     </div>
 
-                    {/* Expanded details */}
                     {isExpanded && analysis.analysis_details && (
                       <div className="mt-4 pt-4 border-t space-y-4">
-                        {/* Fingerprint Analysis */}
                         <div>
-                          <h4 className="text-sm font-medium mb-2">{t('admin.fraud.fingerprintAnalysis')}</h4>
+                          <h4 className="text-sm font-medium mb-2">{LABELS.sections.fingerprint}</h4>
                           <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs">
                             {Object.entries(analysis.analysis_details.fingerprint_analysis || {}).map(([key, value]) => (
-                              <div key={key} className={cn(
-                                "p-2 rounded border text-center",
-                                value ? "border-red-500/50 bg-red-500/10" : "border-green-500/50 bg-green-500/10"
-                              )}>
+                              <div
+                                key={key}
+                                className={cn(
+                                  'p-2 rounded border text-center',
+                                  value ? 'border-red-500/50 bg-red-500/10' : 'border-green-500/50 bg-green-500/10'
+                                )}
+                              >
                                 <div className="font-medium">{key.replace(/_/g, ' ')}</div>
-                                <div>{value ? `⚠️ ${t('admin.fraud.yes')}` : `✅ ${t('admin.fraud.no')}`}</div>
+                                <div>{value ? `⚠️ ${LABELS.yes}` : `✅ ${LABELS.no}`}</div>
                               </div>
                             ))}
                           </div>
                         </div>
 
-                        {/* Transaction Analysis */}
                         <div>
-                          <h4 className="text-sm font-medium mb-2">{t('admin.fraud.transactionPatterns')}</h4>
+                          <h4 className="text-sm font-medium mb-2">{LABELS.sections.transaction}</h4>
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
                             <div className="p-2 rounded border">
-                              <div className="text-muted-foreground">{t('admin.fraud.count')}</div>
+                              <div className="text-muted-foreground">{LABELS.fields.count}</div>
                               <div className="font-medium">{analysis.analysis_details.transaction_analysis?.count || 0}</div>
                             </div>
                             <div className="p-2 rounded border">
-                              <div className="text-muted-foreground">{t('admin.fraud.avgInterval')}</div>
+                              <div className="text-muted-foreground">{LABELS.fields.avgInterval}</div>
                               <div className="font-medium">
                                 {Math.round(analysis.analysis_details.transaction_analysis?.avg_interval_seconds || 0)}s
                               </div>
                             </div>
                             <div className="p-2 rounded border">
-                              <div className="text-muted-foreground">{t('admin.fraud.roundPercent')}</div>
+                              <div className="text-muted-foreground">{LABELS.fields.roundPercent}</div>
                               <div className="font-medium">
                                 {Math.round((analysis.analysis_details.transaction_analysis?.round_amounts_ratio || 0) * 100)}%
                               </div>
                             </div>
                             <div className="p-2 rounded border">
-                              <div className="text-muted-foreground">{t('admin.fraud.sameHourPercent')}</div>
+                              <div className="text-muted-foreground">{LABELS.fields.sameHourPercent}</div>
                               <div className="font-medium">
                                 {Math.round((analysis.analysis_details.transaction_analysis?.same_hour_ratio || 0) * 100)}%
                               </div>
@@ -276,18 +311,17 @@ export const FraudAnalysisWidget = () => {
                           </div>
                         </div>
 
-                        {/* Timing Analysis */}
                         <div>
-                          <h4 className="text-sm font-medium mb-2">{t('admin.fraud.timingAnalysis')}</h4>
+                          <h4 className="text-sm font-medium mb-2">{LABELS.sections.timing}</h4>
                           <div className="grid grid-cols-2 gap-2 text-xs">
                             <div className="p-2 rounded border">
-                              <div className="text-muted-foreground">{t('admin.fraud.accountAge')}</div>
+                              <div className="text-muted-foreground">{LABELS.fields.accountAge}</div>
                               <div className="font-medium">
                                 {Math.round(analysis.analysis_details.timing_analysis?.account_age_hours || 0)}h
                               </div>
                             </div>
                             <div className="p-2 rounded border">
-                              <div className="text-muted-foreground">{t('admin.fraud.timeToComplete')}</div>
+                              <div className="text-muted-foreground">{LABELS.fields.timeToComplete}</div>
                               <div className="font-medium">
                                 {Math.round(analysis.analysis_details.timing_analysis?.time_to_complete_hours || 0)}h
                               </div>
@@ -295,9 +329,8 @@ export const FraudAnalysisWidget = () => {
                           </div>
                         </div>
 
-                        {/* All Reasons */}
                         <div>
-                          <h4 className="text-sm font-medium mb-2">{t('admin.fraud.allRiskFactors')}</h4>
+                          <h4 className="text-sm font-medium mb-2">{LABELS.sections.allFactors}</h4>
                           <div className="flex flex-wrap gap-1">
                             {analysis.reasons.map((reason, i) => (
                               <Badge key={i} variant="outline" className="text-xs">
