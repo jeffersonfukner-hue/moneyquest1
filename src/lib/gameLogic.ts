@@ -63,6 +63,10 @@ export const getBadgeKey = (badgeName: string): string => {
     'Christmas Planner': 'christmas_planner',
     'Smart Reveler': 'smart_reveler',
     'Golden Egg': 'golden_egg',
+    // Loan badges
+    'Debt Killer': 'debt_killer',
+    'Zero Late Payments': 'zero_late_payments',
+    'Interest Under Control': 'interest_under_control',
   };
   return nameToKey[badgeName] || badgeName.toLowerCase().replace(/\s+/g, '_');
 };
