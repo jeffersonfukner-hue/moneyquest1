@@ -48,7 +48,7 @@ serve(async (req) => {
     logStep("Stripe key verified");
 
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
+    if (!authHeader?.startsWith("Bearer ")) {
       logStep("ERROR", { message: "No authorization header provided" });
       return new Response(JSON.stringify({ error: "No authorization header provided" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -58,23 +58,73 @@ serve(async (req) => {
     logStep("Authorization header found");
 
     const token = authHeader.replace("Bearer ", "");
-    const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
-    if (userError) {
-      logStep("ERROR", { message: `Authentication error: ${userError.message}` });
-      return new Response(JSON.stringify({ error: `Auth session missing!` }), {
+    
+    // Use getClaims for resilient JWT validation (works even with expired access tokens if refresh succeeded)
+    const { data: claimsData, error: claimsError } = await supabaseClient.auth.getClaims(token);
+    
+    if (claimsError || !claimsData?.claims?.sub) {
+      logStep("getClaims failed, trying getUser as fallback", { error: claimsError?.message });
+      
+      // Fallback to getUser for edge cases
+      const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
+      if (userError || !userData?.user) {
+        logStep("ERROR", { message: `Authentication error: ${userError?.message || 'No user'}` });
+        return new Response(JSON.stringify({ error: "Auth session missing!" }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 401,
+        });
+      }
+      
+      const user = userData.user;
+      if (!user?.email) {
+        logStep("ERROR", { message: "User email not available" });
+        return new Response(JSON.stringify({ error: "User not authenticated" }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 401,
+        });
+      }
+      
+      logStep("User authenticated via getUser fallback", { userId: user.id, email: user.email });
+      
+      // Continue with user data
+      var userId = user.id;
+      var userEmail = user.email;
+    } else {
+      // getClaims succeeded
+      userId = claimsData.claims.sub;
+      userEmail = claimsData.claims.email as string;
+      logStep("User authenticated via getClaims", { userId, email: userEmail });
+      
+      if (!userEmail) {
+        // Need to fetch email from database
+        const { data: profileData } = await supabaseClient
+          .from("profiles")
+          .select("id")
+          .eq("id", userId)
+          .single();
+          
+        if (!profileData) {
+          logStep("ERROR", { message: "Profile not found" });
+          return new Response(JSON.stringify({ error: "User not found" }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+            status: 401,
+          });
+        }
+        
+        // Get email from auth.users
+        const { data: authUser } = await supabaseClient.auth.admin.getUserById(userId);
+        userEmail = authUser?.user?.email || "";
+      }
+    }
+    
+    const user = { id: userId, email: userEmail };
+    if (!user.email) {
+      logStep("ERROR", { message: "User email not available" });
+      return new Response(JSON.stringify({ error: "User email required" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 401,
       });
     }
-    const user = userData.user;
-    if (!user?.email) {
-      logStep("ERROR", { message: "User not authenticated or email not available" });
-      return new Response(JSON.stringify({ error: "User not authenticated" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 401,
-      });
-    }
-    logStep("User authenticated", { userId: user.id, email: user.email });
 
     // Fetch current profile to check premium_override and trial status
     const { data: profile, error: profileError } = await supabaseClient
