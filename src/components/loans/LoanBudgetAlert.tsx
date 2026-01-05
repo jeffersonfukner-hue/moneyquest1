@@ -54,8 +54,8 @@ export function LoanBudgetAlert({ showCard = true }: LoanBudgetAlertProps) {
       bgColor: 'bg-green-500/10',
       borderColor: 'border-green-500/30',
       progressColor: 'bg-green-500',
-      title: 'Empréstimos sob controle',
-      message: `Seus empréstimos comprometem ${commitmentPercentage.toFixed(0)}% da sua renda mensal.`,
+      title: 'Empréstimos sob controle 💪',
+      message: `Parabéns! Seus empréstimos comprometem apenas ${commitmentPercentage.toFixed(0)}% da sua renda mensal. Continue assim!`,
     },
     warning: {
       icon: AlertTriangle,
@@ -63,8 +63,8 @@ export function LoanBudgetAlert({ showCard = true }: LoanBudgetAlertProps) {
       bgColor: 'bg-yellow-500/10',
       borderColor: 'border-yellow-500/30',
       progressColor: 'bg-yellow-500',
-      title: 'Atenção ao comprometimento',
-      message: `Seus empréstimos comprometem ${commitmentPercentage.toFixed(0)}% da sua renda mensal. Recomendamos manter abaixo de 20%.`,
+      title: 'Fique atento ao comprometimento',
+      message: `Seus empréstimos comprometem ${commitmentPercentage.toFixed(0)}% da sua renda mensal. O ideal é manter esse valor abaixo de 20%.`,
     },
     critical: {
       icon: AlertTriangle,
@@ -73,7 +73,7 @@ export function LoanBudgetAlert({ showCard = true }: LoanBudgetAlertProps) {
       borderColor: 'border-red-500/30',
       progressColor: 'bg-red-500',
       title: 'Comprometimento elevado',
-      message: `⚠️ Seus empréstimos comprometem ${commitmentPercentage.toFixed(0)}% da sua renda mensal. Considere renegociar ou quitar algumas dívidas.`,
+      message: `⚠️ Seus empréstimos comprometem ${commitmentPercentage.toFixed(0)}% da sua renda mensal. Considere renegociar ou quitar algumas dívidas para recuperar sua liberdade financeira.`,
     },
   };
 

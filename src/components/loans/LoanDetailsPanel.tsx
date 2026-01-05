@@ -138,9 +138,12 @@ export function LoanDetailsPanel({ loan, onBack, onPayInstallment, onPrepay, onP
           </div>
           <Progress value={progressPercent} className="h-3 mb-3" />
           <div className="flex justify-between text-sm text-muted-foreground">
-            <span>{loan.parcelas_pagas} parcelas pagas</span>
-            <span>{loan.quantidade_parcelas - loan.parcelas_pagas} restantes</span>
+            <span>Você já quitou {loan.parcelas_pagas} parcelas</span>
+            <span>Faltam {loan.quantidade_parcelas - loan.parcelas_pagas}</span>
           </div>
+          {progressPercent > 0 && progressPercent < 100 && (
+            <p className="text-xs text-center mt-2 text-primary">Continue assim, você está no caminho certo! 💪</p>
+          )}
         </CardContent>
       </Card>
 
@@ -174,7 +177,7 @@ export function LoanDetailsPanel({ loan, onBack, onPayInstallment, onPrepay, onP
             </div>
             <p className={`text-lg font-bold ${isOverdue ? 'text-destructive' : isDueToday ? 'text-yellow-600' : ''}`}>
               {loan.status === 'quitado' 
-                ? '—' 
+                ? 'Quitado 🎉' 
                 : format(proximoVencimento, "dd/MM/yyyy", { locale: ptBR })
               }
             </p>
@@ -188,6 +191,7 @@ export function LoanDetailsPanel({ loan, onBack, onPayInstallment, onPrepay, onP
               <span className="text-xs text-muted-foreground uppercase">Valor da Parcela</span>
             </div>
             <p className="text-lg font-bold">{formatLoanCurrency(loan.valor_parcela, loan.currency)}</p>
+            <p className="text-[10px] text-muted-foreground">pago mensalmente</p>
           </CardContent>
         </Card>
       </div>
@@ -208,13 +212,16 @@ export function LoanDetailsPanel({ loan, onBack, onPayInstallment, onPrepay, onP
             </div>
             <Separator />
             <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Juros Pagos</span>
+              <span className="text-sm text-muted-foreground">Juros Pagos até agora</span>
               <span className="font-medium text-orange-600">{formatLoanCurrency(jurosPagos, loan.currency)}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Juros Total Estimado</span>
               <span className="font-medium">{formatLoanCurrency(jurosTotal > 0 ? jurosTotal : 0, loan.currency)}</span>
             </div>
+            <p className="text-xs text-muted-foreground pt-2 border-t">
+              💡 Acompanhar de perto ajuda a evitar juros desnecessários.
+            </p>
           </CardContent>
         </Card>
       )}

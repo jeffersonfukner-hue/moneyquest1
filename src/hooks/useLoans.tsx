@@ -202,16 +202,16 @@ export const useLoans = () => {
 
       setLoans(prev => [newLoan, ...prev]);
       toast({
-        title: 'Empréstimo cadastrado!',
-        description: `${loanData.quantidade_parcelas} parcelas foram geradas automaticamente.`,
+        title: 'Empréstimo cadastrado com sucesso!',
+        description: `${loanData.quantidade_parcelas} parcelas foram geradas. Acompanhe de perto para evitar juros desnecessários.`,
       });
 
       return newLoan;
     } catch (error) {
       console.error('Error adding loan:', error);
       toast({
-        title: 'Erro',
-        description: 'Não foi possível cadastrar o empréstimo.',
+        title: 'Erro ao cadastrar',
+        description: 'Não foi possível cadastrar o empréstimo. Tente novamente.',
         variant: 'destructive',
       });
       return null;
@@ -307,10 +307,10 @@ export const useLoans = () => {
       );
 
       toast({
-        title: 'Parcela paga!',
+        title: 'Parcela paga com sucesso! 👏',
         description: newStatus === 'quitado' 
-          ? '🎉 Parabéns! Empréstimo quitado!' 
-          : `Parcela ${installmentNumber} registrada. Faltam ${loan.quantidade_parcelas - newParcelasPagas}.`,
+          ? '🎉 Empréstimo quitado! Menos uma dívida, mais liberdade financeira.' 
+          : `Você está mais perto de quitar esse empréstimo. Faltam ${loan.quantidade_parcelas - newParcelasPagas} parcelas.`,
       });
 
       // Check for badge unlocks
@@ -400,10 +400,10 @@ export const useLoans = () => {
       );
 
       toast({
-        title: 'Parcelas antecipadas!',
+        title: 'Parcelas antecipadas com sucesso! 💪',
         description: newStatus === 'quitado' 
-          ? '🎉 Parabéns! Empréstimo quitado!' 
-          : `${installmentsToPay} parcela(s) antecipada(s) com sucesso.`,
+          ? '🎉 Empréstimo quitado! Menos uma dívida, mais liberdade financeira.' 
+          : `${installmentsToPay} parcela(s) antecipada(s). Antecipar pode reduzir o total de juros pagos.`,
       });
 
       // Check for badge unlocks if loan was paid off
@@ -453,7 +453,7 @@ export const useLoans = () => {
 
       toast({
         title: '🎉 Empréstimo quitado!',
-        description: 'Parabéns por quitar essa dívida!',
+        description: 'Parabéns! Menos uma dívida, mais liberdade financeira.',
       });
 
       // Check for badge unlocks

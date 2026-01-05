@@ -197,6 +197,7 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
           {/* Valor Total */}
           <div className="space-y-2">
             <Label>Valor Total do Empréstimo</Label>
+            <p className="text-xs text-muted-foreground -mt-1">Valor total contratado, sem descontar parcelas já pagas.</p>
             <div className="flex gap-2">
               <Select value={selectedCurrency} onValueChange={(v) => setSelectedCurrency(v as SupportedCurrency)}>
                 <SelectTrigger className="w-24 min-h-[44px]">
@@ -246,6 +247,7 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
                 onChange={(e) => setValorParcela(e.target.value)}
                 className="min-h-[44px]"
               />
+              <p className="text-[10px] text-muted-foreground">Valor pago mensalmente</p>
             </div>
           </div>
 
@@ -277,6 +279,7 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
                 onChange={(e) => setTaxaJuros(e.target.value)}
                 className="min-h-[44px]"
               />
+              <p className="text-[10px] text-muted-foreground">Ajuda a ver o custo real</p>
             </div>
           </div>
 
@@ -285,7 +288,7 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
             <div className="flex items-center justify-between">
               <div>
                 <Label className="text-sm">Debitar parcelas automaticamente</Label>
-                <p className="text-xs text-muted-foreground">Lança a despesa no vencimento</p>
+                <p className="text-xs text-muted-foreground">Lança a despesa no dia do vencimento</p>
               </div>
               <Switch
                 checked={debitarAutomaticamente}
@@ -295,8 +298,8 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
             
             <div className="flex items-center justify-between">
               <div>
-                <Label className="text-sm">Enviar lembrete antes do vencimento</Label>
-                <p className="text-xs text-muted-foreground">Notifica 3 dias antes</p>
+                <Label className="text-sm">Lembrete antes do vencimento</Label>
+                <p className="text-xs text-muted-foreground">Receba um aviso 3 dias antes</p>
               </div>
               <Switch
                 checked={enviarLembrete}
@@ -307,7 +310,7 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
             <div className="flex items-center justify-between">
               <div>
                 <Label className="text-sm">Considerar no orçamento mensal</Label>
-                <p className="text-xs text-muted-foreground">Inclui nas metas de gastos</p>
+                <p className="text-xs text-muted-foreground">As parcelas serão incluídas nas suas metas de gastos</p>
               </div>
               <Switch
                 checked={considerarOrcamento}
