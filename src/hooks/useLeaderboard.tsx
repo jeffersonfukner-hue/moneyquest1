@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 export interface LeaderboardEntry {
   id: string;
   user_id: string;
+  public_id: string;
   display_name: string;
   avatar_icon: string;
   xp: number;
@@ -168,7 +169,7 @@ export const useLeaderboard = () => {
         xp: profile.xp,
         level: profile.level,
         is_public: isPublic
-      });
+      } as any);
 
     if (error) {
       toast.error('Failed to join leaderboard');

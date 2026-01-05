@@ -610,6 +610,7 @@ export type Database = {
           is_public: boolean | null
           joined_at: string | null
           level: number
+          public_id: string
           updated_at: string | null
           user_id: string
           xp: number
@@ -621,6 +622,7 @@ export type Database = {
           is_public?: boolean | null
           joined_at?: string | null
           level?: number
+          public_id: string
           updated_at?: string | null
           user_id: string
           xp?: number
@@ -632,6 +634,7 @@ export type Database = {
           is_public?: boolean | null
           joined_at?: string | null
           level?: number
+          public_id?: string
           updated_at?: string | null
           user_id?: string
           xp?: number
@@ -1814,7 +1817,42 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      leaderboard_public: {
+        Row: {
+          avatar_icon: string | null
+          display_name: string | null
+          id: string | null
+          is_public: boolean | null
+          joined_at: string | null
+          level: number | null
+          public_id: string | null
+          updated_at: string | null
+          xp: number | null
+        }
+        Insert: {
+          avatar_icon?: string | null
+          display_name?: string | null
+          id?: string | null
+          is_public?: boolean | null
+          joined_at?: string | null
+          level?: number | null
+          public_id?: string | null
+          updated_at?: string | null
+          xp?: number | null
+        }
+        Update: {
+          avatar_icon?: string | null
+          display_name?: string | null
+          id?: string | null
+          is_public?: boolean | null
+          joined_at?: string | null
+          level?: number | null
+          public_id?: string | null
+          updated_at?: string | null
+          xp?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       admin_add_ip_whitelist: {
