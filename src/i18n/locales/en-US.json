@@ -32,7 +32,14 @@
     "invoicePaidDesc": "The invoice was successfully paid.",
     "payError": "Could not pay the invoice.",
     "insufficientBalance": "Insufficient balance in the linked account.",
-    "alreadyPaid": "This invoice has already been paid."
+    "alreadyPaid": "This invoice has already been paid.",
+    "limitEvolution": "Usage Evolution",
+    "avgUsage": "Average usage",
+    "ofLimit": "of limit",
+    "stable": "Stable",
+    "spent": "Spent",
+    "limitUsage": "Limit usage",
+    "noSpendingData": "No spending data yet"
   },
   "admin": {
     "oauth": {

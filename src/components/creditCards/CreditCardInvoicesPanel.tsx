@@ -21,6 +21,7 @@ import { formatMoney } from '@/lib/formatters';
 import { CreditCard } from '@/hooks/useCreditCards';
 import { useCreditCardInvoices, CreditCardInvoice, InvoiceTransaction } from '@/hooks/useCreditCardInvoices';
 import { PayInvoiceDialog } from './PayInvoiceDialog';
+import { CreditCardLimitEvolutionChart } from './CreditCardLimitEvolutionChart';
 import { Wallet } from '@/types/wallet';
 import { cn } from '@/lib/utils';
 
@@ -201,15 +202,27 @@ export const CreditCardInvoicesPanel = ({ card, wallets, onBack }: CreditCardInv
     invoices, 
     loading, 
     payingInvoice, 
-    fetchInvoiceTransactions, 
+    fetchInvoiceTransactions,
+    fetchCardTransactions,
     payInvoice,
     refetch 
   } = useCreditCardInvoices(card.id);
   
   const [selectedInvoice, setSelectedInvoice] = useState<CreditCardInvoice | null>(null);
   const [showPayDialog, setShowPayDialog] = useState(false);
+  const [cardTransactions, setCardTransactions] = useState<(InvoiceTransaction & { credit_card_id: string })[]>([]);
+  const [loadingTransactions, setLoadingTransactions] = useState(true);
 
-  const linkedWallet = wallets.find(w => w.id === card.linked_wallet_id) || null;
+  // Fetch card transactions for the chart
+  useEffect(() => {
+    const loadTransactions = async () => {
+      setLoadingTransactions(true);
+      const txns = await fetchCardTransactions();
+      setCardTransactions(txns as (InvoiceTransaction & { credit_card_id: string })[]);
+      setLoadingTransactions(false);
+    };
+    loadTransactions();
+  }, [fetchCardTransactions]);
 
   const handlePayClick = (invoice: CreditCardInvoice) => {
     setSelectedInvoice(invoice);
@@ -228,6 +241,8 @@ export const CreditCardInvoicesPanel = ({ card, wallets, onBack }: CreditCardInv
   const openInvoices = invoices.filter(inv => inv.status === 'open');
   const closedInvoices = invoices.filter(inv => inv.status === 'closed');
   const paidInvoices = invoices.filter(inv => inv.status === 'paid');
+  
+  const linkedWallet = wallets.find(w => w.id === card.linked_wallet_id) || null;
 
   return (
     <div className="space-y-4">
@@ -246,6 +261,14 @@ export const CreditCardInvoicesPanel = ({ card, wallets, onBack }: CreditCardInv
           </div>
         </div>
       </div>
+
+      {/* Limit Evolution Chart */}
+      {!loadingTransactions && (
+        <CreditCardLimitEvolutionChart 
+          card={card} 
+          transactions={cardTransactions}
+        />
+      )}
 
       {/* Loading state */}
       {loading ? (

@@ -32,7 +32,14 @@
     "invoicePaidDesc": "La factura fue pagada con éxito.",
     "payError": "No se pudo pagar la factura.",
     "insufficientBalance": "Saldo insuficiente en la cuenta vinculada.",
-    "alreadyPaid": "Esta factura ya fue pagada."
+    "alreadyPaid": "Esta factura ya fue pagada.",
+    "limitEvolution": "Evolución del Uso",
+    "avgUsage": "Uso promedio",
+    "ofLimit": "del límite",
+    "stable": "Estable",
+    "spent": "Gastado",
+    "limitUsage": "Uso del límite",
+    "noSpendingData": "Sin datos de gastos aún"
   },
   "admin": {
     "oauth": {

@@ -83,6 +83,29 @@ export const useCreditCardInvoices = (creditCardId?: string) => {
     }
   };
 
+  // Fetch all transactions for a credit card (for charts)
+  const fetchCardTransactions = useCallback(async (): Promise<InvoiceTransaction[]> => {
+    if (!user || !creditCardId) return [];
+
+    try {
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('id, description, amount, category, date, currency, credit_card_id')
+        .eq('credit_card_id', creditCardId)
+        .eq('user_id', user.id)
+        .order('date', { ascending: false });
+
+      if (error) throw error;
+      return (data || []).map(tx => ({
+        ...tx,
+        credit_card_id: tx.credit_card_id || creditCardId,
+      })) as (InvoiceTransaction & { credit_card_id: string })[];
+    } catch (error) {
+      console.error('Error fetching card transactions:', error);
+      return [];
+    }
+  }, [user, creditCardId]);
+
   const payInvoice = async (invoiceId: string, walletId: string): Promise<boolean> => {
     if (!user) return false;
 
@@ -164,6 +187,7 @@ export const useCreditCardInvoices = (creditCardId?: string) => {
     payingInvoice,
     refetch: fetchInvoices,
     fetchInvoiceTransactions,
+    fetchCardTransactions,
     payInvoice,
     getCurrentInvoice,
   };
