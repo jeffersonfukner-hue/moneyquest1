@@ -35,3 +35,6 @@ verify_jwt = false
 
 [functions.sitemap]
 verify_jwt = false
+
+[functions.web-vitals-check]
+verify_jwt = false
