@@ -750,6 +750,83 @@ export type Database = {
         }
         Relationships: []
       }
+      loans: {
+        Row: {
+          considerar_orcamento: boolean
+          created_at: string
+          currency: string
+          data_contratacao: string
+          debitar_automaticamente: boolean
+          enviar_lembrete: boolean
+          id: string
+          instituicao_pessoa: string
+          notas: string | null
+          parcelas_pagas: number
+          primeiro_vencimento: string
+          quantidade_parcelas: number
+          saldo_devedor: number
+          status: string
+          taxa_juros: number | null
+          tipo_emprestimo: string
+          updated_at: string
+          user_id: string
+          valor_parcela: number
+          valor_total: number
+        }
+        Insert: {
+          considerar_orcamento?: boolean
+          created_at?: string
+          currency?: string
+          data_contratacao?: string
+          debitar_automaticamente?: boolean
+          enviar_lembrete?: boolean
+          id?: string
+          instituicao_pessoa: string
+          notas?: string | null
+          parcelas_pagas?: number
+          primeiro_vencimento: string
+          quantidade_parcelas: number
+          saldo_devedor: number
+          status?: string
+          taxa_juros?: number | null
+          tipo_emprestimo: string
+          updated_at?: string
+          user_id: string
+          valor_parcela: number
+          valor_total: number
+        }
+        Update: {
+          considerar_orcamento?: boolean
+          created_at?: string
+          currency?: string
+          data_contratacao?: string
+          debitar_automaticamente?: boolean
+          enviar_lembrete?: boolean
+          id?: string
+          instituicao_pessoa?: string
+          notas?: string | null
+          parcelas_pagas?: number
+          primeiro_vencimento?: string
+          quantidade_parcelas?: number
+          saldo_devedor?: number
+          status?: string
+          taxa_juros?: number | null
+          tipo_emprestimo?: string
+          updated_at?: string
+          user_id?: string
+          valor_parcela?: number
+          valor_total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loans_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       message_templates: {
         Row: {
           category: string | null
