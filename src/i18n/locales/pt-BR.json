@@ -1052,6 +1052,7 @@
     "badges": "Conquistas",
     "journal": "Diário",
     "wallets": "Carteiras",
+    "scheduled": "Agendados",
     "settings": "Configurações"
   },
   "transactions": {
@@ -2586,5 +2587,25 @@
     "levelsAway_other": "Faltam {{count}} níveis",
     "keepPlaying": "Continue jogando para desbloquear!",
     "premiumUnlock": "Ou desbloqueie agora com Premium"
+  },
+  "scheduled": {
+    "title": "Lançamentos Futuros",
+    "add": "Novo",
+    "active": "Ativos",
+    "paused": "Pausados",
+    "next30Days": "Próx. 30 dias",
+    "monthlyTotal": "Total Mensal Estimado",
+    "upcoming": "Próximos",
+    "allScheduled": "Todos",
+    "noUpcoming": "Nenhum lançamento nos próximos 30 dias",
+    "noScheduled": "Nenhum lançamento agendado",
+    "createFirst": "Criar primeiro agendamento",
+    "daily": "Diário",
+    "weekly": "Semanal",
+    "monthly": "Mensal"
+  },
+  "quests": {
+    "title": "Missões",
+    "subtitle": "Complete desafios e ganhe XP"
   }
 }

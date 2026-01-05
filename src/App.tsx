@@ -71,6 +71,7 @@ const LazyCategories = lazy(() => import("./pages/Categories"));
 const LazyLeaderboard = lazy(() => import("./pages/Leaderboard"));
 const LazyAdventureJournal = lazy(() => import("./pages/AdventureJournal"));
 const LazyWallets = lazy(() => import("./pages/Wallets"));
+const LazyScheduledTransactions = lazy(() => import("./pages/ScheduledTransactions"));
 const LazyCashFlow = lazy(() => import("./pages/CashFlow"));
 const LazyPeriodComparison = lazy(() => import("./pages/PeriodComparison"));
 const LazySupport = lazy(() => import("./pages/Support"));
@@ -293,6 +294,11 @@ const App = () => (
                   <Route path="/wallets" element={
                     <AuthenticatedWrapper>
                       <Suspense fallback={<PageLoader />}><LazyWallets /></Suspense>
+                    </AuthenticatedWrapper>
+                  } />
+                  <Route path="/scheduled" element={
+                    <AuthenticatedWrapper>
+                      <Suspense fallback={<PageLoader />}><LazyScheduledTransactions /></Suspense>
                     </AuthenticatedWrapper>
                   } />
                   <Route path="/cash-flow" element={
