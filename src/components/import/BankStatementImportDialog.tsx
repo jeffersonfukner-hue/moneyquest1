@@ -1,17 +1,17 @@
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Upload, FileText, CreditCard, Check, X, AlertCircle, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { Upload, FileText, CreditCard, Wallet, Loader2, ChevronDown, ChevronUp, AlertCircle } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 import { useBankStatementImport, ParsedTransaction } from '@/hooks/useBankStatementImport';
 import { useCategories } from '@/hooks/useCategories';
 import { useWallets } from '@/hooks/useWallets';
@@ -44,7 +44,7 @@ export const BankStatementImportDialog = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [pastedText, setPastedText] = useState('');
   const [importing, setImporting] = useState(false);
-  const [expandedInvoice, setExpandedInvoice] = useState<string | null>(null);
+  const [parseError, setParseError] = useState<string | null>(null);
 
   const {
     loading,
@@ -185,6 +185,14 @@ export const BankStatementImportDialog = ({
           </Tabs>
         ) : (
           <div className="flex-1 flex flex-col min-h-0">
+            {/* Error from parsing */}
+            {parseError && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{parseError}</AlertDescription>
+              </Alert>
+            )}
+
             {/* Invoice Payment Alerts */}
             {invoicePayments.length > 0 && (
               <Alert className="mb-4 border-amber-500/50 bg-amber-500/10">
@@ -209,14 +217,14 @@ export const BankStatementImportDialog = ({
             </div>
 
             <ScrollArea className="flex-1 -mx-6 px-6">
-              <div className="space-y-2 pb-4">
+              <div className="space-y-3 pb-4">
                 {transactions.map((tx) => (
                   <div
                     key={tx.id}
                     className={cn(
                       "border rounded-lg p-3 transition-colors",
-                      tx.selected ? "border-primary/50 bg-primary/5" : "border-border",
-                      tx.isInvoicePayment && "border-amber-500/30 bg-amber-500/5"
+                      tx.selected ? "border-primary/50 bg-primary/5" : "border-border opacity-60",
+                      tx.isInvoicePayment && tx.selected && "border-amber-500/30 bg-amber-500/5"
                     )}
                   >
                     <div className="flex items-start gap-3">
@@ -226,6 +234,7 @@ export const BankStatementImportDialog = ({
                         className="mt-1"
                       />
                       <div className="flex-1 min-w-0">
+                        {/* Transaction header */}
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="font-medium text-sm truncate">{tx.description}</span>
                           {tx.isInvoicePayment && (
@@ -243,38 +252,136 @@ export const BankStatementImportDialog = ({
                           </span>
                         </div>
 
-                        {/* Invoice Payment Card Selection */}
-                        {tx.isInvoicePayment && tx.selected && (
-                          <Collapsible
-                            open={expandedInvoice === tx.id}
-                            onOpenChange={(open) => setExpandedInvoice(open ? tx.id : null)}
-                          >
-                            <CollapsibleTrigger asChild>
-                              <Button variant="ghost" size="sm" className="mt-2 h-7 text-xs gap-1 text-amber-600">
-                                {expandedInvoice === tx.id ? (
-                                  <ChevronUp className="w-3 h-3" />
-                                ) : (
-                                  <ChevronDown className="w-3 h-3" />
-                                )}
-                                {tx.creditCardId 
-                                  ? t('import.cardLinked', 'Vinculado: {{card}}', { card: creditCards.find(c => c.id === tx.creditCardId)?.name || '' })
-                                  : t('import.linkToCard', 'Vincular a cartão')
+                        {/* Selection options when selected */}
+                        {tx.selected && (
+                          <div className="mt-3 pt-3 border-t border-border/50 space-y-3">
+                            {/* Destination Type: Account or Credit Card */}
+                            <div className="space-y-2">
+                              <Label className="text-xs font-medium text-muted-foreground">
+                                {t('import.destinationType', 'Lançar em:')}
+                              </Label>
+                              <RadioGroup
+                                value={tx.destinationType}
+                                onValueChange={(value: 'account' | 'credit_card') => 
+                                  updateTransaction(tx.id, { destinationType: value })
                                 }
-                              </Button>
-                            </CollapsibleTrigger>
-                            <CollapsibleContent className="mt-2">
-                              <div className="bg-amber-500/10 rounded-lg p-3 space-y-2">
-                                <p className="text-xs text-amber-700 dark:text-amber-400">
-                                  {tx.suggestedCardMatch 
-                                    ? t('import.suggestedCard', 'Sugestão: {{card}}', { card: tx.suggestedCardMatch })
-                                    : t('import.selectCard', 'Selecione o cartão para vincular este pagamento:')
-                                  }
-                                </p>
+                                className="flex gap-4"
+                              >
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="account" id={`${tx.id}-account`} />
+                                  <Label htmlFor={`${tx.id}-account`} className="text-sm flex items-center gap-1 cursor-pointer">
+                                    <Wallet className="w-3.5 h-3.5" />
+                                    {t('import.bankAccount', 'Conta Bancária')}
+                                  </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="credit_card" id={`${tx.id}-card`} />
+                                  <Label htmlFor={`${tx.id}-card`} className="text-sm flex items-center gap-1 cursor-pointer">
+                                    <CreditCard className="w-3.5 h-3.5" />
+                                    {t('import.creditCard', 'Cartão de Crédito')}
+                                  </Label>
+                                </div>
+                              </RadioGroup>
+                            </div>
+
+                            {/* Account selection */}
+                            {tx.destinationType === 'account' && (
+                              <div className="grid grid-cols-2 gap-2">
+                                <div className="space-y-1">
+                                  <Label className="text-xs text-muted-foreground">{t('import.category', 'Categoria')}</Label>
+                                  <Select
+                                    value={tx.category || ''}
+                                    onValueChange={(value) => updateTransaction(tx.id, { category: value })}
+                                  >
+                                    <SelectTrigger className="h-8 text-xs">
+                                      <SelectValue placeholder={t('import.selectCategory', 'Selecionar...')} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {(tx.type === 'INCOME' ? incomeCategories : expenseCategories).map((cat) => (
+                                        <SelectItem key={cat.id} value={cat.name} className="text-xs">
+                                          {cat.icon} {cat.name}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div className="space-y-1">
+                                  <Label className="text-xs text-muted-foreground">{t('import.wallet', 'Conta')}</Label>
+                                  <Select
+                                    value={tx.walletId || ''}
+                                    onValueChange={(value) => updateTransaction(tx.id, { walletId: value })}
+                                  >
+                                    <SelectTrigger className="h-8 text-xs">
+                                      <SelectValue placeholder={t('import.selectWallet', 'Selecionar...')} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {activeWallets.map((wallet) => (
+                                        <SelectItem key={wallet.id} value={wallet.id} className="text-xs">
+                                          {wallet.name}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Credit Card selection */}
+                            {tx.destinationType === 'credit_card' && (
+                              <div className="grid grid-cols-2 gap-2">
+                                <div className="space-y-1">
+                                  <Label className="text-xs text-muted-foreground">{t('import.category', 'Categoria')}</Label>
+                                  <Select
+                                    value={tx.category || ''}
+                                    onValueChange={(value) => updateTransaction(tx.id, { category: value })}
+                                  >
+                                    <SelectTrigger className="h-8 text-xs">
+                                      <SelectValue placeholder={t('import.selectCategory', 'Selecionar...')} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {expenseCategories.map((cat) => (
+                                        <SelectItem key={cat.id} value={cat.name} className="text-xs">
+                                          {cat.icon} {cat.name}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div className="space-y-1">
+                                  <Label className="text-xs text-muted-foreground">{t('import.creditCard', 'Cartão')}</Label>
+                                  <Select
+                                    value={tx.creditCardId || ''}
+                                    onValueChange={(value) => updateTransaction(tx.id, { creditCardId: value })}
+                                  >
+                                    <SelectTrigger className="h-8 text-xs">
+                                      <SelectValue placeholder={t('import.selectCard', 'Selecionar...')} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {creditCards.map((card) => (
+                                        <SelectItem key={card.id} value={card.id} className="text-xs">
+                                          {card.name} ({card.bank})
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Invoice payment special case */}
+                            {tx.isInvoicePayment && tx.destinationType === 'account' && (
+                              <div className="bg-amber-500/10 rounded p-2 text-xs text-amber-700 dark:text-amber-400">
+                                {tx.suggestedCardMatch && (
+                                  <p className="mb-1">
+                                    {t('import.suggestedCard', 'Sugestão: {{card}}', { card: tx.suggestedCardMatch })}
+                                  </p>
+                                )}
+                                <p>{t('import.invoiceHint', 'Este parece ser um pagamento de fatura. Selecione o cartão abaixo para vincular:')}</p>
                                 <Select
                                   value={tx.creditCardId || ''}
                                   onValueChange={(value) => linkInvoiceToCard(tx.id, value)}
                                 >
-                                  <SelectTrigger className="h-8 text-xs">
+                                  <SelectTrigger className="h-7 text-xs mt-2">
                                     <SelectValue placeholder={t('import.chooseCard', 'Escolher cartão...')} />
                                   </SelectTrigger>
                                   <SelectContent>
@@ -286,43 +393,7 @@ export const BankStatementImportDialog = ({
                                   </SelectContent>
                                 </Select>
                               </div>
-                            </CollapsibleContent>
-                          </Collapsible>
-                        )}
-
-                        {/* Category and Wallet Selection for regular transactions */}
-                        {tx.selected && !tx.isInvoicePayment && (
-                          <div className="grid grid-cols-2 gap-2 mt-2">
-                            <Select
-                              value={tx.category || ''}
-                              onValueChange={(value) => updateTransaction(tx.id, { category: value })}
-                            >
-                              <SelectTrigger className="h-8 text-xs">
-                                <SelectValue placeholder={t('import.category', 'Categoria')} />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {(tx.type === 'INCOME' ? incomeCategories : expenseCategories).map((cat) => (
-                                  <SelectItem key={cat.id} value={cat.name} className="text-xs">
-                                    {cat.icon} {cat.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <Select
-                              value={tx.walletId || ''}
-                              onValueChange={(value) => updateTransaction(tx.id, { walletId: value })}
-                            >
-                              <SelectTrigger className="h-8 text-xs">
-                                <SelectValue placeholder={t('import.wallet', 'Conta')} />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {activeWallets.map((wallet) => (
-                                  <SelectItem key={wallet.id} value={wallet.id} className="text-xs">
-                                    {wallet.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                            )}
                           </div>
                         )}
                       </div>
@@ -333,7 +404,7 @@ export const BankStatementImportDialog = ({
             </ScrollArea>
 
             <DialogFooter className="mt-4 pt-4 border-t">
-              <Button variant="outline" onClick={() => { reset(); setPastedText(''); }}>
+              <Button variant="outline" onClick={() => { reset(); setPastedText(''); setParseError(null); }}>
                 {t('import.back', 'Voltar')}
               </Button>
               <Button

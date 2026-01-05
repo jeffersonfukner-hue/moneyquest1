@@ -1,5 +1,3 @@
-import { createClient } from "jsr:@supabase/supabase-js@2";
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -16,7 +14,6 @@ interface ParsedTransaction {
 
 interface ParseResult {
   transactions: ParsedTransaction[];
-  rawText?: string;
   errors?: string[];
 }
 
@@ -36,7 +33,6 @@ function isInvoicePayment(description: string): boolean {
 }
 
 function extractCardNameFromDescription(description: string): string | undefined {
-  // Try to extract bank/card name from description
   const bankPatterns = [
     /sicredi/i, /nubank/i, /inter/i, /itau/i, /itaú/i, /bradesco/i,
     /santander/i, /caixa/i, /bb|banco do brasil/i, /c6/i, /original/i,
@@ -52,39 +48,86 @@ function extractCardNameFromDescription(description: string): string | undefined
   return undefined;
 }
 
+function parseDate(dateStr: string): string {
+  // Try DD/MM/YYYY or DD-MM-YYYY
+  const match = dateStr.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+  if (match) {
+    const day = match[1].padStart(2, '0');
+    const month = match[2].padStart(2, '0');
+    let year = match[3];
+    if (year.length === 2) {
+      year = parseInt(year) > 50 ? '19' + year : '20' + year;
+    }
+    return `${year}-${month}-${day}`;
+  }
+  return new Date().toISOString().split('T')[0];
+}
+
+function parseAmount(amountStr: string): { value: number; isNegative: boolean } {
+  // Clean the string
+  let cleaned = amountStr.replace(/[R$\s]/g, '').trim();
+  const isNegative = cleaned.startsWith('-') || cleaned.includes('D') || cleaned.includes('DEB');
+  cleaned = cleaned.replace(/[-+CD]/gi, '').trim();
+  
+  // Handle Brazilian format (1.234,56) vs US format (1,234.56)
+  if (cleaned.includes(',') && cleaned.includes('.')) {
+    // Check which comes last
+    const lastComma = cleaned.lastIndexOf(',');
+    const lastDot = cleaned.lastIndexOf('.');
+    if (lastComma > lastDot) {
+      // Brazilian format: 1.234,56
+      cleaned = cleaned.replace(/\./g, '').replace(',', '.');
+    } else {
+      // US format: 1,234.56
+      cleaned = cleaned.replace(/,/g, '');
+    }
+  } else if (cleaned.includes(',')) {
+    // Could be 1234,56 (decimal comma) or 1,234 (thousand separator)
+    const parts = cleaned.split(',');
+    if (parts.length === 2 && parts[1].length <= 2) {
+      // Decimal comma
+      cleaned = cleaned.replace(',', '.');
+    } else {
+      // Thousand separator
+      cleaned = cleaned.replace(/,/g, '');
+    }
+  }
+  
+  const value = parseFloat(cleaned);
+  return { value: isNaN(value) ? 0 : Math.abs(value), isNegative };
+}
+
 function parseCSVContent(content: string): ParsedTransaction[] {
   const lines = content.split('\n').filter(line => line.trim());
   const transactions: ParsedTransaction[] = [];
   
   // Skip header if present
   const startIndex = lines[0]?.toLowerCase().includes('data') || 
-                     lines[0]?.toLowerCase().includes('date') ? 1 : 0;
+                     lines[0]?.toLowerCase().includes('date') ||
+                     lines[0]?.toLowerCase().includes('descrição') ? 1 : 0;
   
   for (let i = startIndex; i < lines.length; i++) {
     const line = lines[i];
-    // Try different CSV formats
+    // Try different CSV separators
     const parts = line.split(/[,;\t]/).map(p => p.trim().replace(/"/g, ''));
     
     if (parts.length >= 2) {
-      // Try to identify date, description, amount
       let date = '';
       let description = '';
       let amount = 0;
+      let isExpense = false;
       
       for (const part of parts) {
         // Check if it's a date
-        if (/\d{2}[\/\-]\d{2}[\/\-]\d{2,4}/.test(part)) {
-          date = part;
+        if (/\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/.test(part)) {
+          date = parseDate(part);
         }
-        // Check if it's a number
+        // Check if it's a number (amount)
         else if (/^-?[\d.,]+$/.test(part.replace(/[R$\s]/g, ''))) {
-          const numStr = part.replace(/[R$\s]/g, '').replace(',', '.');
-          const num = parseFloat(numStr);
-          if (!isNaN(num) && num !== 0) {
-            amount = Math.abs(num);
-            if (numStr.startsWith('-') || part.includes('-')) {
-              amount = -amount;
-            }
+          const { value, isNegative } = parseAmount(part);
+          if (value !== 0) {
+            amount = value;
+            isExpense = isNegative;
           }
         }
         // Otherwise it's description
@@ -94,13 +137,12 @@ function parseCSVContent(content: string): ParsedTransaction[] {
       }
       
       if (description && amount !== 0) {
-        const isExpense = amount < 0;
         const invoicePayment = isInvoicePayment(description);
         
         transactions.push({
           date: date || new Date().toISOString().split('T')[0],
           description,
-          amount: Math.abs(amount),
+          amount,
           type: isExpense ? 'EXPENSE' : 'INCOME',
           isInvoicePayment: invoicePayment,
           suggestedCardMatch: invoicePayment ? extractCardNameFromDescription(description) : undefined,
@@ -116,18 +158,21 @@ function parseTextContent(content: string): ParsedTransaction[] {
   const lines = content.split('\n').filter(line => line.trim());
   const transactions: ParsedTransaction[] = [];
   
-  // Pattern for common bank statement formats
+  // Multiple patterns for common bank statement formats
   const patterns = [
     // DD/MM/YYYY DESCRIPTION VALUE
-    /(\d{2}[\/\-]\d{2}[\/\-]\d{2,4})\s+(.+?)\s+(-?[\d.,]+)$/,
+    /(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})\s+(.+?)\s+(-?[\d.,]+)\s*$/,
     // DESCRIPTION DD/MM VALUE
-    /(.+?)\s+(\d{2}[\/\-]\d{2}[\/\-]?\d{0,4})\s+(-?[\d.,]+)$/,
+    /(.+?)\s+(\d{1,2}[\/\-]\d{1,2}[\/\-]?\d{0,4})\s+(-?[\d.,]+)\s*$/,
+    // DD/MM DESCRIPTION VALUE (short date)
+    /(\d{1,2}[\/\-]\d{1,2})\s+(.+?)\s+(-?[\d.,]+)\s*$/,
     // Just description and value
-    /^(.{10,}?)\s+(-?R?\$?\s?[\d.,]+)$/,
+    /^(.{5,}?)\s+(-?R?\$?\s?[\d.,]+)\s*$/,
   ];
   
   for (const line of lines) {
     const trimmed = line.trim();
+    if (!trimmed || trimmed.length < 5) continue;
     
     for (const pattern of patterns) {
       const match = trimmed.match(pattern);
@@ -136,27 +181,24 @@ function parseTextContent(content: string): ParsedTransaction[] {
         let description = '';
         let amountStr = '';
         
-        if (pattern === patterns[0]) {
+        if (pattern === patterns[0] || pattern === patterns[2]) {
           [, date, description, amountStr] = match;
         } else if (pattern === patterns[1]) {
           [, description, date, amountStr] = match;
         } else {
           [, description, amountStr] = match;
-          date = new Date().toISOString().split('T')[0];
         }
         
-        const numStr = amountStr.replace(/[R$\s]/g, '').replace(',', '.');
-        const amount = parseFloat(numStr);
+        const { value, isNegative } = parseAmount(amountStr);
         
-        if (!isNaN(amount) && amount !== 0 && description.length > 2) {
-          const isExpense = numStr.startsWith('-') || amountStr.includes('-');
+        if (value !== 0 && description.length > 2) {
           const invoicePayment = isInvoicePayment(description);
           
           transactions.push({
-            date: date || new Date().toISOString().split('T')[0],
+            date: date ? parseDate(date) : new Date().toISOString().split('T')[0],
             description: description.toUpperCase().trim(),
-            amount: Math.abs(amount),
-            type: isExpense ? 'EXPENSE' : 'INCOME',
+            amount: value,
+            type: isNegative ? 'EXPENSE' : 'INCOME',
             isInvoicePayment: invoicePayment,
             suggestedCardMatch: invoicePayment ? extractCardNameFromDescription(description) : undefined,
           });
@@ -169,90 +211,59 @@ function parseTextContent(content: string): ParsedTransaction[] {
   return transactions;
 }
 
-async function parsePDFWithAI(base64Content: string): Promise<ParseResult> {
-  console.log('Parsing PDF with AI...');
-  
-  const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
-  if (!GEMINI_API_KEY) {
-    throw new Error('GEMINI_API_KEY not configured');
-  }
-  
-  const prompt = `Analyze this bank statement PDF and extract all transactions.
-For each transaction, identify:
-1. Date (in YYYY-MM-DD format)
-2. Description
-3. Amount (positive number)
-4. Type: INCOME (deposits, credits) or EXPENSE (withdrawals, debits, payments)
-5. Whether it appears to be a credit card invoice payment (look for terms like "PAGAMENTO FATURA", "FATURA CARTAO", etc.)
-
-Return a JSON array with this structure:
-{
-  "transactions": [
-    {
-      "date": "2024-01-15",
-      "description": "PAGAMENTO FATURA NUBANK",
-      "amount": 1500.00,
-      "type": "EXPENSE",
-      "isInvoicePayment": true,
-      "suggestedCardMatch": "Nubank"
-    }
-  ]
-}
-
-Only return valid JSON, no markdown or explanations.`;
-
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{
-          parts: [
-            { text: prompt },
-            {
-              inline_data: {
-                mime_type: 'application/pdf',
-                data: base64Content,
-              },
-            },
-          ],
-        }],
-        generationConfig: {
-          temperature: 0.1,
-          maxOutputTokens: 8192,
-        },
-      }),
-    }
-  );
-
-  if (!response.ok) {
-    const error = await response.text();
-    console.error('Gemini API error:', error);
-    throw new Error('Failed to parse PDF with AI');
-  }
-
-  const result = await response.json();
-  const text = result.candidates?.[0]?.content?.parts?.[0]?.text || '';
-  
-  console.log('AI response:', text.substring(0, 500));
-  
-  // Extract JSON from response
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) {
-    console.error('No JSON found in response');
-    return { transactions: [], errors: ['Could not parse PDF content'] };
-  }
+// Basic PDF text extraction (without AI)
+// Note: This is a simplified parser that works with text-based PDFs
+// For scanned PDFs or complex layouts, results may be limited
+function parsePDFBasic(base64Content: string): ParseResult {
+  console.log('Parsing PDF with basic text extraction...');
   
   try {
-    const parsed = JSON.parse(jsonMatch[0]);
+    // Decode base64 to binary
+    const binaryStr = atob(base64Content);
+    
+    // Extract readable text from PDF (simplified approach)
+    // This looks for text streams in the PDF structure
+    const textChunks: string[] = [];
+    let currentText = '';
+    
+    for (let i = 0; i < binaryStr.length; i++) {
+      const char = binaryStr[i];
+      // Only keep printable ASCII characters
+      if (char.charCodeAt(0) >= 32 && char.charCodeAt(0) <= 126) {
+        currentText += char;
+      } else if (currentText.length > 0) {
+        // Check if we have meaningful text
+        if (currentText.length >= 5 && /[a-zA-Z0-9]/.test(currentText)) {
+          textChunks.push(currentText);
+        }
+        currentText = '';
+      }
+    }
+    
+    if (currentText.length >= 5) {
+      textChunks.push(currentText);
+    }
+    
+    // Join chunks and try to parse as text
+    const fullText = textChunks.join('\n');
+    console.log('Extracted text length:', fullText.length);
+    
+    const transactions = parseTextContent(fullText);
+    
+    if (transactions.length === 0) {
+      return {
+        transactions: [],
+        errors: ['Não foi possível extrair transações do PDF. Tente copiar o texto do extrato e colar na aba "Colar Texto".'],
+      };
+    }
+    
+    return { transactions };
+  } catch (error) {
+    console.error('PDF parsing error:', error);
     return {
-      transactions: parsed.transactions || [],
-      rawText: text,
+      transactions: [],
+      errors: ['Erro ao processar PDF. Tente converter para texto ou CSV.'],
     };
-  } catch (e) {
-    console.error('JSON parse error:', e);
-    return { transactions: [], errors: ['Invalid JSON response from AI'] };
   }
 }
 
@@ -274,7 +285,7 @@ Deno.serve(async (req) => {
     } else if (type === 'text') {
       result = { transactions: parseTextContent(content) };
     } else if (type === 'pdf') {
-      result = await parsePDFWithAI(content);
+      result = parsePDFBasic(content);
     } else {
       throw new Error(`Unsupported file type: ${type}`);
     }
