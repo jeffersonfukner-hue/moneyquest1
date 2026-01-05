@@ -528,7 +528,7 @@ export default function TrafficAnalytics() {
                         <TableCell className="truncate max-w-[300px]">{error.page_url}</TableCell>
                         <TableCell className="text-right">{error.occurrences}</TableCell>
                         <TableCell className="text-right">
-                          {format(new Date(error.created_at), 'dd/MM HH:mm', { locale: ptBR })}
+                          {format(new Date(error.last_occurrence), 'dd/MM HH:mm', { locale: ptBR })}
                         </TableCell>
                       </TableRow>
                     ))}
