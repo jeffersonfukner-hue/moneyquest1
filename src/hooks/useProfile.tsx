@@ -54,23 +54,10 @@ export const useProfile = () => {
       if (!subscriptionCheckDone.current && session?.access_token) {
         subscriptionCheckDone.current = true;
         
-        const syncSubscription = async (retryCount = 0): Promise<void> => {
+        const syncSubscription = async (): Promise<void> => {
           try {
-            // Refresh session before calling edge function to ensure valid token
-            const { data: refreshedSession } = await supabase.auth.refreshSession();
-            if (!refreshedSession?.session?.access_token) {
-              console.log('Session refresh failed, skipping subscription sync');
-              return;
-            }
-            
+            // Don't refresh session - use existing token to avoid rate limiting
             const { error: syncError } = await supabase.functions.invoke('check-subscription');
-            
-            // If auth error and haven't retried, wait and retry once
-            if (syncError?.message?.includes('Auth session missing') && retryCount === 0) {
-              console.log('Session sync delay, retrying subscription check...');
-              await new Promise(resolve => setTimeout(resolve, 2000));
-              return syncSubscription(1);
-            }
             
             if (!syncError) {
               // Refetch profile after subscription sync
@@ -90,7 +77,7 @@ export const useProfile = () => {
         };
         
         // Delay initial sync to allow session to stabilize
-        setTimeout(() => syncSubscription(), 500);
+        setTimeout(() => syncSubscription(), 1000);
       }
     }
     setLoading(false);
@@ -98,7 +85,8 @@ export const useProfile = () => {
 
   useEffect(() => {
     fetchProfile();
-  }, [user, session?.access_token]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   // Realtime subscription for profile updates
   useEffect(() => {
