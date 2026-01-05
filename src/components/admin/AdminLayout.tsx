@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { 
   LayoutDashboard, 
   Users, 
@@ -26,25 +25,25 @@ interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
+// Labels fixos em pt-BR para o SuperAdmin (independente do idioma do usuário)
 const navItems = [
-  { path: '/super-admin', icon: LayoutDashboard, labelKey: 'admin.nav.dashboard' },
-  { path: '/super-admin/users', icon: Users, labelKey: 'admin.nav.users' },
-  { path: '/super-admin/traffic', icon: Activity, labelKey: 'admin.nav.traffic' },
-  { path: '/super-admin/campaigns', icon: Megaphone, labelKey: 'admin.nav.campaigns' },
-  { path: '/super-admin/support', icon: MessageSquare, labelKey: 'admin.nav.support' },
-  { path: '/super-admin/comments', icon: MessageSquareText, labelKey: 'admin.nav.comments' },
-  { path: '/super-admin/referrals', icon: Gift, labelKey: 'admin.nav.referrals' },
-  { path: '/super-admin/trial-abuse', icon: Fingerprint, labelKey: 'admin.nav.trialAbuse' },
-  { path: '/super-admin/engagement', icon: AlertTriangle, labelKey: 'admin.nav.engagement' },
-  { path: '/super-admin/analytics', icon: BarChart3, labelKey: 'admin.nav.analytics' },
-  { path: '/super-admin/scoring-audit', icon: Calculator, labelKey: 'admin.nav.scoringAudit' },
-  { path: '/super-admin/logs', icon: ScrollText, labelKey: 'admin.nav.logs' },
+  { path: '/super-admin', icon: LayoutDashboard, label: 'Painel Geral' },
+  { path: '/super-admin/users', icon: Users, label: 'Usuários' },
+  { path: '/super-admin/traffic', icon: Activity, label: 'Tráfego' },
+  { path: '/super-admin/campaigns', icon: Megaphone, label: 'Campanhas' },
+  { path: '/super-admin/support', icon: MessageSquare, label: 'Suporte' },
+  { path: '/super-admin/comments', icon: MessageSquareText, label: 'Comentários' },
+  { path: '/super-admin/referrals', icon: Gift, label: 'Indicações' },
+  { path: '/super-admin/trial-abuse', icon: Fingerprint, label: 'Abuso de Trial' },
+  { path: '/super-admin/engagement', icon: AlertTriangle, label: 'Engajamento' },
+  { path: '/super-admin/analytics', icon: BarChart3, label: 'Analytics' },
+  { path: '/super-admin/scoring-audit', icon: Calculator, label: 'Auditoria XP' },
+  { path: '/super-admin/logs', icon: ScrollText, label: 'Logs' },
 ];
 
 export const AdminLayout = ({ children }: AdminLayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const NavContent = () => (
@@ -74,7 +73,7 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
               )}
             >
               <item.icon className="w-5 h-5" />
-              {t(item.labelKey)}
+              {item.label}
             </button>
           );
         })}
@@ -87,7 +86,7 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
           onClick={() => navigate('/')}
         >
           <ChevronLeft className="w-4 h-4" />
-          {t('admin.backToApp')}
+          Voltar ao App
         </Button>
       </div>
     </div>

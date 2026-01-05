@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { UsersTable } from '@/components/admin/UsersTable';
 import { PremiumDialog } from '@/components/admin/PremiumDialog';
@@ -10,8 +9,24 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { ManualReferralLinkWidget } from '@/components/admin/ManualReferralLinkWidget';
 import type { AdminUser } from '@/types/admin';
 
+// Labels fixos em pt-BR para SuperAdmin
+const LABELS = {
+  title: 'Gerenciar Usuários',
+  subtitle: 'Visualize e gerencie todos os usuários da plataforma',
+  block: {
+    title: 'Bloquear Usuário',
+    description: 'Tem certeza que deseja bloquear este usuário? Esta ação pode ser revertida.',
+    confirm: 'Bloquear',
+  },
+  override: {
+    resetTitle: 'Resetar Override',
+    resetDescription: 'Deseja resetar o override de premium? O status será controlado pelo Stripe.',
+    resetConfirm: 'Resetar',
+  },
+  cancel: 'Cancelar',
+};
+
 const UsersManagement = () => {
-  const { t } = useTranslation();
   const { users, usersLoading, updateSubscription, updateUserStatus, grantBonus, sendMessage, resetPremiumOverride, deleteUser } = useAdminData();
   
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
@@ -97,8 +112,8 @@ const UsersManagement = () => {
     <AdminLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-display font-bold">{t('admin.users.title')}</h1>
-          <p className="text-muted-foreground">{t('admin.users.subtitle')}</p>
+          <h1 className="text-2xl lg:text-3xl font-display font-bold">{LABELS.title}</h1>
+          <p className="text-muted-foreground">{LABELS.subtitle}</p>
         </div>
 
         {/* Manual Referral Link Widget */}
@@ -127,15 +142,15 @@ const UsersManagement = () => {
       <AlertDialog open={blockOpen} onOpenChange={setBlockOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('admin.block.title')}</AlertDialogTitle>
+            <AlertDialogTitle>{LABELS.block.title}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('admin.block.description', { user: selectedUser?.email })}
+              {LABELS.block.description}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogCancel>{LABELS.cancel}</AlertDialogCancel>
             <AlertDialogAction onClick={handleConfirmBlock} className="bg-destructive text-destructive-foreground">
-              {t('admin.block.confirm')}
+              {LABELS.block.confirm}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -144,15 +159,15 @@ const UsersManagement = () => {
       <AlertDialog open={resetOverrideOpen} onOpenChange={setResetOverrideOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('admin.override.resetTitle')}</AlertDialogTitle>
+            <AlertDialogTitle>{LABELS.override.resetTitle}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('admin.override.resetDescription', { user: selectedUser?.email })}
+              {LABELS.override.resetDescription}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogCancel>{LABELS.cancel}</AlertDialogCancel>
             <AlertDialogAction onClick={handleConfirmResetOverride}>
-              {t('admin.override.resetConfirm')}
+              {LABELS.override.resetConfirm}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

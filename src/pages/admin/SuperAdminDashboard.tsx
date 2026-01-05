@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Users, UserCheck, Crown, TrendingUp, Activity, AlertTriangle, Filter, Calendar } from 'lucide-react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { StatsCard } from '@/components/admin/StatsCard';
@@ -23,8 +22,70 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 
+// Labels fixos em pt-BR para SuperAdmin
+const LABELS = {
+  dashboard: 'Dashboard Super Admin',
+  description: 'Visão geral e métricas da plataforma',
+  totalUsers: 'Total de Usuários',
+  activeToday: 'Ativos Hoje',
+  premiumUsers: 'Usuários Premium',
+  engagementRate: 'Taxa de Engajamento',
+  last7days: 'últimos 7 dias',
+  active7Days: 'Ativos (7 dias)',
+  active30Days: 'Ativos (30 dias)',
+  atRiskUsers: 'Usuários em Risco',
+  noData: 'Sem dados',
+  users: 'usuários',
+  charts: {
+    week1: 'Sem. 1',
+    week2: 'Sem. 2',
+    week3: 'Sem. 3',
+    week4: 'Sem. 4',
+    activityTrend: 'Tendência de Atividade',
+    activityTrendDesc: 'Usuários ativos e novos nos últimos 7 dias',
+    activeUsers: 'Usuários Ativos',
+    newUsers: 'Novos Usuários',
+    planDistribution: 'Distribuição de Planos',
+    planDistributionDesc: 'Free vs Premium',
+    highlyEngaged: 'Muito Engajados',
+    moderatelyEngaged: 'Mod. Engajados',
+    lowEngaged: 'Pouco Engajados',
+    inactive: 'Inativos',
+    engagementLevels: 'Níveis de Engajamento',
+    engagementLevelsDesc: 'Distribuição por atividade',
+    newUsersByWeek: 'Novos Usuários por Semana',
+    newUsersByWeekDesc: 'Tendência de cadastros',
+    riskDistribution: 'Distribuição de Risco',
+    riskDistributionDesc: 'Usuários em risco de abandono',
+  },
+  risk: {
+    low: 'Risco Baixo',
+    medium: 'Risco Médio',
+    high: 'Risco Alto',
+  },
+  funnel: {
+    title: 'Funil de Conversão',
+    description: 'Jornada do usuário',
+    registration: 'Cadastro',
+    firstUse: 'Primeiro Uso',
+    recurringUse: 'Uso Recorrente',
+    premium: 'Premium',
+    registrationToFirstUse: 'Cadastro → Primeiro Uso',
+    firstUseToRecurring: 'Primeiro Uso → Recorrente',
+    recurringToPremium: 'Recorrente → Premium',
+  },
+  retention: {
+    title: 'Retenção',
+    description: 'Taxas de retenção por período',
+    day1: 'Dia 1',
+    day7: 'Dia 7',
+    day30: 'Dia 30',
+    retained: 'retidos',
+    retentionRate: 'Taxa de Retenção',
+  },
+};
+
 const SuperAdminDashboard = () => {
-  const { t } = useTranslation();
   const { analytics, atRiskUsers, users, analyticsLoading, usersLoading } = useAdminData();
 
   // Generate activity trend data (last 7 days simulation based on actual data)
@@ -37,9 +98,8 @@ const SuperAdminDashboard = () => {
     for (let i = 6; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(date.getDate() - i);
-      const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+      const dayName = date.toLocaleDateString('pt-BR', { weekday: 'short' });
       
-      // Simulate decreasing activity as we go back in time
       const baseActive = analytics.active_today || 0;
       const variation = Math.floor(Math.random() * 3) - 1;
       const dayActive = Math.max(0, baseActive + (i === 0 ? 0 : Math.floor(baseActive * (0.1 * i)) + variation));
@@ -60,10 +120,10 @@ const SuperAdminDashboard = () => {
     
     const now = new Date();
     const weeks = [
-      { label: t('admin.charts.week4'), start: 21, end: 28 },
-      { label: t('admin.charts.week3'), start: 14, end: 21 },
-      { label: t('admin.charts.week2'), start: 7, end: 14 },
-      { label: t('admin.charts.week1'), start: 0, end: 7 },
+      { label: LABELS.charts.week4, start: 21, end: 28 },
+      { label: LABELS.charts.week3, start: 14, end: 21 },
+      { label: LABELS.charts.week2, start: 7, end: 14 },
+      { label: LABELS.charts.week1, start: 0, end: 7 },
     ];
     
     return weeks.map(week => {
@@ -75,7 +135,7 @@ const SuperAdminDashboard = () => {
       
       return { week: week.label, users: count };
     });
-  }, [users, t]);
+  }, [users]);
 
   // Plan distribution data with percentages
   const planData = useMemo(() => {
@@ -110,64 +170,61 @@ const SuperAdminDashboard = () => {
     const inactive = Math.max(0, total - (analytics.active_30days || 0));
     
     return [
-      { name: t('admin.charts.highlyEngaged'), value: highlyEngaged, color: '#22c55e' },
-      { name: t('admin.charts.moderatelyEngaged'), value: moderatelyEngaged, color: '#3b82f6' },
-      { name: t('admin.charts.lowEngaged'), value: lowEngaged, color: '#eab308' },
-      { name: t('admin.charts.inactive'), value: inactive, color: '#ef4444' },
+      { name: LABELS.charts.highlyEngaged, value: highlyEngaged, color: '#22c55e' },
+      { name: LABELS.charts.moderatelyEngaged, value: moderatelyEngaged, color: '#3b82f6' },
+      { name: LABELS.charts.lowEngaged, value: lowEngaged, color: '#eab308' },
+      { name: LABELS.charts.inactive, value: inactive, color: '#ef4444' },
     ];
-  }, [analytics, t]);
+  }, [analytics]);
 
   // Risk distribution data
   const riskData = useMemo(() => {
     if (!atRiskUsers) return [];
     return [
-      { name: t('admin.risk.low'), value: atRiskUsers.filter(u => u.risk_level === 'low').length, color: '#22c55e' },
-      { name: t('admin.risk.medium'), value: atRiskUsers.filter(u => u.risk_level === 'medium').length, color: '#eab308' },
-      { name: t('admin.risk.high'), value: atRiskUsers.filter(u => u.risk_level === 'high').length, color: '#ef4444' },
+      { name: LABELS.risk.low, value: atRiskUsers.filter(u => u.risk_level === 'low').length, color: '#22c55e' },
+      { name: LABELS.risk.medium, value: atRiskUsers.filter(u => u.risk_level === 'medium').length, color: '#eab308' },
+      { name: LABELS.risk.high, value: atRiskUsers.filter(u => u.risk_level === 'high').length, color: '#ef4444' },
     ];
-  }, [atRiskUsers, t]);
+  }, [atRiskUsers]);
 
-  // Conversion funnel data: Registration → First use → Recurring use → Premium
+  // Conversion funnel data
   const funnelData = useMemo(() => {
     if (!analytics || !users) return [];
     
     const totalUsers = analytics.total_users || 0;
-    // Users who have logged in at least once (have last_active_date)
     const firstUse = users.filter(u => u.last_active_date).length;
-    // Recurring users (active in the last 30 days)
     const recurringUse = analytics.active_30days || 0;
-    // Premium users
     const premium = analytics.premium_users || 0;
     
     return [
       { 
-        name: t('admin.funnel.registration'), 
+        name: LABELS.funnel.registration, 
         value: totalUsers, 
         fill: '#3b82f6',
         percentage: '100%'
       },
       { 
-        name: t('admin.funnel.firstUse'), 
+        name: LABELS.funnel.firstUse, 
         value: firstUse, 
         fill: '#22c55e',
         percentage: totalUsers > 0 ? `${((firstUse / totalUsers) * 100).toFixed(1)}%` : '0%'
       },
       { 
-        name: t('admin.funnel.recurringUse'), 
+        name: LABELS.funnel.recurringUse, 
         value: recurringUse, 
         fill: '#eab308',
         percentage: totalUsers > 0 ? `${((recurringUse / totalUsers) * 100).toFixed(1)}%` : '0%'
       },
       { 
-        name: t('admin.funnel.premium'), 
+        name: LABELS.funnel.premium, 
         value: premium, 
         fill: '#8b5cf6',
         percentage: totalUsers > 0 ? `${((premium / totalUsers) * 100).toFixed(1)}%` : '0%'
       },
     ];
-  }, [analytics, users, t]);
+  }, [analytics, users]);
 
-  // Retention data: Day 1, Day 7, Day 30
+  // Retention data
   const retentionData = useMemo(() => {
     if (!analytics || !users) return [];
     
@@ -176,17 +233,15 @@ const SuperAdminDashboard = () => {
     
     const now = new Date();
     
-    // Day 1 retention: Users who logged in at least once after registration
     const day1Retained = users.filter(u => {
       if (!u.last_active_date || !u.created_at) return false;
       const createdAt = new Date(u.created_at);
       const lastActive = new Date(u.last_active_date);
       const createdDate = createdAt.toDateString();
       const lastActiveDate = lastActive.toDateString();
-      return createdDate !== lastActiveDate; // Logged in on a different day than creation
+      return createdDate !== lastActiveDate;
     }).length;
     
-    // Day 7 retention: Users still active 7+ days after registration
     const day7Retained = users.filter(u => {
       if (!u.last_active_date || !u.created_at) return false;
       const createdAt = new Date(u.created_at);
@@ -196,7 +251,6 @@ const SuperAdminDashboard = () => {
       return daysSinceCreation >= 7 && daysActiveSinceCreation >= 7;
     }).length;
     
-    // Day 30 retention: Users still active 30+ days after registration
     const day30Retained = users.filter(u => {
       if (!u.last_active_date || !u.created_at) return false;
       const createdAt = new Date(u.created_at);
@@ -206,7 +260,6 @@ const SuperAdminDashboard = () => {
       return daysSinceCreation >= 30 && daysActiveSinceCreation >= 30;
     }).length;
     
-    // Calculate eligible users for each cohort
     const eligibleDay7 = users.filter(u => {
       const createdAt = new Date(u.created_at);
       const daysSinceCreation = Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
@@ -221,28 +274,28 @@ const SuperAdminDashboard = () => {
     
     return [
       { 
-        name: t('admin.retention.day1'), 
+        name: LABELS.retention.day1, 
         retained: day1Retained,
         total: totalUsers,
         rate: ((day1Retained / totalUsers) * 100).toFixed(1),
         fill: '#22c55e'
       },
       { 
-        name: t('admin.retention.day7'), 
+        name: LABELS.retention.day7, 
         retained: day7Retained,
         total: eligibleDay7,
         rate: ((day7Retained / eligibleDay7) * 100).toFixed(1),
         fill: '#3b82f6'
       },
       { 
-        name: t('admin.retention.day30'), 
+        name: LABELS.retention.day30, 
         retained: day30Retained,
         total: eligibleDay30,
         rate: ((day30Retained / eligibleDay30) * 100).toFixed(1),
         fill: '#8b5cf6'
       },
     ];
-  }, [analytics, users, t]);
+  }, [analytics, users]);
 
   // Custom tooltip for charts
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -294,8 +347,8 @@ const SuperAdminDashboard = () => {
     <AdminLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-display font-bold">{t('admin.dashboard')}</h1>
-          <p className="text-muted-foreground">{t('admin.description')}</p>
+          <h1 className="text-2xl lg:text-3xl font-display font-bold">{LABELS.dashboard}</h1>
+          <p className="text-muted-foreground">{LABELS.description}</p>
         </div>
 
         {/* Retention Alerts */}
@@ -310,27 +363,27 @@ const SuperAdminDashboard = () => {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatsCard
-            title={t('admin.totalUsers')}
+            title={LABELS.totalUsers}
             value={analytics?.total_users || 0}
             icon={Users}
             variant="primary"
           />
           <StatsCard
-            title={t('admin.activeToday')}
+            title={LABELS.activeToday}
             value={analytics?.active_today || 0}
             icon={UserCheck}
             variant="success"
           />
           <StatsCard
-            title={t('admin.premiumUsers')}
+            title={LABELS.premiumUsers}
             value={analytics?.premium_users || 0}
             icon={Crown}
             variant="warning"
           />
           <StatsCard
-            title={t('admin.engagementRate')}
+            title={LABELS.engagementRate}
             value={`${analytics?.engagement_rate || 0}%`}
-            subtitle={t('admin.charts.last7days')}
+            subtitle={LABELS.last7days}
             icon={TrendingUp}
             variant="default"
           />
@@ -343,9 +396,9 @@ const SuperAdminDashboard = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Activity className="w-5 h-5 text-primary" />
-                {t('admin.charts.activityTrend')}
+                {LABELS.charts.activityTrend}
               </CardTitle>
-              <CardDescription>{t('admin.charts.activityTrendDesc')}</CardDescription>
+              <CardDescription>{LABELS.charts.activityTrendDesc}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-72">
@@ -376,7 +429,7 @@ const SuperAdminDashboard = () => {
                     <Area 
                       type="monotone" 
                       dataKey="active" 
-                      name={t('admin.charts.activeUsers')}
+                      name={LABELS.charts.activeUsers}
                       stroke="hsl(var(--primary))" 
                       fillOpacity={1} 
                       fill="url(#colorActive)" 
@@ -385,7 +438,7 @@ const SuperAdminDashboard = () => {
                     <Area 
                       type="monotone" 
                       dataKey="new" 
-                      name={t('admin.charts.newUsers')}
+                      name={LABELS.charts.newUsers}
                       stroke="#22c55e" 
                       fillOpacity={1} 
                       fill="url(#colorNew)" 
@@ -402,9 +455,9 @@ const SuperAdminDashboard = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Crown className="w-5 h-5 text-amber-500" />
-                {t('admin.charts.planDistribution')}
+                {LABELS.charts.planDistribution}
               </CardTitle>
-              <CardDescription>{t('admin.charts.planDistributionDesc')}</CardDescription>
+              <CardDescription>{LABELS.charts.planDistributionDesc}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-72 flex items-center justify-center">
@@ -433,14 +486,14 @@ const SuperAdminDashboard = () => {
                       </Pie>
                       <Tooltip 
                         formatter={(value: number, name: string) => [
-                          `${value} ${t('admin.charts.users')}`,
+                          `${value} ${LABELS.users}`,
                           name
                         ]}
                       />
                     </PieChart>
                   </ResponsiveContainer>
                 ) : (
-                  <p className="text-muted-foreground">{t('common.noData')}</p>
+                  <p className="text-muted-foreground">{LABELS.noData}</p>
                 )}
               </div>
               {/* Legend with stats */}
@@ -466,9 +519,9 @@ const SuperAdminDashboard = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-primary" />
-                {t('admin.charts.engagementLevels')}
+                {LABELS.charts.engagementLevels}
               </CardTitle>
-              <CardDescription>{t('admin.charts.engagementLevelsDesc')}</CardDescription>
+              <CardDescription>{LABELS.charts.engagementLevelsDesc}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-72">
@@ -501,9 +554,9 @@ const SuperAdminDashboard = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Filter className="w-5 h-5 text-primary" />
-              {t('admin.funnel.title')}
+              {LABELS.funnel.title}
             </CardTitle>
-            <CardDescription>{t('admin.funnel.description')}</CardDescription>
+            <CardDescription>{LABELS.funnel.description}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-80">
@@ -517,7 +570,7 @@ const SuperAdminDashboard = () => {
                           <div className="bg-popover border border-border rounded-lg shadow-lg p-3">
                             <p className="font-medium text-foreground">{data.name}</p>
                             <p className="text-sm text-muted-foreground">
-                              {data.value} {t('admin.charts.users')} ({data.percentage})
+                              {data.value} {LABELS.users} ({data.percentage})
                             </p>
                           </div>
                         );
@@ -577,7 +630,7 @@ const SuperAdminDashboard = () => {
                         ? ((funnelData[1].value / funnelData[0].value) * 100).toFixed(1) 
                         : 0}%
                     </p>
-                    <p className="text-xs text-muted-foreground">{t('admin.funnel.registrationToFirstUse')}</p>
+                    <p className="text-xs text-muted-foreground">{LABELS.funnel.registrationToFirstUse}</p>
                   </div>
                   <div className="text-center p-3 bg-muted/50 rounded-lg">
                     <p className="text-lg font-bold text-foreground">
@@ -585,7 +638,7 @@ const SuperAdminDashboard = () => {
                         ? ((funnelData[2].value / funnelData[1].value) * 100).toFixed(1) 
                         : 0}%
                     </p>
-                    <p className="text-xs text-muted-foreground">{t('admin.funnel.firstUseToRecurring')}</p>
+                    <p className="text-xs text-muted-foreground">{LABELS.funnel.firstUseToRecurring}</p>
                   </div>
                   <div className="text-center p-3 bg-muted/50 rounded-lg">
                     <p className="text-lg font-bold text-foreground">
@@ -593,7 +646,7 @@ const SuperAdminDashboard = () => {
                         ? ((funnelData[3].value / funnelData[2].value) * 100).toFixed(1) 
                         : 0}%
                     </p>
-                    <p className="text-xs text-muted-foreground">{t('admin.funnel.recurringToPremium')}</p>
+                    <p className="text-xs text-muted-foreground">{LABELS.funnel.recurringToPremium}</p>
                   </div>
                 </>
               )}
@@ -608,9 +661,9 @@ const SuperAdminDashboard = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Users className="w-5 h-5 text-primary" />
-                {t('admin.charts.newUsersByWeek')}
+                {LABELS.charts.newUsersByWeek}
               </CardTitle>
-              <CardDescription>{t('admin.charts.newUsersByWeekDesc')}</CardDescription>
+              <CardDescription>{LABELS.charts.newUsersByWeekDesc}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-64">
@@ -622,7 +675,7 @@ const SuperAdminDashboard = () => {
                     <Tooltip content={<CustomTooltip />} />
                     <Bar 
                       dataKey="users" 
-                      name={t('admin.charts.newUsers')}
+                      name={LABELS.charts.newUsers}
                       fill="hsl(var(--primary))" 
                       radius={[4, 4, 0, 0]}
                     />
@@ -637,9 +690,9 @@ const SuperAdminDashboard = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5 text-amber-500" />
-                {t('admin.charts.riskDistribution')}
+                {LABELS.charts.riskDistribution}
               </CardTitle>
-              <CardDescription>{t('admin.charts.riskDistributionDesc')}</CardDescription>
+              <CardDescription>{LABELS.charts.riskDistributionDesc}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-64">
@@ -649,7 +702,7 @@ const SuperAdminDashboard = () => {
                     <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} />
                     <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
                     <Tooltip content={<CustomTooltip />} />
-                    <Bar dataKey="value" name={t('admin.charts.users')} radius={[4, 4, 0, 0]}>
+                    <Bar dataKey="value" name={LABELS.users} radius={[4, 4, 0, 0]}>
                       {riskData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
@@ -666,9 +719,9 @@ const SuperAdminDashboard = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Calendar className="w-5 h-5 text-primary" />
-              {t('admin.retention.title')}
+              {LABELS.retention.title}
             </CardTitle>
-            <CardDescription>{t('admin.retention.description')}</CardDescription>
+            <CardDescription>{LABELS.retention.description}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-72">
@@ -690,10 +743,10 @@ const SuperAdminDashboard = () => {
                           <div className="bg-popover border border-border rounded-lg shadow-lg p-3">
                             <p className="font-medium text-foreground">{data.name}</p>
                             <p className="text-sm text-muted-foreground">
-                              {data.retained} / {data.total} {t('admin.charts.users')}
+                              {data.retained} / {data.total} {LABELS.users}
                             </p>
                             <p className="text-sm font-bold" style={{ color: data.fill }}>
-                              {data.rate}% {t('admin.retention.retained')}
+                              {data.rate}% {LABELS.retention.retained}
                             </p>
                           </div>
                         );
@@ -703,7 +756,7 @@ const SuperAdminDashboard = () => {
                   />
                   <Bar 
                     dataKey="rate" 
-                    name={t('admin.retention.retentionRate')}
+                    name={LABELS.retention.retentionRate}
                     radius={[4, 4, 0, 0]}
                   >
                     {retentionData.map((entry, index) => (
@@ -726,7 +779,7 @@ const SuperAdminDashboard = () => {
                   </div>
                   <p className="text-2xl font-bold text-foreground">{item.rate}%</p>
                   <p className="text-xs text-muted-foreground">
-                    {item.retained} / {item.total} {t('admin.charts.users')}
+                    {item.retained} / {item.total} {LABELS.users}
                   </p>
                 </div>
               ))}
@@ -744,7 +797,7 @@ const SuperAdminDashboard = () => {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-foreground">{analytics?.active_7days || 0}</p>
-                  <p className="text-sm text-muted-foreground">{t('admin.active7Days')}</p>
+                  <p className="text-sm text-muted-foreground">{LABELS.active7Days}</p>
                 </div>
               </div>
             </CardContent>
@@ -757,7 +810,7 @@ const SuperAdminDashboard = () => {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-foreground">{analytics?.active_30days || 0}</p>
-                  <p className="text-sm text-muted-foreground">{t('admin.active30Days')}</p>
+                  <p className="text-sm text-muted-foreground">{LABELS.active30Days}</p>
                 </div>
               </div>
             </CardContent>
@@ -770,7 +823,7 @@ const SuperAdminDashboard = () => {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-foreground">{atRiskUsers?.length || 0}</p>
-                  <p className="text-sm text-muted-foreground">{t('admin.atRiskUsers')}</p>
+                  <p className="text-sm text-muted-foreground">{LABELS.atRiskUsers}</p>
                 </div>
               </div>
             </CardContent>

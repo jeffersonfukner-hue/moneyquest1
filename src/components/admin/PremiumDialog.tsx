@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +8,19 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Crown } from 'lucide-react';
 import type { AdminUser } from '@/types/admin';
 
+// Labels fixos em pt-BR para SuperAdmin
+const LABELS = {
+  title: 'Conceder Premium',
+  description: 'Conceder acesso Premium para',
+  lifetime: 'Vitalício',
+  temporary: 'Por período',
+  days: 'Dias de Premium',
+  note: 'Observação',
+  notePlaceholder: 'Adicione uma observação opcional...',
+  confirm: 'Confirmar',
+  cancel: 'Cancelar',
+};
+
 interface PremiumDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -17,7 +29,6 @@ interface PremiumDialogProps {
 }
 
 export const PremiumDialog = ({ open, onOpenChange, user, onConfirm }: PremiumDialogProps) => {
-  const { t } = useTranslation();
   const [type, setType] = useState<'lifetime' | 'period'>('lifetime');
   const [days, setDays] = useState('30');
   const [note, setNote] = useState('');
@@ -44,29 +55,29 @@ export const PremiumDialog = ({ open, onOpenChange, user, onConfirm }: PremiumDi
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Crown className="w-5 h-5 text-yellow-500" />
-            {t('admin.premium.title')}
+            {LABELS.title}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           <p className="text-sm text-muted-foreground">
-            {t('admin.premium.description', { user: user?.display_name || user?.email })}
+            {LABELS.description} {user?.display_name || user?.email}
           </p>
 
           <RadioGroup value={type} onValueChange={(v) => setType(v as 'lifetime' | 'period')}>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="lifetime" id="lifetime" />
-              <Label htmlFor="lifetime">{t('admin.premium.lifetime')}</Label>
+              <Label htmlFor="lifetime">{LABELS.lifetime}</Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="period" id="period" />
-              <Label htmlFor="period">{t('admin.premium.temporary')}</Label>
+              <Label htmlFor="period">{LABELS.temporary}</Label>
             </div>
           </RadioGroup>
 
           {type === 'period' && (
             <div className="space-y-2">
-              <Label>{t('admin.premium.days')}</Label>
+              <Label>{LABELS.days}</Label>
               <Input 
                 type="number" 
                 value={days} 
@@ -77,21 +88,21 @@ export const PremiumDialog = ({ open, onOpenChange, user, onConfirm }: PremiumDi
           )}
 
           <div className="space-y-2">
-            <Label>{t('admin.note')}</Label>
+            <Label>{LABELS.note}</Label>
             <Textarea 
               value={note} 
               onChange={(e) => setNote(e.target.value)}
-              placeholder={t('admin.notePlaceholder')}
+              placeholder={LABELS.notePlaceholder}
             />
           </div>
         </div>
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {t('common.cancel')}
+            {LABELS.cancel}
           </Button>
           <Button onClick={handleConfirm}>
-            {t('admin.premium.confirm')}
+            {LABELS.confirm}
           </Button>
         </DialogFooter>
       </DialogContent>
