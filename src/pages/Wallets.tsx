@@ -22,6 +22,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useWallets } from '@/hooks/useWallets';
 import { useCreditCards, CreditCard as CreditCardType } from '@/hooks/useCreditCards';
 import { useLoans, Loan } from '@/hooks/useLoans';
+import { useTransactions } from '@/hooks/useTransactions';
 import { WalletCard } from '@/components/wallets/WalletCard';
 import { SortableWalletCard } from '@/components/wallets/SortableWalletCard';
 import { AddWalletDialog } from '@/components/wallets/AddWalletDialog';
@@ -49,6 +50,7 @@ const WalletsPage = () => {
   const { activeWallets, inactiveWallets, wallets, deleteWallet, reactivateWallet, reorderWallets, loading, refetch: refetchWallets } = useWallets();
   const { creditCards, addCreditCard, updateCreditCard, deleteCreditCard, loading: cardsLoading } = useCreditCards();
   const { loans, activeLoans, paidLoans, addLoan, updateLoan, deleteLoan, payInstallment, prepayInstallments, payOffLoan, loading: loansLoading, totalSaldoDevedor, totalParcelasMensais } = useLoans();
+  const { updateTransaction, deleteTransaction } = useTransactions();
   
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showAddCardDialog, setShowAddCardDialog] = useState(false);
@@ -267,6 +269,8 @@ const WalletsPage = () => {
                   setViewingInvoicesCard(null);
                   refetchWallets(); // Refresh wallet balances after potential payment
                 }}
+                onUpdateTransaction={updateTransaction}
+                onDeleteTransaction={deleteTransaction}
               />
             ) : (
               <>

@@ -9,7 +9,10 @@ import {
   Clock, 
   AlertCircle,
   CreditCard as CreditCardIcon,
-  ArrowLeft
+  ArrowLeft,
+  MoreVertical,
+  Edit,
+  Trash2
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,6 +20,22 @@ import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { formatMoney } from '@/lib/formatters';
 import { CreditCard } from '@/hooks/useCreditCards';
 import { useCreditCardInvoices, CreditCardInvoice, InvoiceTransaction } from '@/hooks/useCreditCardInvoices';
@@ -24,6 +43,8 @@ import { PayInvoiceDialog } from './PayInvoiceDialog';
 import { CreditCardLimitEvolutionChart } from './CreditCardLimitEvolutionChart';
 import { Wallet } from '@/types/wallet';
 import { cn } from '@/lib/utils';
+import { Transaction } from '@/types/database';
+import { EditCreditCardTransactionDialog } from './EditCreditCardTransactionDialog';
 
 interface CreditCardInvoicesPanelProps {
   card: CreditCard;
@@ -71,9 +92,11 @@ interface InvoiceCardProps {
   linkedWallet: Wallet | null;
   onPayClick: (invoice: CreditCardInvoice) => void;
   fetchTransactions: (invoiceId: string) => Promise<InvoiceTransaction[]>;
+  onEditTransaction: (transaction: InvoiceTransaction) => void;
+  onDeleteTransaction: (transaction: InvoiceTransaction) => void;
 }
 
-const InvoiceCard = ({ invoice, card, linkedWallet, onPayClick, fetchTransactions }: InvoiceCardProps) => {
+const InvoiceCard = ({ invoice, card, linkedWallet, onPayClick, fetchTransactions, onEditTransaction, onDeleteTransaction }: InvoiceCardProps) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [transactions, setTransactions] = useState<InvoiceTransaction[]>([]);
@@ -159,7 +182,7 @@ const InvoiceCard = ({ invoice, card, linkedWallet, onPayClick, fetchTransaction
                   {transactions.map(txn => (
                     <div 
                       key={txn.id} 
-                      className="flex items-center justify-between py-2 px-3 bg-background rounded-lg"
+                      className="flex items-center justify-between py-2 px-3 bg-background rounded-lg group"
                     >
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">{txn.description}</p>
@@ -167,9 +190,42 @@ const InvoiceCard = ({ invoice, card, linkedWallet, onPayClick, fetchTransaction
                           {formatDate(txn.date)} • {txn.category}
                         </p>
                       </div>
-                      <p className="text-sm font-medium text-destructive ml-2">
-                        -{formatMoney(txn.amount, txn.currency as any)}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium text-destructive">
+                          -{formatMoney(txn.amount, txn.currency as any)}
+                        </p>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <MoreVertical className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={(e) => {
+                              e.stopPropagation();
+                              onEditTransaction(txn);
+                            }}>
+                              <Edit className="w-4 h-4 mr-2" />
+                              {t('common.edit', 'Editar')}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onDeleteTransaction(txn);
+                              }}
+                              className="text-destructive focus:text-destructive"
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              {t('common.delete', 'Excluir')}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -196,7 +252,15 @@ const InvoiceCard = ({ invoice, card, linkedWallet, onPayClick, fetchTransaction
   );
 };
 
-export const CreditCardInvoicesPanel = ({ card, wallets, onBack }: CreditCardInvoicesPanelProps) => {
+interface CreditCardInvoicesPanelProps {
+  card: CreditCard;
+  wallets: Wallet[];
+  onBack: () => void;
+  onUpdateTransaction: (id: string, updates: Partial<Transaction>) => Promise<{ error: Error | null }>;
+  onDeleteTransaction: (id: string) => Promise<{ error: Error | null }>;
+}
+
+export const CreditCardInvoicesPanel = ({ card, wallets, onBack, onUpdateTransaction, onDeleteTransaction }: CreditCardInvoicesPanelProps) => {
   const { t } = useTranslation();
   const { 
     invoices, 
@@ -212,6 +276,12 @@ export const CreditCardInvoicesPanel = ({ card, wallets, onBack }: CreditCardInv
   const [showPayDialog, setShowPayDialog] = useState(false);
   const [cardTransactions, setCardTransactions] = useState<(InvoiceTransaction & { credit_card_id: string })[]>([]);
   const [loadingTransactions, setLoadingTransactions] = useState(true);
+  
+  // State for editing/deleting transactions
+  const [editingTransaction, setEditingTransaction] = useState<InvoiceTransaction | null>(null);
+  const [deletingTransaction, setDeletingTransaction] = useState<InvoiceTransaction | null>(null);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   // Fetch card transactions for the chart
   useEffect(() => {
@@ -235,6 +305,35 @@ export const CreditCardInvoicesPanel = ({ card, wallets, onBack }: CreditCardInv
       refetch();
     }
     return success;
+  };
+
+  const handleEditTransaction = (txn: InvoiceTransaction) => {
+    setEditingTransaction(txn);
+    setShowEditDialog(true);
+  };
+
+  const handleDeleteTransactionClick = (txn: InvoiceTransaction) => {
+    setDeletingTransaction(txn);
+    setShowDeleteDialog(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (deletingTransaction) {
+      await onDeleteTransaction(deletingTransaction.id);
+      setShowDeleteDialog(false);
+      setDeletingTransaction(null);
+      refetch();
+    }
+  };
+
+  const handleUpdateTransaction = async (id: string, updates: Partial<Transaction>) => {
+    const result = await onUpdateTransaction(id, updates);
+    if (!result.error) {
+      setShowEditDialog(false);
+      setEditingTransaction(null);
+      refetch();
+    }
+    return result;
   };
 
   // Group invoices by status
@@ -306,6 +405,8 @@ export const CreditCardInvoicesPanel = ({ card, wallets, onBack }: CreditCardInv
                     linkedWallet={linkedWallet}
                     onPayClick={handlePayClick}
                     fetchTransactions={fetchInvoiceTransactions}
+                    onEditTransaction={handleEditTransaction}
+                    onDeleteTransaction={handleDeleteTransactionClick}
                   />
                 ))}
               </div>
@@ -326,6 +427,8 @@ export const CreditCardInvoicesPanel = ({ card, wallets, onBack }: CreditCardInv
                     linkedWallet={linkedWallet}
                     onPayClick={handlePayClick}
                     fetchTransactions={fetchInvoiceTransactions}
+                    onEditTransaction={handleEditTransaction}
+                    onDeleteTransaction={handleDeleteTransactionClick}
                   />
                 ))}
               </div>
@@ -346,6 +449,8 @@ export const CreditCardInvoicesPanel = ({ card, wallets, onBack }: CreditCardInv
                     linkedWallet={linkedWallet}
                     onPayClick={handlePayClick}
                     fetchTransactions={fetchInvoiceTransactions}
+                    onEditTransaction={handleEditTransaction}
+                    onDeleteTransaction={handleDeleteTransactionClick}
                   />
                 ))}
               </div>
@@ -364,6 +469,41 @@ export const CreditCardInvoicesPanel = ({ card, wallets, onBack }: CreditCardInv
         onPay={handlePay}
         paying={payingInvoice}
       />
+
+      {/* Delete Transaction Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('transactions.deleteTitle', 'Excluir transação?')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('transactions.deleteDesc', 'Esta ação não pode ser desfeita. A transação será removida permanentemente.')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('common.cancel', 'Cancelar')}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              {t('common.delete', 'Excluir')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Edit Transaction Dialog */}
+      {editingTransaction && (
+        <EditCreditCardTransactionDialog
+          transaction={editingTransaction}
+          card={card}
+          open={showEditDialog}
+          onOpenChange={(open) => {
+            setShowEditDialog(open);
+            if (!open) setEditingTransaction(null);
+          }}
+          onUpdate={handleUpdateTransaction}
+        />
+      )}
     </div>
   );
 };
