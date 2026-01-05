@@ -1012,7 +1012,10 @@
     "seconds": "SEG",
     "anonymous": "Anônimo",
     "actions": "Ações",
-    "noName": "Sem nome"
+    "noName": "Sem nome",
+    "description": "Descrição",
+    "optional": "opcional",
+    "date": "Data"
   },
   "auth": {
     "login": "Entrar",
