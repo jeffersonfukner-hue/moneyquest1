@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { format, addDays, addWeeks, addMonths, addYears, isBefore, isAfter, startOfDay } from 'date-fns';
@@ -143,8 +143,8 @@ const ScheduledTransactions = () => {
     }
   };
 
-  // Generate upcoming entries for the next 30 days
-  const generateUpcomingEntries = (): UpcomingEntry[] => {
+  // Generate upcoming entries for the next 30 days - memoized to prevent flickering
+  const upcomingEntries = useMemo((): UpcomingEntry[] => {
     const entries: UpcomingEntry[] = [];
     const today = startOfDay(new Date());
     const endDate = addDays(today, 30);
@@ -206,25 +206,25 @@ const ScheduledTransactions = () => {
       });
 
     return entries.sort((a, b) => a.scheduledDate.getTime() - b.scheduledDate.getTime());
-  };
+  }, [scheduledTransfers, scheduledTransactions]);
 
-  const upcomingEntries = generateUpcomingEntries();
+  // Filter entries based on sub tab - memoized
+  const filteredUpcoming = useMemo(() => 
+    upcomingEntries.filter(entry => {
+      if (activeSubTab === 'all') return true;
+      return entry.type === (activeSubTab === 'transfers' ? 'transfer' : 'transaction');
+    }), [upcomingEntries, activeSubTab]);
 
-  // Filter entries based on sub tab
-  const filteredUpcoming = upcomingEntries.filter(entry => {
-    if (activeSubTab === 'all') return true;
-    return entry.type === (activeSubTab === 'transfers' ? 'transfer' : 'transaction');
-  });
-
-  // Group entries by date
-  const groupedEntries = filteredUpcoming.reduce((acc, entry) => {
-    const dateKey = format(entry.scheduledDate, 'yyyy-MM-dd');
-    if (!acc[dateKey]) {
-      acc[dateKey] = [];
-    }
-    acc[dateKey].push(entry);
-    return acc;
-  }, {} as Record<string, typeof upcomingEntries>);
+  // Group entries by date - memoized
+  const groupedEntries = useMemo(() => 
+    filteredUpcoming.reduce((acc, entry) => {
+      const dateKey = format(entry.scheduledDate, 'yyyy-MM-dd');
+      if (!acc[dateKey]) {
+        acc[dateKey] = [];
+      }
+      acc[dateKey].push(entry);
+      return acc;
+    }, {} as Record<string, typeof upcomingEntries>), [filteredUpcoming]);
 
   // Calculate totals
   const calculateMonthlyAmount = (amount: number, frequency: string) => {
@@ -236,32 +236,32 @@ const ScheduledTransactions = () => {
     }
   };
 
-  const totalMonthlyTransfers = scheduledTransfers
-    .filter(t => t.is_active)
-    .reduce((sum, t) => sum + calculateMonthlyAmount(t.amount, t.frequency), 0);
+  // Memoized calculations to prevent flickering
+  const { totalMonthlyTransfers, totalMonthlyIncome, totalMonthlyExpenses, activeTransfersCount, activeTransactionsCount, totalActive, totalPaused } = useMemo(() => {
+    const transfers = scheduledTransfers.filter(t => t.is_active);
+    const activeIncome = scheduledTransactions.filter(t => t.is_active && t.type === 'INCOME');
+    const activeExpenses = scheduledTransactions.filter(t => t.is_active && t.type === 'EXPENSE');
+    
+    return {
+      totalMonthlyTransfers: transfers.reduce((sum, t) => sum + calculateMonthlyAmount(t.amount, t.frequency), 0),
+      totalMonthlyIncome: activeIncome.reduce((sum, t) => sum + calculateMonthlyAmount(t.amount, t.frequency), 0),
+      totalMonthlyExpenses: activeExpenses.reduce((sum, t) => sum + calculateMonthlyAmount(t.amount, t.frequency), 0),
+      activeTransfersCount: transfers.length,
+      activeTransactionsCount: scheduledTransactions.filter(t => t.is_active).length,
+      totalActive: transfers.length + scheduledTransactions.filter(t => t.is_active).length,
+      totalPaused: scheduledTransfers.filter(t => !t.is_active).length + scheduledTransactions.filter(t => !t.is_active).length,
+    };
+  }, [scheduledTransfers, scheduledTransactions]);
 
-  const totalMonthlyIncome = scheduledTransactions
-    .filter(t => t.is_active && t.type === 'INCOME')
-    .reduce((sum, t) => sum + calculateMonthlyAmount(t.amount, t.frequency), 0);
-
-  const totalMonthlyExpenses = scheduledTransactions
-    .filter(t => t.is_active && t.type === 'EXPENSE')
-    .reduce((sum, t) => sum + calculateMonthlyAmount(t.amount, t.frequency), 0);
-
-  const activeTransfersCount = scheduledTransfers.filter(t => t.is_active).length;
-  const activeTransactionsCount = scheduledTransactions.filter(t => t.is_active).length;
-  const totalActive = activeTransfersCount + activeTransactionsCount;
-  const totalPaused = scheduledTransfers.filter(t => !t.is_active).length + 
-                      scheduledTransactions.filter(t => !t.is_active).length;
-
-  // All scheduled items for the "All" tab
-  const allScheduledItems = [
-    ...scheduledTransfers.map(t => ({ type: 'transfer' as const, item: t })),
-    ...scheduledTransactions.map(t => ({ type: 'transaction' as const, item: t })),
-  ].filter(item => {
-    if (activeSubTab === 'all') return true;
-    return item.type === (activeSubTab === 'transfers' ? 'transfer' : 'transaction');
-  });
+  // All scheduled items for the "All" tab - memoized
+  const allScheduledItems = useMemo(() => 
+    [
+      ...scheduledTransfers.map(t => ({ type: 'transfer' as const, item: t })),
+      ...scheduledTransactions.map(t => ({ type: 'transaction' as const, item: t })),
+    ].filter(item => {
+      if (activeSubTab === 'all') return true;
+      return item.type === (activeSubTab === 'transfers' ? 'transfer' : 'transaction');
+    }), [scheduledTransfers, scheduledTransactions, activeSubTab]);
 
   if (loading) {
     return (
