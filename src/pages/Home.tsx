@@ -38,14 +38,14 @@ const Home = () => {
       <div className="flex-1 flex items-center justify-center px-6 pb-8">
         <div className="w-full max-w-sm">
           <div className="space-y-8">
-            {/* Hero Section */}
-            <section className="text-center space-y-4 animate-fade-in">
-              <Logo size="xl" animated shine priority className="justify-center" />
+            {/* Hero Section - H1 renders immediately without animation for faster LCP */}
+            <section className="text-center space-y-4">
+              <Logo size="xl" animated shine priority className="justify-center animate-fade-in" />
               <div className="space-y-2 pt-4">
                 <h1 className="text-3xl font-bold tracking-tight text-foreground">
                   {t('landing.hero.title')}
                 </h1>
-                <p className="text-base text-muted-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed animate-fade-in">
                   {t('landing.hero.subtitle')}
                 </p>
               </div>

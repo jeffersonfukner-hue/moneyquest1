@@ -14,9 +14,27 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://dybbailvbaaovkstgpoh.supabase.co" crossorigin>
+    <!-- AdSense preconnect for faster ad loading -->
+    <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
+    <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
     
     <!-- Preload critical font weights for faster LCP -->
     <link rel="preload" href="https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfAZ9hiA.woff2" as="font" type="font/woff2" crossorigin>
+    
+    <!-- Preload critical logo for LCP -->
+    <link rel="preload" href="/src/assets/logo-square.webp" as="image" type="image/webp">
+    
+    <!-- Critical CSS for faster FCP - inline minimal styles for above-the-fold -->
+    <style>
+      :root{--background:260 15% 97%;--foreground:0 0% 12%;--primary:263 37% 27%;--muted-foreground:0 0% 40%}
+      .dark{--background:262 32% 8%;--foreground:210 20% 95%;--muted-foreground:215 20% 65%}
+      *{box-sizing:border-box}
+      html{font-family:Inter,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+      body{margin:0;background:hsl(var(--background));color:hsl(var(--foreground));min-height:100vh}
+      #root{min-height:100vh;display:flex;flex-direction:column}
+      .animate-fade-in{animation:fadeIn .3s ease-out both}
+      @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    </style>
     
     <!-- Google Fonts - Inter + Fredoka with display=swap for non-blocking render -->
     <!-- Using media="print" + onload pattern for async loading (eliminates render-blocking) -->
@@ -135,6 +153,8 @@
 
   <body>
     <div id="root"></div>
+    <!-- Modulepreload for faster module resolution -->
+    <link rel="modulepreload" href="/src/main.tsx">
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

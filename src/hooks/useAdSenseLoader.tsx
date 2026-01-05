@@ -29,18 +29,27 @@ export const useAdSenseLoader = () => {
       return;
     }
 
-    // Create and load AdSense script
-    const script = document.createElement('script');
-    script.id = ADSENSE_SCRIPT_ID;
-    script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CONFIG.client}`;
-    script.async = true;
-    script.crossOrigin = 'anonymous';
-    document.head.appendChild(script);
+    // Load AdSense script with requestIdleCallback to avoid blocking LCP
+    const loadScript = () => {
+      if (document.getElementById(ADSENSE_SCRIPT_ID)) return;
+      
+      const script = document.createElement('script');
+      script.id = ADSENSE_SCRIPT_ID;
+      script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CONFIG.client}`;
+      script.async = true;
+      script.crossOrigin = 'anonymous';
+      document.head.appendChild(script);
+    };
+
+    // Use requestIdleCallback for non-blocking load, with fallback
+    if ('requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(loadScript, { timeout: 3000 });
+    } else {
+      setTimeout(loadScript, 2000);
+    }
 
     // Note: We intentionally do NOT remove the script on cleanup
     // because it would cause issues with ad initialization
-    // The script is harmless once loaded - it only serves ads when
-    // there are ad containers on the page
   }, [canLoad, location.pathname]);
 
   return { canLoad };
