@@ -1,15 +1,29 @@
 import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { BarChart3, Eye, MousePointer, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
-import { 
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
-  CartesianGrid, Cell, PieChart, Pie
-} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell, PieChart, Pie } from 'recharts';
+
+const LABELS = {
+  impressions: 'Impressões',
+  clicks: 'Cliques',
+  ctrOverall: 'CTR Geral',
+  activeCampaigns: 'Campanhas Ativas',
+  performanceByCampaign: 'Desempenho por Campanha',
+  last30Days: 'Últimos 30 dias',
+  noCampaignData: 'Nenhum dado de campanha',
+  typeDistribution: 'Distribuição por Tipo',
+  impressionsByType: 'Impressões por tipo de campanha',
+  noData: 'Nenhum dado disponível',
+  breakdown: 'Detalhamento por Campanha',
+  campaign: 'Campanha',
+  type: 'Tipo',
+  noAnalyticsYet: 'Nenhuma métrica registrada ainda',
+  activateToCollect: 'Ative campanhas para começar a coletar dados',
+};
 
 interface CampaignStats {
   campaign_id: string;
@@ -30,8 +44,6 @@ interface CampaignAnalyticsWidgetProps {
 }
 
 export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetProps) => {
-  const { t } = useTranslation();
-
   // Fetch campaign events
   const { data: events, isLoading } = useQuery({
     queryKey: ['campaign-analytics'],
@@ -41,11 +53,11 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
         .select('*')
         .eq('test_name', 'campaign')
         .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
-      
+
       if (error) throw error;
       return data || [];
     },
-    refetchInterval: 60000, // Refresh every minute
+    refetchInterval: 60000,
   });
 
   // Calculate stats per campaign
@@ -53,7 +65,7 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
     if (!events || !campaigns) return [];
 
     const statsMap = new Map<string, { impressions: number; clicks: number }>();
-    
+
     events.forEach((event) => {
       const campaignId = event.variant;
       if (!statsMap.has(campaignId)) {
@@ -79,7 +91,7 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
           ctr: stats.impressions > 0 ? (stats.clicks / stats.impressions) * 100 : 0,
         };
       })
-      .filter(s => s.impressions > 0 || s.clicks > 0)
+      .filter((s) => s.impressions > 0 || s.clicks > 0)
       .sort((a, b) => b.impressions - a.impressions);
   }, [events, campaigns]);
 
@@ -94,12 +106,10 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
     );
   }, [campaignStats]);
 
-  const overallCtr = totals.impressions > 0 
-    ? ((totals.clicks / totals.impressions) * 100).toFixed(2) 
-    : '0.00';
+  const overallCtr = totals.impressions > 0 ? ((totals.clicks / totals.impressions) * 100).toFixed(2) : '0.00';
 
   // Chart data
-  const chartData = campaignStats.slice(0, 10).map(s => ({
+  const chartData = campaignStats.slice(0, 10).map((s) => ({
     name: s.campaign_name.length > 12 ? s.campaign_name.slice(0, 12) + '...' : s.campaign_name,
     fullName: s.campaign_name,
     impressions: s.impressions,
@@ -110,7 +120,7 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
   // Type distribution for pie chart
   const typeDistribution = useMemo(() => {
     const typeMap = new Map<string, number>();
-    campaignStats.forEach(s => {
+    campaignStats.forEach((s) => {
       typeMap.set(s.campaign_type, (typeMap.get(s.campaign_type) || 0) + s.impressions);
     });
     return Array.from(typeMap.entries()).map(([type, value]) => ({
@@ -142,7 +152,7 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
           <CardContent className="pt-4">
             <div className="flex items-center gap-2">
               <Eye className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">{t('admin.campaignAnalytics.impressions')}</span>
+              <span className="text-sm text-muted-foreground">{LABELS.impressions}</span>
             </div>
             <div className="text-2xl font-bold mt-1">{totals.impressions.toLocaleString()}</div>
           </CardContent>
@@ -151,7 +161,7 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
           <CardContent className="pt-4">
             <div className="flex items-center gap-2">
               <MousePointer className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">{t('admin.campaignAnalytics.clicks')}</span>
+              <span className="text-sm text-muted-foreground">{LABELS.clicks}</span>
             </div>
             <div className="text-2xl font-bold mt-1">{totals.clicks.toLocaleString()}</div>
           </CardContent>
@@ -160,7 +170,7 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
           <CardContent className="pt-4">
             <div className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">{t('admin.campaignAnalytics.ctrOverall')}</span>
+              <span className="text-sm text-muted-foreground">{LABELS.ctrOverall}</span>
             </div>
             <div className="text-2xl font-bold mt-1">{overallCtr}%</div>
           </CardContent>
@@ -169,7 +179,7 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
           <CardContent className="pt-4">
             <div className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">{t('admin.campaignAnalytics.activeCampaigns')}</span>
+              <span className="text-sm text-muted-foreground">{LABELS.activeCampaigns}</span>
             </div>
             <div className="text-2xl font-bold mt-1">{campaignStats.length}</div>
           </CardContent>
@@ -181,8 +191,8 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
         {/* Bar Chart - Impressions & Clicks */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">{t('admin.campaignAnalytics.performanceByCampaign')}</CardTitle>
-            <CardDescription>{t('admin.campaignAnalytics.last30Days')}</CardDescription>
+            <CardTitle className="text-base">{LABELS.performanceByCampaign}</CardTitle>
+            <CardDescription>{LABELS.last30Days}</CardDescription>
           </CardHeader>
           <CardContent>
             {chartData.length > 0 ? (
@@ -191,22 +201,20 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
                   <BarChart data={chartData} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                    <YAxis 
-                      type="category" 
-                      dataKey="name" 
-                      stroke="hsl(var(--muted-foreground))" 
-                      fontSize={10}
-                      width={80}
-                    />
-                    <Tooltip 
+                    <YAxis type="category" dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={10} width={80} />
+                    <Tooltip
                       content={({ active, payload }) => {
                         if (active && payload?.length) {
                           const data = payload[0].payload;
                           return (
                             <div className="bg-popover border border-border rounded-lg shadow-lg p-3">
                               <p className="font-medium">{data.fullName}</p>
-                              <p className="text-sm">{t('admin.campaignAnalytics.impressions')}: {data.impressions}</p>
-                              <p className="text-sm">{t('admin.campaignAnalytics.clicks')}: {data.clicks}</p>
+                              <p className="text-sm">
+                                {LABELS.impressions}: {data.impressions}
+                              </p>
+                              <p className="text-sm">
+                                {LABELS.clicks}: {data.clicks}
+                              </p>
                               <p className="text-sm text-primary">CTR: {data.ctr.toFixed(2)}%</p>
                             </div>
                           );
@@ -214,15 +222,13 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
                         return null;
                       }}
                     />
-                    <Bar dataKey="impressions" fill="hsl(var(--muted-foreground))" name={t('admin.campaignAnalytics.impressions')} radius={[0, 4, 4, 0]} />
-                    <Bar dataKey="clicks" fill="hsl(var(--primary))" name={t('admin.campaignAnalytics.clicks')} radius={[0, 4, 4, 0]} />
+                    <Bar dataKey="impressions" fill="hsl(var(--muted-foreground))" name={LABELS.impressions} radius={[0, 4, 4, 0]} />
+                    <Bar dataKey="clicks" fill="hsl(var(--primary))" name={LABELS.clicks} radius={[0, 4, 4, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             ) : (
-              <div className="h-64 flex items-center justify-center text-muted-foreground">
-                {t('admin.campaignAnalytics.noCampaignData')}
-              </div>
+              <div className="h-64 flex items-center justify-center text-muted-foreground">{LABELS.noCampaignData}</div>
             )}
           </CardContent>
         </Card>
@@ -230,8 +236,8 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
         {/* Pie Chart - Type Distribution */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">{t('admin.campaignAnalytics.typeDistribution')}</CardTitle>
-            <CardDescription>{t('admin.campaignAnalytics.impressionsByType')}</CardDescription>
+            <CardTitle className="text-base">{LABELS.typeDistribution}</CardTitle>
+            <CardDescription>{LABELS.impressionsByType}</CardDescription>
           </CardHeader>
           <CardContent>
             {typeDistribution.length > 0 ? (
@@ -258,9 +264,7 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
                 </ResponsiveContainer>
               </div>
             ) : (
-              <div className="h-64 flex items-center justify-center text-muted-foreground">
-                {t('admin.campaignAnalytics.noData')}
-              </div>
+              <div className="h-64 flex items-center justify-center text-muted-foreground">{LABELS.noData}</div>
             )}
           </CardContent>
         </Card>
@@ -269,7 +273,7 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
       {/* Detailed Table */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">{t('admin.campaignAnalytics.breakdown')}</CardTitle>
+          <CardTitle className="text-base">{LABELS.breakdown}</CardTitle>
         </CardHeader>
         <CardContent>
           {campaignStats.length > 0 ? (
@@ -277,10 +281,10 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left py-2 px-2">{t('admin.campaignAnalytics.campaign')}</th>
-                    <th className="text-left py-2 px-2">{t('admin.campaignAnalytics.type')}</th>
-                    <th className="text-right py-2 px-2">{t('admin.campaignAnalytics.impressions')}</th>
-                    <th className="text-right py-2 px-2">{t('admin.campaignAnalytics.clicks')}</th>
+                    <th className="text-left py-2 px-2">{LABELS.campaign}</th>
+                    <th className="text-left py-2 px-2">{LABELS.type}</th>
+                    <th className="text-right py-2 px-2">{LABELS.impressions}</th>
+                    <th className="text-right py-2 px-2">{LABELS.clicks}</th>
                     <th className="text-right py-2 px-2">CTR</th>
                   </tr>
                 </thead>
@@ -307,9 +311,9 @@ export const CampaignAnalyticsWidget = ({ campaigns }: CampaignAnalyticsWidgetPr
             </div>
           ) : (
             <div className="py-8 text-center text-muted-foreground">
-              {t('admin.campaignAnalytics.noAnalyticsYet')}
+              {LABELS.noAnalyticsYet}
               <br />
-              <span className="text-xs">{t('admin.campaignAnalytics.activateToCollect')}</span>
+              <span className="text-xs">{LABELS.activateToCollect}</span>
             </div>
           )}
         </CardContent>
