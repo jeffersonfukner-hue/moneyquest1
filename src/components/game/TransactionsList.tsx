@@ -2,10 +2,12 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Locale } from 'date-fns';
 import { Transaction, SupportedCurrency } from '@/types/database';
-import { ArrowUpCircle, ArrowDownCircle, Trash2, Pencil, MoreVertical, CheckSquare, X, Wallet, Lock, Copy } from 'lucide-react';
+import { ArrowUpCircle, ArrowDownCircle, Trash2, Pencil, MoreVertical, CheckSquare, X, Wallet, Lock, Copy, ChevronDown, ChevronRight, TrendingUp, TrendingDown, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { format, subDays } from 'date-fns';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { format, subDays, startOfMonth, endOfMonth, isSameMonth } from 'date-fns';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
@@ -17,6 +19,7 @@ import { BatchWalletAssignDialog } from './BatchWalletAssignDialog';
 import { useWallets } from '@/hooks/useWallets';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Checkbox } from '@/components/ui/checkbox';
+import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,7 +44,14 @@ interface TransactionsListProps {
   onDuplicate?: (transaction: Transaction) => void;
 }
 
-type FilterPeriod = 'all' | 'week' | 'month' | 'year';
+interface MonthGroup {
+  key: string;
+  label: string;
+  transactions: Transaction[];
+  totalIncome: number;
+  totalExpense: number;
+  balance: number;
+}
 
 export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpdateWallet, onBatchDelete, onDuplicate }: TransactionsListProps) => {
   const { t } = useTranslation();
@@ -49,8 +59,8 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
   const { formatCurrency, currency: userCurrency, formatConverted } = useCurrency();
   const { wallets } = useWallets();
   const { isPremium, checkFeature } = useSubscription();
-  const [filter, setFilter] = useState<FilterPeriod>('all');
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
   
   // Selection mode state
   const [isSelectionMode, setIsSelectionMode] = useState(false);
@@ -70,29 +80,71 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
     }, {} as Record<string, typeof wallets[0]>);
   }, [wallets]);
 
-  const filteredTransactions = useMemo(() => {
-    const now = new Date();
-    return transactions.filter(t => {
-      const txDate = parseDateString(t.date);
-      switch (filter) {
-        case 'week': return txDate >= subDays(now, 7);
-        case 'month': return txDate >= subDays(now, 30);
-        case 'year': return txDate >= subDays(now, 365);
-        default: return true;
+  // Group transactions by month with summaries
+  const monthGroups = useMemo(() => {
+    const groups: Record<string, MonthGroup> = {};
+    
+    transactions.forEach(tx => {
+      const txDate = parseDateString(tx.date);
+      const monthKey = format(txDate, 'yyyy-MM');
+      const monthLabel = format(txDate, 'MMMM yyyy', { locale: dateLocale });
+      
+      if (!groups[monthKey]) {
+        groups[monthKey] = {
+          key: monthKey,
+          label: monthLabel,
+          transactions: [],
+          totalIncome: 0,
+          totalExpense: 0,
+          balance: 0,
+        };
+      }
+      
+      groups[monthKey].transactions.push(tx);
+      
+      if (tx.type === 'INCOME') {
+        groups[monthKey].totalIncome += tx.amount;
+      } else {
+        groups[monthKey].totalExpense += tx.amount;
       }
     });
-  }, [transactions, filter]);
+    
+    // Calculate balance and sort transactions within each month
+    Object.values(groups).forEach(group => {
+      group.balance = group.totalIncome - group.totalExpense;
+      group.transactions.sort((a, b) => 
+        new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+    });
+    
+    // Sort months from newest to oldest
+    return Object.values(groups).sort((a, b) => b.key.localeCompare(a.key));
+  }, [transactions, dateLocale]);
 
-  const groupedTransactions = useMemo(() => {
-    return filteredTransactions.reduce((groups, transaction) => {
-      const date = transaction.date;
-      if (!groups[date]) {
-        groups[date] = [];
+  // Auto-expand current month
+  useMemo(() => {
+    if (monthGroups.length > 0 && expandedMonths.size === 0) {
+      const currentMonthKey = format(new Date(), 'yyyy-MM');
+      const hasCurrentMonth = monthGroups.some(g => g.key === currentMonthKey);
+      if (hasCurrentMonth) {
+        setExpandedMonths(new Set([currentMonthKey]));
+      } else if (monthGroups[0]) {
+        setExpandedMonths(new Set([monthGroups[0].key]));
       }
-      groups[date].push(transaction);
-      return groups;
-    }, {} as Record<string, Transaction[]>);
-  }, [filteredTransactions]);
+    }
+  }, [monthGroups]);
+
+  const toggleMonth = (monthKey: string) => {
+    setExpandedMonths(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(monthKey)) {
+        newSet.delete(monthKey);
+      } else {
+        newSet.add(monthKey);
+      }
+      return newSet;
+    });
+  };
 
   const toggleSelection = (id: string) => {
     setSelectedIds(prev => {
@@ -107,10 +159,10 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
   };
 
   const handleSelectAll = () => {
-    if (selectedIds.size === filteredTransactions.length) {
+    if (selectedIds.size === transactions.length) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(filteredTransactions.map(t => t.id)));
+      setSelectedIds(new Set(transactions.map(t => t.id)));
     }
   };
 
@@ -168,60 +220,40 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
   }
 
   return (
-    <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-md animate-slide-up" style={{ animationDelay: '0.4s' }}>
-      <div className="flex flex-col gap-3 mb-4">
-        <div className="flex items-center justify-between">
-          <h3 className="font-display text-lg font-semibold text-foreground">
-            {t('transactions.title')}
-          </h3>
-          {!isSelectionMode && onBatchUpdateWallet && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleEnterSelectionMode}
-              className="gap-2"
-            >
-              {canBatchEdit ? (
-                <>
-                  <CheckSquare className="w-4 h-4" />
-                  {t('transactions.batchActions.select')}
-                </>
-              ) : (
-                <>
-                  <Lock className="w-4 h-4" />
-                  {t('transactions.batchActions.select')}
-                </>
-              )}
-            </Button>
-          )}
-        </div>
-        <ToggleGroup 
-          type="single" 
-          value={filter} 
-          onValueChange={(v) => v && setFilter(v as FilterPeriod)}
-          className="bg-muted/50 rounded-lg p-1 self-start"
-        >
-          <ToggleGroupItem value="all" className="text-xs px-3 py-1.5 min-h-[36px] data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">
-            {t('common.all')}
-          </ToggleGroupItem>
-          <ToggleGroupItem value="week" className="text-xs px-3 py-1.5 min-h-[36px] data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">
-            {t('common.week')}
-          </ToggleGroupItem>
-          <ToggleGroupItem value="month" className="text-xs px-3 py-1.5 min-h-[36px] data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">
-            {t('common.month')}
-          </ToggleGroupItem>
-          <ToggleGroupItem value="year" className="text-xs px-3 py-1.5 min-h-[36px] data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">
-            {t('common.year')}
-          </ToggleGroupItem>
-        </ToggleGroup>
+    <div className="space-y-3 animate-slide-up" style={{ animationDelay: '0.4s' }}>
+      {/* Header */}
+      <div className="flex items-center justify-between px-1">
+        <h3 className="font-display text-lg font-semibold text-foreground">
+          {t('transactions.title')}
+        </h3>
+        {!isSelectionMode && onBatchUpdateWallet && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleEnterSelectionMode}
+            className="gap-2"
+          >
+            {canBatchEdit ? (
+              <>
+                <CheckSquare className="w-4 h-4" />
+                <span className="hidden sm:inline">{t('transactions.batchActions.select')}</span>
+              </>
+            ) : (
+              <>
+                <Lock className="w-4 h-4" />
+                <span className="hidden sm:inline">{t('transactions.batchActions.select')}</span>
+              </>
+            )}
+          </Button>
+        )}
       </div>
 
       {/* Selection mode action bar */}
       {isSelectionMode && (
-        <div className="flex items-center justify-between bg-primary/10 rounded-lg p-3 mb-4 border border-primary/20">
+        <div className="flex items-center justify-between bg-primary/10 rounded-lg p-3 border border-primary/20">
           <div className="flex items-center gap-3">
             <Checkbox
-              checked={selectedIds.size === filteredTransactions.length && filteredTransactions.length > 0}
+              checked={selectedIds.size === transactions.length && transactions.length > 0}
               onCheckedChange={handleSelectAll}
             />
             <span className="text-sm font-medium">
@@ -260,44 +292,29 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
         </div>
       )}
 
-      {filteredTransactions.length === 0 ? (
-        <div className="text-center py-8">
-          <p className="text-sm text-muted-foreground">
-            {t('transactions.noTransactionsForPeriod')}
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-          {Object.entries(groupedTransactions).map(([date, txs]) => (
-            <div key={date}>
-              <p className="text-xs font-medium text-muted-foreground mb-2">
-                {format(parseDateString(date), "EEEE, d MMMM", { locale: dateLocale })}
-              </p>
-              <div className="space-y-2">
-                {txs.map(transaction => (
-                  <TransactionItem 
-                    key={transaction.id} 
-                    transaction={transaction} 
-                    onDelete={onDelete}
-                    onEdit={() => setEditingTransaction(transaction)}
-                    onDuplicate={onDuplicate ? () => onDuplicate(transaction) : undefined}
-                    dateLocale={dateLocale}
-                    formatCurrency={formatCurrency}
-                    userCurrency={userCurrency}
-                    formatConverted={formatConverted}
-                    walletName={transaction.wallet_id ? (walletMap[transaction.wallet_id]?.institution || walletMap[transaction.wallet_id]?.name) : undefined}
-                    walletIcon={transaction.wallet_id ? walletMap[transaction.wallet_id]?.icon : undefined}
-                    t={t}
-                    isSelectionMode={isSelectionMode}
-                    isSelected={selectedIds.has(transaction.id)}
-                    onToggleSelect={() => toggleSelection(transaction.id)}
-                  />
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      {/* Month cards */}
+      <div className="space-y-3">
+        {monthGroups.map((group) => (
+          <MonthCard
+            key={group.key}
+            group={group}
+            isExpanded={expandedMonths.has(group.key)}
+            onToggle={() => toggleMonth(group.key)}
+            userCurrency={userCurrency}
+            walletMap={walletMap}
+            dateLocale={dateLocale}
+            formatCurrency={formatCurrency}
+            formatConverted={formatConverted}
+            t={t}
+            onDelete={onDelete}
+            onEdit={setEditingTransaction}
+            onDuplicate={onDuplicate}
+            isSelectionMode={isSelectionMode}
+            selectedIds={selectedIds}
+            onToggleSelect={toggleSelection}
+          />
+        ))}
+      </div>
 
       {editingTransaction && (
         <EditTransactionDialog
@@ -367,6 +384,122 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
   );
 };
 
+interface MonthCardProps {
+  group: MonthGroup;
+  isExpanded: boolean;
+  onToggle: () => void;
+  userCurrency: SupportedCurrency;
+  walletMap: Record<string, any>;
+  dateLocale: Locale;
+  formatCurrency: (amount: number) => string;
+  formatConverted: (amount: number, from: SupportedCurrency) => string;
+  t: (key: string) => string;
+  onDelete: (id: string) => void;
+  onEdit: (transaction: Transaction) => void;
+  onDuplicate?: (transaction: Transaction) => void;
+  isSelectionMode: boolean;
+  selectedIds: Set<string>;
+  onToggleSelect: (id: string) => void;
+}
+
+const MonthCard = ({
+  group,
+  isExpanded,
+  onToggle,
+  userCurrency,
+  walletMap,
+  dateLocale,
+  formatCurrency,
+  formatConverted,
+  t,
+  onDelete,
+  onEdit,
+  onDuplicate,
+  isSelectionMode,
+  selectedIds,
+  onToggleSelect,
+}: MonthCardProps) => {
+  const isPositive = group.balance >= 0;
+  
+  return (
+    <Card className="overflow-hidden">
+      <Collapsible open={isExpanded} onOpenChange={onToggle}>
+        <CollapsibleTrigger className="w-full">
+          <div className="p-3 flex items-center gap-2 hover:bg-muted/50 transition-colors">
+            <div className={cn(
+              "p-1.5 rounded-lg shrink-0",
+              isPositive ? "bg-income/10" : "bg-expense/10"
+            )}>
+              <Calendar className={cn(
+                "w-4 h-4",
+                isPositive ? "text-income" : "text-expense"
+              )} />
+            </div>
+            
+            <div className="flex-1 min-w-0 text-left">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <p className="font-medium text-sm capitalize truncate">{group.label}</p>
+                <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                  {group.transactions.length} {group.transactions.length === 1 ? 'lançamento' : 'lançamentos'}
+                </Badge>
+              </div>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="text-[10px] text-income flex items-center gap-0.5">
+                  <TrendingUp className="w-3 h-3" />
+                  {formatMoney(group.totalIncome, userCurrency)}
+                </span>
+                <span className="text-[10px] text-expense flex items-center gap-0.5">
+                  <TrendingDown className="w-3 h-3" />
+                  {formatMoney(group.totalExpense, userCurrency)}
+                </span>
+              </div>
+            </div>
+            
+            <div className="text-right shrink-0">
+              <p className={cn(
+                "font-bold text-sm",
+                isPositive ? "text-income" : "text-expense"
+              )}>
+                {isPositive ? '+' : ''}{formatMoney(group.balance, userCurrency)}
+              </p>
+            </div>
+            
+            {isExpanded ? (
+              <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
+            ) : (
+              <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+            )}
+          </div>
+        </CollapsibleTrigger>
+        
+        <CollapsibleContent>
+          <div className="px-3 pb-3 space-y-1.5 border-t bg-muted/30 pt-2">
+            {group.transactions.map(transaction => (
+              <TransactionItem
+                key={transaction.id}
+                transaction={transaction}
+                onDelete={onDelete}
+                onEdit={() => onEdit(transaction)}
+                onDuplicate={onDuplicate ? () => onDuplicate(transaction) : undefined}
+                dateLocale={dateLocale}
+                formatCurrency={formatCurrency}
+                userCurrency={userCurrency}
+                formatConverted={formatConverted}
+                walletName={transaction.wallet_id ? (walletMap[transaction.wallet_id]?.institution || walletMap[transaction.wallet_id]?.name) : undefined}
+                walletIcon={transaction.wallet_id ? walletMap[transaction.wallet_id]?.icon : undefined}
+                t={t}
+                isSelectionMode={isSelectionMode}
+                isSelected={selectedIds.has(transaction.id)}
+                onToggleSelect={() => onToggleSelect(transaction.id)}
+              />
+            ))}
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
+    </Card>
+  );
+};
+
 const TransactionItem = ({ 
   transaction, 
   onDelete,
@@ -398,7 +531,6 @@ const TransactionItem = ({
   isSelected?: boolean;
   onToggleSelect?: () => void;
 }) => {
-  const isMobile = useIsMobile();
   const transactionCurrency = transaction.currency || 'BRL';
   const isDifferentCurrency = transactionCurrency !== userCurrency;
   
@@ -415,183 +547,85 @@ const TransactionItem = ({
       onToggleSelect();
     }
   };
-
-  const ActionsMenu = () => (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="min-w-[44px] min-h-[44px] flex-shrink-0 text-muted-foreground"
-        >
-          <MoreVertical className="w-5 h-5" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent 
-        align="end" 
-        className="w-48 bg-popover z-50"
-      >
-        <DropdownMenuItem 
-          onClick={onEdit}
-          className="min-h-[44px] gap-3 cursor-pointer"
-        >
-          <Pencil className="w-4 h-4" />
-          {t('common.edit')}
-        </DropdownMenuItem>
-        {onDuplicate && (
-          <DropdownMenuItem 
-            onClick={onDuplicate}
-            className="min-h-[44px] gap-3 cursor-pointer"
-          >
-            <Copy className="w-4 h-4" />
-            {t('transactions.duplicate')}
-          </DropdownMenuItem>
-        )}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem 
-          onClick={() => onDelete(transaction.id)}
-          className="min-h-[44px] gap-3 text-destructive focus:text-destructive cursor-pointer"
-        >
-          <Trash2 className="w-4 h-4" />
-          {t('common.delete')}
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
   
   return (
     <div 
-      className={`p-3 sm:p-4 bg-muted/30 rounded-xl hover:bg-muted/50 transition-colors group overflow-hidden ${
-        isSelectionMode ? 'cursor-pointer' : ''
-      } ${isSelected ? 'ring-2 ring-primary bg-primary/5' : ''}`}
+      className={cn(
+        "flex items-center justify-between py-2 px-3 bg-background rounded-lg group",
+        isSelectionMode && "cursor-pointer",
+        isSelected && "ring-2 ring-primary bg-primary/5"
+      )}
       onClick={handleClick}
     >
-      {/* Mobile Layout - Stacked */}
-      {isMobile ? (
-        <div className="flex flex-col gap-2">
-          {/* Header row: Checkbox/Icon, Description, Menu */}
-          <div className="flex items-start gap-3">
-            {isSelectionMode ? (
-              <div className="min-w-[44px] min-h-[44px] w-11 h-11 flex items-center justify-center flex-shrink-0">
-                <Checkbox checked={isSelected} onCheckedChange={onToggleSelect} />
-              </div>
+      <div className="flex items-center gap-2 flex-1 min-w-0">
+        {isSelectionMode ? (
+          <Checkbox checked={isSelected} onCheckedChange={onToggleSelect} />
+        ) : (
+          <div className={cn(
+            "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
+            transaction.type === 'INCOME' ? 'bg-income/20' : 'bg-expense/20'
+          )}>
+            {transaction.type === 'INCOME' ? (
+              <ArrowUpCircle className="w-4 h-4 text-income" />
             ) : (
-              <div className={`min-w-[44px] min-h-[44px] w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                transaction.type === 'INCOME' 
-                  ? 'bg-income/20' 
-                  : 'bg-expense/20'
-              }`}>
-                {transaction.type === 'INCOME' ? (
-                  <ArrowUpCircle className="w-5 h-5 text-income" />
-                ) : (
-                  <ArrowDownCircle className="w-5 h-5 text-expense" />
-                )}
-              </div>
-            )}
-            
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">
-                {transaction.description.toUpperCase()}
-              </p>
-              <p className="text-xs text-muted-foreground truncate">
-                {format(parseDateString(transaction.date), "d MMM yyyy", { locale: dateLocale })}
-                {walletName && (
-                  <span> • {walletIcon} {walletName}</span>
-                )}
-              </p>
-              <p className="text-xs text-muted-foreground truncate">
-                {displayCategory} • +{transaction.xp_earned} XP
-              </p>
-            </div>
-
-            {!isSelectionMode && <ActionsMenu />}
-          </div>
-
-          {/* Amount row */}
-          <div className="ml-[56px]">
-            <p className={`text-sm font-bold ${
-              transaction.type === 'INCOME' ? 'text-income' : 'text-expense'
-            }`}>
-              {transaction.type === 'INCOME' ? '+' : '-'}{formattedAmount}
-            </p>
-            {isDifferentCurrency && (
-              <p className="text-xs text-muted-foreground">
-                ({formatMoney(transaction.amount, transactionCurrency as SupportedCurrency)})
-              </p>
+              <ArrowDownCircle className="w-4 h-4 text-expense" />
             )}
           </div>
+        )}
+        
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium truncate">{transaction.description}</p>
+          <p className="text-[10px] text-muted-foreground truncate">
+            {format(parseDateString(transaction.date), "d MMM", { locale: dateLocale })}
+            {' • '}{displayCategory}
+            {walletName && <span> • {walletIcon} {walletName}</span>}
+          </p>
         </div>
-      ) : (
-        /* Desktop Layout - Horizontal */
-        <div className="flex items-center gap-3">
-          {isSelectionMode ? (
-            <div className="min-w-[44px] min-h-[44px] w-11 h-11 flex items-center justify-center flex-shrink-0">
-              <Checkbox checked={isSelected} onCheckedChange={onToggleSelect} />
-            </div>
-          ) : (
-            <div className={`min-w-[44px] min-h-[44px] w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0 ${
-              transaction.type === 'INCOME' 
-                ? 'bg-income/20' 
-                : 'bg-expense/20'
-            }`}>
-              {transaction.type === 'INCOME' ? (
-                <ArrowUpCircle className="w-5 h-5 text-income" />
-              ) : (
-                <ArrowDownCircle className="w-5 h-5 text-expense" />
-              )}
-            </div>
-          )}
-          
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-foreground truncate">
-              {transaction.description.toUpperCase()}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {format(parseDateString(transaction.date), "d MMM yyyy", { locale: dateLocale })}
-              {walletName && (
-                <span> • {walletIcon} {walletName}</span>
-              )}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {displayCategory} • +{transaction.xp_earned} XP
-            </p>
-          </div>
-
-          <div className="text-right flex-shrink-0">
-            <p className={`text-sm font-bold ${
-              transaction.type === 'INCOME' ? 'text-income' : 'text-expense'
-            }`}>
-              {transaction.type === 'INCOME' ? '+' : '-'}{formattedAmount}
-            </p>
-            {isDifferentCurrency && (
-              <p className="text-xs text-muted-foreground">
-                ({formatMoney(transaction.amount, transactionCurrency as SupportedCurrency)})
-              </p>
-            )}
-          </div>
-
-          {!isSelectionMode && (
-            <div className="flex gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="min-w-[44px] min-h-[44px] text-muted-foreground hover:text-foreground"
-                onClick={onEdit}
+      </div>
+      
+      <div className="flex items-center gap-1">
+        <p className={cn(
+          "text-sm font-medium",
+          transaction.type === 'INCOME' ? 'text-income' : 'text-expense'
+        )}>
+          {transaction.type === 'INCOME' ? '+' : '-'}{formattedAmount}
+        </p>
+        
+        {!isSelectionMode && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={(e) => e.stopPropagation()}
               >
-                <Pencil className="w-4 h-4" />
+                <MoreVertical className="w-4 h-4" />
               </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="min-w-[44px] min-h-[44px] text-muted-foreground hover:text-destructive"
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-40">
+              <DropdownMenuItem onClick={onEdit} className="gap-2">
+                <Pencil className="w-4 h-4" />
+                {t('common.edit')}
+              </DropdownMenuItem>
+              {onDuplicate && (
+                <DropdownMenuItem onClick={onDuplicate} className="gap-2">
+                  <Copy className="w-4 h-4" />
+                  {t('transactions.duplicate')}
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
                 onClick={() => onDelete(transaction.id)}
+                className="gap-2 text-destructive focus:text-destructive"
               >
                 <Trash2 className="w-4 h-4" />
-              </Button>
-            </div>
-          )}
-        </div>
-      )}
+                {t('common.delete')}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+      </div>
     </div>
   );
 };
