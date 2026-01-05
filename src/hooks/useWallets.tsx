@@ -82,19 +82,41 @@ export const useWallets = () => {
     if (!user) return false;
 
     try {
+      const wallet = wallets.find(w => w.id === id);
+      if (!wallet) return false;
+
+      // If initial_balance changed, adjust current_balance accordingly
+      let newCurrentBalance = wallet.current_balance;
+      if (updates.initial_balance !== undefined && updates.initial_balance !== wallet.initial_balance) {
+        const balanceDiff = updates.initial_balance - wallet.initial_balance;
+        newCurrentBalance = wallet.current_balance + balanceDiff;
+      }
+
+      const updateData: Record<string, unknown> = {
+        ...updates,
+        updated_at: new Date().toISOString(),
+      };
+
+      // Include current_balance adjustment if initial_balance changed
+      if (updates.initial_balance !== undefined && updates.initial_balance !== wallet.initial_balance) {
+        updateData.current_balance = newCurrentBalance;
+      }
+
       const { error } = await supabase
         .from('wallets')
-        .update({
-          ...updates,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updateData)
         .eq('id', id)
         .eq('user_id', user.id);
 
       if (error) throw error;
 
       setWallets(prev => prev.map(w => 
-        w.id === id ? { ...w, ...updates, updated_at: new Date().toISOString() } : w
+        w.id === id ? { 
+          ...w, 
+          ...updates, 
+          current_balance: updates.initial_balance !== undefined ? newCurrentBalance : w.current_balance,
+          updated_at: new Date().toISOString() 
+        } : w
       ));
       toast.success(t('wallets.updated'));
       return true;
