@@ -57,7 +57,7 @@ export const MobileHeader = ({ onSettingsClick, onProfileClick }: MobileHeaderPr
     <>
       <header className="sticky top-0 z-40 bg-background border-b border-border safe-area-top">
         <div className="flex items-center justify-center h-14 px-2 max-w-md mx-auto">
-          <div className="flex items-center gap-0.5">
+          <div className="flex items-center gap-1">
             <Logo size="xs" variant="full" />
             <SoundToggle />
             <NotificationBell />
