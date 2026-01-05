@@ -38,3 +38,12 @@ verify_jwt = false
 
 [functions.web-vitals-check]
 verify_jwt = false
+
+[functions.parse-bank-statement]
+verify_jwt = true
+
+[functions.receipt-ocr]
+verify_jwt = true
+
+[functions.process-scheduled-transfers]
+verify_jwt = false
