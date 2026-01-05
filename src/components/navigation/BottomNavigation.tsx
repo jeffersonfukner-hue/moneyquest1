@@ -1,9 +1,9 @@
-import { Home, ArrowLeftRight, Plus, Target, BookOpen } from 'lucide-react';
+import { Home, ArrowLeftRight, Plus, Target, Wallet } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
-export type TabId = 'home' | 'transactions' | 'add' | 'quests' | 'journal';
+export type TabId = 'home' | 'transactions' | 'add' | 'quests' | 'wallets';
 
 interface BottomNavigationProps {
   activeTab: TabId;
@@ -20,7 +20,7 @@ export const BottomNavigation = ({ activeTab, onTabChange, onAddClick }: BottomN
     { id: 'transactions' as TabId, icon: ArrowLeftRight, label: t('navigation.transactions') },
     { id: 'add' as TabId, icon: Plus, label: t('navigation.add'), isAction: true },
     { id: 'quests' as TabId, icon: Target, label: t('navigation.quests') },
-    { id: 'journal' as TabId, icon: BookOpen, label: t('navigation.journal'), isLink: true },
+    { id: 'wallets' as TabId, icon: Wallet, label: t('navigation.wallets'), isLink: true },
   ];
 
   return (
@@ -50,7 +50,7 @@ export const BottomNavigation = ({ activeTab, onTabChange, onAddClick }: BottomN
             return (
               <button
                 key={tab.id}
-                onClick={() => navigate('/journal')}
+                onClick={() => navigate('/wallets')}
                 className={cn(
                   "flex flex-col items-center justify-center gap-1 min-w-[64px] min-h-[48px] rounded-lg transition-colors",
                   "text-muted-foreground hover:text-foreground"
