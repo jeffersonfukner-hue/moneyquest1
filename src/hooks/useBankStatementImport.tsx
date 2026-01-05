@@ -17,6 +17,8 @@ export interface ParsedTransaction {
   walletId?: string;
   creditCardId?: string;
   linkToCard: boolean;
+  // Destination type: account or credit_card
+  destinationType: 'account' | 'credit_card';
 }
 
 export interface CreditCard {
@@ -69,11 +71,12 @@ export const useBankStatementImport = () => {
         throw new Error(data.error);
       }
 
-      const parsed: ParsedTransaction[] = (data.transactions || []).map((tx: Omit<ParsedTransaction, 'id' | 'selected' | 'linkToCard'>, index: number) => ({
+      const parsed: ParsedTransaction[] = (data.transactions || []).map((tx: Omit<ParsedTransaction, 'id' | 'selected' | 'linkToCard' | 'destinationType'>, index: number) => ({
         ...tx,
         id: `import-${index}-${Date.now()}`,
         selected: true,
         linkToCard: tx.isInvoicePayment,
+        destinationType: 'account' as const, // Default to account
       }));
 
       setTransactions(parsed);
@@ -119,11 +122,12 @@ export const useBankStatementImport = () => {
       if (fnError) throw new Error(fnError.message);
       if (data.error) throw new Error(data.error);
 
-      const parsed: ParsedTransaction[] = (data.transactions || []).map((tx: Omit<ParsedTransaction, 'id' | 'selected' | 'linkToCard'>, index: number) => ({
+      const parsed: ParsedTransaction[] = (data.transactions || []).map((tx: Omit<ParsedTransaction, 'id' | 'selected' | 'linkToCard' | 'destinationType'>, index: number) => ({
         ...tx,
         id: `import-${index}-${Date.now()}`,
         selected: true,
         linkToCard: tx.isInvoicePayment,
+        destinationType: 'account' as const,
       }));
 
       setTransactions(parsed);
