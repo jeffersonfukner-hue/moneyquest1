@@ -20,7 +20,7 @@ export const useWallets = () => {
         .from('wallets')
         .select('*')
         .eq('user_id', user.id)
-        .order('created_at', { ascending: true });
+        .order('display_order', { ascending: true });
 
       if (error) throw error;
 
@@ -234,6 +234,41 @@ export const useWallets = () => {
     }
   };
 
+  const reorderWallets = async (walletIds: string[]): Promise<boolean> => {
+    if (!user) return false;
+
+    try {
+      // Update display_order for each wallet
+      const updates = walletIds.map((id, index) => 
+        supabase
+          .from('wallets')
+          .update({ display_order: index + 1, updated_at: new Date().toISOString() })
+          .eq('id', id)
+          .eq('user_id', user.id)
+      );
+
+      await Promise.all(updates);
+
+      // Update local state
+      setWallets(prev => {
+        const reordered = walletIds.map((id, index) => {
+          const wallet = prev.find(w => w.id === id);
+          return wallet ? { ...wallet, display_order: index + 1 } : null;
+        }).filter(Boolean) as Wallet[];
+        
+        // Add any wallets not in the reorder list (inactive ones)
+        const remaining = prev.filter(w => !walletIds.includes(w.id));
+        return [...reordered, ...remaining];
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Error reordering wallets:', error);
+      toast.error(t('wallets.reorderError'));
+      return false;
+    }
+  };
+
   const activeWallets = wallets.filter(w => w.is_active);
   const inactiveWallets = wallets.filter(w => !w.is_active);
 
@@ -248,6 +283,7 @@ export const useWallets = () => {
     reactivateWallet,
     recalculateBalance,
     updateWalletBalance,
+    reorderWallets,
     refetch: fetchWallets,
   };
 };

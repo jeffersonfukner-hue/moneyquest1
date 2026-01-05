@@ -14,6 +14,7 @@ export interface Wallet {
   is_active: boolean;
   icon: string;
   color: string;
+  display_order: number;
   created_at: string;
   updated_at: string;
 }
