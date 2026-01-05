@@ -111,9 +111,32 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
 export const useSubscription = (): SubscriptionContextType => {
   const context = useContext(SubscriptionContext);
+
+  // Resilient default (prevents blank screens if used outside provider)
   if (context === undefined) {
-    throw new Error('useSubscription must be used within a SubscriptionProvider');
+    return {
+      plan: 'FREE',
+      isPremium: false,
+      // Treat as loading so premium gates / ads don't flicker incorrectly
+      loading: true,
+      canAccessWeeklyQuests: false,
+      canAccessMonthlyQuests: false,
+      canAccessSpecialQuests: false,
+      canAccessRareBadges: false,
+      canAccessCategoryGoals: false,
+      canAccessAIInsights: false,
+      canAccessMultiLanguage: false,
+      canAccessMultiCurrency: false,
+      canAccessAdvancedThemes: false,
+      canAccessDataExport: false,
+      canAccessUnlimitedHistory: false,
+      checkFeature: () => false,
+      subscriptionExpiresAt: null,
+      isInTrial: false,
+      trialExpired: false,
+    };
   }
+
   return context;
 };
 
