@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Pencil, Trash2, Power, PowerOff, Calendar, Eye, BarChart3 } from 'lucide-react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
@@ -17,6 +16,79 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+
+// Labels fixos em pt-BR para SuperAdmin
+const LABELS = {
+  title: 'Campanhas',
+  subtitle: 'Gerencie banners promocionais e campanhas sazonais',
+  newCampaign: 'Nova Campanha',
+  editCampaign: 'Editar Campanha',
+  total: 'Total',
+  active: 'Ativas',
+  seasonal: 'Sazonais',
+  discounts: 'Descontos',
+  activeStatus: 'Ativa',
+  inactive: 'Inativa',
+  outsidePeriod: 'Fora do período',
+  noCampaigns: 'Nenhuma campanha criada ainda.',
+  createFirst: 'Criar primeira campanha',
+  deleteConfirm: 'Excluir esta campanha?',
+  updated: 'Campanha atualizada!',
+  created: 'Campanha criada!',
+  statusUpdated: 'Status atualizado!',
+  deleted: 'Campanha excluída!',
+  saveError: 'Erro ao salvar campanha',
+  tabs: {
+    campaigns: 'Campanhas',
+    analytics: 'Analytics',
+  },
+  form: {
+    internalName: 'Nome interno',
+    type: 'Tipo',
+    icon: 'Ícone',
+    titleField: 'Título',
+    subtitleField: 'Subtítulo (opcional)',
+    buttonText: 'Texto do botão',
+    buttonLink: 'Link do botão',
+    backgroundGradient: 'Gradiente de fundo',
+    targetAudience: 'Público-alvo',
+    priority: 'Prioridade (0-100)',
+    startDate: 'Data de início (opcional)',
+    endDate: 'Data de término (opcional)',
+    activateCampaign: 'Ativar campanha',
+    bannerPreview: 'Preview do Banner',
+    cancel: 'Cancelar',
+    saving: 'Salvando...',
+    update: 'Atualizar',
+    create: 'Criar',
+    start: 'Início',
+    end: 'Fim',
+    cta: 'CTA',
+    preview: 'Preview',
+    activate: 'Ativar',
+    deactivate: 'Desativar',
+  },
+  types: {
+    seasonal: 'Sazonal',
+    promo: 'Promoção',
+    discount: 'Desconto',
+    feature: 'Feature',
+  },
+  audiences: {
+    all: 'Todos',
+    free: 'Usuários Free',
+    premium: 'Usuários Premium',
+    trial: 'Em Trial',
+  },
+  gradients: {
+    primary: 'Primary',
+    blackFriday: 'Black Friday',
+    christmas: 'Natal',
+    newYear: 'Ano Novo',
+    carnival: 'Carnaval',
+    tech: 'Tech',
+  },
+};
 
 interface Campaign {
   id: string;
@@ -37,27 +109,27 @@ interface Campaign {
   created_at: string;
 }
 
-const getCampaignTypes = (t: (key: string) => string) => [
-  { value: 'seasonal', label: t('admin.campaigns.types.seasonal'), icon: '🎄' },
-  { value: 'promo', label: t('admin.campaigns.types.promo'), icon: '🎉' },
-  { value: 'discount', label: t('admin.campaigns.types.discount'), icon: '💰' },
-  { value: 'feature', label: t('admin.campaigns.types.feature'), icon: '✨' },
+const CAMPAIGN_TYPES = [
+  { value: 'seasonal', label: LABELS.types.seasonal, icon: '🎄' },
+  { value: 'promo', label: LABELS.types.promo, icon: '🎉' },
+  { value: 'discount', label: LABELS.types.discount, icon: '💰' },
+  { value: 'feature', label: LABELS.types.feature, icon: '✨' },
 ];
 
-const getTargetAudiences = (t: (key: string) => string) => [
-  { value: 'all', label: t('admin.campaigns.audiences.all') },
-  { value: 'free', label: t('admin.campaigns.audiences.free') },
-  { value: 'premium', label: t('admin.campaigns.audiences.premium') },
-  { value: 'trial', label: t('admin.campaigns.audiences.trial') },
+const TARGET_AUDIENCES = [
+  { value: 'all', label: LABELS.audiences.all },
+  { value: 'free', label: LABELS.audiences.free },
+  { value: 'premium', label: LABELS.audiences.premium },
+  { value: 'trial', label: LABELS.audiences.trial },
 ];
 
-const getGradientPresets = (t: (key: string) => string) => [
-  { value: 'from-primary/20 via-primary/15 to-primary/20', label: t('admin.campaigns.gradients.primary'), preview: 'bg-gradient-to-r from-primary/20 via-primary/15 to-primary/20' },
-  { value: 'from-orange-500/30 via-red-500/20 to-orange-500/30', label: t('admin.campaigns.gradients.blackFriday'), preview: 'bg-gradient-to-r from-orange-500/30 via-red-500/20 to-orange-500/30' },
-  { value: 'from-green-500/30 via-red-500/20 to-green-500/30', label: t('admin.campaigns.gradients.christmas'), preview: 'bg-gradient-to-r from-green-500/30 via-red-500/20 to-green-500/30' },
-  { value: 'from-purple-500/30 via-blue-500/20 to-purple-500/30', label: t('admin.campaigns.gradients.newYear'), preview: 'bg-gradient-to-r from-purple-500/30 via-blue-500/20 to-purple-500/30' },
-  { value: 'from-yellow-500/30 via-green-500/20 to-yellow-500/30', label: t('admin.campaigns.gradients.carnival'), preview: 'bg-gradient-to-r from-yellow-500/30 via-green-500/20 to-yellow-500/30' },
-  { value: 'from-blue-500/30 via-cyan-500/20 to-blue-500/30', label: t('admin.campaigns.gradients.tech'), preview: 'bg-gradient-to-r from-blue-500/30 via-cyan-500/20 to-blue-500/30' },
+const GRADIENT_PRESETS = [
+  { value: 'from-primary/20 via-primary/15 to-primary/20', label: LABELS.gradients.primary },
+  { value: 'from-orange-500/30 via-red-500/20 to-orange-500/30', label: LABELS.gradients.blackFriday },
+  { value: 'from-green-500/30 via-red-500/20 to-green-500/30', label: LABELS.gradients.christmas },
+  { value: 'from-purple-500/30 via-blue-500/20 to-purple-500/30', label: LABELS.gradients.newYear },
+  { value: 'from-yellow-500/30 via-green-500/20 to-yellow-500/30', label: LABELS.gradients.carnival },
+  { value: 'from-blue-500/30 via-cyan-500/20 to-blue-500/30', label: LABELS.gradients.tech },
 ];
 
 const defaultFormData = {
@@ -77,17 +149,11 @@ const defaultFormData = {
 };
 
 const CampaignsManagement = () => {
-  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
   const [formData, setFormData] = useState(defaultFormData);
   const [previewOpen, setPreviewOpen] = useState(false);
-
-  // Translated config arrays
-  const CAMPAIGN_TYPES = getCampaignTypes(t);
-  const TARGET_AUDIENCES = getTargetAudiences(t);
-  const GRADIENT_PRESETS = getGradientPresets(t);
 
   // Fetch campaigns
   const { data: campaigns, isLoading } = useQuery({
@@ -131,10 +197,10 @@ const CampaignsManagement = () => {
       queryClient.invalidateQueries({ queryKey: ['campaigns'] });
       setDialogOpen(false);
       resetForm();
-      toast.success(editingCampaign ? t('admin.campaigns.updated') : t('admin.campaigns.created'));
+      toast.success(editingCampaign ? LABELS.updated : LABELS.created);
     },
     onError: (error) => {
-      toast.error(t('admin.campaigns.saveError') + ': ' + error.message);
+      toast.error(LABELS.saveError + ': ' + error.message);
     },
   });
 
@@ -151,10 +217,10 @@ const CampaignsManagement = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-campaigns'] });
       queryClient.invalidateQueries({ queryKey: ['campaigns'] });
-      toast.success(t('admin.campaigns.statusUpdated'));
+      toast.success(LABELS.statusUpdated);
     },
     onError: (error) => {
-      toast.error(t('admin.campaigns.saveError') + ': ' + error.message);
+      toast.error(LABELS.saveError + ': ' + error.message);
     },
   });
 
@@ -171,10 +237,10 @@ const CampaignsManagement = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-campaigns'] });
       queryClient.invalidateQueries({ queryKey: ['campaigns'] });
-      toast.success(t('admin.campaigns.deleted'));
+      toast.success(LABELS.deleted);
     },
     onError: (error) => {
-      toast.error(t('admin.campaigns.saveError') + ': ' + error.message);
+      toast.error(LABELS.saveError + ': ' + error.message);
     },
   });
 
@@ -244,12 +310,12 @@ const CampaignsManagement = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl lg:text-3xl font-display font-bold">{t('admin.campaigns.title')}</h1>
-            <p className="text-muted-foreground">{t('admin.campaigns.subtitle')}</p>
+            <h1 className="text-2xl lg:text-3xl font-display font-bold">{LABELS.title}</h1>
+            <p className="text-muted-foreground">{LABELS.subtitle}</p>
           </div>
           <Button onClick={() => { resetForm(); setDialogOpen(true); }}>
             <Plus className="w-4 h-4 mr-2" />
-            {t('admin.campaigns.newCampaign')}
+            {LABELS.newCampaign}
           </Button>
         </div>
 
@@ -257,186 +323,181 @@ const CampaignsManagement = () => {
           <TabsList>
             <TabsTrigger value="campaigns">
               <Plus className="w-4 h-4 mr-2" />
-              {t('admin.campaigns.tabs.campaigns')}
+              {LABELS.tabs.campaigns}
             </TabsTrigger>
             <TabsTrigger value="analytics">
               <BarChart3 className="w-4 h-4 mr-2" />
-              {t('admin.campaigns.tabs.analytics')}
+              {LABELS.tabs.analytics}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="campaigns" className="space-y-6 mt-6">
-
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="pt-4">
-              <div className="text-2xl font-bold">{campaigns?.length || 0}</div>
-              <p className="text-sm text-muted-foreground">{t('admin.campaigns.total')}</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="text-2xl font-bold text-green-500">
-                {campaigns?.filter(c => c.is_active && isDateActive(c)).length || 0}
-              </div>
-              <p className="text-sm text-muted-foreground">{t('admin.campaigns.active')}</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="text-2xl font-bold text-yellow-500">
-                {campaigns?.filter(c => c.campaign_type === 'seasonal').length || 0}
-              </div>
-              <p className="text-sm text-muted-foreground">{t('admin.campaigns.seasonal')}</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="text-2xl font-bold text-blue-500">
-                {campaigns?.filter(c => c.campaign_type === 'discount').length || 0}
-              </div>
-              <p className="text-sm text-muted-foreground">{t('admin.campaigns.discounts')}</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Campaigns List */}
-        <div className="space-y-4">
-          {campaigns?.map((campaign) => {
-            const typeInfo = getTypeInfo(campaign.campaign_type);
-            const dateActive = isDateActive(campaign);
-            const fullyActive = campaign.is_active && dateActive;
-            
-            return (
-              <Card key={campaign.id} className={!fullyActive ? 'opacity-60' : ''}>
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-4 flex-1">
-                      {/* Icon */}
-                      <div className="text-3xl">{campaign.icon}</div>
-                      
-                      {/* Info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="font-semibold truncate">{campaign.name}</h3>
-                          <Badge variant={fullyActive ? 'default' : 'secondary'}>
-                            {fullyActive ? t('admin.campaigns.activeStatus') : t('admin.campaigns.inactive')}
-                          </Badge>
-                          <Badge variant="outline">
-                            {typeInfo.icon} {typeInfo.label}
-                          </Badge>
-                          <Badge variant="outline">
-                            {getAudienceLabel(campaign.target_audience)}
-                          </Badge>
-                        </div>
-                        
-                        <p className="text-sm font-medium mt-1">{campaign.title}</p>
-                        {campaign.subtitle && (
-                          <p className="text-sm text-muted-foreground">{campaign.subtitle}</p>
-                        )}
-                        
-                        <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                          <span>{t('admin.campaignForm.cta')}: {campaign.cta_text} → {campaign.cta_link}</span>
-                          <span>{t('admin.campaignForm.priority')}: {campaign.priority}</span>
-                        </div>
-                        
-                        {(campaign.start_date || campaign.end_date) && (
-                          <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                            <Calendar className="w-3 h-3" />
-                            {campaign.start_date && (
-                              <span>{t('admin.campaignForm.start')}: {format(new Date(campaign.start_date), 'dd/MM/yyyy HH:mm')}</span>
-                            )}
-                            {campaign.end_date && (
-                              <span>• {t('admin.campaignForm.end')}: {format(new Date(campaign.end_date), 'dd/MM/yyyy HH:mm')}</span>
-                            )}
-                            {!dateActive && (
-                              <Badge variant="destructive" className="ml-2 text-xs">
-                                {t('admin.campaigns.outsidePeriod')}
-                              </Badge>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    
-                    {/* Actions */}
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          setFormData({
-                            ...formData,
-                            icon: campaign.icon,
-                            title: campaign.title,
-                            subtitle: campaign.subtitle || '',
-                            cta_text: campaign.cta_text,
-                            bg_gradient: campaign.bg_gradient,
-                          });
-                          setPreviewOpen(true);
-                        }}
-                        title={t('admin.campaignForm.preview')}
-                      >
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => toggleActiveMutation.mutate({ 
-                          id: campaign.id, 
-                          is_active: !campaign.is_active 
-                        })}
-                        title={campaign.is_active ? t('admin.campaignForm.deactivate') : t('admin.campaignForm.activate')}
-                      >
-                        {campaign.is_active ? (
-                          <PowerOff className="w-4 h-4 text-red-500" />
-                        ) : (
-                          <Power className="w-4 h-4 text-green-500" />
-                        )}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleEdit(campaign)}
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          if (confirm(t('admin.campaigns.deleteConfirm'))) {
-                            deleteMutation.mutate(campaign.id);
-                          }
-                        }}
-                      >
-                        <Trash2 className="w-4 h-4 text-destructive" />
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  {/* Gradient Preview */}
-                  <div 
-                    className={`mt-3 h-2 rounded-full bg-gradient-to-r ${campaign.bg_gradient}`}
-                  />
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Card>
+                <CardContent className="pt-4">
+                  <div className="text-2xl font-bold">{campaigns?.length || 0}</div>
+                  <p className="text-sm text-muted-foreground">{LABELS.total}</p>
                 </CardContent>
               </Card>
-            );
-          })}
-          
-          {campaigns?.length === 0 && (
-            <Card>
-              <CardContent className="p-8 text-center">
-                <p className="text-muted-foreground">{t('admin.campaigns.noCampaigns')}</p>
-                <Button className="mt-4" onClick={() => { resetForm(); setDialogOpen(true); }}>
-                  <Plus className="w-4 h-4 mr-2" />
-                  {t('admin.campaigns.createFirst')}
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+              <Card>
+                <CardContent className="pt-4">
+                  <div className="text-2xl font-bold text-green-500">
+                    {campaigns?.filter(c => c.is_active && isDateActive(c)).length || 0}
+                  </div>
+                  <p className="text-sm text-muted-foreground">{LABELS.active}</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-4">
+                  <div className="text-2xl font-bold text-yellow-500">
+                    {campaigns?.filter(c => c.campaign_type === 'seasonal').length || 0}
+                  </div>
+                  <p className="text-sm text-muted-foreground">{LABELS.seasonal}</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-4">
+                  <div className="text-2xl font-bold text-blue-500">
+                    {campaigns?.filter(c => c.campaign_type === 'discount').length || 0}
+                  </div>
+                  <p className="text-sm text-muted-foreground">{LABELS.discounts}</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Campaigns List */}
+            <div className="space-y-4">
+              {campaigns?.map((campaign) => {
+                const typeInfo = getTypeInfo(campaign.campaign_type);
+                const dateActive = isDateActive(campaign);
+                const fullyActive = campaign.is_active && dateActive;
+                
+                return (
+                  <Card key={campaign.id} className={!fullyActive ? 'opacity-60' : ''}>
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-start gap-4 flex-1">
+                          <div className="text-3xl">{campaign.icon}</div>
+                          
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h3 className="font-semibold truncate">{campaign.name}</h3>
+                              <Badge variant={fullyActive ? 'default' : 'secondary'}>
+                                {fullyActive ? LABELS.activeStatus : LABELS.inactive}
+                              </Badge>
+                              <Badge variant="outline">
+                                {typeInfo.icon} {typeInfo.label}
+                              </Badge>
+                              <Badge variant="outline">
+                                {getAudienceLabel(campaign.target_audience)}
+                              </Badge>
+                            </div>
+                            
+                            <p className="text-sm font-medium mt-1">{campaign.title}</p>
+                            {campaign.subtitle && (
+                              <p className="text-sm text-muted-foreground">{campaign.subtitle}</p>
+                            )}
+                            
+                            <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                              <span>{LABELS.form.cta}: {campaign.cta_text} → {campaign.cta_link}</span>
+                              <span>{LABELS.form.priority}: {campaign.priority}</span>
+                            </div>
+                            
+                            {(campaign.start_date || campaign.end_date) && (
+                              <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                                <Calendar className="w-3 h-3" />
+                                {campaign.start_date && (
+                                  <span>{LABELS.form.start}: {format(new Date(campaign.start_date), 'dd/MM/yyyy HH:mm')}</span>
+                                )}
+                                {campaign.end_date && (
+                                  <span>• {LABELS.form.end}: {format(new Date(campaign.end_date), 'dd/MM/yyyy HH:mm')}</span>
+                                )}
+                                {!dateActive && (
+                                  <Badge variant="destructive" className="ml-2 text-xs">
+                                    {LABELS.outsidePeriod}
+                                  </Badge>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              setFormData({
+                                ...formData,
+                                icon: campaign.icon,
+                                title: campaign.title,
+                                subtitle: campaign.subtitle || '',
+                                cta_text: campaign.cta_text,
+                                bg_gradient: campaign.bg_gradient,
+                              });
+                              setPreviewOpen(true);
+                            }}
+                            title={LABELS.form.preview}
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => toggleActiveMutation.mutate({ 
+                              id: campaign.id, 
+                              is_active: !campaign.is_active 
+                            })}
+                            title={campaign.is_active ? LABELS.form.deactivate : LABELS.form.activate}
+                          >
+                            {campaign.is_active ? (
+                              <PowerOff className="w-4 h-4 text-red-500" />
+                            ) : (
+                              <Power className="w-4 h-4 text-green-500" />
+                            )}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEdit(campaign)}
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              if (confirm(LABELS.deleteConfirm)) {
+                                deleteMutation.mutate(campaign.id);
+                              }
+                            }}
+                          >
+                            <Trash2 className="w-4 h-4 text-destructive" />
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      <div 
+                        className={`mt-3 h-2 rounded-full bg-gradient-to-r ${campaign.bg_gradient}`}
+                      />
+                    </CardContent>
+                  </Card>
+                );
+              })}
+              
+              {campaigns?.length === 0 && (
+                <Card>
+                  <CardContent className="p-8 text-center">
+                    <p className="text-muted-foreground">{LABELS.noCampaigns}</p>
+                    <Button className="mt-4" onClick={() => { resetForm(); setDialogOpen(true); }}>
+                      <Plus className="w-4 h-4 mr-2" />
+                      {LABELS.createFirst}
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           </TabsContent>
 
           <TabsContent value="analytics" className="mt-6">
@@ -450,14 +511,14 @@ const CampaignsManagement = () => {
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingCampaign ? t('admin.campaigns.editCampaign') : t('admin.campaigns.newCampaign')}
+              {editingCampaign ? LABELS.editCampaign : LABELS.newCampaign}
             </DialogTitle>
           </DialogHeader>
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">{t('admin.campaigns.form.internalName')}</Label>
+                <Label htmlFor="name">{LABELS.form.internalName}</Label>
                 <Input
                   id="name"
                   value={formData.name}
@@ -468,7 +529,7 @@ const CampaignsManagement = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="type">{t('admin.campaigns.form.type')}</Label>
+                <Label htmlFor="type">{LABELS.form.type}</Label>
                 <Select
                   value={formData.campaign_type}
                   onValueChange={(value) => setFormData({ ...formData, campaign_type: value })}
@@ -489,7 +550,7 @@ const CampaignsManagement = () => {
 
             <div className="grid grid-cols-4 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="icon">{t('admin.campaigns.form.icon')}</Label>
+                <Label htmlFor="icon">{LABELS.form.icon}</Label>
                 <Input
                   id="icon"
                   value={formData.icon}
@@ -500,7 +561,7 @@ const CampaignsManagement = () => {
               </div>
               
               <div className="col-span-3 space-y-2">
-                <Label htmlFor="title">{t('admin.campaigns.form.titleField')}</Label>
+                <Label htmlFor="title">{LABELS.form.titleField}</Label>
                 <Input
                   id="title"
                   value={formData.title}
@@ -512,7 +573,7 @@ const CampaignsManagement = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="subtitle">{t('admin.campaigns.form.subtitleField')}</Label>
+              <Label htmlFor="subtitle">{LABELS.form.subtitleField}</Label>
               <Input
                 id="subtitle"
                 value={formData.subtitle}
@@ -523,7 +584,7 @@ const CampaignsManagement = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="cta_text">{t('admin.campaigns.form.buttonText')}</Label>
+                <Label htmlFor="cta_text">{LABELS.form.buttonText}</Label>
                 <Input
                   id="cta_text"
                   value={formData.cta_text}
@@ -534,7 +595,7 @@ const CampaignsManagement = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="cta_link">{t('admin.campaigns.form.buttonLink')}</Label>
+                <Label htmlFor="cta_link">{LABELS.form.buttonLink}</Label>
                 <Input
                   id="cta_link"
                   value={formData.cta_link}
@@ -546,7 +607,7 @@ const CampaignsManagement = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>{t('admin.campaigns.form.backgroundGradient')}</Label>
+              <Label>{LABELS.form.backgroundGradient}</Label>
               <div className="grid grid-cols-3 gap-2">
                 {GRADIENT_PRESETS.map((gradient) => (
                   <button
@@ -568,7 +629,7 @@ const CampaignsManagement = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="target">{t('admin.campaigns.form.targetAudience')}</Label>
+                <Label htmlFor="target">{LABELS.form.targetAudience}</Label>
                 <Select
                   value={formData.target_audience}
                   onValueChange={(value) => setFormData({ ...formData, target_audience: value })}
@@ -587,7 +648,7 @@ const CampaignsManagement = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="priority">{t('admin.campaigns.form.priority')}</Label>
+                <Label htmlFor="priority">{LABELS.form.priority}</Label>
                 <Input
                   id="priority"
                   type="number"
@@ -601,7 +662,7 @@ const CampaignsManagement = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="start_date">{t('admin.campaigns.form.startDate')}</Label>
+                <Label htmlFor="start_date">{LABELS.form.startDate}</Label>
                 <Input
                   id="start_date"
                   type="datetime-local"
@@ -611,7 +672,7 @@ const CampaignsManagement = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="end_date">{t('admin.campaigns.form.endDate')}</Label>
+                <Label htmlFor="end_date">{LABELS.form.endDate}</Label>
                 <Input
                   id="end_date"
                   type="datetime-local"
@@ -627,13 +688,13 @@ const CampaignsManagement = () => {
                 checked={formData.is_active}
                 onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
               />
-              <Label htmlFor="is_active">{t('admin.campaigns.form.activateCampaign')}</Label>
+              <Label htmlFor="is_active">{LABELS.form.activateCampaign}</Label>
             </div>
 
             {/* Preview */}
             <Card>
               <CardHeader className="py-3">
-                <CardTitle className="text-sm">{t('admin.campaigns.form.bannerPreview')}</CardTitle>
+                <CardTitle className="text-sm">{LABELS.form.bannerPreview}</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
                 <div 
@@ -655,10 +716,10 @@ const CampaignsManagement = () => {
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-                {t('admin.campaigns.form.cancel')}
+                {LABELS.form.cancel}
               </Button>
               <Button type="submit" disabled={upsertMutation.isPending}>
-                {upsertMutation.isPending ? t('admin.campaigns.form.saving') : (editingCampaign ? t('admin.campaigns.form.update') : t('admin.campaigns.form.create'))}
+                {upsertMutation.isPending ? LABELS.form.saving : (editingCampaign ? LABELS.form.update : LABELS.form.create)}
               </Button>
             </DialogFooter>
           </form>
@@ -669,7 +730,7 @@ const CampaignsManagement = () => {
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>{t('admin.campaigns.form.bannerPreview')}</DialogTitle>
+            <DialogTitle>{LABELS.form.bannerPreview}</DialogTitle>
           </DialogHeader>
           <div className="rounded-lg overflow-hidden border">
             <div 

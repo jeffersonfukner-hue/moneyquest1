@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { 
   MoreHorizontal, 
@@ -39,6 +38,39 @@ import { cn } from '@/lib/utils';
 import type { AdminUser } from '@/types/admin';
 import { AvatarDisplay } from '@/components/profile/AvatarDisplay';
 
+// Labels fixos em pt-BR para SuperAdmin
+const LABELS = {
+  searchUsers: 'Buscar usuários...',
+  noUsersFound: 'Nenhum usuário encontrado',
+  table: {
+    user: 'Usuário',
+    status: 'Status',
+    plan: 'Plano',
+    lastActive: 'Último Acesso',
+    registered: 'Cadastro',
+  },
+  status: {
+    active: 'Ativo',
+    blocked: 'Bloqueado',
+    inactive: 'Inativo',
+  },
+  actions: {
+    grantPremium: 'Conceder Premium',
+    revokePremium: 'Revogar Premium',
+    resetOverride: 'Resetar Override',
+    grantBonus: 'Conceder Bônus',
+    sendMessage: 'Enviar Mensagem',
+    block: 'Bloquear',
+    unblock: 'Desbloquear',
+    deleteUser: 'Excluir Usuário',
+  },
+  override: {
+    forceOn: 'Premium forçado (override admin)',
+    forceOff: 'Premium desativado (override admin)',
+  },
+  noName: 'Sem nome',
+};
+
 interface UsersTableProps {
   users: AdminUser[];
   onGrantPremium: (user: AdminUser) => void;
@@ -62,7 +94,6 @@ export const UsersTable = ({
   onResetOverride,
   onDeleteUser,
 }: UsersTableProps) => {
-  const { t } = useTranslation();
   const [search, setSearch] = useState('');
 
   const filteredUsers = users.filter(user => 
@@ -73,11 +104,11 @@ export const UsersTable = ({
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
-        return <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/30"><CheckCircle className="w-3 h-3 mr-1" /> {t('admin.status.active')}</Badge>;
+        return <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/30"><CheckCircle className="w-3 h-3 mr-1" /> {LABELS.status.active}</Badge>;
       case 'blocked':
-        return <Badge variant="outline" className="bg-red-500/10 text-red-600 border-red-500/30"><XCircle className="w-3 h-3 mr-1" /> {t('admin.status.blocked')}</Badge>;
+        return <Badge variant="outline" className="bg-red-500/10 text-red-600 border-red-500/30"><XCircle className="w-3 h-3 mr-1" /> {LABELS.status.blocked}</Badge>;
       default:
-        return <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/30"><Clock className="w-3 h-3 mr-1" /> {t('admin.status.inactive')}</Badge>;
+        return <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/30"><Clock className="w-3 h-3 mr-1" /> {LABELS.status.inactive}</Badge>;
     }
   };
 
@@ -99,7 +130,7 @@ export const UsersTable = ({
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>{t('admin.override.forceOn')}</p>
+                  <p>{LABELS.override.forceOn}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -120,7 +151,7 @@ export const UsersTable = ({
                 </Badge>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{t('admin.override.forceOff')}</p>
+                <p>{LABELS.override.forceOff}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -134,7 +165,7 @@ export const UsersTable = ({
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input 
-          placeholder={t('admin.searchUsers')}
+          placeholder={LABELS.searchUsers}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-10"
@@ -145,11 +176,11 @@ export const UsersTable = ({
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
-              <TableHead>{t('admin.table.user')}</TableHead>
-              <TableHead>{t('admin.table.status')}</TableHead>
-              <TableHead>{t('admin.table.plan')}</TableHead>
-              <TableHead className="hidden md:table-cell">{t('admin.table.lastActive')}</TableHead>
-              <TableHead className="hidden lg:table-cell">{t('admin.table.registered')}</TableHead>
+              <TableHead>{LABELS.table.user}</TableHead>
+              <TableHead>{LABELS.table.status}</TableHead>
+              <TableHead>{LABELS.table.plan}</TableHead>
+              <TableHead className="hidden md:table-cell">{LABELS.table.lastActive}</TableHead>
+              <TableHead className="hidden lg:table-cell">{LABELS.table.registered}</TableHead>
               <TableHead className="w-[50px]"></TableHead>
             </TableRow>
           </TableHeader>
@@ -164,7 +195,7 @@ export const UsersTable = ({
                       size="md"
                     />
                     <div>
-                      <p className="font-medium">{user.display_name || 'No name'}</p>
+                      <p className="font-medium">{user.display_name || LABELS.noName}</p>
                       <p className="text-sm text-muted-foreground">{user.email}</p>
                     </div>
                   </div>
@@ -191,33 +222,33 @@ export const UsersTable = ({
                       {user.subscription_plan === 'FREE' ? (
                         <DropdownMenuItem onClick={() => onGrantPremium(user)}>
                           <Crown className="w-4 h-4 mr-2 text-yellow-500" />
-                          {t('admin.actions.grantPremium')}
+                          {LABELS.actions.grantPremium}
                         </DropdownMenuItem>
                       ) : (
                         <DropdownMenuItem onClick={() => onRevokePremium(user)}>
                           <Crown className="w-4 h-4 mr-2 text-muted-foreground" />
-                          {t('admin.actions.revokePremium')}
+                          {LABELS.actions.revokePremium}
                         </DropdownMenuItem>
                       )}
                       {user.premium_override !== 'none' && (
                         <DropdownMenuItem onClick={() => onResetOverride(user)}>
                           <RotateCcw className="w-4 h-4 mr-2 text-purple-500" />
-                          {t('admin.actions.resetOverride')}
+                          {LABELS.actions.resetOverride}
                         </DropdownMenuItem>
                       )}
                       <DropdownMenuItem onClick={() => onGrantBonus(user)}>
                         <Gift className="w-4 h-4 mr-2 text-primary" />
-                        {t('admin.actions.grantBonus')}
+                        {LABELS.actions.grantBonus}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => onSendMessage(user)}>
                         <Mail className="w-4 h-4 mr-2 text-blue-500" />
-                        {t('admin.actions.sendMessage')}
+                        {LABELS.actions.sendMessage}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       {user.status === 'blocked' ? (
                         <DropdownMenuItem onClick={() => onUnblockUser(user)}>
                           <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                          {t('admin.actions.unblock')}
+                          {LABELS.actions.unblock}
                         </DropdownMenuItem>
                       ) : (
                         <DropdownMenuItem 
@@ -225,7 +256,7 @@ export const UsersTable = ({
                           className="text-red-600"
                         >
                           <Ban className="w-4 h-4 mr-2" />
-                          {t('admin.actions.block')}
+                          {LABELS.actions.block}
                         </DropdownMenuItem>
                       )}
                       <DropdownMenuSeparator />
@@ -234,7 +265,7 @@ export const UsersTable = ({
                         className="text-red-600"
                       >
                         <Trash2 className="w-4 h-4 mr-2" />
-                        {t('admin.actions.deleteUser', 'Delete User')}
+                        {LABELS.actions.deleteUser}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -247,7 +278,7 @@ export const UsersTable = ({
 
       {filteredUsers.length === 0 && (
         <div className="text-center py-8 text-muted-foreground">
-          {t('admin.noUsersFound')}
+          {LABELS.noUsersFound}
         </div>
       )}
     </div>

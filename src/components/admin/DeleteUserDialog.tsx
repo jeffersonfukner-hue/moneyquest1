@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { AlertTriangle, Download, Loader2, CheckCircle2, CloudUpload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -15,6 +14,32 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+
+// Labels fixos em pt-BR para SuperAdmin
+const LABELS = {
+  title: "Excluir Usuário",
+  warning: "Esta ação é irreversível. Todos os dados do usuário serão permanentemente excluídos.",
+  permanentWarning: "ATENÇÃO: Esta ação NÃO pode ser desfeita!",
+  userInfo: "Usuário a ser excluído",
+  autoBackup: "Backup automático na nuvem",
+  autoBackupHint: "Salva os dados do usuário antes da exclusão",
+  backupComplete: "Backup concluído com sucesso",
+  backupInProgress: "Realizando backup...",
+  backupInProgressDesc: "Salvando dados do usuário na nuvem",
+  backupSuccess: "Backup realizado",
+  backupSuccessDesc: "Dados salvos com sucesso no storage",
+  backupError: "Erro no backup",
+  backingUp: "Fazendo backup...",
+  exportButton: "Baixar dados (JSON)",
+  exportSuccess: "Dados exportados",
+  exportSuccessDesc: "Download iniciado com sucesso",
+  exportError: "Erro ao exportar dados",
+  confirmLabel: "Digite o e-mail do usuário para confirmar:",
+  emailMismatch: "O e-mail digitado não corresponde",
+  confirmButton: "Excluir permanentemente",
+  cancel: "Cancelar",
+  loading: "Processando...",
+};
 
 interface DeleteUserDialogProps {
   open: boolean;
@@ -35,7 +60,6 @@ export function DeleteUserDialog({
   onConfirm,
   isLoading,
 }: DeleteUserDialogProps) {
-  const { t } = useTranslation();
   const { toast } = useToast();
   const [confirmEmail, setConfirmEmail] = useState("");
   const [isExporting, setIsExporting] = useState(false);
@@ -87,7 +111,6 @@ export function DeleteUserDialog({
     try {
       const data = await exportUserData();
 
-      // Create and download JSON file
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -99,13 +122,13 @@ export function DeleteUserDialog({
       URL.revokeObjectURL(url);
 
       toast({
-        title: t("admin.delete.exportSuccess"),
-        description: t("admin.delete.exportSuccessDesc"),
+        title: LABELS.exportSuccess,
+        description: LABELS.exportSuccessDesc,
       });
     } catch (error) {
       console.error('Export error:', error);
       toast({
-        title: t("admin.delete.exportError"),
+        title: LABELS.exportError,
         variant: "destructive",
       });
     } finally {
@@ -119,11 +142,10 @@ export function DeleteUserDialog({
     setIsDeleting(true);
 
     try {
-      // Auto backup if enabled
       if (autoBackup) {
         toast({
-          title: t("admin.delete.backupInProgress"),
-          description: t("admin.delete.backupInProgressDesc"),
+          title: LABELS.backupInProgress,
+          description: LABELS.backupInProgressDesc,
         });
 
         const data = await exportUserData();
@@ -132,17 +154,16 @@ export function DeleteUserDialog({
         setBackupComplete(true);
         
         toast({
-          title: t("admin.delete.backupSuccess"),
-          description: t("admin.delete.backupSuccessDesc"),
+          title: LABELS.backupSuccess,
+          description: LABELS.backupSuccessDesc,
         });
       }
 
-      // Proceed with deletion
       onConfirm();
     } catch (error) {
       console.error('Backup/Delete error:', error);
       toast({
-        title: t("admin.delete.backupError"),
+        title: LABELS.backupError,
         description: String(error),
         variant: "destructive",
       });
@@ -161,32 +182,31 @@ export function DeleteUserDialog({
               <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
             <DialogTitle className="text-destructive">
-              {t("admin.delete.title")}
+              {LABELS.title}
             </DialogTitle>
           </div>
           <DialogDescription className="pt-2">
-            {t("admin.delete.warning")}
+            {LABELS.warning}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           <div className="rounded-md bg-destructive/10 p-3 text-sm">
             <p className="text-destructive">
-              {t("admin.delete.permanentWarning")}
+              {LABELS.permanentWarning}
             </p>
             <p className="mt-2 font-medium">
-              {t("admin.delete.userInfo")}: <strong>{userName}</strong> (
+              {LABELS.userInfo}: <strong>{userName}</strong> (
               <span className="font-mono text-xs">{userEmail}</span>)
             </p>
           </div>
 
-          {/* Auto backup option */}
           <div className="rounded-md border border-border bg-muted/50 p-3 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <CloudUpload className="h-4 w-4 text-muted-foreground" />
                 <Label htmlFor="auto-backup" className="text-sm font-medium cursor-pointer">
-                  {t("admin.delete.autoBackup")}
+                  {LABELS.autoBackup}
                 </Label>
               </div>
               <Switch
@@ -196,18 +216,17 @@ export function DeleteUserDialog({
               />
             </div>
             <p className="text-xs text-muted-foreground">
-              {t("admin.delete.autoBackupHint")}
+              {LABELS.autoBackupHint}
             </p>
             
             {backupComplete && (
               <div className="flex items-center gap-2 text-xs text-green-600">
                 <CheckCircle2 className="h-3 w-3" />
-                {t("admin.delete.backupComplete")}
+                {LABELS.backupComplete}
               </div>
             )}
           </div>
 
-          {/* Manual export button */}
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
@@ -221,13 +240,13 @@ export function DeleteUserDialog({
               ) : (
                 <Download className="mr-2 h-4 w-4" />
               )}
-              {t("admin.delete.exportButton")}
+              {LABELS.exportButton}
             </Button>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="confirm-email">
-              {t("admin.delete.confirmLabel")}
+              {LABELS.confirmLabel}
             </Label>
             <Input
               id="confirm-email"
@@ -244,7 +263,7 @@ export function DeleteUserDialog({
             />
             {confirmEmail && !emailMatches && (
               <p className="text-xs text-destructive">
-                {t("admin.delete.emailMismatch")}
+                {LABELS.emailMismatch}
               </p>
             )}
           </div>
@@ -256,7 +275,7 @@ export function DeleteUserDialog({
             onClick={() => onOpenChange(false)}
             disabled={isPending}
           >
-            {t("common.cancel")}
+            {LABELS.cancel}
           </Button>
           <Button
             variant="destructive"
@@ -267,11 +286,11 @@ export function DeleteUserDialog({
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 {autoBackup && !backupComplete 
-                  ? t("admin.delete.backingUp") 
-                  : t("common.loading")}
+                  ? LABELS.backingUp 
+                  : LABELS.loading}
               </>
             ) : (
-              t("admin.delete.confirmButton")
+              LABELS.confirmButton
             )}
           </Button>
         </DialogFooter>

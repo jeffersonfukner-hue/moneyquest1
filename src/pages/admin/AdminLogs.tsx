@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { useAdminData } from '@/hooks/useAdminData';
@@ -7,24 +6,43 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 
+// Labels fixos em pt-BR para SuperAdmin
+const LABELS = {
+  title: 'Logs de Atividade',
+  subtitle: 'Histórico de ações administrativas',
+  recentActions: 'Ações Recentes',
+  date: 'Data',
+  action: 'Ação',
+  details: 'Detalhes',
+  note: 'Observação',
+  noLogs: 'Nenhum log encontrado',
+  log: {
+    premiumGrant: 'Premium Concedido',
+    premiumRevoke: 'Premium Revogado',
+    blockUser: 'Usuário Bloqueado',
+    unblockUser: 'Usuário Desbloqueado',
+    grantBonus: 'Bônus Concedido',
+    sendMessage: 'Mensagem Enviada',
+  },
+};
+
 const AdminLogs = () => {
-  const { t } = useTranslation();
   const { logs, logsLoading } = useAdminData();
 
   const getActionBadge = (actionType: string) => {
     switch (actionType) {
       case 'PREMIUM_GRANT':
-        return <Badge className="bg-green-500">{t('admin.log.premiumGrant')}</Badge>;
+        return <Badge className="bg-green-500">{LABELS.log.premiumGrant}</Badge>;
       case 'PREMIUM_REVOKE':
-        return <Badge variant="secondary">{t('admin.log.premiumRevoke')}</Badge>;
+        return <Badge variant="secondary">{LABELS.log.premiumRevoke}</Badge>;
       case 'BLOCK_USER':
-        return <Badge variant="destructive">{t('admin.log.blockUser')}</Badge>;
+        return <Badge variant="destructive">{LABELS.log.blockUser}</Badge>;
       case 'UNBLOCK_USER':
-        return <Badge className="bg-blue-500">{t('admin.log.unblockUser')}</Badge>;
+        return <Badge className="bg-blue-500">{LABELS.log.unblockUser}</Badge>;
       case 'GRANT_BONUS':
-        return <Badge className="bg-purple-500">{t('admin.log.grantBonus')}</Badge>;
+        return <Badge className="bg-purple-500">{LABELS.log.grantBonus}</Badge>;
       case 'SEND_MESSAGE':
-        return <Badge className="bg-cyan-500">{t('admin.log.sendMessage')}</Badge>;
+        return <Badge className="bg-cyan-500">{LABELS.log.sendMessage}</Badge>;
       default:
         return <Badge variant="outline">{actionType}</Badge>;
     }
@@ -42,22 +60,22 @@ const AdminLogs = () => {
     <AdminLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-display font-bold">{t('admin.logs.title')}</h1>
-          <p className="text-muted-foreground">{t('admin.logs.subtitle')}</p>
+          <h1 className="text-2xl lg:text-3xl font-display font-bold">{LABELS.title}</h1>
+          <p className="text-muted-foreground">{LABELS.subtitle}</p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('admin.logs.recentActions')}</CardTitle>
+            <CardTitle>{LABELS.recentActions}</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t('admin.logs.date')}</TableHead>
-                  <TableHead>{t('admin.logs.action')}</TableHead>
-                  <TableHead>{t('admin.logs.details')}</TableHead>
-                  <TableHead>{t('admin.logs.note')}</TableHead>
+                  <TableHead>{LABELS.date}</TableHead>
+                  <TableHead>{LABELS.action}</TableHead>
+                  <TableHead>{LABELS.details}</TableHead>
+                  <TableHead>{LABELS.note}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -78,7 +96,7 @@ const AdminLogs = () => {
               </TableBody>
             </Table>
             {(!logs || logs.length === 0) && (
-              <p className="text-center py-8 text-muted-foreground">{t('admin.logs.noLogs')}</p>
+              <p className="text-center py-8 text-muted-foreground">{LABELS.noLogs}</p>
             )}
           </CardContent>
         </Card>

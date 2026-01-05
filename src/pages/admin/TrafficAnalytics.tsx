@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -21,6 +20,57 @@ import {
 import { useTrafficAnalytics, DateRange } from '@/hooks/useTrafficAnalytics';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+
+// Labels fixos em pt-BR para SuperAdmin
+const LABELS = {
+  title: 'Análise de Tráfego',
+  subtitle: 'Monitore acessos, comportamento e origens do tráfego',
+  totalViews: 'Total de Acessos',
+  uniqueUsers: 'Usuários Únicos',
+  avgTime: 'Tempo Médio',
+  bounceRate: 'Taxa de Rejeição',
+  viewsByDay: 'Acessos por Dia',
+  viewsByHour: 'Acessos por Hora',
+  viewsByDevice: 'Dispositivos',
+  topPages: 'Páginas Mais Acessadas',
+  internalNotice: 'Dados de desenvolvedores e administradores não são considerados nas métricas.',
+  tabs: {
+    overview: 'Visão Geral',
+    pages: 'Páginas',
+    sources: 'Origens',
+    errors: 'Erros',
+    suspicious: 'Suspeitos',
+  },
+  table: {
+    page: 'Página',
+    views: 'Acessos',
+    users: 'Usuários',
+    avgTime: 'Tempo Médio',
+    exitRate: 'Taxa de Saída',
+    noData: 'Nenhum dado disponível',
+  },
+  sources: {
+    origin: 'Origem do Tráfego',
+    byCountry: 'Por País',
+    utmCampaigns: 'Campanhas UTM',
+  },
+  errors: {
+    title: 'Erros Recentes',
+    code: 'Código',
+    page: 'Página',
+    count: 'Ocorrências',
+    lastSeen: 'Última Ocorrência',
+    noErrors: 'Nenhum erro registrado',
+  },
+  suspicious: {
+    title: 'Atividade Suspeita',
+    session: 'Sessão',
+    ip: 'IP',
+    reason: 'Motivo',
+    date: 'Data',
+    noSuspicious: 'Nenhuma atividade suspeita detectada',
+  },
+};
 
 const COLORS = ['#8B5CF6', '#06B6D4', '#10B981', '#F59E0B', '#EF4444', '#EC4899'];
 
@@ -63,7 +113,6 @@ const DeviceIcon = ({ device }: { device: string }) => {
 };
 
 export default function TrafficAnalytics() {
-  const { t } = useTranslation();
   const {
     dateRange,
     setDateRange,
@@ -118,11 +167,9 @@ export default function TrafficAnalytics() {
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <BarChart3 className="h-6 w-6 text-primary" />
-              {t('admin.traffic.title', 'Análise de Tráfego')}
+              {LABELS.title}
             </h1>
-            <p className="text-muted-foreground">
-              {t('admin.traffic.subtitle', 'Monitore acessos, comportamento e origens do tráfego')}
-            </p>
+            <p className="text-muted-foreground">{LABELS.subtitle}</p>
           </div>
           
           <div className="flex items-center gap-2">
@@ -146,29 +193,29 @@ export default function TrafficAnalytics() {
         <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
           <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
           <AlertDescription className="text-blue-800 dark:text-blue-200">
-            {t('admin.traffic.internalNotice', 'Dados de desenvolvedores e administradores não são considerados nas métricas.')}
+            {LABELS.internalNotice}
           </AlertDescription>
         </Alert>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <StatsCard
-            title={t('admin.traffic.totalViews', 'Total de Acessos')}
+            title={LABELS.totalViews}
             value={formatNumber(analytics?.total_views || 0)}
             icon={Eye}
           />
           <StatsCard
-            title={t('admin.traffic.uniqueUsers', 'Usuários Únicos')}
+            title={LABELS.uniqueUsers}
             value={formatNumber(analytics?.unique_users || 0)}
             icon={Users}
           />
           <StatsCard
-            title={t('admin.traffic.avgTime', 'Tempo Médio')}
+            title={LABELS.avgTime}
             value={formatTime(analytics?.avg_time_on_page || 0)}
             icon={Clock}
           />
           <StatsCard
-            title={t('admin.traffic.bounceRate', 'Taxa de Rejeição')}
+            title={LABELS.bounceRate}
             value={`${(analytics?.bounce_rate || 0).toFixed(1)}%`}
             icon={ArrowUpRight}
           />
@@ -177,11 +224,11 @@ export default function TrafficAnalytics() {
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-            <TabsTrigger value="pages">Páginas</TabsTrigger>
-            <TabsTrigger value="sources">Origens</TabsTrigger>
-            <TabsTrigger value="errors">Erros</TabsTrigger>
-            <TabsTrigger value="suspicious">Suspeitos</TabsTrigger>
+            <TabsTrigger value="overview">{LABELS.tabs.overview}</TabsTrigger>
+            <TabsTrigger value="pages">{LABELS.tabs.pages}</TabsTrigger>
+            <TabsTrigger value="sources">{LABELS.tabs.sources}</TabsTrigger>
+            <TabsTrigger value="errors">{LABELS.tabs.errors}</TabsTrigger>
+            <TabsTrigger value="suspicious">{LABELS.tabs.suspicious}</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
@@ -191,7 +238,7 @@ export default function TrafficAnalytics() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
-                  {t('admin.traffic.viewsByDay', 'Acessos por Dia')}
+                  {LABELS.viewsByDay}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -237,7 +284,7 @@ export default function TrafficAnalytics() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Clock className="h-5 w-5" />
-                    {t('admin.traffic.viewsByHour', 'Acessos por Hora')}
+                    {LABELS.viewsByHour}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -263,7 +310,7 @@ export default function TrafficAnalytics() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Monitor className="h-5 w-5" />
-                    {t('admin.traffic.viewsByDevice', 'Dispositivos')}
+                    {LABELS.viewsByDevice}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -301,18 +348,18 @@ export default function TrafficAnalytics() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Link2 className="h-5 w-5" />
-                  {t('admin.traffic.topPages', 'Páginas Mais Acessadas')}
+                  {LABELS.topPages}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Página</TableHead>
-                      <TableHead className="text-right">Acessos</TableHead>
-                      <TableHead className="text-right">Usuários</TableHead>
-                      <TableHead className="text-right">Tempo Médio</TableHead>
-                      <TableHead className="text-right">Taxa de Saída</TableHead>
+                      <TableHead>{LABELS.table.page}</TableHead>
+                      <TableHead className="text-right">{LABELS.table.views}</TableHead>
+                      <TableHead className="text-right">{LABELS.table.users}</TableHead>
+                      <TableHead className="text-right">{LABELS.table.avgTime}</TableHead>
+                      <TableHead className="text-right">{LABELS.table.exitRate}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -347,7 +394,7 @@ export default function TrafficAnalytics() {
                     {(!topPages || topPages.length === 0) && (
                       <TableRow>
                         <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                          Nenhum dado disponível
+                          {LABELS.table.noData}
                         </TableCell>
                       </TableRow>
                     )}
@@ -365,7 +412,7 @@ export default function TrafficAnalytics() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Globe className="h-5 w-5" />
-                    Origem do Tráfego
+                    {LABELS.sources.origin}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -400,7 +447,7 @@ export default function TrafficAnalytics() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <MapPin className="h-5 w-5" />
-                    Por País
+                    {LABELS.sources.byCountry}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -425,25 +472,25 @@ export default function TrafficAnalytics() {
             {sources?.by_utm && sources.by_utm.length > 0 && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Campanhas UTM</CardTitle>
+                  <CardTitle>{LABELS.sources.utmCampaigns}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Source</TableHead>
-                        <TableHead>Medium</TableHead>
-                        <TableHead>Campaign</TableHead>
+                        <TableHead>Campanha</TableHead>
+                        <TableHead>Origem</TableHead>
+                        <TableHead>Mídia</TableHead>
                         <TableHead className="text-right">Acessos</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {sources.by_utm.map((utm, i) => (
                         <TableRow key={i}>
+                          <TableCell className="font-medium">{utm.utm_campaign || '-'}</TableCell>
                           <TableCell>{utm.utm_source || '-'}</TableCell>
                           <TableCell>{utm.utm_medium || '-'}</TableCell>
-                          <TableCell>{utm.utm_campaign || '-'}</TableCell>
-                          <TableCell className="text-right font-medium">{formatNumber(utm.views)}</TableCell>
+                          <TableCell className="text-right">{utm.views}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -459,49 +506,36 @@ export default function TrafficAnalytics() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <AlertTriangle className="h-5 w-5 text-destructive" />
-                  Erros de Navegação
+                  {LABELS.errors.title}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>URL</TableHead>
-                      <TableHead>Código</TableHead>
-                      <TableHead>Origem</TableHead>
-                      <TableHead className="text-right">Ocorrências</TableHead>
-                      <TableHead className="text-right">Última</TableHead>
+                      <TableHead>{LABELS.errors.code}</TableHead>
+                      <TableHead>{LABELS.errors.page}</TableHead>
+                      <TableHead className="text-right">{LABELS.errors.count}</TableHead>
+                      <TableHead className="text-right">{LABELS.errors.lastSeen}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {errors?.map((error, i) => (
                       <TableRow key={i}>
-                        <TableCell className="font-mono text-sm truncate max-w-[250px]">
-                          {error.page_url}
-                        </TableCell>
                         <TableCell>
-                          <Badge variant={
-                            error.error_code === 404 ? 'secondary' : 
-                            error.error_code >= 500 ? 'destructive' : 'outline'
-                          }>
-                            {error.error_code}
-                          </Badge>
+                          <Badge variant="destructive">{error.error_code}</Badge>
                         </TableCell>
-                        <TableCell className="text-sm text-muted-foreground truncate max-w-[200px]">
-                          {error.origin || 'Direto'}
-                        </TableCell>
-                        <TableCell className="text-right font-medium">
-                          {error.occurrences}
-                        </TableCell>
-                        <TableCell className="text-right text-sm text-muted-foreground">
-                          {format(new Date(error.last_occurrence), 'dd/MM HH:mm')}
+                        <TableCell className="truncate max-w-[300px]">{error.page_url}</TableCell>
+                        <TableCell className="text-right">{error.occurrences}</TableCell>
+                        <TableCell className="text-right">
+                          {format(new Date(error.created_at), 'dd/MM HH:mm', { locale: ptBR })}
                         </TableCell>
                       </TableRow>
                     ))}
                     {(!errors || errors.length === 0) && (
                       <TableRow>
-                        <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                          ✓ Nenhum erro registrado no período
+                        <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
+                          {LABELS.errors.noErrors}
                         </TableCell>
                       </TableRow>
                     )}
@@ -512,44 +546,37 @@ export default function TrafficAnalytics() {
           </TabsContent>
 
           {/* Suspicious Tab */}
-          <TabsContent value="suspicious" className="space-y-6">
-            {/* High Frequency */}
+          <TabsContent value="suspicious">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <AlertTriangle className="h-5 w-5 text-amber-500" />
-                  Alta Frequência de Requisições
+                  <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                  {LABELS.suspicious.title}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Session ID</TableHead>
-                      <TableHead className="text-right">Requisições</TableHead>
-                      <TableHead className="text-right">Primeira</TableHead>
-                      <TableHead className="text-right">Última</TableHead>
+                      <TableHead>{LABELS.suspicious.session}</TableHead>
+                      <TableHead>{LABELS.suspicious.reason}</TableHead>
+                      <TableHead className="text-right">{LABELS.suspicious.date}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {suspicious?.high_frequency?.map((item, i) => (
+                    {suspicious && Array.isArray(suspicious) && suspicious.map((item, i) => (
                       <TableRow key={i}>
-                        <TableCell className="font-mono text-sm">{item.session_id.slice(0, 20)}...</TableCell>
-                        <TableCell className="text-right font-medium text-destructive">
-                          {item.request_count}
-                        </TableCell>
-                        <TableCell className="text-right text-sm">
-                          {format(new Date(item.first_request), 'dd/MM HH:mm')}
-                        </TableCell>
-                        <TableCell className="text-right text-sm">
-                          {format(new Date(item.last_request), 'dd/MM HH:mm')}
+                        <TableCell className="font-mono text-xs">{item.session_id?.slice(0, 8)}...</TableCell>
+                        <TableCell>{item.reason}</TableCell>
+                        <TableCell className="text-right">
+                          {format(new Date(item.created_at), 'dd/MM HH:mm', { locale: ptBR })}
                         </TableCell>
                       </TableRow>
                     ))}
-                    {(!suspicious?.high_frequency || suspicious.high_frequency.length === 0) && (
+                    {(!suspicious || !Array.isArray(suspicious) || suspicious.length === 0) && (
                       <TableRow>
-                        <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
-                          ✓ Nenhuma atividade suspeita detectada
+                        <TableCell colSpan={3} className="text-center text-muted-foreground py-8">
+                          {LABELS.suspicious.noSuspicious}
                         </TableCell>
                       </TableRow>
                     )}
@@ -557,81 +584,6 @@ export default function TrafficAnalytics() {
                 </Table>
               </CardContent>
             </Card>
-
-            {/* Admin Access Attempts */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <AlertTriangle className="h-5 w-5 text-destructive" />
-                  Tentativas de Acesso Admin
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>URL</TableHead>
-                      <TableHead>Session</TableHead>
-                      <TableHead className="text-right">Tentativas</TableHead>
-                      <TableHead className="text-right">Última</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {suspicious?.admin_attempts?.map((item, i) => (
-                      <TableRow key={i}>
-                        <TableCell className="font-mono text-sm">{item.page_url}</TableCell>
-                        <TableCell className="font-mono text-sm">{item.session_id.slice(0, 15)}...</TableCell>
-                        <TableCell className="text-right font-medium text-destructive">
-                          {item.attempts}
-                        </TableCell>
-                        <TableCell className="text-right text-sm">
-                          {format(new Date(item.last_attempt), 'dd/MM HH:mm')}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    {(!suspicious?.admin_attempts || suspicious.admin_attempts.length === 0) && (
-                      <TableRow>
-                        <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
-                          ✓ Nenhuma tentativa de invasão detectada
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-
-            {/* Unusual Origins */}
-            {suspicious?.unusual_origins && suspicious.unusual_origins.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Globe className="h-5 w-5 text-amber-500" />
-                    Origens Incomuns
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>País</TableHead>
-                        <TableHead className="text-right">Acessos</TableHead>
-                        <TableHead className="text-right">Sessões</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {suspicious.unusual_origins.map((item, i) => (
-                        <TableRow key={i}>
-                          <TableCell>{item.country}</TableCell>
-                          <TableCell className="text-right">{item.views}</TableCell>
-                          <TableCell className="text-right">{item.sessions}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            )}
           </TabsContent>
         </Tabs>
       </div>
