@@ -1,11 +1,12 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Locale } from 'date-fns';
 import { Transaction, SupportedCurrency } from '@/types/database';
-import { ArrowUpCircle, ArrowDownCircle, Trash2, Pencil, MoreVertical, CheckSquare, X, Wallet, Lock, Copy, ChevronDown, ChevronRight, TrendingUp, TrendingDown, Calendar } from 'lucide-react';
+import { ArrowUpCircle, ArrowDownCircle, Trash2, Pencil, MoreVertical, CheckSquare, X, Wallet, Lock, Copy, ChevronDown, ChevronRight, TrendingUp, TrendingDown, Calendar, CreditCard, Landmark, Banknote } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format, subDays, startOfMonth, endOfMonth, isSameMonth } from 'date-fns';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -53,6 +54,8 @@ interface MonthGroup {
   balance: number;
 }
 
+type SourceTab = 'account' | 'card' | 'loan';
+
 export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpdateWallet, onBatchDelete, onDuplicate }: TransactionsListProps) => {
   const { t } = useTranslation();
   const { dateLocale } = useLanguage();
@@ -61,6 +64,7 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
   const { isPremium, checkFeature } = useSubscription();
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
+  const [activeSourceTab, setActiveSourceTab] = useState<SourceTab>('account');
   
   // Selection mode state
   const [isSelectionMode, setIsSelectionMode] = useState(false);
@@ -80,11 +84,38 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
     }, {} as Record<string, typeof wallets[0]>);
   }, [wallets]);
 
+  // Filter transactions by source type
+  const filteredBySource = useMemo(() => {
+    return transactions.filter(tx => {
+      const sourceType = tx.source_type || 'account';
+      if (activeSourceTab === 'account') {
+        return sourceType === 'account' && !tx.credit_card_id;
+      } else if (activeSourceTab === 'card') {
+        return sourceType === 'card' || tx.credit_card_id;
+      } else if (activeSourceTab === 'loan') {
+        return sourceType === 'loan';
+      }
+      return true;
+    });
+  }, [transactions, activeSourceTab]);
+
+  // Count transactions by source for badges
+  const sourceCounts = useMemo(() => {
+    const accountTxs = transactions.filter(tx => (tx.source_type === 'account' || !tx.source_type) && !tx.credit_card_id);
+    const cardTxs = transactions.filter(tx => tx.source_type === 'card' || tx.credit_card_id);
+    const loanTxs = transactions.filter(tx => tx.source_type === 'loan');
+    return {
+      account: accountTxs.length,
+      card: cardTxs.length,
+      loan: loanTxs.length,
+    };
+  }, [transactions]);
+
   // Group transactions by month with summaries
   const monthGroups = useMemo(() => {
     const groups: Record<string, MonthGroup> = {};
     
-    transactions.forEach(tx => {
+    filteredBySource.forEach(tx => {
       const txDate = parseDateString(tx.date);
       const monthKey = format(txDate, 'yyyy-MM');
       const monthLabel = format(txDate, 'MMMM yyyy', { locale: dateLocale });
@@ -119,7 +150,12 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
     
     // Sort months from newest to oldest
     return Object.values(groups).sort((a, b) => b.key.localeCompare(a.key));
-  }, [transactions, dateLocale]);
+  }, [filteredBySource, dateLocale]);
+
+  // Reset expanded months when switching tabs
+  useEffect(() => {
+    setExpandedMonths(new Set());
+  }, [activeSourceTab]);
 
   // Auto-expand current month
   useMemo(() => {
@@ -159,10 +195,10 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
   };
 
   const handleSelectAll = () => {
-    if (selectedIds.size === transactions.length) {
+    if (selectedIds.size === filteredBySource.length) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(transactions.map(t => t.id)));
+      setSelectedIds(new Set(filteredBySource.map(t => t.id)));
     }
   };
 
@@ -248,12 +284,45 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
         )}
       </div>
 
+      {/* Source Type Tabs */}
+      <Tabs value={activeSourceTab} onValueChange={(v) => setActiveSourceTab(v as SourceTab)} className="w-full">
+        <TabsList className="grid w-full grid-cols-3 h-auto p-1">
+          <TabsTrigger value="account" className="flex items-center gap-1.5 py-2 text-xs">
+            <Landmark className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Contas</span>
+            {sourceCounts.account > 0 && (
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 ml-0.5">
+                {sourceCounts.account}
+              </Badge>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="card" className="flex items-center gap-1.5 py-2 text-xs">
+            <CreditCard className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Cartões</span>
+            {sourceCounts.card > 0 && (
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 ml-0.5">
+                {sourceCounts.card}
+              </Badge>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="loan" className="flex items-center gap-1.5 py-2 text-xs">
+            <Banknote className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Empréstimos</span>
+            {sourceCounts.loan > 0 && (
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 ml-0.5">
+                {sourceCounts.loan}
+              </Badge>
+            )}
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+
       {/* Selection mode action bar */}
       {isSelectionMode && (
         <div className="flex items-center justify-between bg-primary/10 rounded-lg p-3 border border-primary/20">
           <div className="flex items-center gap-3">
             <Checkbox
-              checked={selectedIds.size === transactions.length && transactions.length > 0}
+              checked={selectedIds.size === filteredBySource.length && filteredBySource.length > 0}
               onCheckedChange={handleSelectAll}
             />
             <span className="text-sm font-medium">
@@ -292,29 +361,44 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
         </div>
       )}
 
-      {/* Month cards */}
-      <div className="space-y-3">
-        {monthGroups.map((group) => (
-          <MonthCard
-            key={group.key}
-            group={group}
-            isExpanded={expandedMonths.has(group.key)}
-            onToggle={() => toggleMonth(group.key)}
-            userCurrency={userCurrency}
-            walletMap={walletMap}
-            dateLocale={dateLocale}
-            formatCurrency={formatCurrency}
-            formatConverted={formatConverted}
-            t={t}
-            onDelete={onDelete}
-            onEdit={setEditingTransaction}
-            onDuplicate={onDuplicate}
-            isSelectionMode={isSelectionMode}
-            selectedIds={selectedIds}
-            onToggleSelect={toggleSelection}
-          />
-        ))}
-      </div>
+      {/* Month cards or empty state */}
+      {filteredBySource.length === 0 ? (
+        <div className="bg-card rounded-2xl p-6 shadow-md text-center">
+          <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
+            {activeSourceTab === 'account' && <Landmark className="w-6 h-6 text-muted-foreground" />}
+            {activeSourceTab === 'card' && <CreditCard className="w-6 h-6 text-muted-foreground" />}
+            {activeSourceTab === 'loan' && <Banknote className="w-6 h-6 text-muted-foreground" />}
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {activeSourceTab === 'account' && 'Nenhuma transação de conta bancária'}
+            {activeSourceTab === 'card' && 'Nenhuma transação de cartão de crédito'}
+            {activeSourceTab === 'loan' && 'Nenhuma transação de empréstimo'}
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {monthGroups.map((group) => (
+            <MonthCard
+              key={group.key}
+              group={group}
+              isExpanded={expandedMonths.has(group.key)}
+              onToggle={() => toggleMonth(group.key)}
+              userCurrency={userCurrency}
+              walletMap={walletMap}
+              dateLocale={dateLocale}
+              formatCurrency={formatCurrency}
+              formatConverted={formatConverted}
+              t={t}
+              onDelete={onDelete}
+              onEdit={setEditingTransaction}
+              onDuplicate={onDuplicate}
+              isSelectionMode={isSelectionMode}
+              selectedIds={selectedIds}
+              onToggleSelect={toggleSelection}
+            />
+          ))}
+        </div>
+      )}
 
       {editingTransaction && (
         <EditTransactionDialog

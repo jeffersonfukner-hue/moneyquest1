@@ -62,6 +62,12 @@ export interface Transaction {
   xp_earned: number;
   currency: SupportedCurrency;
   wallet_id: string | null;
+  credit_card_id?: string | null;
+  invoice_id?: string | null;
+  source_type?: string;
+  transaction_subtype?: string;
+  has_items?: boolean;
+  is_manual?: boolean;
   created_at: string;
 }
 
