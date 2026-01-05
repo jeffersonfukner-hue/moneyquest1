@@ -88,8 +88,8 @@ const LABELS = {
   alerts: {
     spamProtectedTitle: 'Proteção Anti-Spam Ativa',
     spamProtectedDesc: 'O sistema limita a 15 transações com XP por dia por usuário. Após o limite, transações são registradas normalmente mas com 0 XP.',
-    reversalTitle: 'Reversão de XP',
-    reversalDesc: 'Atualmente não há sistema automático de reversão de XP ao excluir transações. Considere implementar se necessário.',
+    reversalTitle: 'Reversão de XP Automática',
+    reversalDesc: 'Ao excluir uma transação, o XP é automaticamente revertido via trigger no banco de dados. O histórico é registrado em xp_history com source "transaction_deleted".',
     fixedXpTitle: 'XP Fixo por Transação',
     fixedXpDesc: 'Cada transação concede exatamente +5 XP, independente do valor monetário. Isso evita manipulação via micro-transações.',
   },
@@ -351,8 +351,8 @@ const ScoringAudit = () => {
             </AlertDescription>
           </Alert>
 
-          <Alert variant="destructive">
-            <AlertTriangle className="h-4 w-4" />
+          <Alert>
+            <Info className="h-4 w-4" />
             <AlertTitle>{LABELS.alerts.reversalTitle}</AlertTitle>
             <AlertDescription>
               {LABELS.alerts.reversalDesc}
