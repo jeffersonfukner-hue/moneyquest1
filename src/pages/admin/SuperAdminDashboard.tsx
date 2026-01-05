@@ -12,6 +12,7 @@ import { DiscountConversionWidget } from '@/components/admin/DiscountConversionW
 import { ReferralConversionWidget } from '@/components/admin/ReferralConversionWidget';
 import { ServiceWorkerStatusWidget } from '@/components/admin/ServiceWorkerStatusWidget';
 import { WebVitalsWidget } from '@/components/admin/WebVitalsWidget';
+import { WebVitalsAlerts } from '@/components/admin/WebVitalsAlerts';
 import GoogleOAuthConfigWidget from '@/components/admin/GoogleOAuthConfigWidget';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useAdminData } from '@/hooks/useAdminData';
@@ -299,6 +300,9 @@ const SuperAdminDashboard = () => {
 
         {/* Retention Alerts */}
         <RetentionAlerts />
+
+        {/* Web Vitals Performance Alerts */}
+        <WebVitalsAlerts />
 
         {/* OAuth Configuration Guide */}
         <GoogleOAuthConfigWidget />
