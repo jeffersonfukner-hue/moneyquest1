@@ -434,6 +434,59 @@ export type Database = {
           },
         ]
       }
+      credit_card_invoices: {
+        Row: {
+          closed_at: string | null
+          created_at: string
+          credit_card_id: string
+          due_date: string
+          id: string
+          paid_at: string | null
+          period_end: string
+          period_start: string
+          status: string
+          total_amount: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          closed_at?: string | null
+          created_at?: string
+          credit_card_id: string
+          due_date: string
+          id?: string
+          paid_at?: string | null
+          period_end: string
+          period_start: string
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          closed_at?: string | null
+          created_at?: string
+          credit_card_id?: string
+          due_date?: string
+          id?: string
+          paid_at?: string | null
+          period_end?: string
+          period_start?: string
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_card_invoices_credit_card_id_fkey"
+            columns: ["credit_card_id"]
+            isOneToOne: false
+            referencedRelation: "credit_cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       credit_cards: {
         Row: {
           available_limit: number
@@ -1519,6 +1572,7 @@ export type Database = {
           description: string
           has_items: boolean | null
           id: string
+          invoice_id: string | null
           is_manual: boolean
           source_type: string
           transaction_subtype: string | null
@@ -1537,6 +1591,7 @@ export type Database = {
           description: string
           has_items?: boolean | null
           id?: string
+          invoice_id?: string | null
           is_manual?: boolean
           source_type?: string
           transaction_subtype?: string | null
@@ -1555,6 +1610,7 @@ export type Database = {
           description?: string
           has_items?: boolean | null
           id?: string
+          invoice_id?: string | null
           is_manual?: boolean
           source_type?: string
           transaction_subtype?: string | null
@@ -1569,6 +1625,13 @@ export type Database = {
             columns: ["credit_card_id"]
             isOneToOne: false
             referencedRelation: "credit_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "credit_card_invoices"
             referencedColumns: ["id"]
           },
           {
@@ -2257,6 +2320,14 @@ export type Database = {
         Returns: Json
       }
       get_level_title: { Args: { user_level: number }; Returns: string }
+      get_or_create_current_invoice: {
+        Args: {
+          p_credit_card_id: string
+          p_transaction_date: string
+          p_user_id: string
+        }
+        Returns: string
+      }
       get_period_end: { Args: { period_type: string }; Returns: string }
       get_period_start: { Args: { period_type: string }; Returns: string }
       get_referral_stats: { Args: { p_user_id: string }; Returns: Json }
@@ -2280,6 +2351,10 @@ export type Database = {
             Args: { p_referral_code: string; p_referred_user_id: string }
             Returns: Json
           }
+      recalculate_invoice_total: {
+        Args: { p_invoice_id: string }
+        Returns: number
+      }
       register_fingerprint_with_trial_check: {
         Args: {
           p_fingerprint_hash: string
