@@ -33,13 +33,14 @@ import { ScheduledTransfersCard } from '@/components/wallets/ScheduledTransfersC
 import { CreditCardCard } from '@/components/creditCards/CreditCardCard';
 import { AddCreditCardDialog } from '@/components/creditCards/AddCreditCardDialog';
 import { EditCreditCardDialog } from '@/components/creditCards/EditCreditCardDialog';
+import { CreditCardInvoicesPanel } from '@/components/creditCards/CreditCardInvoicesPanel';
 import { Wallet } from '@/types/wallet';
 import { AppLayout } from '@/components/layout/AppLayout';
 
 const WalletsPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { activeWallets, inactiveWallets, wallets, deleteWallet, reactivateWallet, reorderWallets, loading } = useWallets();
+  const { activeWallets, inactiveWallets, wallets, deleteWallet, reactivateWallet, reorderWallets, loading, refetch: refetchWallets } = useWallets();
   const { creditCards, addCreditCard, updateCreditCard, deleteCreditCard, loading: cardsLoading } = useCreditCards();
   
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -49,6 +50,7 @@ const WalletsPage = () => {
   const [transferFromWallet, setTransferFromWallet] = useState<Wallet | undefined>();
   const [editingWallet, setEditingWallet] = useState<Wallet | null>(null);
   const [editingCard, setEditingCard] = useState<CreditCardType | null>(null);
+  const [viewingInvoicesCard, setViewingInvoicesCard] = useState<CreditCardType | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -242,36 +244,50 @@ const WalletsPage = () => {
 
           {/* Credit Cards Tab */}
           <TabsContent value="cards" className="space-y-4 mt-4">
-            <Button 
-              onClick={() => setShowAddCardDialog(true)} 
-              className="w-full"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              {t('creditCards.addCard', 'Adicionar Cartão')}
-            </Button>
-
-            {creditCards.length === 0 ? (
-              <div className="text-center py-12">
-                <CreditCard className="mx-auto h-12 w-12 text-muted-foreground/50" />
-                <p className="mt-3 text-sm text-muted-foreground">
-                  {t('creditCards.noCards', 'Nenhum cartão cadastrado')}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {t('creditCards.noCardsHint', 'Adicione seus cartões para controlar gastos e faturas.')}
-                </p>
-              </div>
+            {viewingInvoicesCard ? (
+              <CreditCardInvoicesPanel
+                card={viewingInvoicesCard}
+                wallets={wallets}
+                onBack={() => {
+                  setViewingInvoicesCard(null);
+                  refetchWallets(); // Refresh wallet balances after potential payment
+                }}
+              />
             ) : (
-              <div className="grid gap-3">
-                {creditCards.map(card => (
-                  <CreditCardCard
-                    key={card.id}
-                    card={card}
-                    wallets={wallets}
-                    onEdit={setEditingCard}
-                    onDelete={deleteCreditCard}
-                  />
-                ))}
-              </div>
+              <>
+                <Button 
+                  onClick={() => setShowAddCardDialog(true)} 
+                  className="w-full"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  {t('creditCards.addCard', 'Adicionar Cartão')}
+                </Button>
+
+                {creditCards.length === 0 ? (
+                  <div className="text-center py-12">
+                    <CreditCard className="mx-auto h-12 w-12 text-muted-foreground/50" />
+                    <p className="mt-3 text-sm text-muted-foreground">
+                      {t('creditCards.noCards', 'Nenhum cartão cadastrado')}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {t('creditCards.noCardsHint', 'Adicione seus cartões para controlar gastos e faturas.')}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid gap-3">
+                    {creditCards.map(card => (
+                      <CreditCardCard
+                        key={card.id}
+                        card={card}
+                        wallets={wallets}
+                        onEdit={setEditingCard}
+                        onDelete={deleteCreditCard}
+                        onViewInvoices={setViewingInvoicesCard}
+                      />
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </TabsContent>
         </Tabs>
