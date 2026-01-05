@@ -1,10 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
-import { ArrowRight, AlertTriangle, RefreshCw } from 'lucide-react';
-import { format } from 'date-fns';
+import { ArrowRight, Clock, RefreshCw } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -28,76 +27,66 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { useWallets } from '@/hooks/useWallets';
-import { useWalletTransfers, CreateTransferData } from '@/hooks/useWalletTransfers';
+import { useWalletTransfers, CreateScheduledTransferData } from '@/hooks/useWalletTransfers';
 import { useExchangeRates } from '@/hooks/useExchangeRates';
-import { useCurrency } from '@/contexts/CurrencyContext';
-import { Wallet } from '@/types/wallet';
 import { SupportedCurrency } from '@/types/database';
 
-const transferSchema = z.object({
+const scheduledTransferSchema = z.object({
   from_wallet_id: z.string().min(1, 'Required'),
   to_wallet_id: z.string().min(1, 'Required'),
   amount: z.number().positive('Must be positive'),
   description: z.string().optional(),
-  date: z.date(),
+  frequency: z.enum(['daily', 'weekly', 'monthly']),
+  day_of_week: z.number().optional(),
+  day_of_month: z.number().optional(),
 });
 
-type TransferFormData = z.infer<typeof transferSchema>;
+type ScheduledTransferFormData = z.infer<typeof scheduledTransferSchema>;
 
-interface TransferDialogProps {
+interface ScheduledTransferDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  preselectedWallet?: Wallet;
 }
 
-export const TransferDialog = ({ open, onOpenChange, preselectedWallet }: TransferDialogProps) => {
+const DAYS_OF_WEEK = [
+  { value: 0, label: 'sunday' },
+  { value: 1, label: 'monday' },
+  { value: 2, label: 'tuesday' },
+  { value: 3, label: 'wednesday' },
+  { value: 4, label: 'thursday' },
+  { value: 5, label: 'friday' },
+  { value: 6, label: 'saturday' },
+];
+
+export const ScheduledTransferDialog = ({ open, onOpenChange }: ScheduledTransferDialogProps) => {
   const { t } = useTranslation();
   const { activeWallets } = useWallets();
-  const { createTransfer } = useWalletTransfers();
-  const { convertCurrency, getRate } = useExchangeRates();
-  const { formatCurrency } = useCurrency();
+  const { createScheduledTransfer } = useWalletTransfers();
+  const { getRate } = useExchangeRates();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm<TransferFormData>({
-    resolver: zodResolver(transferSchema),
+  const form = useForm<ScheduledTransferFormData>({
+    resolver: zodResolver(scheduledTransferSchema),
     defaultValues: {
-      from_wallet_id: preselectedWallet?.id || '',
+      from_wallet_id: '',
       to_wallet_id: '',
       amount: 0,
       description: '',
-      date: new Date(),
+      frequency: 'monthly',
+      day_of_week: 1,
+      day_of_month: 5,
     },
   });
 
-  // Reset form when dialog opens with preselected wallet
-  useEffect(() => {
-    if (open && preselectedWallet) {
-      form.setValue('from_wallet_id', preselectedWallet.id);
-    }
-  }, [open, preselectedWallet, form]);
-
   const watchFromWallet = form.watch('from_wallet_id');
   const watchToWallet = form.watch('to_wallet_id');
-  const watchAmount = form.watch('amount');
+  const watchFrequency = form.watch('frequency');
 
   const fromWallet = activeWallets.find(w => w.id === watchFromWallet);
   const toWallet = activeWallets.find(w => w.id === watchToWallet);
 
   const hasCurrencyMismatch = fromWallet && toWallet && fromWallet.currency !== toWallet.currency;
-
-  // Calculate converted amount
-  const convertedAmount = hasCurrencyMismatch && watchAmount > 0
-    ? convertCurrency(watchAmount, fromWallet.currency, toWallet.currency)
-    : null;
-
-  const exchangeRate = hasCurrencyMismatch
-    ? getRate(fromWallet.currency, toWallet.currency)
-    : null;
 
   const formatWalletCurrency = (amount: number, currency: SupportedCurrency) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -107,22 +96,23 @@ export const TransferDialog = ({ open, onOpenChange, preselectedWallet }: Transf
     }).format(amount);
   };
 
-  const onSubmit = async (data: TransferFormData) => {
+  const onSubmit = async (data: ScheduledTransferFormData) => {
     if (!fromWallet) return;
 
     setIsSubmitting(true);
     
-    const transferData: CreateTransferData = {
+    const transferData: CreateScheduledTransferData = {
       from_wallet_id: data.from_wallet_id,
       to_wallet_id: data.to_wallet_id,
       amount: data.amount,
       currency: fromWallet.currency,
       description: data.description,
-      date: format(data.date, 'yyyy-MM-dd'),
-      converted_amount: convertedAmount || undefined,
+      frequency: data.frequency,
+      day_of_week: data.frequency === 'weekly' ? data.day_of_week : undefined,
+      day_of_month: data.frequency === 'monthly' ? data.day_of_month : undefined,
     };
 
-    const success = await createTransfer(transferData);
+    const success = await createScheduledTransfer(transferData);
     
     setIsSubmitting(false);
 
@@ -139,7 +129,8 @@ export const TransferDialog = ({ open, onOpenChange, preselectedWallet }: Transf
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            {t('wallets.transferBetweenAccounts')}
+            <Clock className="h-5 w-5" />
+            {t('wallets.scheduleTransfer')}
           </DialogTitle>
         </DialogHeader>
 
@@ -177,7 +168,6 @@ export const TransferDialog = ({ open, onOpenChange, preselectedWallet }: Transf
               )}
             />
 
-            {/* Arrow indicator */}
             <div className="flex justify-center">
               <ArrowRight className="h-5 w-5 text-muted-foreground" />
             </div>
@@ -218,20 +208,12 @@ export const TransferDialog = ({ open, onOpenChange, preselectedWallet }: Transf
               )}
             />
 
-            {/* Currency conversion info */}
+            {/* Currency conversion note */}
             {hasCurrencyMismatch && (
-              <div className="p-3 bg-primary/5 border border-primary/20 rounded-md space-y-2">
+              <div className="p-3 bg-primary/5 border border-primary/20 rounded-md">
                 <div className="flex items-center gap-2 text-sm">
                   <RefreshCw className="h-4 w-4 text-primary" />
-                  <span className="font-medium">{t('wallets.currencyConversion')}</span>
-                </div>
-                <div className="text-xs text-muted-foreground space-y-1">
-                  <p>1 {fromWallet.currency} = {exchangeRate?.toFixed(4)} {toWallet.currency}</p>
-                  {convertedAmount !== null && watchAmount > 0 && (
-                    <p className="font-medium text-foreground">
-                      {formatWalletCurrency(watchAmount, fromWallet.currency)} → {formatWalletCurrency(convertedAmount, toWallet.currency)}
-                    </p>
-                  )}
+                  <span>{t('wallets.autoConversionNote')}</span>
                 </div>
               </div>
             )}
@@ -261,6 +243,84 @@ export const TransferDialog = ({ open, onOpenChange, preselectedWallet }: Transf
               )}
             />
 
+            {/* Frequency */}
+            <FormField
+              control={form.control}
+              name="frequency"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('wallets.frequency')}</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="daily">{t('wallets.frequencyDaily')}</SelectItem>
+                      <SelectItem value="weekly">{t('wallets.frequencyWeekly')}</SelectItem>
+                      <SelectItem value="monthly">{t('wallets.frequencyMonthly')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Day of Week (for weekly) */}
+            {watchFrequency === 'weekly' && (
+              <FormField
+                control={form.control}
+                name="day_of_week"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('wallets.dayOfWeek')}</FormLabel>
+                    <Select 
+                      onValueChange={(v) => field.onChange(parseInt(v))} 
+                      value={field.value?.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {DAYS_OF_WEEK.map((day) => (
+                          <SelectItem key={day.value} value={day.value.toString()}>
+                            {t(`wallets.days.${day.label}`)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {/* Day of Month (for monthly) */}
+            {watchFrequency === 'monthly' && (
+              <FormField
+                control={form.control}
+                name="day_of_month"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('wallets.dayOfMonth')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={1}
+                        max={31}
+                        {...field}
+                        onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
             {/* Description */}
             <FormField
               control={form.control}
@@ -276,45 +336,8 @@ export const TransferDialog = ({ open, onOpenChange, preselectedWallet }: Transf
               )}
             />
 
-            {/* Date */}
-            <FormField
-              control={form.control}
-              name="date"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>{t('common.date')}</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value ? format(field.value, 'PPP') : <span>{t('common.selectDate')}</span>}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) => date > new Date()}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? t('common.loading') : t('wallets.transfer')}
+              {isSubmitting ? t('common.loading') : t('wallets.createScheduledTransfer')}
             </Button>
           </form>
         </Form>
