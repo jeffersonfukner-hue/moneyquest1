@@ -787,7 +787,22 @@
       "investment": "Investments",
       "cash": "Cash",
       "other": "Other"
-    }
+    },
+    "transfer": "Transfer",
+    "transferBetweenAccounts": "Transfer between accounts",
+    "fromWallet": "From",
+    "toWallet": "To",
+    "transferAmount": "Transfer amount",
+    "transferSuccess": "Transfer completed successfully!",
+    "sameWalletError": "Select different wallets",
+    "insufficientBalance": "Insufficient balance",
+    "recentTransfers": "Recent transfers",
+    "currencyWarning": "Warning: transfer between different currencies",
+    "transferDescriptionPlaceholder": "E.g.: Emergency fund",
+    "noTransfers": "No transfers yet",
+    "inactiveTab": "Inactive",
+    "deactivate": "Deactivate",
+    "reactivate": "Reactivate"
   },
   "premiumCashFlow": {
     "title": "Premium Cash Flow Report",
