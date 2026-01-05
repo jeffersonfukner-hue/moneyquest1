@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, Wallet as WalletIcon, ArrowLeft, ArrowLeftRight } from 'lucide-react';
+import { Plus, Wallet as WalletIcon, ArrowLeft, ArrowLeftRight, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -10,6 +10,9 @@ import { AddWalletDialog } from '@/components/wallets/AddWalletDialog';
 import { EditWalletDialog } from '@/components/wallets/EditWalletDialog';
 import { WalletBalancesWidget } from '@/components/wallets/WalletBalancesWidget';
 import { TransferDialog } from '@/components/wallets/TransferDialog';
+import { ScheduledTransferDialog } from '@/components/wallets/ScheduledTransferDialog';
+import { TransferHistoryCard } from '@/components/wallets/TransferHistoryCard';
+import { ScheduledTransfersCard } from '@/components/wallets/ScheduledTransfersCard';
 import { Wallet } from '@/types/wallet';
 import { AppLayout } from '@/components/layout/AppLayout';
 
@@ -19,6 +22,7 @@ const WalletsPage = () => {
   const { activeWallets, inactiveWallets, deleteWallet, reactivateWallet, loading } = useWallets();
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showTransferDialog, setShowTransferDialog] = useState(false);
+  const [showScheduledDialog, setShowScheduledDialog] = useState(false);
   const [transferFromWallet, setTransferFromWallet] = useState<Wallet | undefined>();
   const [editingWallet, setEditingWallet] = useState<Wallet | null>(null);
 
@@ -69,10 +73,10 @@ const WalletsPage = () => {
         <WalletBalancesWidget wallets={activeWallets} />
 
         {/* Action Buttons */}
-        <div className="flex gap-2">
+        <div className="grid grid-cols-2 gap-2">
           <Button 
             onClick={() => setShowAddDialog(true)} 
-            className="flex-1"
+            className="w-full"
           >
             <Plus className="mr-2 h-4 w-4" />
             {t('wallets.addWallet')}
@@ -80,13 +84,29 @@ const WalletsPage = () => {
           <Button 
             onClick={() => handleOpenTransfer()} 
             variant="outline"
-            className="flex-1"
+            className="w-full"
             disabled={activeWallets.length < 2}
           >
             <ArrowLeftRight className="mr-2 h-4 w-4" />
             {t('wallets.transfer')}
           </Button>
         </div>
+
+        <Button 
+          onClick={() => setShowScheduledDialog(true)} 
+          variant="secondary"
+          className="w-full"
+          disabled={activeWallets.length < 2}
+        >
+          <Clock className="mr-2 h-4 w-4" />
+          {t('wallets.scheduleTransfer')}
+        </Button>
+
+        {/* Scheduled Transfers */}
+        <ScheduledTransfersCard />
+
+        {/* Transfer History */}
+        <TransferHistoryCard expanded />
 
         {/* Wallets Tabs */}
         <Tabs defaultValue="active" className="w-full">
@@ -157,6 +177,11 @@ const WalletsPage = () => {
         open={showTransferDialog}
         onOpenChange={setShowTransferDialog}
         preselectedWallet={transferFromWallet}
+      />
+
+      <ScheduledTransferDialog
+        open={showScheduledDialog}
+        onOpenChange={setShowScheduledDialog}
       />
     </AppLayout>
   );

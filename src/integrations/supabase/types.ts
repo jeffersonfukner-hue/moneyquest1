@@ -1042,6 +1042,75 @@ export type Database = {
         }
         Relationships: []
       }
+      scheduled_transfers: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          day_of_month: number | null
+          day_of_week: number | null
+          description: string | null
+          frequency: string
+          from_wallet_id: string
+          id: string
+          is_active: boolean
+          last_run_date: string | null
+          next_run_date: string
+          to_wallet_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          day_of_month?: number | null
+          day_of_week?: number | null
+          description?: string | null
+          frequency: string
+          from_wallet_id: string
+          id?: string
+          is_active?: boolean
+          last_run_date?: string | null
+          next_run_date: string
+          to_wallet_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          day_of_month?: number | null
+          day_of_week?: number | null
+          description?: string | null
+          frequency?: string
+          from_wallet_id?: string
+          id?: string
+          is_active?: boolean
+          last_run_date?: string | null
+          next_run_date?: string
+          to_wallet_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scheduled_transfers_from_wallet_id_fkey"
+            columns: ["from_wallet_id"]
+            isOneToOne: false
+            referencedRelation: "wallets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scheduled_transfers_to_wallet_id_fkey"
+            columns: ["to_wallet_id"]
+            isOneToOne: false
+            referencedRelation: "wallets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       support_messages: {
         Row: {
           attachment_url: string | null
