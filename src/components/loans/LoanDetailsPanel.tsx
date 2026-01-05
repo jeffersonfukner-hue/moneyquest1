@@ -22,6 +22,8 @@ import { ptBR } from 'date-fns/locale';
 import { Loan } from '@/hooks/useLoans';
 import { LoanInstallmentsPanel } from './LoanInstallmentsPanel';
 import { PayOffLoanDialog } from './PayOffLoanDialog';
+import { LoanProjectionWidget } from './LoanProjectionWidget';
+import { LockedFeature } from '@/components/subscription/LockedFeature';
 
 interface LoanDetailsPanelProps {
   loan: Loan;
@@ -255,6 +257,13 @@ export function LoanDetailsPanel({ loan, onBack, onPayInstallment, onPrepay, onP
           </div>
         </CardContent>
       </Card>
+
+      {/* Premium: Loan Projections */}
+      {loan.status === 'ativo' && (
+        <LockedFeature feature="loan_projections">
+          <LoanProjectionWidget loan={loan} />
+        </LockedFeature>
+      )}
 
       {/* Notes */}
       {loan.notas && (
