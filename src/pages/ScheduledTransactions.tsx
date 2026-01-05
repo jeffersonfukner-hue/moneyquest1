@@ -510,11 +510,22 @@ const ScheduledTransactions = () => {
                                   <span>{getTransactionFrequencyLabel(entry.transaction)}</span>
                                 </div>
                               </div>
-                              <div className="text-right">
-                                <p className={`font-semibold ${entry.transaction.type === 'INCOME' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                                  {entry.transaction.type === 'INCOME' ? '+' : '-'}
-                                  {formatCurrency(entry.transaction.amount, entry.transaction.currency)}
-                                </p>
+                              <div className="flex items-center gap-2">
+                                <div className="text-right">
+                                  <p className={`font-semibold ${entry.transaction.type === 'INCOME' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                                    {entry.transaction.type === 'INCOME' ? '+' : '-'}
+                                    {formatCurrency(entry.transaction.amount, entry.transaction.currency)}
+                                  </p>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                  onClick={() => handleEditTransaction(entry.transaction)}
+                                  aria-label={t('scheduled.editTransaction')}
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
                               </div>
                             </div>
                           )}
