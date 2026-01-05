@@ -38,7 +38,7 @@ Nossa equipe inclui:
 
 Todos os nossos conteúdos são cuidadosamente revisados para garantir precisão, relevância e aplicabilidade prática no dia a dia dos brasileiros.`,
     shortBio: 'Especialistas em finanças pessoais e gamificação, ajudando milhares de pessoas a transformarem sua relação com o dinheiro.',
-    avatar: '/logo.png',
+    avatar: '/logo-square.png',
     expertise: [
       'Controle Financeiro',
       'Educação Financeira',
