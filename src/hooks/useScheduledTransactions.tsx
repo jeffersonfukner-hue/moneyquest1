@@ -49,9 +49,13 @@ export const useScheduledTransactions = () => {
   const [loading, setLoading] = useState(true);
 
   const fetchScheduledTransactions = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
     try {
+      setLoading(true);
       const { data, error } = await supabase
         .from('scheduled_transactions')
         .select('*')
@@ -59,6 +63,7 @@ export const useScheduledTransactions = () => {
         .order('next_run_date', { ascending: true });
 
       if (error) throw error;
+      console.log('[ScheduledTransactions] Fetched:', data?.length, 'items');
       setScheduledTransactions((data || []) as ScheduledTransaction[]);
     } catch (error) {
       console.error('Error fetching scheduled transactions:', error);
