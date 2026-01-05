@@ -2,6 +2,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import { registerMoneyQuestSW } from "./pwa/registerMoneyQuestSW";
+import { initWebVitals } from "./lib/webVitals";
 
 const BUILD_VERSION = import.meta.env.VITE_BUILD_VERSION || "unknown";
 const STORAGE_KEY = "mq_build_version";
@@ -71,6 +72,9 @@ if (!checkVersionAndReload()) {
   window.addEventListener("unhandledrejection", handleRejection);
   
   registerMoneyQuestSW();
+  
+  // Initialize Web Vitals monitoring for performance tracking
+  initWebVitals();
   
   createRoot(document.getElementById("root")!).render(<App />);
 }
