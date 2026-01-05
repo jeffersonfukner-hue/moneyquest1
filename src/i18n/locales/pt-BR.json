@@ -797,6 +797,9 @@
   "wallets": {
     "title": "Carteiras",
     "wallet": "Carteira",
+    "balances": "Saldo das Carteiras",
+    "totalBalance": "Saldo Total",
+    "noWallets": "Nenhuma carteira cadastrada",
     "addWallet": "Adicionar Carteira",
     "editWallet": "Editar Carteira",
     "selectWallet": "Selecionar carteira",
