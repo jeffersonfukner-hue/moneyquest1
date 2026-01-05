@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { useAdminData } from '@/hooks/useAdminData';
@@ -6,8 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertTriangle, Clock } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
-// Labels fixos em pt-BR para SuperAdmin
 const LABELS = {
   title: 'Alertas de Engajamento',
   subtitle: 'Usuários em risco de abandono',
@@ -21,11 +22,54 @@ const LABELS = {
   lastSeen: 'Último acesso',
   neverActive: 'Nunca acessou',
   daysInactive: 'dias inativo',
-  noName: 'Sem nome',
 };
+
+interface AtRiskUserWithEmail {
+  user_id: string;
+  display_name: string | null;
+  email: string;
+  last_active_date: string | null;
+  days_inactive: number;
+  risk_level: string;
+}
 
 const EngagementAlerts = () => {
   const { atRiskUsers, atRiskLoading } = useAdminData();
+  const [usersWithEmail, setUsersWithEmail] = useState<AtRiskUserWithEmail[]>([]);
+  const [loadingEmails, setLoadingEmails] = useState(false);
+
+  useEffect(() => {
+    const fetchEmails = async () => {
+      if (!atRiskUsers || atRiskUsers.length === 0) {
+        setUsersWithEmail([]);
+        return;
+      }
+
+      setLoadingEmails(true);
+      try {
+        const enriched = await Promise.all(
+          atRiskUsers.map(async (user) => {
+            let email = '';
+            if (!user.display_name) {
+              const { data } = await supabase.rpc('admin_get_user_email', {
+                _user_id: user.user_id,
+              });
+              email = (data as string) || '';
+            }
+            return { ...user, email };
+          })
+        );
+        setUsersWithEmail(enriched);
+      } catch (error) {
+        console.error('Error fetching emails:', error);
+        setUsersWithEmail(atRiskUsers.map((u) => ({ ...u, email: '' })));
+      } finally {
+        setLoadingEmails(false);
+      }
+    };
+
+    fetchEmails();
+  }, [atRiskUsers]);
 
   const getRiskBadge = (level: string) => {
     switch (level) {
@@ -38,19 +82,29 @@ const EngagementAlerts = () => {
     }
   };
 
-  if (atRiskLoading) {
+  const isLoading = atRiskLoading || loadingEmails;
+
+  if (isLoading) {
     return (
       <AdminLayout>
         <div className="space-y-4">
-          {[1,2,3].map(i => <Skeleton key={i} className="h-24" />)}
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-24" />
+          ))}
         </div>
       </AdminLayout>
     );
   }
 
-  const highRisk = atRiskUsers?.filter(u => u.risk_level === 'high') || [];
-  const mediumRisk = atRiskUsers?.filter(u => u.risk_level === 'medium') || [];
-  const lowRisk = atRiskUsers?.filter(u => u.risk_level === 'low') || [];
+  const highRisk = usersWithEmail?.filter((u) => u.risk_level === 'high') || [];
+  const mediumRisk = usersWithEmail?.filter((u) => u.risk_level === 'medium') || [];
+  const lowRisk = usersWithEmail?.filter((u) => u.risk_level === 'low') || [];
+
+  const getUserDisplayName = (user: AtRiskUserWithEmail) => {
+    if (user.display_name) return user.display_name;
+    if (user.email) return user.email;
+    return user.user_id.slice(0, 8) + '...';
+  };
 
   return (
     <AdminLayout>
@@ -72,6 +126,7 @@ const EngagementAlerts = () => {
               <p className="text-sm text-muted-foreground">{LABELS.highDesc}</p>
             </CardContent>
           </Card>
+
           <Card className="border-yellow-500/30 bg-yellow-500/5">
             <CardHeader className="pb-2">
               <CardTitle className="text-yellow-600 flex items-center gap-2">
@@ -83,6 +138,7 @@ const EngagementAlerts = () => {
               <p className="text-sm text-muted-foreground">{LABELS.mediumDesc}</p>
             </CardContent>
           </Card>
+
           <Card className="border-green-500/30 bg-green-500/5">
             <CardHeader className="pb-2">
               <CardTitle className="text-green-600 flex items-center gap-2">
@@ -103,19 +159,20 @@ const EngagementAlerts = () => {
           <CardContent>
             <ScrollArea className="h-[400px]">
               <div className="space-y-2">
-                {atRiskUsers?.map(user => (
+                {usersWithEmail?.map((user) => (
                   <div key={user.user_id} className="flex items-center justify-between p-3 rounded-lg border">
                     <div>
-                      <p className="font-medium">{user.display_name || LABELS.noName}</p>
+                      <p className="font-medium">{getUserDisplayName(user)}</p>
                       <p className="text-sm text-muted-foreground">
-                        {user.last_active_date 
+                        {user.last_active_date
                           ? `${LABELS.lastSeen}: ${format(new Date(user.last_active_date), 'dd/MM/yyyy')}`
-                          : LABELS.neverActive
-                        }
+                          : LABELS.neverActive}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-muted-foreground">{user.days_inactive} {LABELS.daysInactive}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {user.days_inactive} {LABELS.daysInactive}
+                      </span>
                       {getRiskBadge(user.risk_level)}
                     </div>
                   </div>
