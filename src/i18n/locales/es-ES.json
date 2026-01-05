@@ -1,4 +1,10 @@
 {
+  "transactions": {
+    "selectCard": "Seleccione la tarjeta:",
+    "noCards": "Ninguna tarjeta registrada",
+    "addFirstCard": "Agregue su primera tarjeta para comenzar",
+    "changeCard": "Cambiar"
+  },
   "admin": {
     "oauth": {
       "title": "Configuración Google OAuth",

@@ -24,9 +24,11 @@ import { SUPPORTED_CURRENCIES } from '@/i18n';
 import { getCategoryTranslationKey } from '@/lib/gameLogic';
 import { WalletSelector } from '@/components/wallets/WalletSelector';
 import { useWallets } from '@/hooks/useWallets';
+import { useCreditCards } from '@/hooks/useCreditCards';
 import { ItemBreakdownEditor, TransactionItem } from '@/components/premium/ItemBreakdownEditor';
 import { ReceiptOCRButton } from '@/components/premium/ReceiptOCRButton';
 import { PremiumUpsellModal } from '@/components/premium/PremiumFeatureGate';
+import { AddCreditCardDialog } from '@/components/creditCards/AddCreditCardDialog';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface SessionSummary {
@@ -59,6 +61,7 @@ interface AddTransactionDialogProps {
     wallet_id: string;
     source_type?: string;
     transaction_subtype?: string;
+    credit_card_id?: string;
     items?: Array<{ name: string; amount: number }>;
   }) => Promise<{ error: Error | null; xpEarned?: number }>;
   open?: boolean;
@@ -75,11 +78,17 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   const { goals, refetch: refetchGoals } = useCategoryGoals();
   const { canAccessCategoryGoals, isPremium } = useSubscription();
   const { activeWallets, refetch: refetchWallets } = useWallets();
+  const { activeCards, refetch: refetchCards, addCreditCard } = useCreditCards();
   const { user } = useAuth();
   
   const [internalOpen, setInternalOpen] = useState(false);
   // First choice: account or credit card
   const [sourceType, setSourceType] = useState<SourceType | null>(null);
+  // Credit card selection step
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+  const [showCardSelection, setShowCardSelection] = useState(false);
+  const [showAddCardDialog, setShowAddCardDialog] = useState(false);
+  
   const [type, setType] = useState<TransactionType>('EXPENSE');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
@@ -105,6 +114,11 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
     totalIncome: 0,
     xpGained: 0,
   });
+  
+  // Get selected card details
+  const selectedCard = useMemo(() => {
+    return activeCards.find(c => c.id === selectedCardId) || null;
+  }, [activeCards, selectedCardId]);
   
   // Validation state
   const [touched, setTouched] = useState<{
@@ -169,6 +183,8 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
     if (!newOpen) {
       // Reset source selection when dialog closes
       setSourceType(null);
+      setSelectedCardId(null);
+      setShowCardSelection(false);
       setType('EXPENSE');
       setCategory('');
       
@@ -195,15 +211,45 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   const handleSourceTypeSelect = (source: SourceType) => {
     setSourceType(source);
     if (source === 'card') {
-      // For credit card, always expense
+      // For credit card, show card selection step
       setType('EXPENSE');
+      setShowCardSelection(true);
     }
     setCategory('');
+  };
+
+  // Handle card selection
+  const handleCardSelect = (cardId: string) => {
+    setSelectedCardId(cardId);
+    setShowCardSelection(false);
+  };
+
+  // Handle add card success
+  const handleAddCardSuccess = async (cardData: any) => {
+    const newCard = await addCreditCard(cardData);
+    if (newCard) {
+      setSelectedCardId(newCard.id);
+      setShowCardSelection(false);
+      setShowAddCardDialog(false);
+    }
+  };
+
+  // Go back to card selection
+  const handleBackToCardSelection = () => {
+    setShowCardSelection(true);
+    setSelectedCardId(null);
+    setDescription('');
+    setAmount('');
+    setCategory('');
+    setTouched({ description: false, amount: false, category: false, wallet: false });
+    setAttemptedSubmit(false);
   };
 
   // Go back to source selection
   const handleBackToSourceSelection = () => {
     setSourceType(null);
+    setSelectedCardId(null);
+    setShowCardSelection(false);
     setType('EXPENSE');
     setCategory('');
     setDescription('');
@@ -249,6 +295,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
       ...(isCardExpense && {
         source_type: 'card',
         transaction_subtype: 'card_expense',
+        credit_card_id: selectedCardId || undefined,
       }),
       // Include breakdown items if enabled (Premium only) - only for card expenses
       ...(showBreakdown && breakdownItems.length > 0 && isCardExpense && {
@@ -462,6 +509,84 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
               </Button>
             </div>
           </div>
+        ) : sourceType === 'card' && showCardSelection ? (
+          /* Step 2 (Card): Select Credit Card */
+          <div className="space-y-4">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground -ml-2"
+              onClick={handleBackToSourceSelection}
+            >
+              <ChevronUp className="w-4 h-4 mr-1 rotate-[-90deg]" />
+              {t('common.back', 'Voltar')}
+            </Button>
+            
+            <p className="text-sm text-muted-foreground">
+              {t('transactions.selectCard', 'Selecione o cartão:')}
+            </p>
+            
+            {activeCards.length === 0 ? (
+              <div className="text-center py-6 space-y-4">
+                <CreditCard className="w-12 h-12 mx-auto text-muted-foreground/50" />
+                <div>
+                  <p className="font-medium text-muted-foreground">
+                    {t('transactions.noCards', 'Nenhum cartão cadastrado')}
+                  </p>
+                  <p className="text-sm text-muted-foreground/70">
+                    {t('transactions.addFirstCard', 'Adicione seu primeiro cartão para começar')}
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="gap-2"
+                  onClick={() => setShowAddCardDialog(true)}
+                >
+                  <Plus className="w-4 h-4" />
+                  {t('creditCards.addCard', 'Adicionar Cartão')}
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {activeCards.map(card => (
+                  <Button
+                    key={card.id}
+                    type="button"
+                    variant="outline"
+                    className="w-full h-auto py-3 px-4 flex items-center gap-3 justify-start hover:border-amber-500 hover:bg-amber-500/5"
+                    onClick={() => handleCardSelect(card.id)}
+                  >
+                    <CreditCard className="w-6 h-6 text-amber-600 flex-shrink-0" />
+                    <div className="text-left flex-1 min-w-0">
+                      <p className="font-medium truncate">{card.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t('creditCards.bank', 'Banco')}: {card.bank}
+                      </p>
+                    </div>
+                  </Button>
+                ))}
+                
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="w-full gap-2 text-primary"
+                  onClick={() => setShowAddCardDialog(true)}
+                >
+                  <Plus className="w-4 h-4" />
+                  {t('creditCards.addCard', 'Adicionar Cartão')}
+                </Button>
+              </div>
+            )}
+            
+            {/* Add Card Dialog */}
+            <AddCreditCardDialog
+              open={showAddCardDialog}
+              onOpenChange={setShowAddCardDialog}
+              onAdd={handleAddCardSuccess}
+            />
+          </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Back button */}
@@ -470,7 +595,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
               variant="ghost"
               size="sm"
               className="text-muted-foreground -ml-2"
-              onClick={handleBackToSourceSelection}
+              onClick={sourceType === 'card' ? handleBackToCardSelection : handleBackToSourceSelection}
             >
               <ChevronUp className="w-4 h-4 mr-1 rotate-[-90deg]" />
               {t('common.back', 'Voltar')}
@@ -512,14 +637,26 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
               </div>
             )}
 
-            {/* Credit Card flow: always expense, show indicator */}
-            {sourceType === 'card' && (
-              <div className="flex items-center gap-2 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
-                <CreditCard className="w-5 h-5 text-amber-600" />
-                <span className="text-sm text-amber-700 dark:text-amber-400">
-                  {t('transactions.cardExpenseHint', 'Registrando gasto no cartão de crédito')}
+            {/* Credit Card flow: show selected card with bank */}
+            {sourceType === 'card' && selectedCard && (
+              <button
+                type="button"
+                className="w-full flex items-center gap-3 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg hover:bg-amber-500/15 transition-colors text-left"
+                onClick={handleBackToCardSelection}
+              >
+                <CreditCard className="w-5 h-5 text-amber-600 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-amber-700 dark:text-amber-400 truncate">
+                    {selectedCard.name}
+                  </p>
+                  <p className="text-xs text-amber-600/70 dark:text-amber-500/70">
+                    {selectedCard.bank}
+                  </p>
+                </div>
+                <span className="text-xs text-amber-600/70 dark:text-amber-500/70">
+                  {t('transactions.changeCard', 'Alterar')}
                 </span>
-              </div>
+              </button>
             )}
 
           <div className="space-y-2">
