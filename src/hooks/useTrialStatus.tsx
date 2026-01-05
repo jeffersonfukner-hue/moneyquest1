@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useProfile } from './useProfile';
 
 export type TrialPhase = 'normal' | 'warning' | 'critical' | 'expired' | null;
+export type PremiumOverride = 'none' | 'force_on' | 'force_off';
 
 export interface TrialStatus {
   isInTrial: boolean;
@@ -13,6 +14,7 @@ export interface TrialStatus {
   phase: TrialPhase;
   hasUsedTrial: boolean;
   hasPaidSubscription: boolean;
+  premiumOverride?: PremiumOverride;
 }
 
 export const useTrialStatus = (): TrialStatus => {
@@ -36,12 +38,44 @@ export const useTrialStatus = (): TrialStatus => {
 
     const now = new Date();
     const hasUsedTrial = profile.has_used_trial ?? false;
+    const premiumOverride = profile.premium_override || 'none';
+    
+    // Check if admin has forced premium status
+    if (premiumOverride === 'force_on') {
+      return {
+        isInTrial: false,
+        trialEndDate: null,
+        trialStartDate: null,
+        daysRemaining: 0,
+        hoursRemaining: 0,
+        progressPercentage: 0,
+        phase: null,
+        hasUsedTrial,
+        hasPaidSubscription: true, // Treat override as paid subscription
+        premiumOverride: 'force_on',
+      };
+    }
+    
+    if (premiumOverride === 'force_off') {
+      return {
+        isInTrial: false,
+        trialEndDate: null,
+        trialStartDate: null,
+        daysRemaining: 0,
+        hoursRemaining: 0,
+        progressPercentage: 0,
+        phase: 'expired',
+        hasUsedTrial,
+        hasPaidSubscription: false,
+        premiumOverride: 'force_off',
+      };
+    }
     
     // Check if user has paid Stripe subscription
     const hasPaidSubscription = 
       profile.stripe_subscription_status === 'active' || 
       profile.stripe_subscription_status === 'trialing';
-    
+
     // If user has paid subscription, they're not in trial
     if (hasPaidSubscription) {
       return {
