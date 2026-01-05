@@ -434,6 +434,62 @@ export type Database = {
           },
         ]
       }
+      credit_cards: {
+        Row: {
+          available_limit: number
+          bank: string
+          billing_close_day: number
+          created_at: string
+          currency: string
+          due_day: number
+          id: string
+          is_active: boolean
+          linked_wallet_id: string | null
+          name: string
+          total_limit: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          available_limit?: number
+          bank: string
+          billing_close_day: number
+          created_at?: string
+          currency?: string
+          due_day: number
+          id?: string
+          is_active?: boolean
+          linked_wallet_id?: string | null
+          name: string
+          total_limit?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          available_limit?: number
+          bank?: string
+          billing_close_day?: number
+          created_at?: string
+          currency?: string
+          due_day?: number
+          id?: string
+          is_active?: boolean
+          linked_wallet_id?: string | null
+          name?: string
+          total_limit?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_cards_linked_wallet_id_fkey"
+            columns: ["linked_wallet_id"]
+            isOneToOne: false
+            referencedRelation: "wallets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       daily_rewards: {
         Row: {
           created_at: string | null
