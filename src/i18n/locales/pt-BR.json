@@ -2361,6 +2361,7 @@
   },
   "ocr": {
     "scanReceipt": "Ler nota fiscal",
+    "scanStatement": "Ler extrato",
     "processing": "Lendo...",
     "success": "Nota fiscal lida!",
     "itemsFound": "{{count}} itens encontrados",

@@ -129,12 +129,12 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   }>({ description: false, amount: false, category: false, wallet: false });
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
 
-  // Validation helpers
+  // Validation helpers - wallet not required for card transactions
   const errors = {
     description: !description.trim(),
     amount: !amount || parseFloat(amount) <= 0,
     category: !category || category === '__new__',
-    wallet: !walletId,
+    wallet: sourceType !== 'card' && !walletId,
   };
   const hasErrors = errors.description || errors.amount || errors.category || errors.wallet;
 
@@ -734,7 +734,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
               message={t('validation.amountRequired')}
             />
 
-            {/* Premium Features: OCR button for all expenses, Breakdown only for card */}
+          {/* Premium Features: OCR button for all expenses, Breakdown only for card */}
             {type === 'EXPENSE' && (
               <div className="flex gap-2 pt-1">
                 {/* OCR Button - available for all expense types */}
@@ -742,6 +742,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
                   <ReceiptOCRButton 
                     onResult={handleOCRResult}
                     className="flex-1"
+                    label={sourceType === 'card' ? t('ocr.scanStatement', 'Ler extrato') : undefined}
                   />
                 ) : (
                   <Button
@@ -752,7 +753,10 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
                     className="flex-1 gap-2 relative"
                   >
                     <Scan className="w-4 h-4" />
-                    {t('ocr.scanReceipt', 'Ler nota fiscal')}
+                    {sourceType === 'card' 
+                      ? t('ocr.scanStatement', 'Ler extrato')
+                      : t('ocr.scanReceipt', 'Ler nota fiscal')
+                    }
                     <Crown className="w-3 h-3 text-amber-500 absolute -top-1 -right-1" />
                   </Button>
                 )}
@@ -847,29 +851,32 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label className="flex items-center gap-1">
-              {t('wallets.wallet')}
-              <span className="text-destructive">*</span>
-            </Label>
-            <WalletSelector
-              wallets={activeWallets}
-              selectedWalletId={walletId}
-              onSelect={(id) => {
-                setWalletId(id);
-                setTouched(prev => ({ ...prev, wallet: true }));
-              }}
-              onWalletCreated={(wallet) => {
-                refetchWallets();
-                setWalletId(wallet.id);
-              }}
-              required
-            />
-            <ValidationMessage 
-              show={(touched.wallet || attemptedSubmit) && errors.wallet}
-              message={t('validation.walletRequired')}
-            />
-          </div>
+          {/* Wallet selector - only for account transactions, not card */}
+          {sourceType !== 'card' && (
+            <div className="space-y-2">
+              <Label className="flex items-center gap-1">
+                {t('wallets.wallet')}
+                <span className="text-destructive">*</span>
+              </Label>
+              <WalletSelector
+                wallets={activeWallets}
+                selectedWalletId={walletId}
+                onSelect={(id) => {
+                  setWalletId(id);
+                  setTouched(prev => ({ ...prev, wallet: true }));
+                }}
+                onWalletCreated={(wallet) => {
+                  refetchWallets();
+                  setWalletId(wallet.id);
+                }}
+                required
+              />
+              <ValidationMessage 
+                show={(touched.wallet || attemptedSubmit) && errors.wallet}
+                message={t('validation.walletRequired')}
+              />
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label>{t('transactions.date')}</Label>
