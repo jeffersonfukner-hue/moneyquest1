@@ -325,6 +325,107 @@ export const useLoans = () => {
     }
   };
 
+  // Prepay multiple installments at once
+  const prepayInstallments = async (loanId: string, numberOfInstallments: number): Promise<boolean> => {
+    if (!user) return false;
+
+    try {
+      const loan = loans.find(l => l.id === loanId);
+      if (!loan) return false;
+
+      const remainingInstallments = loan.quantidade_parcelas - loan.parcelas_pagas;
+      const installmentsToPay = Math.min(numberOfInstallments, remainingInstallments);
+
+      if (installmentsToPay <= 0) return false;
+
+      const newParcelasPagas = loan.parcelas_pagas + installmentsToPay;
+      const newSaldoDevedor = Math.max(0, loan.saldo_devedor - (loan.valor_parcela * installmentsToPay));
+      const newStatus = newParcelasPagas >= loan.quantidade_parcelas ? 'quitado' : 'ativo';
+
+      const { error } = await supabase
+        .from('loans')
+        .update({
+          parcelas_pagas: newParcelasPagas,
+          saldo_devedor: newSaldoDevedor,
+          status: newStatus,
+        })
+        .eq('id', loanId);
+
+      if (error) throw error;
+
+      setLoans(prev =>
+        prev.map(l => l.id === loanId ? {
+          ...l,
+          parcelas_pagas: newParcelasPagas,
+          saldo_devedor: newSaldoDevedor,
+          status: newStatus as 'ativo' | 'quitado',
+        } : l)
+      );
+
+      toast({
+        title: 'Parcelas antecipadas!',
+        description: newStatus === 'quitado' 
+          ? '🎉 Parabéns! Empréstimo quitado!' 
+          : `${installmentsToPay} parcela(s) antecipada(s) com sucesso.`,
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Error prepaying installments:', error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível antecipar as parcelas.',
+        variant: 'destructive',
+      });
+      return false;
+    }
+  };
+
+  // Fully pay off the loan
+  const payOffLoan = async (loanId: string): Promise<boolean> => {
+    if (!user) return false;
+
+    try {
+      const loan = loans.find(l => l.id === loanId);
+      if (!loan) return false;
+
+      const { error } = await supabase
+        .from('loans')
+        .update({
+          parcelas_pagas: loan.quantidade_parcelas,
+          saldo_devedor: 0,
+          status: 'quitado',
+        })
+        .eq('id', loanId);
+
+      if (error) throw error;
+
+      setLoans(prev =>
+        prev.map(l => l.id === loanId ? {
+          ...l,
+          parcelas_pagas: l.quantidade_parcelas,
+          saldo_devedor: 0,
+          status: 'quitado' as const,
+        } : l)
+      );
+
+      toast({
+        title: '🎉 Empréstimo quitado!',
+        description: 'Parabéns por quitar essa dívida!',
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Error paying off loan:', error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível quitar o empréstimo.',
+        variant: 'destructive',
+      });
+      return false;
+    }
+  };
+
   // Get installments for a specific loan
   const getLoanInstallments = useCallback(async (loanId: string) => {
     if (!user) return [];
@@ -361,6 +462,8 @@ export const useLoans = () => {
     updateLoan,
     deleteLoan,
     payInstallment,
+    prepayInstallments,
+    payOffLoan,
     getLoanInstallments,
     totalSaldoDevedor,
     totalParcelasMensais,
