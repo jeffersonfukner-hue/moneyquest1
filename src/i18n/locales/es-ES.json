@@ -2323,5 +2323,20 @@
         "content": "MoneyQuest cumple con las regulaciones de protección de datos aplicables. Para ejercer tus derechos o aclarar dudas, contáctanos a través de la página de Soporte."
       }
     }
+  },
+  "ocr": {
+    "scanReceipt": "Escanear factura",
+    "scanStatement": "Leer extracto",
+    "processing": "Leyendo...",
+    "success": "¡Factura leída!",
+    "itemsFound": "{{count}} ítems encontrados",
+    "error": {
+      "title": "Error de lectura",
+      "tryAgain": "No se pudo leer la factura. Intenta otra foto.",
+      "invalidType": "Tipo inválido",
+      "imageOnly": "Selecciona una imagen (JPG, PNG, etc.)",
+      "tooLarge": "Archivo muy grande",
+      "maxSize": "Tamaño máximo: 10MB"
+    }
   }
 }

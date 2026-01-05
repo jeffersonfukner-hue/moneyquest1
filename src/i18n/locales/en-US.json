@@ -2479,6 +2479,7 @@
   },
   "ocr": {
     "scanReceipt": "Scan receipt",
+    "scanStatement": "Read statement",
     "processing": "Reading...",
     "success": "Receipt read!",
     "itemsFound": "{{count}} items found",

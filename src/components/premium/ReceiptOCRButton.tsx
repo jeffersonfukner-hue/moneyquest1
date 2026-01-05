@@ -24,12 +24,14 @@ interface ReceiptOCRButtonProps {
   onResult: (data: ParsedReceipt) => void;
   disabled?: boolean;
   className?: string;
+  label?: string;
 }
 
 export const ReceiptOCRButton = ({ 
   onResult, 
   disabled,
-  className 
+  className,
+  label
 }: ReceiptOCRButtonProps) => {
   const { t } = useTranslation();
   const { toast } = useToast();
@@ -153,7 +155,7 @@ export const ReceiptOCRButton = ({
         ) : (
           <>
             <Scan className="w-4 h-4" />
-            {t('ocr.scanReceipt', 'Ler nota fiscal')}
+            {label || t('ocr.scanReceipt', 'Ler nota fiscal')}
           </>
         )}
       </Button>

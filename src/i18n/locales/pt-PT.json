@@ -1965,5 +1965,20 @@
       "success": "Utilizador eliminado com sucesso!",
       "error": "Erro ao eliminar utilizador"
     }
+  },
+  "ocr": {
+    "scanReceipt": "Ler factura",
+    "scanStatement": "Ler extrato",
+    "processing": "A ler...",
+    "success": "Factura lida!",
+    "itemsFound": "{{count}} itens encontrados",
+    "error": {
+      "title": "Erro na leitura",
+      "tryAgain": "Não foi possível ler a factura. Tenta outra foto.",
+      "invalidType": "Tipo inválido",
+      "imageOnly": "Seleciona uma imagem (JPG, PNG, etc.)",
+      "tooLarge": "Ficheiro muito grande",
+      "maxSize": "Tamanho máximo: 10MB"
+    }
   }
 }
