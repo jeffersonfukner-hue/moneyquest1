@@ -2440,6 +2440,8 @@
     "transactionActivated": "Recurring transaction activated",
     "transactionPaused": "Recurring transaction paused",
     "transactionDeleted": "Recurring transaction deleted",
+    "transactionUpdated": "Recurring transaction updated",
+    "editTransaction": "Edit Recurring Transaction",
     "createTransaction": "Create Recurring Transaction",
     "descriptionPlaceholder": "E.g.: Salary, Rent, Netflix...",
     "noWallet": "No specific wallet",

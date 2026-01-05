@@ -17,7 +17,8 @@ import {
   ArrowLeftRight,
   TrendingUp,
   TrendingDown,
-  ChevronDown
+  ChevronDown,
+  Pencil
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -76,8 +77,21 @@ const ScheduledTransactions = () => {
   
   const [showTransferDialog, setShowTransferDialog] = useState(false);
   const [showTransactionDialog, setShowTransactionDialog] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState<ScheduledTransaction | null>(null);
   const [activeTab, setActiveTab] = useState<'upcoming' | 'all'>('upcoming');
   const [activeSubTab, setActiveSubTab] = useState<'all' | 'transfers' | 'transactions'>('all');
+
+  const handleEditTransaction = (transaction: ScheduledTransaction) => {
+    setEditingTransaction(transaction);
+    setShowTransactionDialog(true);
+  };
+
+  const handleCloseTransactionDialog = (open: boolean) => {
+    setShowTransactionDialog(open);
+    if (!open) {
+      setEditingTransaction(null);
+    }
+  };
 
   const dateLocale = getDateLocale(i18n.language);
   const loading = loadingTransfers || loadingTransactions;
@@ -630,6 +644,14 @@ const ScheduledTransactions = () => {
                               variant="ghost"
                               size="icon"
                               className="h-8 w-8"
+                              onClick={() => handleEditTransaction(transaction)}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
                               onClick={() => toggleScheduledTransaction(transaction.id, !transaction.is_active)}
                             >
                               {transaction.is_active ? (
@@ -702,7 +724,8 @@ const ScheduledTransactions = () => {
       
       <ScheduledTransactionDialog
         open={showTransactionDialog}
-        onOpenChange={setShowTransactionDialog}
+        onOpenChange={handleCloseTransactionDialog}
+        editTransaction={editingTransaction}
       />
     </AppLayout>
   );
