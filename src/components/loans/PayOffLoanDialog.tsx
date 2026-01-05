@@ -86,10 +86,10 @@ export function PayOffLoanDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Zap className="h-5 w-5 text-primary" />
-            Antecipar ou Quitar
+            Antecipar ou Quitar Empréstimo
           </DialogTitle>
           <DialogDescription>
-            {loan.instituicao_pessoa} - {remainingInstallments} parcela(s) restante(s)
+            {loan.instituicao_pessoa} — Faltam {remainingInstallments} parcela(s) para a quitação
           </DialogDescription>
         </DialogHeader>
 
@@ -100,7 +100,7 @@ export function PayOffLoanDialog({
               <Label htmlFor="prepay" className="cursor-pointer flex-1">
                 <div className="font-medium">Antecipar Parcelas</div>
                 <div className="text-sm text-muted-foreground">
-                  Pague uma ou mais parcelas antecipadamente
+                  Pague parcelas antes do vencimento e reduza o total de juros
                 </div>
               </Label>
             </div>
@@ -110,7 +110,7 @@ export function PayOffLoanDialog({
               <Label htmlFor="payoff" className="cursor-pointer flex-1">
                 <div className="font-medium">Quitar Empréstimo</div>
                 <div className="text-sm text-muted-foreground">
-                  Pague todo o saldo devedor de uma vez
+                  Pague todo o saldo devedor e libere-se dessa dívida
                 </div>
               </Label>
             </div>
@@ -121,7 +121,7 @@ export function PayOffLoanDialog({
           {mode === 'prepay' ? (
             <div className="space-y-3">
               <div>
-                <Label htmlFor="installments">Quantidade de parcelas a antecipar</Label>
+                <Label htmlFor="installments">Quantas parcelas você quer antecipar?</Label>
                 <div className="flex items-center gap-2 mt-2">
                   <Button
                     type="button"
@@ -153,7 +153,7 @@ export function PayOffLoanDialog({
                     +
                   </Button>
                   <span className="text-sm text-muted-foreground">
-                    de {remainingInstallments}
+                    de {remainingInstallments} restantes
                   </span>
                 </div>
               </div>
@@ -162,7 +162,7 @@ export function PayOffLoanDialog({
                 <Calculator className="h-4 w-4" />
                 <AlertDescription>
                   <div className="flex justify-between items-center">
-                    <span>Valor a pagar:</span>
+                    <span>Valor a pagar agora:</span>
                     <span className="font-bold text-lg">
                       {formatLoanCurrency(prepayAmount, loan.currency)}
                     </span>
@@ -174,7 +174,7 @@ export function PayOffLoanDialog({
                 <Alert className="border-green-500/30 bg-green-500/10">
                   <CheckCircle className="h-4 w-4 text-green-600" />
                   <AlertDescription className="text-green-600">
-                    Isso irá quitar o empréstimo por completo!
+                    🎉 Isso irá quitar o empréstimo por completo! Menos uma dívida, mais liberdade financeira.
                   </AlertDescription>
                 </Alert>
               )}
@@ -192,7 +192,7 @@ export function PayOffLoanDialog({
                       </span>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Ao quitar, todas as {remainingInstallments} parcelas restantes serão marcadas como pagas.
+                      Ao quitar, as {remainingInstallments} parcelas restantes serão marcadas como pagas. Você estará livre dessa dívida! 🎉
                     </p>
                   </div>
                 </AlertDescription>

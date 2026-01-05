@@ -128,7 +128,7 @@ export const LoanCard = ({ loan, onEdit, onDelete, onViewInstallments, onViewDet
         {/* Valores */}
         <div className="grid grid-cols-2 gap-3 mb-3">
           <div>
-            <p className="text-[10px] text-muted-foreground uppercase">Valor Total</p>
+            <p className="text-[10px] text-muted-foreground uppercase">Valor Contratado</p>
             <p className="font-semibold text-sm">{formatAmount(loan.valor_total, loan.currency)}</p>
           </div>
           <div>
@@ -143,7 +143,7 @@ export const LoanCard = ({ loan, onEdit, onDelete, onViewInstallments, onViewDet
         <div className="space-y-1.5 mb-3">
           <div className="flex items-center justify-between text-xs">
             <span className="text-muted-foreground">
-              {loan.parcelas_pagas} de {loan.quantidade_parcelas} parcelas
+              Você já quitou {loan.parcelas_pagas} de {loan.quantidade_parcelas} parcelas
             </span>
             <span className="font-medium">{Math.round(progressPercent)}%</span>
           </div>
@@ -156,8 +156,8 @@ export const LoanCard = ({ loan, onEdit, onDelete, onViewInstallments, onViewDet
             <Calendar className="w-3 h-3" />
             <span>
               {loan.status === 'quitado' 
-                ? 'Quitado' 
-                : `Próx: ${format(proximoVencimento, "dd/MM/yy", { locale: ptBR })}`
+                ? 'Quitado 🎉' 
+                : `Próximo venc.: ${format(proximoVencimento, "dd/MM/yy", { locale: ptBR })}`
               }
             </span>
           </div>

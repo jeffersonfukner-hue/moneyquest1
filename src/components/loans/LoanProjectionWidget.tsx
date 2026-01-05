@@ -65,7 +65,7 @@ export function LoanProjectionWidget({ loan }: LoanProjectionWidgetProps) {
     return (
       <Card className="border-green-500/20 bg-green-500/5">
         <CardContent className="pt-6 text-center">
-          <p className="text-muted-foreground">Este empréstimo já foi quitado! 🎉</p>
+          <p className="text-muted-foreground">🎉 Este empréstimo já foi quitado! Menos uma dívida, mais liberdade financeira.</p>
         </CardContent>
       </Card>
     );
@@ -76,22 +76,25 @@ export function LoanProjectionWidget({ loan }: LoanProjectionWidgetProps) {
       <CardHeader className="pb-3">
         <CardTitle className="text-sm flex items-center gap-2">
           <LineChart className="h-4 w-4 text-primary" />
-          Projeções de Quitação
+          Simulador de Quitação
           <Badge variant="secondary" className="ml-auto text-xs">Premium</Badge>
         </CardTitle>
+        <p className="text-xs text-muted-foreground">
+          Simule a quitação antecipada e veja quanto você pode economizar em juros.
+        </p>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Normal Timeline */}
         <div className="p-3 rounded-lg bg-muted/50 border">
           <div className="flex items-center gap-2 mb-2">
             <Calendar className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium">Ritmo Normal</span>
+            <span className="text-sm font-medium">Ritmo Atual</span>
           </div>
           <p className="text-lg font-bold">
             {format(projections.dataNormalQuitacao, "MMMM 'de' yyyy", { locale: ptBR })}
           </p>
           <p className="text-xs text-muted-foreground">
-            {projections.parcelasRestantes} parcelas restantes
+            Faltam {projections.parcelasRestantes} parcelas para a quitação
           </p>
         </div>
 
@@ -99,7 +102,7 @@ export function LoanProjectionWidget({ loan }: LoanProjectionWidgetProps) {
         <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium">+1 parcela/trimestre</span>
+            <span className="text-sm font-medium">+1 parcela por trimestre</span>
           </div>
           <p className="text-lg font-bold text-primary">
             {format(projections.dataAntecipadaTrimestral, "MMMM 'de' yyyy", { locale: ptBR })}
@@ -107,12 +110,12 @@ export function LoanProjectionWidget({ loan }: LoanProjectionWidgetProps) {
           <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
             <span className="flex items-center gap-1">
               <Zap className="h-3 w-3" />
-              {projections.mesesEconomizadosTrimestral} meses menos
+              {projections.mesesEconomizadosTrimestral} meses a menos
             </span>
             {projections.jurosPoupadosTrimestral > 0 && (
               <span className="flex items-center gap-1 text-green-600">
                 <Coins className="h-3 w-3" />
-                ~{formatLoanCurrency(projections.jurosPoupadosTrimestral, loan.currency)} economia
+                ~{formatLoanCurrency(projections.jurosPoupadosTrimestral, loan.currency)} de economia
               </span>
             )}
           </div>
@@ -122,7 +125,7 @@ export function LoanProjectionWidget({ loan }: LoanProjectionWidgetProps) {
         <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/30">
           <div className="flex items-center gap-2 mb-2">
             <Zap className="h-4 w-4 text-green-600" />
-            <span className="text-sm font-medium">+2 parcelas/trimestre</span>
+            <span className="text-sm font-medium">+2 parcelas por trimestre</span>
           </div>
           <p className="text-lg font-bold text-green-600">
             {format(projections.dataAntecipadaAgressiva, "MMMM 'de' yyyy", { locale: ptBR })}
@@ -130,19 +133,19 @@ export function LoanProjectionWidget({ loan }: LoanProjectionWidgetProps) {
           <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
             <span className="flex items-center gap-1">
               <Zap className="h-3 w-3" />
-              {projections.mesesEconomizadosAgressivo} meses menos
+              {projections.mesesEconomizadosAgressivo} meses a menos
             </span>
             {projections.jurosPoupadosAgressivo > 0 && (
               <span className="flex items-center gap-1 text-green-600">
                 <Coins className="h-3 w-3" />
-                ~{formatLoanCurrency(projections.jurosPoupadosAgressivo, loan.currency)} economia
+                ~{formatLoanCurrency(projections.jurosPoupadosAgressivo, loan.currency)} de economia
               </span>
             )}
           </div>
         </div>
 
         <p className="text-xs text-muted-foreground text-center">
-          * Valores estimados baseados na taxa de juros informada
+          * Valores estimados com base na taxa de juros informada
         </p>
       </CardContent>
     </Card>

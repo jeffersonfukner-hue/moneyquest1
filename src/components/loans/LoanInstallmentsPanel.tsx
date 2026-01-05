@@ -113,7 +113,7 @@ export function LoanInstallmentsPanel({ loan, onPayInstallment, onClose }: LoanI
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2">
             <Calendar className="h-5 w-5 text-primary" />
-            Parcelas - {loan.instituicao_pessoa}
+            Parcelas — {loan.instituicao_pessoa}
           </CardTitle>
           <Button variant="ghost" size="sm" onClick={onClose}>
             Fechar
@@ -123,7 +123,7 @@ export function LoanInstallmentsPanel({ loan, onPayInstallment, onClose }: LoanI
         {/* Progress bar */}
         <div className="mt-3">
           <div className="flex justify-between text-sm text-muted-foreground mb-1">
-            <span>{loan.parcelas_pagas} de {loan.quantidade_parcelas} pagas</span>
+            <span>Você já quitou {loan.parcelas_pagas} de {loan.quantidade_parcelas}</span>
             <span>{progress.toFixed(0)}%</span>
           </div>
           <div className="h-2 bg-secondary rounded-full overflow-hidden">
@@ -132,6 +132,9 @@ export function LoanInstallmentsPanel({ loan, onPayInstallment, onClose }: LoanI
               style={{ width: `${progress}%` }}
             />
           </div>
+          {progress > 0 && progress < 100 && (
+            <p className="text-xs text-center text-muted-foreground mt-1">Faltam {loan.quantidade_parcelas - loan.parcelas_pagas} parcelas. Continue assim!</p>
+          )}
         </div>
       </CardHeader>
       
@@ -142,7 +145,7 @@ export function LoanInstallmentsPanel({ loan, onPayInstallment, onClose }: LoanI
           </div>
         ) : installments.length === 0 ? (
           <p className="text-center text-muted-foreground py-4">
-            Nenhuma parcela encontrada.
+            Nenhuma parcela registrada ainda.
           </p>
         ) : (
           installments.map((installment) => {
