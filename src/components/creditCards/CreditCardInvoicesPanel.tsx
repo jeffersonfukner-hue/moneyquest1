@@ -79,8 +79,8 @@ const InvoiceStatusBadge = ({ status }: { status: CreditCardInvoice['status'] })
   const { label, variant, icon: Icon, className } = config[status];
 
   return (
-    <Badge variant={variant} className={cn("gap-1", className)}>
-      <Icon className="w-3 h-3" />
+    <Badge variant={variant} className={cn("gap-0.5 text-[10px] sm:text-xs px-1.5 py-0.5", className)}>
+      <Icon className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
       {label}
     </Badge>
   );
@@ -115,47 +115,47 @@ const InvoiceCard = ({ invoice, card, linkedWallet, onPayClick, fetchTransaction
   };
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('pt-BR');
+    return new Date(dateStr).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
   };
 
   const formatPeriod = () => {
     const start = new Date(invoice.period_start);
     const end = new Date(invoice.period_end);
-    const startMonth = start.toLocaleDateString('pt-BR', { month: 'short' });
-    const endMonth = end.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
-    return `${start.getDate()} ${startMonth} - ${end.getDate()} ${endMonth}`;
+    const startStr = start.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+    const endStr = end.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+    return `${startStr} - ${endStr}`;
   };
 
   return (
     <Card className="overflow-hidden">
       <Collapsible open={isOpen} onOpenChange={handleToggle}>
         <CollapsibleTrigger className="w-full">
-          <div className="p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors">
-            <div className="p-2 rounded-lg bg-amber-500/10">
-              <Receipt className="w-5 h-5 text-amber-600" />
+          <div className="p-3 flex items-center gap-2 hover:bg-muted/50 transition-colors">
+            <div className="p-1.5 rounded-lg bg-amber-500/10 shrink-0">
+              <Receipt className="w-4 h-4 text-amber-600" />
             </div>
             
-            <div className="flex-1 text-left">
-              <div className="flex items-center gap-2 mb-1">
-                <p className="font-medium text-sm">{formatPeriod()}</p>
+            <div className="flex-1 min-w-0 text-left">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <p className="font-medium text-xs sm:text-sm truncate">{formatPeriod()}</p>
                 <InvoiceStatusBadge status={invoice.status} />
               </div>
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <Calendar className="w-3 h-3" />
-                {t('creditCards.dueDate', 'Vencimento')}: {formatDate(invoice.due_date)}
+              <p className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                <Calendar className="w-3 h-3 shrink-0" />
+                <span className="truncate">Vence: {formatDate(invoice.due_date)}</span>
               </p>
             </div>
             
-            <div className="text-right">
-              <p className="font-bold text-amber-600">
+            <div className="text-right shrink-0">
+              <p className="font-bold text-sm sm:text-base text-amber-600">
                 {formatMoney(invoice.total_amount, card.currency as any)}
               </p>
             </div>
             
             {isOpen ? (
-              <ChevronDown className="w-5 h-5 text-muted-foreground" />
+              <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
             ) : (
-              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+              <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
             )}
           </div>
         </CollapsibleTrigger>
