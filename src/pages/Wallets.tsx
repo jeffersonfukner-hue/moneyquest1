@@ -48,7 +48,7 @@ const WalletsPage = () => {
   const navigate = useNavigate();
   const { activeWallets, inactiveWallets, wallets, deleteWallet, reactivateWallet, reorderWallets, loading, refetch: refetchWallets } = useWallets();
   const { creditCards, addCreditCard, updateCreditCard, deleteCreditCard, loading: cardsLoading } = useCreditCards();
-  const { loans, activeLoans, paidLoans, addLoan, updateLoan, deleteLoan, payInstallment, loading: loansLoading, totalSaldoDevedor, totalParcelasMensais } = useLoans();
+  const { loans, activeLoans, paidLoans, addLoan, updateLoan, deleteLoan, payInstallment, prepayInstallments, payOffLoan, loading: loansLoading, totalSaldoDevedor, totalParcelasMensais } = useLoans();
   
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showAddCardDialog, setShowAddCardDialog] = useState(false);
@@ -472,6 +472,8 @@ const WalletsPage = () => {
               loan={viewingDetailsLoan}
               onBack={() => setViewingDetailsLoan(null)}
               onPayInstallment={payInstallment}
+              onPrepay={prepayInstallments}
+              onPayOff={payOffLoan}
             />
           </div>
         </div>

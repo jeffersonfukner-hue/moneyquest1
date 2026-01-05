@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { 
   Landmark, 
   Calendar, 
@@ -9,7 +9,8 @@ import {
   AlertTriangle,
   Percent,
   Wallet,
-  Target
+  Target,
+  Zap
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,11 +21,14 @@ import { format, parseISO, addMonths, isPast, isToday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Loan } from '@/hooks/useLoans';
 import { LoanInstallmentsPanel } from './LoanInstallmentsPanel';
+import { PayOffLoanDialog } from './PayOffLoanDialog';
 
 interface LoanDetailsPanelProps {
   loan: Loan;
   onBack: () => void;
   onPayInstallment: (loanId: string, installmentNumber: number) => Promise<boolean>;
+  onPrepay: (loanId: string, numberOfInstallments: number) => Promise<boolean>;
+  onPayOff: (loanId: string) => Promise<boolean>;
 }
 
 // Format currency with specific currency code
@@ -49,8 +53,9 @@ const LOAN_TYPE_LABELS: Record<Loan['tipo_emprestimo'], { label: string; icon: s
   parcelamento: { label: 'Parcelamento', icon: '🛒' },
 };
 
-export function LoanDetailsPanel({ loan, onBack, onPayInstallment }: LoanDetailsPanelProps) {
+export function LoanDetailsPanel({ loan, onBack, onPayInstallment, onPrepay, onPayOff }: LoanDetailsPanelProps) {
   const [showInstallments, setShowInstallments] = useState(false);
+  const [showPayOffDialog, setShowPayOffDialog] = useState(false);
 
   const typeInfo = LOAN_TYPE_LABELS[loan.tipo_emprestimo];
   const progressPercent = loan.quantidade_parcelas > 0 
@@ -263,15 +268,37 @@ export function LoanDetailsPanel({ loan, onBack, onPayInstallment }: LoanDetails
         </Card>
       )}
 
-      {/* Action Button */}
-      <Button 
-        className="w-full" 
-        onClick={() => setShowInstallments(true)}
-        disabled={loan.status === 'quitado'}
-      >
-        <Clock className="h-4 w-4 mr-2" />
-        Ver e Pagar Parcelas
-      </Button>
+      {/* Action Buttons */}
+      <div className="space-y-2">
+        {loan.status === 'ativo' && (
+          <Button 
+            className="w-full" 
+            variant="default"
+            onClick={() => setShowPayOffDialog(true)}
+          >
+            <Zap className="h-4 w-4 mr-2" />
+            Antecipar ou Quitar
+          </Button>
+        )}
+        
+        <Button 
+          className="w-full" 
+          variant={loan.status === 'quitado' ? 'default' : 'outline'}
+          onClick={() => setShowInstallments(true)}
+        >
+          <Clock className="h-4 w-4 mr-2" />
+          Ver Parcelas
+        </Button>
+      </div>
+
+      {/* Pay Off Dialog */}
+      <PayOffLoanDialog
+        loan={loan}
+        open={showPayOffDialog}
+        onOpenChange={setShowPayOffDialog}
+        onPayOff={onPayOff}
+        onPrepay={onPrepay}
+      />
     </div>
   );
 }
