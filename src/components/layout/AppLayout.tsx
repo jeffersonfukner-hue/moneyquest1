@@ -45,7 +45,6 @@ export const AppLayout = ({
   const handleTabChange = (tab: TabId) => {
     if (tab === 'home') navigate('/');
     if (tab === 'transactions') navigate('/');
-    if (tab === 'quests') navigate('/');
   };
 
   // Calculate bottom padding based on what's visible

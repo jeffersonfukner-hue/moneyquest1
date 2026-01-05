@@ -1053,6 +1053,7 @@
     "badges": "Badges",
     "journal": "Journal",
     "wallets": "Wallets",
+    "scheduled": "Scheduled",
     "settings": "Settings"
   },
   "transactions": {
@@ -2414,5 +2415,25 @@
   },
   "common": {
     "later": "Not now"
+  },
+  "scheduled": {
+    "title": "Scheduled Transactions",
+    "add": "New",
+    "active": "Active",
+    "paused": "Paused",
+    "next30Days": "Next 30 days",
+    "monthlyTotal": "Estimated Monthly Total",
+    "upcoming": "Upcoming",
+    "allScheduled": "All",
+    "noUpcoming": "No scheduled transactions in the next 30 days",
+    "noScheduled": "No scheduled transactions",
+    "createFirst": "Create first schedule",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly"
+  },
+  "quests": {
+    "title": "Quests",
+    "subtitle": "Complete challenges and earn XP"
   }
 }

@@ -238,15 +238,6 @@ const Index = () => {
         );
       case 'transactions':
         return <TransactionsList transactions={transactions} onDelete={deleteTransaction} onUpdate={updateTransaction} onBatchUpdateWallet={batchUpdateWallet} onBatchDelete={batchDeleteTransactions} onDuplicate={handleDuplicateTransaction} />;
-      case 'quests':
-        return (
-          <div className="space-y-4 pb-2">
-            <QuestsPanel quests={quests} />
-            <PersonalRewardsCard />
-            <LevelUnlocksCard />
-            <BadgesGrid badges={badges} />
-          </div>
-        );
       default:
         return null;
     }

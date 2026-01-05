@@ -1,9 +1,9 @@
-import { Home, ArrowLeftRight, Plus, Target, Wallet } from 'lucide-react';
+import { Home, ArrowLeftRight, Plus, CalendarClock, Wallet } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
-export type TabId = 'home' | 'transactions' | 'add' | 'quests' | 'wallets';
+export type TabId = 'home' | 'transactions' | 'add' | 'scheduled' | 'wallets';
 
 interface BottomNavigationProps {
   activeTab: TabId;
@@ -19,8 +19,8 @@ export const BottomNavigation = ({ activeTab, onTabChange, onAddClick }: BottomN
     { id: 'home' as TabId, icon: Home, label: t('navigation.home') },
     { id: 'transactions' as TabId, icon: ArrowLeftRight, label: t('navigation.transactions') },
     { id: 'add' as TabId, icon: Plus, label: t('navigation.add'), isAction: true },
-    { id: 'quests' as TabId, icon: Target, label: t('navigation.quests') },
-    { id: 'wallets' as TabId, icon: Wallet, label: t('navigation.wallets'), isLink: true },
+    { id: 'scheduled' as TabId, icon: CalendarClock, label: t('navigation.scheduled'), isLink: true, path: '/scheduled' },
+    { id: 'wallets' as TabId, icon: Wallet, label: t('navigation.wallets'), isLink: true, path: '/wallets' },
   ];
 
   return (
@@ -50,7 +50,7 @@ export const BottomNavigation = ({ activeTab, onTabChange, onAddClick }: BottomN
             return (
               <button
                 key={tab.id}
-                onClick={() => navigate('/wallets')}
+                onClick={() => navigate((tab as any).path || '/wallets')}
                 className={cn(
                   "flex flex-col items-center justify-center gap-1 min-w-[64px] min-h-[48px] rounded-lg transition-colors",
                   "text-muted-foreground hover:text-foreground"
