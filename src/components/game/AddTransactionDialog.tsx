@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Plus, ArrowUpCircle, ArrowDownCircle, CalendarIcon, Coins, AlertCircle, List, Scan, Crown, ChevronDown, ChevronUp, Wallet, CreditCard } from 'lucide-react';
+import { Plus, ArrowUpCircle, ArrowDownCircle, CalendarIcon, Coins, AlertCircle, List, Scan, Crown, ChevronDown, ChevronUp, Wallet, CreditCard, Landmark } from 'lucide-react';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
@@ -25,6 +25,7 @@ import { getCategoryTranslationKey } from '@/lib/gameLogic';
 import { WalletSelector } from '@/components/wallets/WalletSelector';
 import { useWallets } from '@/hooks/useWallets';
 import { useCreditCards } from '@/hooks/useCreditCards';
+import { useLoans } from '@/hooks/useLoans';
 import { ItemBreakdownEditor, TransactionItem } from '@/components/premium/ItemBreakdownEditor';
 import { ReceiptOCRButton } from '@/components/premium/ReceiptOCRButton';
 import { PremiumUpsellModal } from '@/components/premium/PremiumFeatureGate';
@@ -48,7 +49,7 @@ export interface PrefillData {
 }
 
 // Source type for transaction destination
-type SourceType = 'account' | 'card';
+type SourceType = 'account' | 'card' | 'loan';
 
 interface AddTransactionDialogProps {
   onAdd: (transaction: {
@@ -79,15 +80,19 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   const { canAccessCategoryGoals, isPremium } = useSubscription();
   const { activeWallets, refetch: refetchWallets } = useWallets();
   const { activeCards, refetch: refetchCards, addCreditCard } = useCreditCards();
+  const { activeLoans } = useLoans();
   const { user } = useAuth();
   
   const [internalOpen, setInternalOpen] = useState(false);
-  // First choice: account or credit card
+  // First choice: account, credit card, or loan
   const [sourceType, setSourceType] = useState<SourceType | null>(null);
   // Credit card selection step
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [showCardSelection, setShowCardSelection] = useState(false);
   const [showAddCardDialog, setShowAddCardDialog] = useState(false);
+  // Loan selection step
+  const [selectedLoanId, setSelectedLoanId] = useState<string | null>(null);
+  const [showLoanSelection, setShowLoanSelection] = useState(false);
   
   const [type, setType] = useState<TransactionType>('EXPENSE');
   const [description, setDescription] = useState('');
@@ -129,12 +134,12 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   }>({ description: false, amount: false, category: false, wallet: false });
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
 
-  // Validation helpers - wallet not required for card transactions
+  // Validation helpers - wallet not required for card/loan transactions
   const errors = {
     description: !description.trim(),
     amount: !amount || parseFloat(amount) <= 0,
     category: !category || category === '__new__',
-    wallet: sourceType !== 'card' && !walletId,
+    wallet: sourceType !== 'card' && sourceType !== 'loan' && !walletId,
   };
   const hasErrors = errors.description || errors.amount || errors.category || errors.wallet;
 
@@ -185,6 +190,8 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
       setSourceType(null);
       setSelectedCardId(null);
       setShowCardSelection(false);
+      setSelectedLoanId(null);
+      setShowLoanSelection(false);
       setType('EXPENSE');
       setCategory('');
       
@@ -214,6 +221,10 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
       // For credit card, show card selection step
       setType('EXPENSE');
       setShowCardSelection(true);
+    } else if (source === 'loan') {
+      // For loan, show loan selection step
+      setType('EXPENSE');
+      setShowLoanSelection(true);
     }
     setCategory('');
   };
@@ -222,6 +233,20 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   const handleCardSelect = (cardId: string) => {
     setSelectedCardId(cardId);
     setShowCardSelection(false);
+  };
+
+  // Handle loan selection
+  const handleLoanSelect = (loanId: string) => {
+    const loan = activeLoans.find(l => l.id === loanId);
+    if (loan) {
+      setSelectedLoanId(loanId);
+      setShowLoanSelection(false);
+      // Pre-fill loan data
+      setDescription(`${loan.instituicao_pessoa.toUpperCase()} - PARCELA`);
+      setAmount(loan.valor_parcela.toString());
+      setCategory('Empréstimos');
+      setSelectedCurrency(loan.currency as SupportedCurrency);
+    }
   };
 
   // Handle add card success
@@ -245,11 +270,24 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
     setAttemptedSubmit(false);
   };
 
+  // Go back to loan selection
+  const handleBackToLoanSelection = () => {
+    setShowLoanSelection(true);
+    setSelectedLoanId(null);
+    setDescription('');
+    setAmount('');
+    setCategory('');
+    setTouched({ description: false, amount: false, category: false, wallet: false });
+    setAttemptedSubmit(false);
+  };
+
   // Go back to source selection
   const handleBackToSourceSelection = () => {
     setSourceType(null);
     setSelectedCardId(null);
     setShowCardSelection(false);
+    setSelectedLoanId(null);
+    setShowLoanSelection(false);
     setType('EXPENSE');
     setCategory('');
     setDescription('');
@@ -282,6 +320,11 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
     
     // Determine source_type and transaction_subtype based on selection
     const isCardExpense = sourceType === 'card';
+    const isLoanPayment = sourceType === 'loan';
+    
+    // Get the selected loan for transaction_subtype
+    const selectedLoan = activeLoans.find(l => l.id === selectedLoanId);
+    const nextInstallmentNumber = selectedLoan ? selectedLoan.parcelas_pagas + 1 : 1;
     
     const result = await onAdd({
       description,
@@ -296,6 +339,11 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
         source_type: 'card',
         transaction_subtype: 'card_expense',
         credit_card_id: selectedCardId || undefined,
+      }),
+      // Set source_type and transaction_subtype for loan payments
+      ...(isLoanPayment && selectedLoanId && {
+        source_type: 'loan',
+        transaction_subtype: `loan:${selectedLoanId}:${nextInstallmentNumber}`,
       }),
       // Include breakdown items if enabled (Premium only) - only for card expenses
       ...(showBreakdown && breakdownItems.length > 0 && isCardExpense && {
@@ -325,6 +373,11 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
       setSelectedCurrency(currency);
       setShowBreakdown(false);
       setBreakdownItems([]);
+      // Reset loan selection after successful transaction
+      if (sourceType === 'loan') {
+        setSelectedLoanId(null);
+        setShowLoanSelection(true);
+      }
       // Wallet and date are intentionally kept for multiple transactions
       setTouched({ description: false, amount: false, category: false, wallet: false });
       setAttemptedSubmit(false);
@@ -467,7 +520,9 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
               ? t('transactions.addTransaction')
               : sourceType === 'card' 
                 ? t('transactions.cardExpense', 'Gasto no Cartão')
-                : t('transactions.addTransaction')
+                : sourceType === 'loan'
+                  ? 'Pagamento de Empréstimo'
+                  : t('transactions.addTransaction')
             }
           </DialogTitle>
         </DialogHeader>
@@ -507,7 +562,88 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
                   </p>
                 </div>
               </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="h-auto py-4 flex flex-col items-center gap-2 hover:border-red-500 hover:bg-red-500/5"
+                onClick={() => handleSourceTypeSelect('loan')}
+              >
+                <Landmark className="w-8 h-8 text-red-600" />
+                <div className="text-center">
+                  <p className="font-medium">Empréstimos</p>
+                  <p className="text-xs text-muted-foreground">
+                    Pagamento de parcelas
+                  </p>
+                </div>
+              </Button>
             </div>
+          </div>
+        ) : sourceType === 'loan' && showLoanSelection ? (
+          /* Step 2 (Loan): Select Loan */
+          <div className="space-y-4">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground -ml-2"
+              onClick={handleBackToSourceSelection}
+            >
+              <ChevronUp className="w-4 h-4 mr-1 rotate-[-90deg]" />
+              {t('common.back', 'Voltar')}
+            </Button>
+            
+            <p className="text-sm text-muted-foreground">
+              Selecione o empréstimo:
+            </p>
+            
+            {activeLoans.length === 0 ? (
+              <div className="text-center py-6 space-y-4">
+                <Landmark className="w-12 h-12 mx-auto text-muted-foreground/50" />
+                <div>
+                  <p className="font-medium text-muted-foreground">
+                    Nenhum empréstimo ativo
+                  </p>
+                  <p className="text-sm text-muted-foreground/70">
+                    Cadastre um empréstimo na aba Carteiras para começar
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="gap-2"
+                  onClick={() => {
+                    handleOpenChange(false);
+                    window.location.href = '/wallets';
+                  }}
+                >
+                  <Plus className="w-4 h-4" />
+                  Ir para Carteiras
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-2 max-h-60 overflow-y-auto">
+                {activeLoans.map(loan => {
+                  const parcelasRestantes = loan.quantidade_parcelas - loan.parcelas_pagas;
+                  return (
+                    <Button
+                      key={loan.id}
+                      type="button"
+                      variant="outline"
+                      className="w-full h-auto py-3 px-4 flex items-center gap-3 justify-start hover:border-red-500 hover:bg-red-500/5"
+                      onClick={() => handleLoanSelect(loan.id)}
+                    >
+                      <Landmark className="w-6 h-6 text-red-600 flex-shrink-0" />
+                      <div className="text-left flex-1 min-w-0">
+                        <p className="font-medium truncate">{loan.instituicao_pessoa}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Parcela {loan.parcelas_pagas + 1}/{loan.quantidade_parcelas} • {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: loan.currency }).format(loan.valor_parcela)}
+                        </p>
+                      </div>
+                    </Button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         ) : sourceType === 'card' && showCardSelection ? (
           /* Step 2 (Card): Select Credit Card */
@@ -595,7 +731,13 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
               variant="ghost"
               size="sm"
               className="text-muted-foreground -ml-2"
-              onClick={sourceType === 'card' ? handleBackToCardSelection : handleBackToSourceSelection}
+              onClick={
+                sourceType === 'card' 
+                  ? handleBackToCardSelection 
+                  : sourceType === 'loan' 
+                    ? handleBackToLoanSelection 
+                    : handleBackToSourceSelection
+              }
             >
               <ChevronUp className="w-4 h-4 mr-1 rotate-[-90deg]" />
               {t('common.back', 'Voltar')}
@@ -658,6 +800,32 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
                 </span>
               </button>
             )}
+
+            {/* Loan flow: show selected loan */}
+            {sourceType === 'loan' && selectedLoanId && (() => {
+              const selectedLoan = activeLoans.find(l => l.id === selectedLoanId);
+              if (!selectedLoan) return null;
+              return (
+                <button
+                  type="button"
+                  className="w-full flex items-center gap-3 p-3 bg-red-500/10 border border-red-500/30 rounded-lg hover:bg-red-500/15 transition-colors text-left"
+                  onClick={handleBackToLoanSelection}
+                >
+                  <Landmark className="w-5 h-5 text-red-600 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-red-700 dark:text-red-400 truncate">
+                      {selectedLoan.instituicao_pessoa}
+                    </p>
+                    <p className="text-xs text-red-600/70 dark:text-red-500/70">
+                      Parcela {selectedLoan.parcelas_pagas + 1}/{selectedLoan.quantidade_parcelas}
+                    </p>
+                  </div>
+                  <span className="text-xs text-red-600/70 dark:text-red-500/70">
+                    Alterar
+                  </span>
+                </button>
+              );
+            })()}
 
           <div className="space-y-2">
             <Label htmlFor="description" className="flex items-center gap-1">
