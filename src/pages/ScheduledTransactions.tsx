@@ -28,6 +28,7 @@ import { ScheduledTransferDialog } from '@/components/wallets/ScheduledTransferD
 import { ScheduledTransactionDialog } from '@/components/wallets/ScheduledTransactionDialog';
 import { useWalletTransfers, ScheduledTransfer } from '@/hooks/useWalletTransfers';
 import { useScheduledTransactions, ScheduledTransaction } from '@/hooks/useScheduledTransactions';
+import { useCategories } from '@/hooks/useCategories';
 import { SupportedCurrency } from '@/types/database';
 import {
   DropdownMenu,
@@ -67,11 +68,11 @@ const ScheduledTransactions = () => {
   const {
     scheduledTransactions,
     loading: loadingTransactions,
-    getCategoryIcon,
-    getWalletName: getTxWalletName,
     toggleScheduledTransaction,
     deleteScheduledTransaction
   } = useScheduledTransactions();
+  
+  const { categories } = useCategories();
   
   const [showTransferDialog, setShowTransferDialog] = useState(false);
   const [showTransactionDialog, setShowTransactionDialog] = useState(false);
@@ -80,6 +81,16 @@ const ScheduledTransactions = () => {
 
   const dateLocale = getDateLocale(i18n.language);
   const loading = loadingTransfers || loadingTransactions;
+
+  // Helper functions using shared data
+  const getCategoryIcon = (categoryName: string): string => {
+    const category = categories.find(c => c.name === categoryName);
+    return category?.icon || '📋';
+  };
+
+  const getTxWalletName = (walletId: string | null): string => {
+    return getWalletName(walletId);
+  };
 
   const formatCurrency = (amount: number, currency: string) => {
     return new Intl.NumberFormat('pt-BR', {

@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { useCategories } from '@/hooks/useCategories';
-import { useWallets } from '@/hooks/useWallets';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { SupportedCurrency } from '@/types/database';
@@ -42,8 +40,6 @@ export interface CreateScheduledTransactionData {
 
 export const useScheduledTransactions = () => {
   const { user } = useAuth();
-  const { categories } = useCategories();
-  const { wallets } = useWallets();
   const { t } = useTranslation();
   const [scheduledTransactions, setScheduledTransactions] = useState<ScheduledTransaction[]>([]);
   const [loading, setLoading] = useState(true);
@@ -172,23 +168,6 @@ export const useScheduledTransactions = () => {
     }
   };
 
-  const getCategoryIcon = (categoryName: string): string => {
-    const category = categories.find(c => c.name === categoryName);
-    return category?.icon || '📋';
-  };
-
-  const getWalletName = (walletId: string | null): string => {
-    if (!walletId) return '';
-    const wallet = wallets.find(w => w.id === walletId);
-    return wallet?.name || '';
-  };
-
-  const getWalletIcon = (walletId: string | null): string => {
-    if (!walletId) return '';
-    const wallet = wallets.find(w => w.id === walletId);
-    return wallet?.icon || '💳';
-  };
-
   return {
     scheduledTransactions,
     loading,
@@ -196,8 +175,5 @@ export const useScheduledTransactions = () => {
     toggleScheduledTransaction,
     deleteScheduledTransaction,
     fetchScheduledTransactions,
-    getCategoryIcon,
-    getWalletName,
-    getWalletIcon,
   };
 };
