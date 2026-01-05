@@ -1042,6 +1042,74 @@ export type Database = {
         }
         Relationships: []
       }
+      scheduled_transactions: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          currency: string
+          day_of_month: number | null
+          day_of_week: number | null
+          description: string
+          frequency: string
+          id: string
+          is_active: boolean
+          last_run_date: string | null
+          month_of_year: number | null
+          next_run_date: string
+          type: string
+          updated_at: string
+          user_id: string
+          wallet_id: string | null
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          currency?: string
+          day_of_month?: number | null
+          day_of_week?: number | null
+          description: string
+          frequency: string
+          id?: string
+          is_active?: boolean
+          last_run_date?: string | null
+          month_of_year?: number | null
+          next_run_date: string
+          type: string
+          updated_at?: string
+          user_id: string
+          wallet_id?: string | null
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          currency?: string
+          day_of_month?: number | null
+          day_of_week?: number | null
+          description?: string
+          frequency?: string
+          id?: string
+          is_active?: boolean
+          last_run_date?: string | null
+          month_of_year?: number | null
+          next_run_date?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+          wallet_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scheduled_transactions_wallet_id_fkey"
+            columns: ["wallet_id"]
+            isOneToOne: false
+            referencedRelation: "wallets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       scheduled_transfers: {
         Row: {
           amount: number

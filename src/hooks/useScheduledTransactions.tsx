@@ -1,0 +1,198 @@
+import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { useCategories } from '@/hooks/useCategories';
+import { useWallets } from '@/hooks/useWallets';
+import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
+import { SupportedCurrency } from '@/types/database';
+
+export interface ScheduledTransaction {
+  id: string;
+  user_id: string;
+  description: string;
+  amount: number;
+  type: 'INCOME' | 'EXPENSE';
+  category: string;
+  currency: string;
+  wallet_id: string | null;
+  frequency: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  day_of_week: number | null;
+  day_of_month: number | null;
+  month_of_year: number | null;
+  next_run_date: string;
+  last_run_date: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateScheduledTransactionData {
+  description: string;
+  amount: number;
+  type: 'INCOME' | 'EXPENSE';
+  category: string;
+  currency: SupportedCurrency;
+  wallet_id?: string | null;
+  frequency: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  day_of_week?: number;
+  day_of_month?: number;
+  month_of_year?: number;
+}
+
+export const useScheduledTransactions = () => {
+  const { user } = useAuth();
+  const { categories } = useCategories();
+  const { wallets } = useWallets();
+  const { t } = useTranslation();
+  const [scheduledTransactions, setScheduledTransactions] = useState<ScheduledTransaction[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchScheduledTransactions = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('scheduled_transactions')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('next_run_date', { ascending: true });
+
+      if (error) throw error;
+      setScheduledTransactions((data || []) as ScheduledTransaction[]);
+    } catch (error) {
+      console.error('Error fetching scheduled transactions:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    fetchScheduledTransactions();
+  }, [fetchScheduledTransactions]);
+
+  const createScheduledTransaction = async (data: CreateScheduledTransactionData): Promise<boolean> => {
+    if (!user) return false;
+
+    // Calculate next run date
+    const today = new Date();
+    let nextRunDate = new Date();
+
+    if (data.frequency === 'daily') {
+      nextRunDate.setDate(today.getDate() + 1);
+    } else if (data.frequency === 'weekly' && data.day_of_week !== undefined) {
+      const daysUntilNext = (data.day_of_week - today.getDay() + 7) % 7 || 7;
+      nextRunDate.setDate(today.getDate() + daysUntilNext);
+    } else if (data.frequency === 'monthly' && data.day_of_month !== undefined) {
+      nextRunDate.setDate(data.day_of_month);
+      if (nextRunDate <= today) {
+        nextRunDate.setMonth(nextRunDate.getMonth() + 1);
+      }
+    } else if (data.frequency === 'yearly' && data.day_of_month !== undefined && data.month_of_year !== undefined) {
+      nextRunDate.setMonth(data.month_of_year - 1);
+      nextRunDate.setDate(data.day_of_month);
+      if (nextRunDate <= today) {
+        nextRunDate.setFullYear(nextRunDate.getFullYear() + 1);
+      }
+    }
+
+    try {
+      const { error } = await supabase
+        .from('scheduled_transactions')
+        .insert({
+          user_id: user.id,
+          description: data.description,
+          amount: data.amount,
+          type: data.type,
+          category: data.category,
+          currency: data.currency,
+          wallet_id: data.wallet_id || null,
+          frequency: data.frequency,
+          day_of_week: data.frequency === 'weekly' ? data.day_of_week : null,
+          day_of_month: ['monthly', 'yearly'].includes(data.frequency) ? data.day_of_month : null,
+          month_of_year: data.frequency === 'yearly' ? data.month_of_year : null,
+          next_run_date: nextRunDate.toISOString().split('T')[0],
+        });
+
+      if (error) throw error;
+
+      toast.success(t('scheduled.transactionCreated'));
+      await fetchScheduledTransactions();
+      
+      return true;
+    } catch (error) {
+      console.error('Error creating scheduled transaction:', error);
+      toast.error(t('common.error'));
+      return false;
+    }
+  };
+
+  const toggleScheduledTransaction = async (id: string, isActive: boolean): Promise<boolean> => {
+    try {
+      const { error } = await supabase
+        .from('scheduled_transactions')
+        .update({ is_active: isActive, updated_at: new Date().toISOString() })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast.success(isActive ? t('scheduled.transactionActivated') : t('scheduled.transactionPaused'));
+      await fetchScheduledTransactions();
+      
+      return true;
+    } catch (error) {
+      console.error('Error toggling scheduled transaction:', error);
+      toast.error(t('common.error'));
+      return false;
+    }
+  };
+
+  const deleteScheduledTransaction = async (id: string): Promise<boolean> => {
+    try {
+      const { error } = await supabase
+        .from('scheduled_transactions')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast.success(t('scheduled.transactionDeleted'));
+      await fetchScheduledTransactions();
+      
+      return true;
+    } catch (error) {
+      console.error('Error deleting scheduled transaction:', error);
+      toast.error(t('common.error'));
+      return false;
+    }
+  };
+
+  const getCategoryIcon = (categoryName: string): string => {
+    const category = categories.find(c => c.name === categoryName);
+    return category?.icon || '📋';
+  };
+
+  const getWalletName = (walletId: string | null): string => {
+    if (!walletId) return '';
+    const wallet = wallets.find(w => w.id === walletId);
+    return wallet?.name || '';
+  };
+
+  const getWalletIcon = (walletId: string | null): string => {
+    if (!walletId) return '';
+    const wallet = wallets.find(w => w.id === walletId);
+    return wallet?.icon || '💳';
+  };
+
+  return {
+    scheduledTransactions,
+    loading,
+    createScheduledTransaction,
+    toggleScheduledTransaction,
+    deleteScheduledTransaction,
+    fetchScheduledTransactions,
+    getCategoryIcon,
+    getWalletName,
+    getWalletIcon,
+  };
+};
