@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
@@ -58,6 +58,7 @@ import { cn } from '@/lib/utils';
 const Index = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, loading: authLoading } = useAuth();
   const { profile, loading: profileLoading, refetch: refetchProfile } = useProfile();
   const { transactions, addTransaction, updateTransaction, deleteTransaction, batchUpdateWallet, batchDeleteTransactions, celebrationData, clearCelebration, narrativeData, clearNarrative } = useTransactions();
@@ -70,7 +71,11 @@ const Index = () => {
   const { xpChange, clearXPChange } = useRealtimeXP();
   const { tierUpgrade, clearTierUpgrade } = useReferralNotifications();
   
-  const [activeTab, setActiveTab] = useState<TabId>('home');
+  // Get initial tab from URL search params or location state
+  const searchParams = new URLSearchParams(location.search);
+  const initialTab = (searchParams.get('tab') as TabId) || (location.state as any)?.tab || 'home';
+  
+  const [activeTab, setActiveTab] = useState<TabId>(initialTab);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showRewardDialog, setShowRewardDialog] = useState(false);
   const [sessionSummary, setSessionSummary] = useState<SessionSummary | null>(null);
