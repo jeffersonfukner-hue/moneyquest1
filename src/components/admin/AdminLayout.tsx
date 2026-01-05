@@ -36,7 +36,6 @@ const navItems = [
   { path: '/super-admin/referrals', icon: Gift, label: 'Indicações' },
   { path: '/super-admin/trial-abuse', icon: Fingerprint, label: 'Abuso de Trial' },
   { path: '/super-admin/engagement', icon: AlertTriangle, label: 'Engajamento' },
-  { path: '/super-admin/analytics', icon: BarChart3, label: 'Analytics' },
   { path: '/super-admin/scoring-audit', icon: Calculator, label: 'Auditoria XP' },
   { path: '/super-admin/logs', icon: ScrollText, label: 'Logs' },
 ];
