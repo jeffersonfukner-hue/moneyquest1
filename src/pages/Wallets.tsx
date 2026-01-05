@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, Wallet as WalletIcon, ArrowLeft, ArrowLeftRight, Clock, CreditCard } from 'lucide-react';
+import { Plus, Wallet as WalletIcon, ArrowLeft, ArrowLeftRight, Clock, CreditCard, Landmark } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import {
   DndContext,
@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useWallets } from '@/hooks/useWallets';
 import { useCreditCards, CreditCard as CreditCardType } from '@/hooks/useCreditCards';
+import { useLoans, Loan } from '@/hooks/useLoans';
 import { WalletCard } from '@/components/wallets/WalletCard';
 import { SortableWalletCard } from '@/components/wallets/SortableWalletCard';
 import { AddWalletDialog } from '@/components/wallets/AddWalletDialog';
@@ -34,6 +35,8 @@ import { CreditCardCard } from '@/components/creditCards/CreditCardCard';
 import { AddCreditCardDialog } from '@/components/creditCards/AddCreditCardDialog';
 import { EditCreditCardDialog } from '@/components/creditCards/EditCreditCardDialog';
 import { CreditCardInvoicesPanel } from '@/components/creditCards/CreditCardInvoicesPanel';
+import { LoanCard } from '@/components/loans/LoanCard';
+import { AddLoanDialog } from '@/components/loans/AddLoanDialog';
 import { Wallet } from '@/types/wallet';
 import { AppLayout } from '@/components/layout/AppLayout';
 
@@ -42,14 +45,17 @@ const WalletsPage = () => {
   const navigate = useNavigate();
   const { activeWallets, inactiveWallets, wallets, deleteWallet, reactivateWallet, reorderWallets, loading, refetch: refetchWallets } = useWallets();
   const { creditCards, addCreditCard, updateCreditCard, deleteCreditCard, loading: cardsLoading } = useCreditCards();
+  const { loans, activeLoans, paidLoans, addLoan, updateLoan, deleteLoan, loading: loansLoading, totalSaldoDevedor, totalParcelasMensais } = useLoans();
   
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showAddCardDialog, setShowAddCardDialog] = useState(false);
+  const [showAddLoanDialog, setShowAddLoanDialog] = useState(false);
   const [showTransferDialog, setShowTransferDialog] = useState(false);
   const [showScheduledDialog, setShowScheduledDialog] = useState(false);
   const [transferFromWallet, setTransferFromWallet] = useState<Wallet | undefined>();
   const [editingWallet, setEditingWallet] = useState<Wallet | null>(null);
   const [editingCard, setEditingCard] = useState<CreditCardType | null>(null);
+  const [editingLoan, setEditingLoan] = useState<Loan | null>(null);
   const [viewingInvoicesCard, setViewingInvoicesCard] = useState<CreditCardType | null>(null);
 
   const sensors = useSensors(
@@ -88,7 +94,7 @@ const WalletsPage = () => {
     }
   }, [activeWallets, reorderWallets]);
 
-  if (loading || cardsLoading) {
+  if (loading || cardsLoading || loansLoading) {
     return (
       <div className="min-h-screen bg-background p-4">
         <div className="animate-pulse space-y-4">
@@ -121,16 +127,20 @@ const WalletsPage = () => {
         {/* Balances Overview */}
         <WalletBalancesWidget wallets={activeWallets} />
 
-        {/* Main Tabs: Accounts vs Credit Cards */}
+        {/* Main Tabs: Accounts vs Credit Cards vs Loans */}
         <Tabs defaultValue="accounts" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="accounts" className="flex items-center gap-1.5">
-              <WalletIcon className="w-4 h-4" />
-              {t('wallets.accounts', 'Contas')}
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="accounts" className="flex items-center gap-1 text-xs px-2">
+              <WalletIcon className="w-3.5 h-3.5" />
+              Contas
             </TabsTrigger>
-            <TabsTrigger value="cards" className="flex items-center gap-1.5">
-              <CreditCard className="w-4 h-4" />
-              {t('creditCards.title', 'Cartões')}
+            <TabsTrigger value="cards" className="flex items-center gap-1 text-xs px-2">
+              <CreditCard className="w-3.5 h-3.5" />
+              Cartões
+            </TabsTrigger>
+            <TabsTrigger value="loans" className="flex items-center gap-1 text-xs px-2">
+              <Landmark className="w-3.5 h-3.5" />
+              Empréstimos
             </TabsTrigger>
           </TabsList>
 
@@ -290,6 +300,103 @@ const WalletsPage = () => {
               </>
             )}
           </TabsContent>
+
+          {/* Loans Tab */}
+          <TabsContent value="loans" className="space-y-4 mt-4">
+            <Button 
+              onClick={() => setShowAddLoanDialog(true)} 
+              className="w-full"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Novo Empréstimo
+            </Button>
+
+            {loans.length === 0 ? (
+              <div className="text-center py-12">
+                <Landmark className="mx-auto h-12 w-12 text-muted-foreground/50" />
+                <p className="mt-3 text-sm text-muted-foreground">
+                  Nenhum empréstimo cadastrado
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Registre seus empréstimos para acompanhar parcelas e saldo devedor.
+                </p>
+              </div>
+            ) : (
+              <>
+                {/* Resumo dos empréstimos */}
+                {activeLoans.length > 0 && (
+                  <div className="grid grid-cols-2 gap-2 p-3 bg-muted/30 rounded-lg">
+                    <div>
+                      <p className="text-[10px] text-muted-foreground uppercase">Saldo Devedor Total</p>
+                      <p className="font-bold text-primary">
+                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalSaldoDevedor)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-muted-foreground uppercase">Parcelas/Mês</p>
+                      <p className="font-bold text-orange-500">
+                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalParcelasMensais)}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Tabs Ativos/Quitados */}
+                <Tabs defaultValue="active" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="active">
+                      Ativos ({activeLoans.length})
+                    </TabsTrigger>
+                    <TabsTrigger value="paid">
+                      Quitados ({paidLoans.length})
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="active" className="space-y-3 mt-4">
+                    {activeLoans.length === 0 ? (
+                      <div className="text-center py-8">
+                        <p className="text-sm text-muted-foreground">
+                          Nenhum empréstimo ativo
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="grid gap-3">
+                        {activeLoans.map(loan => (
+                          <LoanCard
+                            key={loan.id}
+                            loan={loan}
+                            onEdit={setEditingLoan}
+                            onDelete={deleteLoan}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="paid" className="space-y-3 mt-4">
+                    {paidLoans.length === 0 ? (
+                      <div className="text-center py-8">
+                        <p className="text-sm text-muted-foreground">
+                          Nenhum empréstimo quitado ainda
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="grid gap-3">
+                        {paidLoans.map(loan => (
+                          <LoanCard
+                            key={loan.id}
+                            loan={loan}
+                            onEdit={setEditingLoan}
+                            onDelete={deleteLoan}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </TabsContent>
+                </Tabs>
+              </>
+            )}
+          </TabsContent>
         </Tabs>
       </div>
 
@@ -326,6 +433,12 @@ const WalletsPage = () => {
         onOpenChange={(open) => !open && setEditingCard(null)}
         card={editingCard}
         onUpdate={updateCreditCard}
+      />
+
+      <AddLoanDialog
+        open={showAddLoanDialog}
+        onOpenChange={setShowAddLoanDialog}
+        onAdd={addLoan}
       />
     </AppLayout>
   );
