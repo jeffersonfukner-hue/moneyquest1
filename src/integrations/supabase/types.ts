@@ -2277,6 +2277,10 @@ export type Database = {
       }
       check_transaction_xp_limit: { Args: { p_user_id: string }; Returns: Json }
       claim_daily_reward: { Args: { p_user_id: string }; Returns: Json }
+      close_credit_card_invoice: {
+        Args: { p_invoice_id: string; p_user_id: string }
+        Returns: Json
+      }
       complete_referral_reward: {
         Args: { p_referred_user_id: string }
         Returns: Json
@@ -2342,6 +2346,15 @@ export type Database = {
       }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
       mark_discount_offer_shown: { Args: { p_user_id: string }; Returns: Json }
+      pay_credit_card_invoice: {
+        Args: {
+          p_invoice_id: string
+          p_payment_date?: string
+          p_user_id: string
+          p_wallet_id: string
+        }
+        Returns: Json
+      }
       process_referral_signup:
         | {
             Args: { p_referral_code: string; p_referred_user_id: string }
