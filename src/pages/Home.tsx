@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
+import { useAdSenseLoader } from '@/hooks/useAdSenseLoader';
 import { Button } from '@/components/ui/button';
 import { TrustBadge } from '@/components/ui/trust-badge';
 import { CircleCheck, CreditCard, Zap, ChevronRight } from 'lucide-react';
@@ -13,6 +14,9 @@ const Home = () => {
   const { t } = useTranslation();
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  
+  // Load AdSense script for ads.txt validation
+  useAdSenseLoader();
 
   // Redirect authenticated users to dashboard
   useEffect(() => {
