@@ -1,5 +1,6 @@
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import DOMPurify from 'dompurify';
 import { useSEO } from '@/hooks/useSEO';
 import { getArticleBySlug, getRelatedArticles, BLOG_CATEGORIES } from '@/lib/blogData';
 import { defaultAuthor, getAuthorSchema } from '@/lib/authorData';
@@ -15,6 +16,14 @@ import { CommentSection } from '@/components/blog/CommentSection';
 import { BlogAdBanner } from '@/components/ads/BlogAdBanner';
 import { BlogInternalBanner } from '@/components/ads/BlogInternalBanner';
 import { useBlogAdSense } from '@/hooks/useBlogAdSense';
+
+// Configure DOMPurify to allow only safe tags for markdown rendering
+const sanitizeHtml = (html: string): string => {
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['strong', 'em', 'a', 'br'],
+    ALLOWED_ATTR: ['href', 'target', 'rel', 'class'],
+  });
+};
 
 // Custom component to render markdown-like content with in-article ad
 const ArticleContent = ({ content }: { content: string }) => {
@@ -88,7 +97,8 @@ const ArticleContent = ({ content }: { content: string }) => {
       // Links - external
       text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">$1</a>');
       // Emojis are preserved
-      return text;
+      // Sanitize the final HTML to prevent XSS
+      return sanitizeHtml(text);
     };
 
     const maybeInsertAd = () => {
