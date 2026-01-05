@@ -1513,11 +1513,15 @@ export type Database = {
           amount: number
           category: string
           created_at: string
+          credit_card_id: string | null
           currency: string
           date: string
           description: string
           has_items: boolean | null
           id: string
+          is_manual: boolean
+          source_type: string
+          transaction_subtype: string | null
           type: string
           user_id: string
           wallet_id: string | null
@@ -1527,11 +1531,15 @@ export type Database = {
           amount: number
           category: string
           created_at?: string
+          credit_card_id?: string | null
           currency?: string
           date?: string
           description: string
           has_items?: boolean | null
           id?: string
+          is_manual?: boolean
+          source_type?: string
+          transaction_subtype?: string | null
           type: string
           user_id: string
           wallet_id?: string | null
@@ -1541,17 +1549,28 @@ export type Database = {
           amount?: number
           category?: string
           created_at?: string
+          credit_card_id?: string | null
           currency?: string
           date?: string
           description?: string
           has_items?: boolean | null
           id?: string
+          is_manual?: boolean
+          source_type?: string
+          transaction_subtype?: string | null
           type?: string
           user_id?: string
           wallet_id?: string | null
           xp_earned?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "transactions_credit_card_id_fkey"
+            columns: ["credit_card_id"]
+            isOneToOne: false
+            referencedRelation: "credit_cards"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "transactions_user_id_fkey"
             columns: ["user_id"]
