@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CreditCard as CreditCardIcon, MoreVertical, Edit, Trash2, Calendar, Building2, Wallet as WalletIcon } from 'lucide-react';
+import { CreditCard as CreditCardIcon, MoreVertical, Edit, Trash2, Calendar, Building2, Wallet as WalletIcon, Receipt } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -31,9 +31,10 @@ interface CreditCardCardProps {
   wallets: Wallet[];
   onEdit: (card: CreditCard) => void;
   onDelete: (id: string) => void;
+  onViewInvoices: (card: CreditCard) => void;
 }
 
-export const CreditCardCard = ({ card, wallets, onEdit, onDelete }: CreditCardCardProps) => {
+export const CreditCardCard = ({ card, wallets, onEdit, onDelete, onViewInvoices }: CreditCardCardProps) => {
   const { t } = useTranslation();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
@@ -120,6 +121,17 @@ export const CreditCardCard = ({ card, wallets, onEdit, onDelete }: CreditCardCa
               {t('creditCards.due', 'Vence')}: {card.due_day}
             </Badge>
           </div>
+
+          {/* View Invoices Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full gap-2 mt-2"
+            onClick={() => onViewInvoices(card)}
+          >
+            <Receipt className="w-4 h-4" />
+            {t('creditCards.viewInvoices', 'Ver Faturas')}
+          </Button>
 
           {/* Linked wallet */}
           {linkedWallet && (
