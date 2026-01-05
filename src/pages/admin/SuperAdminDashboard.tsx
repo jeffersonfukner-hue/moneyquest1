@@ -11,6 +11,7 @@ import { InternalBannerAnalyticsWidget } from '@/components/admin/InternalBanner
 import { DiscountConversionWidget } from '@/components/admin/DiscountConversionWidget';
 import { ReferralConversionWidget } from '@/components/admin/ReferralConversionWidget';
 import { ServiceWorkerStatusWidget } from '@/components/admin/ServiceWorkerStatusWidget';
+import { WebVitalsWidget } from '@/components/admin/WebVitalsWidget';
 import GoogleOAuthConfigWidget from '@/components/admin/GoogleOAuthConfigWidget';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useAdminData } from '@/hooks/useAdminData';
@@ -792,6 +793,9 @@ const SuperAdminDashboard = () => {
 
         {/* Service Worker & Build Status */}
         <ServiceWorkerStatusWidget />
+
+        {/* Web Vitals Performance */}
+        <WebVitalsWidget />
       </div>
     </AdminLayout>
   );

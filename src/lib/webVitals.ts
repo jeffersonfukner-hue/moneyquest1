@@ -1,23 +1,46 @@
 import { onCLS, onFCP, onLCP, onTTFB, onINP, type Metric } from 'web-vitals';
+import { supabase } from '@/integrations/supabase/client';
 
-type WebVitalsMetric = {
-  name: string;
-  value: number;
-  rating: 'good' | 'needs-improvement' | 'poor';
-  delta: number;
-  id: string;
-  navigationType: string;
+// Generate a session ID for grouping metrics
+const getSessionId = (): string => {
+  let sessionId = sessionStorage.getItem('web-vitals-session');
+  if (!sessionId) {
+    sessionId = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+    sessionStorage.setItem('web-vitals-session', sessionId);
+  }
+  return sessionId;
 };
 
-// Send metrics to analytics endpoint
-const sendToAnalytics = (metric: Metric) => {
-  const vitalsData: WebVitalsMetric = {
-    name: metric.name,
-    value: metric.value,
+// Detect device type
+const getDeviceType = (): string => {
+  const ua = navigator.userAgent;
+  if (/tablet|ipad|playbook|silk/i.test(ua)) return 'tablet';
+  if (/mobile|iphone|ipod|android|blackberry|opera mini|iemobile/i.test(ua)) return 'mobile';
+  return 'desktop';
+};
+
+// Get browser name
+const getBrowser = (): string => {
+  const ua = navigator.userAgent;
+  if (ua.includes('Firefox')) return 'Firefox';
+  if (ua.includes('Edg')) return 'Edge';
+  if (ua.includes('Chrome')) return 'Chrome';
+  if (ua.includes('Safari')) return 'Safari';
+  if (ua.includes('Opera')) return 'Opera';
+  return 'Other';
+};
+
+// Send metrics to Supabase
+const sendToAnalytics = async (metric: Metric) => {
+  const vitalsData = {
+    session_id: getSessionId(),
+    page_url: window.location.pathname,
+    metric_name: metric.name,
+    metric_value: metric.value,
     rating: metric.rating,
-    delta: metric.delta,
-    id: metric.id,
-    navigationType: metric.navigationType || 'unknown',
+    navigation_type: metric.navigationType || 'unknown',
+    device_type: getDeviceType(),
+    browser: getBrowser(),
   };
 
   // Log in development
@@ -29,25 +52,19 @@ const sendToAnalytics = (metric: Metric) => {
     return;
   }
 
-  // In production, send to analytics via beacon or fetch
-  // Using navigator.sendBeacon for reliability (fires even on page unload)
-  const url = '/api/vitals'; // Could be replaced with actual endpoint
-  
-  // For now, we'll store in sessionStorage for debugging and log to console
+  // In production, send to Supabase
   try {
-    const existingVitals = JSON.parse(sessionStorage.getItem('web-vitals') || '[]');
-    existingVitals.push({
-      ...vitalsData,
-      timestamp: Date.now(),
-      url: window.location.pathname,
-    });
-    sessionStorage.setItem('web-vitals', JSON.stringify(existingVitals.slice(-20)));
-  } catch {
-    // Silently fail if sessionStorage is not available
+    const { error } = await supabase
+      .from('web_vitals_logs')
+      .insert(vitalsData);
+    
+    if (error) {
+      console.warn('[Web Vitals] Failed to save:', error.message);
+    }
+  } catch (err) {
+    // Silently fail - don't break the app for analytics
+    console.warn('[Web Vitals] Error:', err);
   }
-
-  // Log to console in production for debugging via browser DevTools
-  console.info(`[Web Vitals] ${metric.name}: ${Math.round(metric.value)}${metric.name === 'CLS' ? '' : 'ms'} (${metric.rating})`);
 };
 
 // Initialize Web Vitals monitoring
@@ -63,22 +80,4 @@ export const initWebVitals = () => {
   // Additional metrics
   onFCP(sendToAnalytics);  // First Contentful Paint
   onTTFB(sendToAnalytics); // Time to First Byte
-};
-
-// Get stored vitals for debugging
-export const getStoredVitals = (): WebVitalsMetric[] => {
-  try {
-    return JSON.parse(sessionStorage.getItem('web-vitals') || '[]');
-  } catch {
-    return [];
-  }
-};
-
-// Clear stored vitals
-export const clearStoredVitals = () => {
-  try {
-    sessionStorage.removeItem('web-vitals');
-  } catch {
-    // Silently fail
-  }
 };
