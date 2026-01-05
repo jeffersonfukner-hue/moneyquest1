@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
-import { Clock, TrendingUp, TrendingDown } from 'lucide-react';
+import { Clock, TrendingUp, TrendingDown, Repeat } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -44,6 +44,8 @@ const scheduledTransactionSchema = z.object({
   day_of_week: z.number().optional(),
   day_of_month: z.number().optional(),
   month_of_year: z.number().optional(),
+  has_limit: z.boolean().optional(),
+  total_occurrences: z.number().min(1).optional(),
 });
 
 type ScheduledTransactionFormData = z.infer<typeof scheduledTransactionSchema>;
@@ -101,6 +103,8 @@ export const ScheduledTransactionDialog = ({ open, onOpenChange, editTransaction
       day_of_week: 1,
       day_of_month: 5,
       month_of_year: 1,
+      has_limit: false,
+      total_occurrences: 12,
     },
   });
 
@@ -117,6 +121,8 @@ export const ScheduledTransactionDialog = ({ open, onOpenChange, editTransaction
         day_of_week: editTransaction.day_of_week ?? 1,
         day_of_month: editTransaction.day_of_month ?? 5,
         month_of_year: editTransaction.month_of_year ?? 1,
+        has_limit: editTransaction.total_occurrences !== null,
+        total_occurrences: editTransaction.total_occurrences ?? 12,
       });
     } else if (open && !editTransaction) {
       form.reset({
@@ -129,14 +135,27 @@ export const ScheduledTransactionDialog = ({ open, onOpenChange, editTransaction
         day_of_week: 1,
         day_of_month: 5,
         month_of_year: 1,
+        has_limit: false,
+        total_occurrences: 12,
       });
     }
   }, [open, editTransaction, form]);
 
   const watchType = form.watch('type');
   const watchFrequency = form.watch('frequency');
+  const watchHasLimit = form.watch('has_limit');
 
   const filteredCategories = categories.filter(c => c.type === watchType);
+
+  const getFrequencyLabel = () => {
+    switch (watchFrequency) {
+      case 'daily': return 'dias';
+      case 'weekly': return 'semanas';
+      case 'monthly': return 'meses';
+      case 'yearly': return 'anos';
+      default: return 'vezes';
+    }
+  };
 
   const onSubmit = async (data: ScheduledTransactionFormData) => {
     setIsSubmitting(true);
@@ -169,6 +188,7 @@ export const ScheduledTransactionDialog = ({ open, onOpenChange, editTransaction
         day_of_week: data.frequency === 'weekly' ? data.day_of_week : undefined,
         day_of_month: ['monthly', 'yearly'].includes(data.frequency) ? data.day_of_month : undefined,
         month_of_year: data.frequency === 'yearly' ? data.month_of_year : undefined,
+        total_occurrences: data.has_limit ? data.total_occurrences : null,
       };
 
       success = await createScheduledTransaction(transactionData);
@@ -431,6 +451,55 @@ export const ScheduledTransactionDialog = ({ open, onOpenChange, editTransaction
                 )}
               />
             )}
+
+            {/* Occurrence Limit */}
+            <div className="space-y-3 pt-2 border-t border-border">
+              <FormField
+                control={form.control}
+                name="has_limit"
+                render={({ field }) => (
+                  <FormItem className="flex items-center gap-3">
+                    <FormControl>
+                      <input
+                        type="checkbox"
+                        checked={field.value}
+                        onChange={field.onChange}
+                        className="h-4 w-4 rounded border-input"
+                      />
+                    </FormControl>
+                    <FormLabel className="!mt-0 font-normal flex items-center gap-2">
+                      <Repeat className="h-4 w-4" />
+                      Limitar número de repetições
+                    </FormLabel>
+                  </FormItem>
+                )}
+              />
+
+              {watchHasLimit && (
+                <FormField
+                  control={form.control}
+                  name="total_occurrences"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Repetir por quantos {getFrequencyLabel()}?</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min={1}
+                          max={120}
+                          {...field}
+                          onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
+                        />
+                      </FormControl>
+                      <p className="text-xs text-muted-foreground">
+                        Após {field.value || 1} execuções, o agendamento será desativado automaticamente.
+                      </p>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+            </div>
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? t('common.loading') : (isEditMode ? t('common.save') : t('scheduled.createTransaction'))}

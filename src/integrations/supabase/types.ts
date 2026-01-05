@@ -1246,6 +1246,8 @@ export type Database = {
           last_run_date: string | null
           month_of_year: number | null
           next_run_date: string
+          remaining_occurrences: number | null
+          total_occurrences: number | null
           type: string
           updated_at: string
           user_id: string
@@ -1265,6 +1267,8 @@ export type Database = {
           last_run_date?: string | null
           month_of_year?: number | null
           next_run_date: string
+          remaining_occurrences?: number | null
+          total_occurrences?: number | null
           type: string
           updated_at?: string
           user_id: string
@@ -1284,6 +1288,8 @@ export type Database = {
           last_run_date?: string | null
           month_of_year?: number | null
           next_run_date?: string
+          remaining_occurrences?: number | null
+          total_occurrences?: number | null
           type?: string
           updated_at?: string
           user_id?: string
@@ -1313,7 +1319,9 @@ export type Database = {
           is_active: boolean
           last_run_date: string | null
           next_run_date: string
+          remaining_occurrences: number | null
           to_wallet_id: string
+          total_occurrences: number | null
           updated_at: string
           user_id: string
         }
@@ -1330,7 +1338,9 @@ export type Database = {
           is_active?: boolean
           last_run_date?: string | null
           next_run_date: string
+          remaining_occurrences?: number | null
           to_wallet_id: string
+          total_occurrences?: number | null
           updated_at?: string
           user_id: string
         }
@@ -1347,7 +1357,9 @@ export type Database = {
           is_active?: boolean
           last_run_date?: string | null
           next_run_date?: string
+          remaining_occurrences?: number | null
           to_wallet_id?: string
+          total_occurrences?: number | null
           updated_at?: string
           user_id?: string
         }
