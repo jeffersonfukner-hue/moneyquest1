@@ -1639,6 +1639,7 @@ export type Database = {
         Returns: Json
       }
       admin_check_retention_alerts: { Args: never; Returns: Json }
+      admin_check_web_vitals_alerts: { Args: never; Returns: Json }
       admin_delete_user: {
         Args: { _note?: string; _target_user_id: string }
         Returns: Json
