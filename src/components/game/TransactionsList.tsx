@@ -29,6 +29,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -287,33 +293,60 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
       {/* Source Type Tabs */}
       <Tabs value={activeSourceTab} onValueChange={(v) => setActiveSourceTab(v as SourceTab)} className="w-full">
         <TabsList className="grid w-full grid-cols-3 h-auto p-1">
-          <TabsTrigger value="account" className="flex items-center gap-1.5 py-2 text-xs">
-            <Landmark className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Contas</span>
-            {sourceCounts.account > 0 && (
-              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 ml-0.5">
-                {sourceCounts.account}
-              </Badge>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="card" className="flex items-center gap-1.5 py-2 text-xs">
-            <CreditCard className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Cartões</span>
-            {sourceCounts.card > 0 && (
-              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 ml-0.5">
-                {sourceCounts.card}
-              </Badge>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="loan" className="flex items-center gap-1.5 py-2 text-xs">
-            <Banknote className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Empréstimos</span>
-            {sourceCounts.loan > 0 && (
-              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 ml-0.5">
-                {sourceCounts.loan}
-              </Badge>
-            )}
-          </TabsTrigger>
+          <TooltipProvider delayDuration={300}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <TabsTrigger value="account" className="flex items-center gap-1.5 py-2 text-xs">
+                  <Landmark className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Contas</span>
+                  {sourceCounts.account > 0 && (
+                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 ml-0.5">
+                      {sourceCounts.account}
+                    </Badge>
+                  )}
+                </TabsTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Transações de contas bancárias</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <TooltipProvider delayDuration={300}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <TabsTrigger value="card" className="flex items-center gap-1.5 py-2 text-xs">
+                  <CreditCard className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Cartões</span>
+                  {sourceCounts.card > 0 && (
+                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 ml-0.5">
+                      {sourceCounts.card}
+                    </Badge>
+                  )}
+                </TabsTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Transações de cartões de crédito</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <TooltipProvider delayDuration={300}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <TabsTrigger value="loan" className="flex items-center gap-1.5 py-2 text-xs">
+                  <Banknote className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Empréstimos</span>
+                  {sourceCounts.loan > 0 && (
+                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 ml-0.5">
+                      {sourceCounts.loan}
+                    </Badge>
+                  )}
+                </TabsTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Transações de empréstimos e financiamentos</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </TabsList>
       </Tabs>
 
