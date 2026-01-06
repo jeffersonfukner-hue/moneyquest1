@@ -20,7 +20,7 @@ import {
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Pencil, Plus } from 'lucide-react';
+import { CalendarIcon, Pencil, Plus, CreditCard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Transaction, SupportedCurrency, TransactionType } from '@/types/database';
 import { useCategories } from '@/hooks/useCategories';
@@ -33,6 +33,7 @@ import { getCategoryTranslationKey } from '@/lib/gameLogic';
 import { WalletSelector } from '@/components/wallets/WalletSelector';
 import { useWallets } from '@/hooks/useWallets';
 import { SupplierAutocomplete } from '@/components/suppliers/SupplierAutocomplete';
+import { useCreditCards } from '@/hooks/useCreditCards';
 
 interface EditTransactionDialogProps {
   transaction: Transaction;
@@ -58,6 +59,7 @@ export const EditTransactionDialog = ({
   const { dateLocale } = useLanguage();
   const { currency: userCurrency } = useCurrency();
   const { activeWallets, refetch: refetchWallets } = useWallets();
+  const { creditCards } = useCreditCards();
   const { upsertSupplier } = useSuppliers();
   const [type, setType] = useState<TransactionType>(transaction.type);
   const [supplier, setSupplier] = useState((transaction as any).supplier || '');
@@ -75,6 +77,9 @@ export const EditTransactionDialog = ({
 
   // Check if this is a credit card transaction (doesn't need wallet)
   const isCardTransaction = !!transaction.credit_card_id;
+  const linkedCard = isCardTransaction 
+    ? creditCards.find(c => c.id === transaction.credit_card_id) 
+    : null;
 
   // Reset form when transaction changes
   useEffect(() => {
@@ -158,6 +163,19 @@ export const EditTransactionDialog = ({
           </DialogHeader>
 
           <div className="space-y-4 py-4">
+            {/* Credit Card indicator */}
+            {isCardTransaction && linkedCard && (
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                <CreditCard className="w-5 h-5 text-amber-600" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-amber-700 dark:text-amber-400">
+                    {linkedCard.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{linkedCard.bank}</p>
+                </div>
+              </div>
+            )}
+
             {/* Type Toggle - hide for card transactions */}
             {!isCardTransaction && (
               <div className="space-y-2">
