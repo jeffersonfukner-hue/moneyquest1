@@ -15,15 +15,15 @@ interface ShopItemCardProps {
   onPurchase: () => void;
 }
 
-// Map theme items to actual theme values
-const THEME_MAP: Record<string, 'light' | 'dark'> = {
-  'dark_finance': 'dark',
-  'neon_budget': 'dark',
-  'minimal_white_pro': 'light',
-  'black_card': 'dark',
-  'galactic_wealth': 'dark',
-  'executive_diamond': 'dark',
-  'black_friday': 'dark',
+// Map theme items to CSS class names for preview
+const THEME_CLASS_MAP: Record<string, string> = {
+  'dark_finance': 'theme-dark-finance',
+  'neon_budget': 'theme-neon-budget',
+  'minimal_white_pro': 'theme-minimal-white',
+  'black_card': 'theme-black-card',
+  'galactic_wealth': 'theme-galactic-wealth',
+  'executive_diamond': 'theme-executive-diamond',
+  'black_friday': 'theme-black-friday',
 };
 
 export const ShopItemCard = ({ 
@@ -40,9 +40,16 @@ export const ShopItemCard = ({
   const isStatus = item.tipo === 'status' || item.tipo === 'avatar';
   const isTheme = item.tipo === 'tema';
 
-  const { theme: currentTheme, setTheme } = useTheme();
+  const { theme: currentTheme } = useTheme();
   const originalThemeRef = useRef<string | null>(null);
   const isPreviewingRef = useRef(false);
+  
+  // Cleanup on unmount
+  const cleanupTheme = () => {
+    Object.values(THEME_CLASS_MAP).forEach(cls => {
+      document.documentElement.classList.remove(cls);
+    });
+  };
 
   const formatDuration = (hours: number | null) => {
     if (!hours) return null;
@@ -58,21 +65,24 @@ export const ShopItemCard = ({
     const metadata = item.metadata as Record<string, unknown> | null;
     const themeId = metadata?.theme_id as string | undefined;
     
-    if (themeId && THEME_MAP[themeId]) {
-      // Save current theme only once
-      originalThemeRef.current = currentTheme || 'system';
+    if (themeId && THEME_CLASS_MAP[themeId]) {
+      // Save current classes
+      originalThemeRef.current = document.documentElement.className;
       isPreviewingRef.current = true;
       
-      // Apply preview theme
-      setTheme(THEME_MAP[themeId]);
+      // Apply preview theme class to html element
+      document.documentElement.classList.add(THEME_CLASS_MAP[themeId]);
     }
   };
 
   const handleMouseLeave = () => {
-    if (!isTheme || !isPreviewingRef.current || !originalThemeRef.current) return;
+    if (!isTheme || !isPreviewingRef.current) return;
     
-    // Restore original theme
-    setTheme(originalThemeRef.current);
+    // Remove all theme classes
+    Object.values(THEME_CLASS_MAP).forEach(cls => {
+      document.documentElement.classList.remove(cls);
+    });
+    
     originalThemeRef.current = null;
     isPreviewingRef.current = false;
   };
