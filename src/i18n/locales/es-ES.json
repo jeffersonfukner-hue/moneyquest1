@@ -13,7 +13,9 @@
     "goToTransfers": "Ir a Transferencias →",
     "paymentMethod": "Forma de Pago",
     "debit": "Débito",
-    "credit": "Crédito"
+    "credit": "Crédito",
+    "dateFormat": "dd/mm/aaaa",
+    "today": "Hoy"
   },
   "creditCards": {
     "viewInvoices": "Ver Facturas",

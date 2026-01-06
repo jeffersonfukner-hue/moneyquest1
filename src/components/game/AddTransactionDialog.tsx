@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Plus, ArrowUpCircle, ArrowDownCircle, CalendarIcon, Coins, AlertCircle, List, Scan, Crown, ChevronDown, ChevronUp, Wallet, CreditCard, Landmark, ArrowRightLeft, Smartphone, Banknote } from 'lucide-react';
+import { Plus, ArrowUpCircle, ArrowDownCircle, Coins, AlertCircle, List, Scan, Crown, ChevronDown, ChevronUp, Wallet, CreditCard, Landmark, ArrowRightLeft, Smartphone, Banknote } from 'lucide-react';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
-import { Calendar } from '@/components/ui/calendar';
+import { DatePickerInput } from '@/components/ui/date-picker-input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -1203,31 +1203,12 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
 
           <div className="space-y-2">
             <Label>{t('transactions.date')}</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal min-h-[48px]",
-                    !date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP", { locale: dateLocale }) : <span>{t('transactions.selectDate')}</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  defaultMonth={date}
-                  onSelect={(d) => d && setDate(d)}
-                  disabled={(d) => d > new Date()}
-                  initialFocus
-                  className="pointer-events-auto"
-                />
-              </PopoverContent>
-            </Popover>
+            <DatePickerInput
+              value={date}
+              onChange={(d) => d && setDate(d)}
+              disabled={(d) => d > new Date()}
+              placeholder={t('transactions.dateFormat', 'dd/mm/aaaa')}
+            />
           </div>
 
           <Button
