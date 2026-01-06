@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
-import { ArrowRight, AlertTriangle, RefreshCw } from 'lucide-react';
+import { ArrowRight, AlertTriangle, RefreshCw, Plus } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   Dialog,
@@ -38,6 +38,7 @@ import { useExchangeRates } from '@/hooks/useExchangeRates';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { Wallet } from '@/types/wallet';
 import { SupportedCurrency } from '@/types/database';
+import { AddWalletDialog } from './AddWalletDialog';
 
 const transferSchema = z.object({
   from_wallet_id: z.string().min(1, 'Required'),
@@ -57,11 +58,12 @@ interface TransferDialogProps {
 
 export const TransferDialog = ({ open, onOpenChange, preselectedWallet }: TransferDialogProps) => {
   const { t } = useTranslation();
-  const { activeWallets } = useWallets();
+  const { activeWallets, refetch: refetchWallets } = useWallets();
   const { createTransfer } = useWalletTransfers();
   const { convertCurrency, getRate } = useExchangeRates();
   const { formatCurrency } = useCurrency();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showAddWalletDialog, setShowAddWalletDialog] = useState(false);
 
   const form = useForm<TransferFormData>({
     resolver: zodResolver(transferSchema),
@@ -172,6 +174,16 @@ export const TransferDialog = ({ open, onOpenChange, preselectedWallet }: Transf
                       ))}
                     </SelectContent>
                   </Select>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="w-full mt-1 text-primary"
+                    onClick={() => setShowAddWalletDialog(true)}
+                  >
+                    <Plus className="w-4 h-4 mr-1" />
+                    {t('wallets.addWallet')}
+                  </Button>
                   <FormMessage />
                 </FormItem>
               )}
@@ -318,6 +330,16 @@ export const TransferDialog = ({ open, onOpenChange, preselectedWallet }: Transf
             </Button>
           </form>
         </Form>
+
+        {/* Add Wallet Dialog */}
+        <AddWalletDialog
+          open={showAddWalletDialog}
+          onOpenChange={setShowAddWalletDialog}
+          onWalletCreated={() => {
+            refetchWallets();
+            setShowAddWalletDialog(false);
+          }}
+        />
       </DialogContent>
     </Dialog>
   );
