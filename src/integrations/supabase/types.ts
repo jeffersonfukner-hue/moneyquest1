@@ -1002,6 +1002,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          active_shop_theme: string | null
           avatar_icon: string
           avatar_url: string | null
           created_at: string
@@ -1043,6 +1044,7 @@ export type Database = {
           xp_conversivel: number
         }
         Insert: {
+          active_shop_theme?: string | null
           avatar_icon?: string
           avatar_url?: string | null
           created_at?: string
@@ -1084,6 +1086,7 @@ export type Database = {
           xp_conversivel?: number
         }
         Update: {
+          active_shop_theme?: string | null
           avatar_icon?: string
           avatar_url?: string | null
           created_at?: string
@@ -2376,6 +2379,7 @@ export type Database = {
       admin_get_all_profiles: {
         Args: never
         Returns: {
+          active_shop_theme: string | null
           avatar_icon: string
           avatar_url: string | null
           created_at: string
