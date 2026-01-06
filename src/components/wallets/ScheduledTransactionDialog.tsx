@@ -134,6 +134,50 @@ const AmountInput = ({ control }: { control: any }) => {
   );
 };
 
+// Separate component for occurrences input to use hooks properly
+const OccurrencesInput = ({ control, getFrequencyLabel }: { control: any; getFrequencyLabel: () => string }) => {
+  const { field } = useController({ control, name: 'total_occurrences' });
+  const [displayValue, setDisplayValue] = useState(
+    field.value ? String(field.value) : ''
+  );
+
+  useEffect(() => {
+    setDisplayValue(field.value ? String(field.value) : '');
+  }, [field.value]);
+
+  return (
+    <FormItem>
+      <FormLabel>Repetir por quantos {getFrequencyLabel()}?</FormLabel>
+      <FormControl>
+        <Input
+          type="text"
+          inputMode="numeric"
+          placeholder="12"
+          value={displayValue}
+          onChange={(e) => {
+            const val = e.target.value.replace(/\D/g, '');
+            setDisplayValue(val);
+            if (val !== '') {
+              const num = Math.min(parseInt(val, 10), 999);
+              field.onChange(num);
+            }
+          }}
+          onBlur={() => {
+            const parsed = parseInt(displayValue, 10);
+            const finalValue = isNaN(parsed) || parsed < 1 ? 1 : Math.min(parsed, 999);
+            field.onChange(finalValue);
+            setDisplayValue(String(finalValue));
+          }}
+        />
+      </FormControl>
+      <p className="text-xs text-muted-foreground">
+        Após {field.value || 1} execuções, o agendamento será desativado automaticamente.
+      </p>
+      <FormMessage />
+    </FormItem>
+  );
+};
+
 export const ScheduledTransactionDialog = ({
   open,
   onOpenChange,
@@ -523,36 +567,7 @@ export const ScheduledTransactionDialog = ({
               />
 
               {watchHasLimit && (
-                <FormField
-                  control={form.control}
-                  name="total_occurrences"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Repetir por quantos {getFrequencyLabel()}?</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          inputMode="numeric"
-                          placeholder="12"
-                          value={field.value === 0 ? '' : field.value}
-                          onChange={(e) => {
-                            const val = e.target.value.replace(/\D/g, '');
-                            if (val === '') {
-                              field.onChange(1);
-                            } else {
-                              const num = Math.min(Math.max(parseInt(val, 10), 1), 999);
-                              field.onChange(num);
-                            }
-                          }}
-                        />
-                      </FormControl>
-                      <p className="text-xs text-muted-foreground">
-                        Após {field.value || 1} execuções, o agendamento será desativado automaticamente.
-                      </p>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <OccurrencesInput control={form.control} getFrequencyLabel={getFrequencyLabel} />
               )}
             </div>
 
