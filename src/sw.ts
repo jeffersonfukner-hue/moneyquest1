@@ -24,15 +24,16 @@ cleanupOutdatedCaches();
 // Precache build assets (JS/CSS/icons) with revisioned URLs
 precacheAndRoute(self.__WB_MANIFEST);
 
-// SPA navigation: ALWAYS try network first to avoid stale index.html after deploy
+// SPA navigation: prefer network to avoid stale index.html after deploy
+// IMPORTANT: do NOT use a short network timeout here, otherwise we can serve an old index.html
+// which points to older JS bundles (causing auth/header mismatches).
 registerRoute(
   ({ request }) => request.mode === 'navigate',
   new NetworkFirst({
     cacheName: 'html-cache',
-    networkTimeoutSeconds: 3,
     plugins: [
       new CacheableResponsePlugin({ statuses: [200] }),
-      new ExpirationPlugin({ maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 }), // 1 day
+      new ExpirationPlugin({ maxEntries: 20, maxAgeSeconds: 60 * 10 }), // 10 minutes
     ],
   }),
 );
