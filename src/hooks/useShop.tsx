@@ -289,7 +289,7 @@ export const useShop = () => {
 
       if (error) throw error;
 
-      const result = data as { success: boolean; error?: string; coins_earned?: number; xp_spent?: number };
+      const result = data as { success: boolean; error?: string; coins_earned?: number; xp_spent?: number; new_balance?: number };
 
       if (!result.success) {
         const errorMessages: Record<string, string> = {
@@ -303,8 +303,9 @@ export const useShop = () => {
         return false;
       }
 
-      toast.success(`✨ Convertido: ${result.xp_spent} XP → ${result.coins_earned} MQ Coins`);
+      toast.success(`✨ Convertido: ${result.xp_spent} XP → ${result.coins_earned} MQ Coins! Novo saldo: ${result.new_balance}`);
       
+      // Force refetch to update UI
       await Promise.all([
         fetchConversionInfo(),
         refetchProfile()
