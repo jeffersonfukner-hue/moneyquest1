@@ -81,9 +81,8 @@ const Shop = () => {
               <ShoppingBag className="w-7 h-7 text-accent" />
               Loja MoneyQuest
             </h1>
-            <p className="text-muted-foreground mt-1 max-w-md">
-              Use seu XP para desbloquear itens, boosts e experiências exclusivas.{' '}
-              <span className="text-accent font-medium">Seu progresso nunca é perdido.</span>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Use seu XP para desbloquear itens e experiências exclusivas.
             </p>
           </div>
           
