@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Plus, ArrowUpCircle, ArrowDownCircle, CalendarIcon, Coins, AlertCircle, List, Scan, Crown, ChevronDown, ChevronUp, Wallet, CreditCard, Landmark, ArrowRightLeft } from 'lucide-react';
+import { Plus, ArrowUpCircle, ArrowDownCircle, CalendarIcon, Coins, AlertCircle, List, Scan, Crown, ChevronDown, ChevronUp, Wallet, CreditCard, Landmark, ArrowRightLeft, Smartphone, Banknote } from 'lucide-react';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
@@ -52,6 +52,8 @@ export interface PrefillData {
 
 // Source type for transaction destination
 type SourceType = 'account' | 'card' | 'loan';
+// Payment method for account expenses
+type PaymentMethod = 'debit' | 'pix' | 'credit';
 
 interface AddTransactionDialogProps {
   onAdd: (transaction: {
@@ -97,6 +99,8 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   // Loan selection step
   const [selectedLoanId, setSelectedLoanId] = useState<string | null>(null);
   const [showLoanSelection, setShowLoanSelection] = useState(false);
+  // Payment method for account expenses
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
   
   const [type, setType] = useState<TransactionType>('EXPENSE');
   const [supplier, setSupplier] = useState('');
@@ -228,6 +232,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
       setShowCardSelection(false);
       setSelectedLoanId(null);
       setShowLoanSelection(false);
+      setPaymentMethod(null);
       setType('EXPENSE');
       setCategory('');
       setSupplier('');
@@ -439,6 +444,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
         // Ensure card/loan selection states are false for account transactions
         setShowCardSelection(false);
         setShowLoanSelection(false);
+        // Keep payment method for consecutive expenses (user likely uses same method)
       }
       // For card transactions, keep selectedCardId to allow multiple transactions on same card
       
@@ -820,6 +826,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
                   onClick={() => {
                     setType('INCOME');
                     setCategory('');
+                    setPaymentMethod(null); // Reset payment method for income
                   }}
                 >
                   <ArrowUpCircle className="w-4 h-4 mr-2" />
@@ -840,6 +847,56 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
                   <ArrowDownCircle className="w-4 h-4 mr-2" />
                   {t('transactions.expense')}
                 </Button>
+              </div>
+            )}
+
+            {/* Payment method selector for account expenses */}
+            {sourceType === 'account' && type === 'EXPENSE' && (
+              <div className="space-y-2">
+                <Label>{t('transactions.paymentMethod', 'Forma de Pagamento')}</Label>
+                <div className="grid grid-cols-3 gap-2">
+                  <Button
+                    type="button"
+                    variant={paymentMethod === 'debit' ? 'default' : 'outline'}
+                    className={cn(
+                      "h-auto py-3 flex flex-col items-center gap-1",
+                      paymentMethod === 'debit' && 'bg-primary'
+                    )}
+                    onClick={() => setPaymentMethod('debit')}
+                  >
+                    <Banknote className="w-5 h-5" />
+                    <span className="text-xs">{t('transactions.debit', 'Débito')}</span>
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={paymentMethod === 'pix' ? 'default' : 'outline'}
+                    className={cn(
+                      "h-auto py-3 flex flex-col items-center gap-1",
+                      paymentMethod === 'pix' && 'bg-primary'
+                    )}
+                    onClick={() => setPaymentMethod('pix')}
+                  >
+                    <Smartphone className="w-5 h-5" />
+                    <span className="text-xs">PIX</span>
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={paymentMethod === 'credit' ? 'default' : 'outline'}
+                    className={cn(
+                      "h-auto py-3 flex flex-col items-center gap-1",
+                      paymentMethod === 'credit' && 'bg-amber-600 hover:bg-amber-700 text-white'
+                    )}
+                    onClick={() => {
+                      // Switch to card flow
+                      setSourceType('card');
+                      setShowCardSelection(true);
+                      setPaymentMethod(null);
+                    }}
+                  >
+                    <CreditCard className="w-5 h-5" />
+                    <span className="text-xs">{t('transactions.credit', 'Crédito')}</span>
+                  </Button>
+                </div>
               </div>
             )}
 

@@ -10,7 +10,10 @@
     "incomeSourcePlaceholder": "E.g.: COMPANY X, CLIENT Y, BANK...",
     "transferDetected": "This looks like a transfer between accounts.",
     "transferSuggestion": "Use the Transfer feature in Wallets to keep your balances accurate and avoid inflating income/expenses.",
-    "goToTransfers": "Go to Transfers →"
+    "goToTransfers": "Go to Transfers →",
+    "paymentMethod": "Payment Method",
+    "debit": "Debit",
+    "credit": "Credit"
   },
   "creditCards": {
     "viewInvoices": "View Invoices",
