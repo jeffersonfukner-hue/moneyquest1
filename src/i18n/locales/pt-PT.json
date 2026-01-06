@@ -5,7 +5,10 @@
     "addFirstCard": "Adicione o seu primeiro cartão para começar",
     "changeCard": "Alterar",
     "supplier": "Fornecedor",
-    "supplierPlaceholder": "Ex: AMAZON, WORTEN, UBER..."
+    "supplierPlaceholder": "Ex: AMAZON, WORTEN, UBER...",
+    "transferDetected": "Isto parece uma transferência entre contas.",
+    "transferSuggestion": "Use a funcionalidade de Transferência nas Carteiras para manter os seus saldos corretos e não inflar receitas/despesas.",
+    "goToTransfers": "Ir para Transferências →"
   },
   "creditCards": {
     "viewInvoices": "Ver Faturas",
