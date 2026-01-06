@@ -337,7 +337,7 @@ export const CommentSection = ({ articleSlug }: CommentSectionProps) => {
                   onChange={(e) => setReplyContent(e.target.value)}
                   className="min-h-[80px] resize-none text-sm"
                   maxLength={1000}
-                  autoFocus
+                  dir="ltr"
                 />
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-muted-foreground">
