@@ -1403,6 +1403,7 @@ export type Database = {
           month_of_year: number | null
           next_run_date: string
           remaining_occurrences: number | null
+          supplier: string | null
           total_occurrences: number | null
           type: string
           updated_at: string
@@ -1424,6 +1425,7 @@ export type Database = {
           month_of_year?: number | null
           next_run_date: string
           remaining_occurrences?: number | null
+          supplier?: string | null
           total_occurrences?: number | null
           type: string
           updated_at?: string
@@ -1445,6 +1447,7 @@ export type Database = {
           month_of_year?: number | null
           next_run_date?: string
           remaining_occurrences?: number | null
+          supplier?: string | null
           total_occurrences?: number | null
           type?: string
           updated_at?: string
@@ -1886,6 +1889,7 @@ export type Database = {
           invoice_id: string | null
           is_manual: boolean
           source_type: string
+          supplier: string | null
           transaction_subtype: string | null
           type: string
           user_id: string
@@ -1905,6 +1909,7 @@ export type Database = {
           invoice_id?: string | null
           is_manual?: boolean
           source_type?: string
+          supplier?: string | null
           transaction_subtype?: string | null
           type: string
           user_id: string
@@ -1924,6 +1929,7 @@ export type Database = {
           invoice_id?: string | null
           is_manual?: boolean
           source_type?: string
+          supplier?: string | null
           transaction_subtype?: string | null
           type?: string
           user_id?: string

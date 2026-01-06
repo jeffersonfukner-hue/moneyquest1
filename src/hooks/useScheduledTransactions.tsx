@@ -14,6 +14,7 @@ export interface ScheduledTransaction {
   category: string;
   currency: string;
   wallet_id: string | null;
+  supplier: string | null;
   frequency: 'daily' | 'weekly' | 'monthly' | 'yearly';
   day_of_week: number | null;
   day_of_month: number | null;
@@ -34,6 +35,7 @@ export interface CreateScheduledTransactionData {
   category: string;
   currency: SupportedCurrency;
   wallet_id?: string | null;
+  supplier?: string | null;
   frequency: 'daily' | 'weekly' | 'monthly' | 'yearly';
   day_of_week?: number;
   day_of_month?: number;
@@ -44,6 +46,7 @@ export interface CreateScheduledTransactionData {
 export interface UpdateScheduledTransactionData extends Partial<CreateScheduledTransactionData> {
   id: string;
   remaining_occurrences?: number | null;
+  supplier?: string | null;
 }
 
 export const useScheduledTransactions = () => {
@@ -118,6 +121,7 @@ export const useScheduledTransactions = () => {
           category: data.category,
           currency: data.currency,
           wallet_id: data.wallet_id || null,
+          supplier: data.supplier?.toUpperCase() || null,
           frequency: data.frequency,
           day_of_week: data.frequency === 'weekly' ? data.day_of_week : null,
           day_of_month: ['monthly', 'yearly'].includes(data.frequency) ? data.day_of_month : null,
@@ -184,6 +188,7 @@ export const useScheduledTransactions = () => {
       if (data.category !== undefined) updateData.category = data.category;
       if (data.currency !== undefined) updateData.currency = data.currency;
       if (data.wallet_id !== undefined) updateData.wallet_id = data.wallet_id || null;
+      if (data.supplier !== undefined) updateData.supplier = data.supplier?.toUpperCase() || null;
       if (data.frequency !== undefined) {
         updateData.frequency = data.frequency;
         updateData.day_of_week = data.frequency === 'weekly' ? data.day_of_week : null;

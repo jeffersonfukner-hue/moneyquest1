@@ -87,6 +87,7 @@ export const useTransactions = () => {
       credit_card_id?: string;
       source_type?: 'account' | 'card';
       transaction_subtype?: 'debit' | 'credit' | 'card_expense' | 'invoice_payment';
+      supplier?: string;
       items?: Array<{ name: string; amount: number }>;
     }
   ) => {
@@ -104,8 +105,8 @@ export const useTransactions = () => {
     const breakdownBonusXp = transaction.items && transaction.items.length > 0 ? 5 : 0;
     const totalXpForTx = xpEarned + (canEarnXp ? breakdownBonusXp : 0);
     
-    // Extract items before inserting
-    const { items, ...txData } = transaction;
+    // Extract items and supplier before inserting
+    const { items, supplier, ...txData } = transaction;
     
     // Insert transaction (ensure UPPERCASE description)
     const { data: insertedTx, error: txError } = await supabase
@@ -114,6 +115,7 @@ export const useTransactions = () => {
         user_id: user.id,
         ...txData,
         description: txData.description.toUpperCase(),
+        supplier: supplier?.toUpperCase() || null,
         xp_earned: totalXpForTx,
         has_items: items && items.length > 0,
         source_type: txData.source_type || 'account',

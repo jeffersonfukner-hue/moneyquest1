@@ -41,6 +41,7 @@ import { SupportedCurrency } from '@/types/database';
 
 const scheduledTransactionSchema = z.object({
   description: z.string().min(1, 'Descrição é obrigatória'),
+  supplier: z.string().optional(),
   amount: z.number({ required_error: 'Valor é obrigatório', invalid_type_error: 'Valor é obrigatório' }).positive('Valor deve ser maior que zero'),
   type: z.enum(['INCOME', 'EXPENSE']),
   category: z.string().min(1, 'Categoria é obrigatória'),
@@ -312,6 +313,7 @@ export const ScheduledTransactionDialog = ({
     resolver: zodResolver(scheduledTransactionSchema),
     defaultValues: {
       description: '',
+      supplier: '',
       amount: undefined,
       type: 'EXPENSE',
       category: '',
@@ -330,6 +332,7 @@ export const ScheduledTransactionDialog = ({
     if (open && editTransaction) {
       form.reset({
         description: editTransaction.description,
+        supplier: editTransaction.supplier || '',
         amount: editTransaction.amount,
         type: editTransaction.type,
         category: editTransaction.category,
@@ -344,6 +347,7 @@ export const ScheduledTransactionDialog = ({
     } else if (open && !editTransaction) {
       form.reset({
         description: '',
+        supplier: '',
         amount: undefined,
         type: 'EXPENSE',
         category: '',
@@ -383,6 +387,7 @@ export const ScheduledTransactionDialog = ({
       success = await updateScheduledTransaction({
         id: editTransaction.id,
         description: data.description,
+        supplier: data.type === 'EXPENSE' ? (data.supplier || null) : null,
         amount: data.amount,
         type: data.type,
         category: data.category,
@@ -397,6 +402,7 @@ export const ScheduledTransactionDialog = ({
     } else {
       const transactionData: CreateScheduledTransactionData = {
         description: data.description,
+        supplier: data.type === 'EXPENSE' ? (data.supplier || null) : null,
         amount: data.amount,
         type: data.type,
         category: data.category,
@@ -463,6 +469,28 @@ export const ScheduledTransactionDialog = ({
                 </FormItem>
               )}
             />
+
+            {/* Supplier - only for expenses */}
+            {watchType === 'EXPENSE' && (
+              <FormField
+                control={form.control}
+                name="supplier"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('transactions.supplier', 'Fornecedor')}</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder={t('transactions.supplierPlaceholder', 'Ex: AMAZON, IFOOD, UBER...')} 
+                        {...field} 
+                        onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                        style={{ textTransform: 'uppercase' }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             {/* Description */}
             <FormField
