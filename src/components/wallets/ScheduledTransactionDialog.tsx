@@ -233,6 +233,59 @@ const OccurrencesInput = ({ control, getFrequencyLabel }: { control: any; getFre
   );
 };
 
+// Separate component for day of month input to use hooks properly
+const DayOfMonthInput = ({ control }: { control: any }) => {
+  const { t } = useTranslation();
+  const { field, fieldState } = useController({ control, name: 'day_of_month' });
+  const [displayValue, setDisplayValue] = useState('');
+
+  useEffect(() => {
+    if (field.value !== undefined && field.value !== null) {
+      setDisplayValue(String(field.value));
+    } else {
+      setDisplayValue('');
+    }
+  }, [field.value]);
+
+  return (
+    <FormItem>
+      <FormLabel>{t('wallets.dayOfMonth')}</FormLabel>
+      <FormControl>
+        <Input
+          type="text"
+          inputMode="numeric"
+          placeholder=""
+          value={displayValue}
+          onChange={(e) => {
+            const val = e.target.value.replace(/\D/g, '');
+            setDisplayValue(val);
+            if (val === '') {
+              field.onChange(undefined);
+            } else {
+              field.onChange(parseInt(val, 10));
+            }
+          }}
+          onBlur={() => {
+            if (displayValue.trim() === '') {
+              field.onChange(undefined);
+              return;
+            }
+            const parsed = parseInt(displayValue, 10);
+            if (!isNaN(parsed)) {
+              const clamped = Math.min(Math.max(parsed, 1), 31);
+              field.onChange(clamped);
+              setDisplayValue(String(clamped));
+            }
+          }}
+        />
+      </FormControl>
+      {fieldState.error && (
+        <p className="text-sm font-medium text-destructive">{fieldState.error.message}</p>
+      )}
+    </FormItem>
+  );
+};
+
 export const ScheduledTransactionDialog = ({
   open,
   onOpenChange,
@@ -546,39 +599,7 @@ export const ScheduledTransactionDialog = ({
 
             {/* Day of Month (for monthly/yearly) */}
             {['monthly', 'yearly'].includes(watchFrequency) && (
-              <FormField
-                control={form.control}
-                name="day_of_month"
-                render={({ field, fieldState }) => (
-                  <FormItem>
-                    <FormLabel>{t('wallets.dayOfMonth')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="text"
-                        inputMode="numeric"
-                        placeholder=""
-                        value={field.value?.toString() ?? ''}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/\D/g, '');
-                          if (val === '') {
-                            field.onChange(undefined);
-                            return;
-                          }
-                          field.onChange(parseInt(val, 10));
-                        }}
-                        onBlur={() => {
-                          if (field.value === undefined) return;
-                          const clamped = Math.min(Math.max(field.value, 1), 31);
-                          field.onChange(clamped);
-                        }}
-                      />
-                    </FormControl>
-                    {fieldState.error && (
-                      <p className="text-sm font-medium text-destructive">{fieldState.error.message}</p>
-                    )}
-                  </FormItem>
-                )}
-              />
+              <DayOfMonthInput control={form.control} />
             )}
 
             {/* Month of Year (for yearly) */}
