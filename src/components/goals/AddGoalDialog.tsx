@@ -153,12 +153,16 @@ export const AddGoalDialog = ({
             </Label>
             <Input
               id="budgetLimit"
-              type="number"
-              step="0.01"
-              min="0.01"
+              type="text"
+              inputMode="decimal"
               placeholder="0.00"
               value={budgetLimit}
-              onChange={(e) => setBudgetLimit(e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value.replace(',', '.');
+                if (val === '' || /^\d*\.?\d{0,2}$/.test(val)) {
+                  setBudgetLimit(val);
+                }
+              }}
               required
               className="min-h-[48px]"
             />
