@@ -73,7 +73,7 @@ const Shop = () => {
 
   return (
     <AppLayout>
-      <div className="container max-w-6xl mx-auto px-4 py-6 space-y-6 pb-24">
+      <div className="max-w-6xl mx-auto px-4 py-6 space-y-6 pb-24 overflow-x-hidden">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
