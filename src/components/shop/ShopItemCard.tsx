@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -43,13 +43,8 @@ export const ShopItemCard = ({
   const { theme: currentTheme } = useTheme();
   const originalThemeRef = useRef<string | null>(null);
   const isPreviewingRef = useRef(false);
-  
-  // Cleanup on unmount
-  const cleanupTheme = () => {
-    Object.values(THEME_CLASS_MAP).forEach(cls => {
-      document.documentElement.classList.remove(cls);
-    });
-  };
+  const [isPreviewing, setIsPreviewing] = useState(false);
+  const [previewThemeClass, setPreviewThemeClass] = useState<string | null>(null);
 
   const formatDuration = (hours: number | null) => {
     if (!hours) return null;
@@ -69,6 +64,8 @@ export const ShopItemCard = ({
       // Save current classes
       originalThemeRef.current = document.documentElement.className;
       isPreviewingRef.current = true;
+      setIsPreviewing(true);
+      setPreviewThemeClass(THEME_CLASS_MAP[themeId]);
       
       // Apply preview theme class to html element
       document.documentElement.classList.add(THEME_CLASS_MAP[themeId]);
@@ -85,31 +82,56 @@ export const ShopItemCard = ({
     
     originalThemeRef.current = null;
     isPreviewingRef.current = false;
+    setIsPreviewing(false);
+    setPreviewThemeClass(null);
   };
 
   return (
     <Card 
       className={cn(
-        "relative overflow-hidden transition-all duration-200 group hover:shadow-lg",
+        "relative overflow-hidden transition-all duration-300 group",
         hasPurchased && "ring-1 ring-green-500/50",
-        item.raridade === 'lendario' && "bg-gradient-to-br from-amber-950/30 to-orange-950/30 border-amber-500/30",
-        item.raridade === 'epico' && "bg-gradient-to-br from-purple-950/30 to-pink-950/30 border-purple-500/30",
-        item.raridade === 'raro' && "bg-gradient-to-br from-blue-950/30 to-cyan-950/30 border-blue-500/30",
-        isTheme && !isLocked && "cursor-pointer"
+        !isPreviewing && item.raridade === 'lendario' && "bg-gradient-to-br from-amber-950/30 to-orange-950/30 border-amber-500/30",
+        !isPreviewing && item.raridade === 'epico' && "bg-gradient-to-br from-purple-950/30 to-pink-950/30 border-purple-500/30",
+        !isPreviewing && item.raridade === 'raro' && "bg-gradient-to-br from-blue-950/30 to-cyan-950/30 border-blue-500/30",
+        isTheme && !isLocked && "cursor-pointer",
+        // Theme preview styles
+        isPreviewing && "bg-card border-primary shadow-2xl scale-[1.02] ring-2 ring-primary/50"
       )}
+      style={isPreviewing ? {
+        background: 'hsl(var(--card))',
+        borderColor: 'hsl(var(--primary))',
+        boxShadow: '0 25px 50px -12px hsl(var(--primary) / 0.3)',
+      } : undefined}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {/* Animated Glow for Legendary */}
-      {item.raridade === 'lendario' && (
+      {item.raridade === 'lendario' && !isPreviewing && (
         <div className="absolute inset-0 bg-gradient-to-r from-amber-500/0 via-amber-500/5 to-amber-500/0 animate-pulse" />
+      )}
+
+      {/* Theme Preview Active Overlay */}
+      {isPreviewing && (
+        <div 
+          className="absolute inset-0 opacity-20 pointer-events-none"
+          style={{ background: 'var(--gradient-hero)' }}
+        />
       )}
 
       {/* Theme Preview Indicator */}
       {isTheme && !isLocked && (
         <div className="absolute top-2 right-2 z-5">
-          <Badge variant="outline" className="text-[9px] px-1.5 py-0 bg-background/80 backdrop-blur-sm">
-            👁️ Hover = Preview
+          <Badge 
+            variant="outline" 
+            className={cn(
+              "text-[9px] px-1.5 py-0 backdrop-blur-sm transition-all",
+              isPreviewing 
+                ? "bg-primary text-primary-foreground border-primary animate-pulse" 
+                : "bg-background/80"
+            )}
+          >
+            {isPreviewing ? '✨ Prévia Ativa' : '👁️ Hover = Preview'}
           </Badge>
         </div>
       )}
@@ -131,13 +153,17 @@ export const ShopItemCard = ({
       <CardContent className="p-3 relative">
         {/* Icon */}
         <div className="flex justify-center mb-2">
-          <div className={cn(
-            "w-14 h-14 rounded-xl flex items-center justify-center text-3xl transition-transform group-hover:scale-110",
-            item.raridade === 'lendario' && "bg-amber-500/15",
-            item.raridade === 'epico' && "bg-purple-500/15",
-            item.raridade === 'raro' && "bg-blue-500/15",
-            item.raridade === 'comum' && "bg-muted"
-          )}>
+          <div 
+            className={cn(
+              "w-14 h-14 rounded-xl flex items-center justify-center text-3xl transition-all duration-300 group-hover:scale-110",
+              !isPreviewing && item.raridade === 'lendario' && "bg-amber-500/15",
+              !isPreviewing && item.raridade === 'epico' && "bg-purple-500/15",
+              !isPreviewing && item.raridade === 'raro' && "bg-blue-500/15",
+              !isPreviewing && item.raridade === 'comum' && "bg-muted",
+              isPreviewing && "bg-primary/20"
+            )}
+            style={isPreviewing ? { background: 'hsl(var(--primary) / 0.2)' } : undefined}
+          >
             {item.icone || typeConfig?.icon || '📦'}
           </div>
         </div>
