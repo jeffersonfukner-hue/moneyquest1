@@ -1,19 +1,28 @@
 import { useState } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useShop, ITEM_TYPES, RARITY_CONFIG, ShopItem } from '@/hooks/useShop';
+import { useShop, ShopItem } from '@/hooks/useShop';
 import { useProfile } from '@/hooks/useProfile';
 import { ShopItemCard } from '@/components/shop/ShopItemCard';
 import { XpConversionCard } from '@/components/shop/XpConversionCard';
 import { ActiveEffectsCard } from '@/components/shop/ActiveEffectsCard';
 import { PurchaseHistoryCard } from '@/components/shop/PurchaseHistoryCard';
 import { PurchaseConfirmDialog } from '@/components/shop/PurchaseConfirmDialog';
-import { Coins, Crown, Sparkles, ShoppingBag, History, Zap } from 'lucide-react';
+import { Coins, Crown, Sparkles, ShoppingBag, History, Zap, Star, Palette, Flame, Award, Lock } from 'lucide-react';
 import { Link } from 'react-router-dom';
+
+const SHOP_TABS = [
+  { id: 'destaques', label: 'Destaques', icon: Star, description: 'Os melhores itens da loja' },
+  { id: 'temas', label: 'Temas', icon: Palette, description: 'Personalize sua experiência' },
+  { id: 'boosts', label: 'Boosts', icon: Zap, description: 'Acelere seu progresso' },
+  { id: 'status', label: 'Status', icon: Award, description: 'Destaque-se na comunidade' },
+  { id: 'premium', label: 'Premium', icon: Crown, description: 'Itens exclusivos' },
+  { id: 'exclusivo', label: 'Exclusivo Premium', icon: Lock, description: 'Só para assinantes' },
+];
 
 const Shop = () => {
   const { profile } = useProfile();
@@ -27,13 +36,32 @@ const Shop = () => {
   } = useShop();
   
   const [selectedItem, setSelectedItem] = useState<ShopItem | null>(null);
-  const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [activeTab, setActiveTab] = useState<string>('destaques');
 
-  const categories = ['all', ...Object.keys(ITEM_TYPES)];
-  
-  const filteredItems = activeCategory === 'all' 
-    ? items 
-    : items.filter(item => item.tipo === activeCategory);
+  // Filter items based on tab
+  const getFilteredItems = (tabId: string): ShopItem[] => {
+    switch (tabId) {
+      case 'destaques':
+        // Featured: legendary and epic items, or best sellers
+        return items.filter(item => 
+          item.raridade === 'lendario' || item.raridade === 'epico'
+        ).slice(0, 6);
+      case 'temas':
+        return items.filter(item => item.tipo === 'tema');
+      case 'boosts':
+        return items.filter(item => item.tipo === 'booster');
+      case 'status':
+        return items.filter(item => item.tipo === 'status' || item.tipo === 'avatar');
+      case 'premium':
+        return items.filter(item => item.premium_only);
+      case 'exclusivo':
+        return items.filter(item => item.premium_only && item.raridade === 'lendario');
+      default:
+        return items;
+    }
+  };
+
+  const filteredItems = getFilteredItems(activeTab);
 
   const handlePurchase = async () => {
     if (!selectedItem) return;
@@ -62,7 +90,7 @@ const Shop = () => {
           <Card className="bg-gradient-to-r from-amber-500/10 via-yellow-500/10 to-orange-500/10 border-amber-500/30">
             <CardContent className="py-4 px-6">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/30">
                   <Coins className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -111,9 +139,10 @@ const Shop = () => {
           </Card>
         )}
 
-        <Tabs defaultValue="shop" className="space-y-6">
+        {/* Main Tabs */}
+        <Tabs defaultValue="loja" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4 h-auto p-1">
-            <TabsTrigger value="shop" className="flex items-center gap-2 py-3">
+            <TabsTrigger value="loja" className="flex items-center gap-2 py-3">
               <ShoppingBag className="w-4 h-4" />
               <span className="hidden sm:inline">Loja</span>
             </TabsTrigger>
@@ -132,27 +161,52 @@ const Shop = () => {
           </TabsList>
 
           {/* Shop Tab */}
-          <TabsContent value="shop" className="space-y-6">
-            {/* Category Filter */}
-            <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <Button
-                  key={category}
-                  variant={activeCategory === category ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setActiveCategory(category)}
-                  className={activeCategory === category ? 'bg-accent text-accent-foreground' : ''}
-                >
-                  {category === 'all' ? '🏪 Todos' : `${ITEM_TYPES[category as keyof typeof ITEM_TYPES]?.icon || '📦'} ${ITEM_TYPES[category as keyof typeof ITEM_TYPES]?.label || category}`}
-                </Button>
-              ))}
+          <TabsContent value="loja" className="space-y-6">
+            {/* Shop Category Tabs */}
+            <div className="overflow-x-auto -mx-4 px-4">
+              <div className="flex gap-2 min-w-max pb-2">
+                {SHOP_TABS.map((tab) => {
+                  const Icon = tab.icon;
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <Button
+                      key={tab.id}
+                      variant={isActive ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`
+                        flex items-center gap-2 whitespace-nowrap transition-all
+                        ${isActive ? 'bg-gradient-to-r from-accent to-accent/80 shadow-lg shadow-accent/30' : ''}
+                        ${tab.id === 'premium' || tab.id === 'exclusivo' ? 'border-purple-500/50' : ''}
+                      `}
+                    >
+                      <Icon className={`w-4 h-4 ${tab.id === 'premium' || tab.id === 'exclusivo' ? 'text-purple-400' : ''}`} />
+                      {tab.label}
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Tab Description */}
+            <div className="flex items-center gap-2 text-muted-foreground">
+              {(() => {
+                const currentTab = SHOP_TABS.find(t => t.id === activeTab);
+                const Icon = currentTab?.icon || Star;
+                return (
+                  <>
+                    <Icon className="w-5 h-5" />
+                    <span>{currentTab?.description}</span>
+                  </>
+                );
+              })()}
             </div>
 
             {/* Items Grid */}
             {loading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[...Array(6)].map((_, i) => (
-                  <Skeleton key={i} className="h-64 rounded-xl" />
+                  <Skeleton key={i} className="h-72 rounded-xl" />
                 ))}
               </div>
             ) : filteredItems.length === 0 ? (
@@ -161,10 +215,18 @@ const Shop = () => {
                   <ShoppingBag className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
                   <h3 className="font-semibold text-lg">Nenhum item disponível</h3>
                   <p className="text-muted-foreground">
-                    {activeCategory !== 'all' 
-                      ? 'Não há itens nesta categoria no momento.' 
-                      : 'A loja está vazia no momento. Volte em breve!'}
+                    {activeTab === 'exclusivo' && !isPremium
+                      ? 'Assine o Premium para ver os itens exclusivos!'
+                      : 'Não há itens nesta categoria no momento.'}
                   </p>
+                  {activeTab === 'exclusivo' && !isPremium && (
+                    <Button asChild className="mt-4 bg-gradient-to-r from-purple-500 to-pink-500">
+                      <Link to="/premium">
+                        <Crown className="w-4 h-4 mr-2" />
+                        Assinar Premium
+                      </Link>
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             ) : (
