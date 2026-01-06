@@ -136,12 +136,16 @@ export const AddCreditCardDialog = ({ open, onOpenChange, onAdd }: AddCreditCard
                 </SelectContent>
               </Select>
               <Input
-                type="number"
-                step="0.01"
-                min="0"
+                type="text"
+                inputMode="decimal"
                 placeholder="0.00"
                 value={totalLimit}
-                onChange={(e) => setTotalLimit(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value.replace(',', '.');
+                  if (val === '' || /^\d*\.?\d{0,2}$/.test(val)) {
+                    setTotalLimit(val);
+                  }
+                }}
                 className="flex-1 min-h-[44px]"
               />
             </div>

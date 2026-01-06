@@ -194,13 +194,18 @@ export const EditWalletDialog = ({ wallet, open, onOpenChange }: EditWalletDialo
             <Label htmlFor="edit-initial-balance">{t('wallets.initialBalance')}</Label>
             <Input
               id="edit-initial-balance"
-              type="number"
-              step="0.01"
+              type="text"
+              inputMode="decimal"
               value={formData.initial_balance || ''}
-              onChange={(e) => setFormData(prev => ({ 
-                ...prev, 
-                initial_balance: parseFloat(e.target.value) || 0 
-              }))}
+              onChange={(e) => {
+                const val = e.target.value.replace(',', '.');
+                if (val === '' || /^-?\d*\.?\d{0,2}$/.test(val)) {
+                  setFormData(prev => ({ 
+                    ...prev, 
+                    initial_balance: val === '' ? 0 : parseFloat(val) || 0 
+                  }));
+                }
+              }}
               placeholder="0.00"
             />
           </div>

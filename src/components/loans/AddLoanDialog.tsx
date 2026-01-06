@@ -310,15 +310,17 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
               </select>
               <Input
                 ref={valorTotalRef}
-                type="number"
-                step="0.01"
-                min="0"
+                type="text"
+                inputMode="decimal"
                 placeholder="0.00"
                 value={valorTotal}
                 onChange={(e) => {
-                  handleValorTotalChange(e.target.value);
-                  setFieldError(null);
-                  setErrorField(null);
+                  const val = e.target.value.replace(',', '.');
+                  if (val === '' || /^\d*\.?\d{0,2}$/.test(val)) {
+                    handleValorTotalChange(val);
+                    setFieldError(null);
+                    setErrorField(null);
+                  }
                 }}
                 className="flex-1 min-h-[44px]"
               />
@@ -334,11 +336,16 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
               <Label>Nº de Parcelas</Label>
               <Input
                 ref={parcelasRef}
-                type="number"
-                min="1"
+                type="text"
+                inputMode="numeric"
                 placeholder=""
                 value={quantidadeParcelas}
-                onChange={(e) => { handleParcelasChange(e.target.value); setFieldError(null); setErrorField(null); }}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '');
+                  handleParcelasChange(val);
+                  setFieldError(null);
+                  setErrorField(null);
+                }}
                 className="min-h-[44px]"
               />
             </div>
@@ -346,12 +353,18 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
               <Label>Valor da Parcela</Label>
               <Input
                 ref={valorParcelaRef}
-                type="number"
-                step="0.01"
-                min="0"
+                type="text"
+                inputMode="decimal"
                 placeholder="0.00"
                 value={valorParcela}
-                onChange={(e) => { setValorParcela(e.target.value); setFieldError(null); setErrorField(null); }}
+                onChange={(e) => {
+                  const val = e.target.value.replace(',', '.');
+                  if (val === '' || /^\d*\.?\d{0,2}$/.test(val)) {
+                    setValorParcela(val);
+                    setFieldError(null);
+                    setErrorField(null);
+                  }
+                }}
                 className="min-h-[44px]"
               />
               <p className="text-[10px] text-muted-foreground">Valor pago mensalmente</p>
@@ -383,12 +396,16 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
                 Taxa de Juros (%)
               </Label>
               <Input
-                type="number"
-                step="0.01"
-                min="0"
+                type="text"
+                inputMode="decimal"
                 placeholder="2.5"
                 value={taxaJuros}
-                onChange={(e) => setTaxaJuros(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value.replace(',', '.');
+                  if (val === '' || /^\d*\.?\d{0,2}$/.test(val)) {
+                    setTaxaJuros(val);
+                  }
+                }}
                 className="min-h-[44px]"
               />
               <p className="text-[10px] text-muted-foreground">Ajuda a ver o custo real</p>

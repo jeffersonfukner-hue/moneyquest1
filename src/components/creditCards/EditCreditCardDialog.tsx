@@ -124,11 +124,15 @@ export const EditCreditCardDialog = ({ open, onOpenChange, card, onUpdate }: Edi
           <div className="space-y-2">
             <Label>{t('creditCards.limit', 'Limite Total')}</Label>
             <Input
-              type="number"
-              step="0.01"
-              min="0"
+              type="text"
+              inputMode="decimal"
               value={totalLimit}
-              onChange={(e) => setTotalLimit(e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value.replace(',', '.');
+                if (val === '' || /^\d*\.?\d{0,2}$/.test(val)) {
+                  setTotalLimit(val);
+                }
+              }}
               className="min-h-[44px]"
             />
           </div>

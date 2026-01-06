@@ -181,12 +181,16 @@ export const EditTransferDialog = ({
                   </SelectContent>
                 </Select>
                 <Input
-                  type="number"
+                  type="text"
+                  inputMode="decimal"
                   value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(',', '.');
+                    if (val === '' || /^\d*\.?\d{0,2}$/.test(val)) {
+                      setAmount(val);
+                    }
+                  }}
                   placeholder="0.00"
-                  step="0.01"
-                  min="0"
                   className="flex-1"
                 />
               </div>
