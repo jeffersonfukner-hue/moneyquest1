@@ -34,6 +34,7 @@ export const AddWalletDialog = ({ open, onOpenChange, onWalletCreated }: AddWall
   const { addWallet } = useWallets();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCustomInstitution, setShowCustomInstitution] = useState(false);
+  const [initialBalanceDisplay, setInitialBalanceDisplay] = useState('');
 
   const [formData, setFormData] = useState<WalletFormData>({
     name: '',
@@ -77,7 +78,14 @@ export const AddWalletDialog = ({ open, onOpenChange, onWalletCreated }: AddWall
     if (!formData.name.trim()) return;
 
     setIsSubmitting(true);
-    const wallet = await addWallet(formData);
+    const parsedBalance = initialBalanceDisplay === '' || initialBalanceDisplay === '-' 
+      ? 0 
+      : parseFloat(initialBalanceDisplay) || 0;
+    
+    const wallet = await addWallet({
+      ...formData,
+      initial_balance: parsedBalance,
+    });
     setIsSubmitting(false);
 
     if (wallet) {
@@ -98,6 +106,7 @@ export const AddWalletDialog = ({ open, onOpenChange, onWalletCreated }: AddWall
       color: '#3B82F6',
     });
     setShowCustomInstitution(false);
+    setInitialBalanceDisplay('');
   };
 
   const walletTypes: WalletType[] = ['checking', 'savings', 'credit', 'investment', 'cash', 'other'];
@@ -238,14 +247,11 @@ export const AddWalletDialog = ({ open, onOpenChange, onWalletCreated }: AddWall
               id="initial-balance"
               type="text"
               inputMode="decimal"
-              value={formData.initial_balance || ''}
+              value={initialBalanceDisplay}
               onChange={(e) => {
                 const val = e.target.value.replace(',', '.');
-                if (val === '' || /^-?\d*\.?\d{0,2}$/.test(val)) {
-                  setFormData(prev => ({ 
-                    ...prev, 
-                    initial_balance: val === '' ? 0 : parseFloat(val) || 0 
-                  }));
+                if (val === '' || val === '-' || /^-?\d*\.?\d{0,2}$/.test(val)) {
+                  setInitialBalanceDisplay(val);
                 }
               }}
               placeholder="0.00"
