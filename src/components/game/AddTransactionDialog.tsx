@@ -890,13 +890,12 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
               );
             })()}
 
-            {/* Supplier field - for all expense transactions */}
-            {type === 'EXPENSE' && (
-              <SupplierAutocomplete
-                value={supplier}
-                onChange={setSupplier}
-              />
-            )}
+            {/* Supplier/Source field - for all transactions (expenses and income) */}
+            <SupplierAutocomplete
+              value={supplier}
+              onChange={setSupplier}
+              isIncome={type === 'INCOME'}
+            />
 
           <div className="space-y-2">
             <Label htmlFor="description" className="flex items-center gap-1">

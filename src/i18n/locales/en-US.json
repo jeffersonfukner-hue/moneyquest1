@@ -6,6 +6,8 @@
     "changeCard": "Change",
     "supplier": "Supplier",
     "supplierPlaceholder": "E.g.: AMAZON, WALMART, UBER...",
+    "incomeSource": "Income Source",
+    "incomeSourcePlaceholder": "E.g.: COMPANY X, CLIENT Y, BANK...",
     "transferDetected": "This looks like a transfer between accounts.",
     "transferSuggestion": "Use the Transfer feature in Wallets to keep your balances accurate and avoid inflating income/expenses.",
     "goToTransfers": "Go to Transfers →"

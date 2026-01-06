@@ -6,6 +6,8 @@
     "changeCard": "Alterar",
     "supplier": "Fornecedor",
     "supplierPlaceholder": "Ex: AMAZON, WORTEN, UBER...",
+    "incomeSource": "Origem da Receita",
+    "incomeSourcePlaceholder": "Ex: EMPRESA X, CLIENTE Y, BANCO...",
     "transferDetected": "Isto parece uma transferência entre contas.",
     "transferSuggestion": "Use a funcionalidade de Transferência nas Carteiras para manter os seus saldos corretos e não inflar receitas/despesas.",
     "goToTransfers": "Ir para Transferências →"

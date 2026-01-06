@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Store, ChevronDown } from 'lucide-react';
+import { Store, ChevronDown, Building2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
@@ -11,9 +11,10 @@ interface SupplierAutocompleteProps {
   value: string;
   onChange: (value: string) => void;
   className?: string;
+  isIncome?: boolean;
 }
 
-export const SupplierAutocomplete = ({ value, onChange, className }: SupplierAutocompleteProps) => {
+export const SupplierAutocomplete = ({ value, onChange, className, isIncome = false }: SupplierAutocompleteProps) => {
   const { t } = useTranslation();
   const { suppliers, searchSuppliers } = useSuppliers();
   const { formatCurrency } = useCurrency();
@@ -65,16 +66,26 @@ export const SupplierAutocomplete = ({ value, onChange, className }: SupplierAut
     }
   };
 
+  const label = isIncome 
+    ? t('transactions.incomeSource', 'Origem da Receita')
+    : t('transactions.supplier', 'Fornecedor');
+  
+  const placeholder = isIncome
+    ? t('transactions.incomeSourcePlaceholder', 'Ex: EMPRESA X, CLIENTE Y, NUBANK...')
+    : t('transactions.supplierPlaceholder', 'Ex: AMAZON, IFOOD, UBER...');
+
+  const Icon = isIncome ? Building2 : Store;
+
   return (
     <div ref={containerRef} className={cn("space-y-2 relative", className)}>
       <Label htmlFor="supplier" className="flex items-center gap-1">
-        {t('transactions.supplier', 'Fornecedor')}
+        {label}
       </Label>
       <div className="relative">
         <Input
           ref={inputRef}
           id="supplier"
-          placeholder={t('transactions.supplierPlaceholder', 'Ex: AMAZON, IFOOD, UBER...')}
+          placeholder={placeholder}
           value={value}
           onChange={handleInputChange}
           onFocus={handleFocus}
@@ -106,7 +117,7 @@ export const SupplierAutocomplete = ({ value, onChange, className }: SupplierAut
               onClick={() => handleSelect(supplier.name)}
             >
               <div className="flex items-center gap-2 min-w-0">
-                <Store className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                <Icon className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                 <span className="truncate font-medium">{supplier.name}</span>
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground flex-shrink-0">
