@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useController } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
@@ -87,6 +87,52 @@ const MONTHS = [
   { value: 11, label: 'november' },
   { value: 12, label: 'december' },
 ];
+
+// Separate component for amount input to use hooks properly
+const AmountInput = ({ control }: { control: any }) => {
+  const { t } = useTranslation();
+  const { field } = useController({ control, name: 'amount' });
+  const [displayValue, setDisplayValue] = useState(
+    field.value === 0 ? '' : String(field.value)
+  );
+
+  useEffect(() => {
+    setDisplayValue(field.value === 0 ? '' : String(field.value));
+  }, [field.value]);
+
+  return (
+    <FormItem>
+      <FormLabel>{t('transactions.amount')}</FormLabel>
+      <FormControl>
+        <Input
+          type="text"
+          inputMode="decimal"
+          placeholder="0,00"
+          value={displayValue}
+          onChange={(e) => {
+            const val = e.target.value.replace(',', '.');
+            if (val === '' || /^\d*\.?\d*$/.test(val)) {
+              setDisplayValue(e.target.value);
+              const parsed = parseFloat(val);
+              if (!isNaN(parsed)) {
+                field.onChange(parsed);
+              } else if (val === '') {
+                field.onChange(0);
+              }
+            }
+          }}
+          onBlur={() => {
+            const parsed = parseFloat(displayValue.replace(',', '.'));
+            const finalValue = isNaN(parsed) ? 0 : parsed;
+            field.onChange(finalValue);
+            setDisplayValue(finalValue === 0 ? '' : String(finalValue));
+          }}
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  );
+};
 
 export const ScheduledTransactionDialog = ({
   open,
@@ -282,35 +328,7 @@ export const ScheduledTransactionDialog = ({
             />
 
             {/* Amount */}
-            <FormField
-              control={form.control}
-              name="amount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('transactions.amount')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      inputMode="decimal"
-                      placeholder="0.00"
-                      className="[appearance:textfield]"
-                      value={field.value === 0 ? '' : field.value}
-                      onChange={(e) => {
-                        const val = e.target.value.replace(',', '.');
-                        if (val === '' || /^\d*\.?\d*$/.test(val)) {
-                          field.onChange(val === '' ? 0 : parseFloat(val) || val);
-                        }
-                      }}
-                      onBlur={(e) => {
-                        const parsed = parseFloat(e.target.value.replace(',', '.'));
-                        field.onChange(isNaN(parsed) ? 0 : parsed);
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <AmountInput control={form.control} />
 
             {/* Category */}
             <FormField
