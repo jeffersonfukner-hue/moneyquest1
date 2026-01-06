@@ -98,10 +98,13 @@ export const EditTransactionDialog = ({
 
   const filteredCategories = categories.filter(c => c.type === type);
 
+  // Check if this is a credit card transaction (doesn't need wallet)
+  const isCardTransaction = !!(transaction as any).credit_card_id;
+
   const isDescriptionValid = description.trim().length > 0;
   const isAmountValid = parseFloat(amount) > 0;
   const isCategoryValid = category.length > 0 && category !== '__new__';
-  const isWalletValid = !!walletId;
+  const isWalletValid = isCardTransaction || !!walletId;
 
   const handleSubmit = async () => {
     setAttemptedSubmit(true);
@@ -155,39 +158,41 @@ export const EditTransactionDialog = ({
           </DialogHeader>
 
           <div className="space-y-4 py-4">
-            {/* Type Toggle */}
-            <div className="space-y-2">
-              <Label>{t('transactions.type')}</Label>
-              <ToggleGroup
-                type="single"
-                value={type}
-                onValueChange={(v) => v && setType(v as TransactionType)}
-                className="grid grid-cols-2 gap-2"
-              >
-                <ToggleGroupItem
-                  value="EXPENSE"
-                  className={cn(
-                    "flex-1 py-3 rounded-xl border-2 transition-all",
-                    type === 'EXPENSE'
-                      ? "border-expense bg-expense/10 text-expense"
-                      : "border-border"
-                  )}
+            {/* Type Toggle - hide for card transactions */}
+            {!isCardTransaction && (
+              <div className="space-y-2">
+                <Label>{t('transactions.type')}</Label>
+                <ToggleGroup
+                  type="single"
+                  value={type}
+                  onValueChange={(v) => v && setType(v as TransactionType)}
+                  className="grid grid-cols-2 gap-2"
                 >
-                  {t('transactions.expense')}
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  value="INCOME"
-                  className={cn(
-                    "flex-1 py-3 rounded-xl border-2 transition-all",
-                    type === 'INCOME'
-                      ? "border-income bg-income/10 text-income"
-                      : "border-border"
-                  )}
-                >
-                  {t('transactions.income')}
-                </ToggleGroupItem>
-              </ToggleGroup>
-            </div>
+                  <ToggleGroupItem
+                    value="EXPENSE"
+                    className={cn(
+                      "flex-1 py-3 rounded-xl border-2 transition-all",
+                      type === 'EXPENSE'
+                        ? "border-expense bg-expense/10 text-expense"
+                        : "border-border"
+                    )}
+                  >
+                    {t('transactions.expense')}
+                  </ToggleGroupItem>
+                  <ToggleGroupItem
+                    value="INCOME"
+                    className={cn(
+                      "flex-1 py-3 rounded-xl border-2 transition-all",
+                      type === 'INCOME'
+                        ? "border-income bg-income/10 text-income"
+                        : "border-border"
+                    )}
+                  >
+                    {t('transactions.income')}
+                  </ToggleGroupItem>
+                </ToggleGroup>
+              </div>
+            )}
 
             {/* Supplier - for expenses only */}
             {type === 'EXPENSE' && (
@@ -296,26 +301,28 @@ export const EditTransactionDialog = ({
               )}
             </div>
 
-            {/* Wallet */}
-            <div className="space-y-2">
-              <Label className="flex items-center gap-1">
-                {t('wallets.wallet')}
-                <span className="text-destructive">*</span>
-              </Label>
-              <WalletSelector
-                wallets={activeWallets}
-                selectedWalletId={walletId}
-                onSelect={setWalletId}
-                onWalletCreated={(wallet) => {
-                  refetchWallets();
-                  setWalletId(wallet.id);
-                }}
-                required
-              />
-              {attemptedSubmit && !isWalletValid && (
-                <ValidationMessage message={t('validation.walletRequired')} />
-              )}
-            </div>
+            {/* Wallet - hide for card transactions */}
+            {!isCardTransaction && (
+              <div className="space-y-2">
+                <Label className="flex items-center gap-1">
+                  {t('wallets.wallet')}
+                  <span className="text-destructive">*</span>
+                </Label>
+                <WalletSelector
+                  wallets={activeWallets}
+                  selectedWalletId={walletId}
+                  onSelect={setWalletId}
+                  onWalletCreated={(wallet) => {
+                    refetchWallets();
+                    setWalletId(wallet.id);
+                  }}
+                  required
+                />
+                {attemptedSubmit && !isWalletValid && (
+                  <ValidationMessage message={t('validation.walletRequired')} />
+                )}
+              </div>
+            )}
 
             {/* Date */}
             <div className="space-y-2">
