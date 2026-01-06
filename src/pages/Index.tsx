@@ -36,6 +36,7 @@ import { XPNotification } from '@/components/game/XPNotification';
 import { SessionSummaryCard } from '@/components/game/SessionSummaryCard';
 import { PersonalRewardsCard } from '@/components/game/PersonalRewardsCard';
 import { LevelUnlocksCard } from '@/components/game/LevelUnlocksCard';
+import { ShopQuickAccessCard } from '@/components/shop/ShopQuickAccessCard';
 import { BottomNavigation, type TabId } from '@/components/navigation/BottomNavigation';
 import { MobileHeader } from '@/components/navigation/MobileHeader';
 import { AICoachCard } from '@/components/ai/AICoachCard';
@@ -193,6 +194,7 @@ const Index = () => {
             
             <DailyRewardBanner onClaimClick={() => setShowRewardDialog(true)} />
             <LevelProgress profile={profile} />
+            <ShopQuickAccessCard />
             <StatsCards profile={profile} />
             
             {/* Session summary - appears after finishing transaction session */}
