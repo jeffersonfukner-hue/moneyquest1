@@ -6,6 +6,8 @@
     "changeCard": "Cambiar",
     "supplier": "Proveedor",
     "supplierPlaceholder": "Ej: AMAZON, MERCADOLIBRE, UBER...",
+    "incomeSource": "Origen del Ingreso",
+    "incomeSourcePlaceholder": "Ej: EMPRESA X, CLIENTE Y, BANCO...",
     "transferDetected": "Esto parece una transferencia entre cuentas.",
     "transferSuggestion": "Usa la función de Transferencia en Billeteras para mantener tus saldos correctos y no inflar ingresos/gastos.",
     "goToTransfers": "Ir a Transferencias →"
