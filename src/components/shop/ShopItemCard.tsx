@@ -17,13 +17,19 @@ interface ShopItemCardProps {
 
 // Map theme items to CSS class names for preview
 const THEME_CLASS_MAP: Record<string, string> = {
+  // Dark themes
   'dark_finance': 'theme-dark-finance',
   'neon_budget': 'theme-neon-budget',
-  'minimal_white_pro': 'theme-minimal-white',
   'black_card': 'theme-black-card',
   'galactic_wealth': 'theme-galactic-wealth',
   'executive_diamond': 'theme-executive-diamond',
   'black_friday': 'theme-black-friday',
+  // Light themes
+  'minimal_white_pro': 'theme-minimal-white',
+  'ocean_breeze': 'theme-ocean-breeze',
+  'sunrise_gold': 'theme-sunrise-gold',
+  'forest_light': 'theme-forest-light',
+  'lavender_dream': 'theme-lavender-dream',
 };
 
 export const ShopItemCard = ({ 
