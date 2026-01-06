@@ -44,6 +44,67 @@ export type Database = {
         }
         Relationships: []
       }
+      active_effects: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          data_expiracao: string | null
+          id: string
+          metadata: Json | null
+          origem_compra_id: string | null
+          origem_item_id: string | null
+          tipo_efeito: string
+          usuario_id: string
+          valor: number | null
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          data_expiracao?: string | null
+          id?: string
+          metadata?: Json | null
+          origem_compra_id?: string | null
+          origem_item_id?: string | null
+          tipo_efeito: string
+          usuario_id: string
+          valor?: number | null
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          data_expiracao?: string | null
+          id?: string
+          metadata?: Json | null
+          origem_compra_id?: string | null
+          origem_item_id?: string | null
+          tipo_efeito?: string
+          usuario_id?: string
+          valor?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "active_effects_origem_compra_id_fkey"
+            columns: ["origem_compra_id"]
+            isOneToOne: false
+            referencedRelation: "purchases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "active_effects_origem_item_id_fkey"
+            columns: ["origem_item_id"]
+            isOneToOne: false
+            referencedRelation: "shop_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "active_effects_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_logs: {
         Row: {
           action_type: string
@@ -918,6 +979,7 @@ export type Database = {
           level: number
           level_title: string
           locale: string
+          mq_coins: number
           notification_preferences: Json
           onboarding_completed: boolean
           premium_override: Database["public"]["Enums"]["premium_override_type"]
@@ -940,6 +1002,7 @@ export type Database = {
           unlocked_features: Json | null
           updated_at: string
           xp: number
+          xp_conversivel: number
         }
         Insert: {
           avatar_icon?: string
@@ -957,6 +1020,7 @@ export type Database = {
           level?: number
           level_title?: string
           locale?: string
+          mq_coins?: number
           notification_preferences?: Json
           onboarding_completed?: boolean
           premium_override?: Database["public"]["Enums"]["premium_override_type"]
@@ -979,6 +1043,7 @@ export type Database = {
           unlocked_features?: Json | null
           updated_at?: string
           xp?: number
+          xp_conversivel?: number
         }
         Update: {
           avatar_icon?: string
@@ -996,6 +1061,7 @@ export type Database = {
           level?: number
           level_title?: string
           locale?: string
+          mq_coins?: number
           notification_preferences?: Json
           onboarding_completed?: boolean
           premium_override?: Database["public"]["Enums"]["premium_override_type"]
@@ -1018,11 +1084,60 @@ export type Database = {
           unlocked_features?: Json | null
           updated_at?: string
           xp?: number
+          xp_conversivel?: number
         }
         Relationships: [
           {
             foreignKeyName: "profiles_referred_by_fkey"
             columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      purchases: {
+        Row: {
+          created_at: string
+          data_compra: string
+          data_expiracao: string | null
+          id: string
+          item_id: string
+          preco_pago: number
+          status: string
+          usuario_id: string
+        }
+        Insert: {
+          created_at?: string
+          data_compra?: string
+          data_expiracao?: string | null
+          id?: string
+          item_id: string
+          preco_pago?: number
+          status?: string
+          usuario_id: string
+        }
+        Update: {
+          created_at?: string
+          data_compra?: string
+          data_expiracao?: string | null
+          id?: string
+          item_id?: string
+          preco_pago?: number
+          status?: string
+          usuario_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchases_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "shop_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchases_usuario_id_fkey"
+            columns: ["usuario_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -1379,6 +1494,60 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      shop_items: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          descricao: string | null
+          duracao_em_horas: number | null
+          icone: string | null
+          id: string
+          imagem_url: string | null
+          metadata: Json | null
+          nome: string
+          preco_mq_coins: number
+          premium_only: boolean
+          raridade: string
+          tipo: string
+          updated_at: string
+          visivel_para_free: boolean
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          descricao?: string | null
+          duracao_em_horas?: number | null
+          icone?: string | null
+          id?: string
+          imagem_url?: string | null
+          metadata?: Json | null
+          nome: string
+          preco_mq_coins?: number
+          premium_only?: boolean
+          raridade?: string
+          tipo: string
+          updated_at?: string
+          visivel_para_free?: boolean
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          descricao?: string | null
+          duracao_em_horas?: number | null
+          icone?: string | null
+          id?: string
+          imagem_url?: string | null
+          metadata?: Json | null
+          nome?: string
+          preco_mq_coins?: number
+          premium_only?: boolean
+          raridade?: string
+          tipo?: string
+          updated_at?: string
+          visivel_para_free?: boolean
+        }
+        Relationships: []
       }
       support_messages: {
         Row: {
@@ -2006,6 +2175,41 @@ export type Database = {
         }
         Relationships: []
       }
+      xp_conversion_log: {
+        Row: {
+          data: string
+          id: string
+          mq_coins_recebidos: number
+          taxa_conversao: number
+          usuario_id: string
+          xp_gasto: number
+        }
+        Insert: {
+          data?: string
+          id?: string
+          mq_coins_recebidos: number
+          taxa_conversao?: number
+          usuario_id: string
+          xp_gasto: number
+        }
+        Update: {
+          data?: string
+          id?: string
+          mq_coins_recebidos?: number
+          taxa_conversao?: number
+          usuario_id?: string
+          xp_gasto?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "xp_conversion_log_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       xp_history: {
         Row: {
           created_at: string | null
@@ -2122,6 +2326,7 @@ export type Database = {
           level: number
           level_title: string
           locale: string
+          mq_coins: number
           notification_preferences: Json
           onboarding_completed: boolean
           premium_override: Database["public"]["Enums"]["premium_override_type"]
@@ -2144,6 +2349,7 @@ export type Database = {
           unlocked_features: Json | null
           updated_at: string
           xp: number
+          xp_conversivel: number
         }[]
         SetofOptions: {
           from: "*"
@@ -2386,6 +2592,7 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: undefined
       }
+      expire_old_effects: { Args: never; Returns: undefined }
       get_active_campaigns: {
         Args: { p_audience?: string }
         Returns: {
