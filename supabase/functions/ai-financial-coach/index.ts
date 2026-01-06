@@ -207,19 +207,21 @@ serve(async (req) => {
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      { auth: { persistSession: false } }
+      { global: { headers: { Authorization: authHeader } } }
     );
 
     const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
+    const { data: claimsData, error: claimsError } = await supabaseClient.auth.getClaims(token);
     
-    if (userError || !user) {
-      console.error('Auth error:', userError?.message);
+    if (claimsError || !claimsData?.claims?.sub) {
+      console.error('Auth error:', claimsError?.message || 'No sub claim');
       return new Response(JSON.stringify({ error: 'unauthorized', message: 'Invalid or expired token' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    const userId = claimsData.claims.sub;
 
     // Parse and validate input
     const rawBody = await req.json();
@@ -262,7 +264,7 @@ serve(async (req) => {
       },
     ];
 
-    console.log(`AI Coach request: user=${user.id}, type=${requestType}, language=${language}, transactions=${transactions.length}`);
+    console.log(`AI Coach request: user=${userId}, type=${requestType}, language=${language}, transactions=${transactions.length}`);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
