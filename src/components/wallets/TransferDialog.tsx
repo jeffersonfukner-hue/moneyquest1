@@ -152,7 +152,16 @@ export const TransferDialog = ({ open, onOpenChange, preselectedWallet }: Transf
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('wallets.fromWallet')}</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select 
+                    onValueChange={(value) => {
+                      if (value === '__add_new__') {
+                        setShowAddWalletDialog(true);
+                      } else {
+                        field.onChange(value);
+                      }
+                    }} 
+                    value={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder={t('wallets.selectWallet')} />
@@ -170,18 +179,14 @@ export const TransferDialog = ({ open, onOpenChange, preselectedWallet }: Transf
                           </div>
                         </SelectItem>
                       ))}
+                      <SelectItem value="__add_new__" className="text-primary">
+                        <div className="flex items-center gap-2">
+                          <Plus className="w-4 h-4" />
+                          <span>{t('wallets.addWallet')}</span>
+                        </div>
+                      </SelectItem>
                     </SelectContent>
                   </Select>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="w-full mt-1 text-primary"
-                    onClick={() => setShowAddWalletDialog(true)}
-                  >
-                    <Plus className="w-4 h-4 mr-1" />
-                    {t('wallets.addWallet')}
-                  </Button>
                   <FormMessage />
                 </FormItem>
               )}
@@ -200,7 +205,13 @@ export const TransferDialog = ({ open, onOpenChange, preselectedWallet }: Transf
                 <FormItem>
                   <FormLabel>{t('wallets.toWallet')}</FormLabel>
                   <Select 
-                    onValueChange={field.onChange} 
+                    onValueChange={(value) => {
+                      if (value === '__add_new__') {
+                        setShowAddWalletDialog(true);
+                      } else {
+                        field.onChange(value);
+                      }
+                    }} 
                     value={field.value}
                     disabled={!watchFromWallet}
                   >
@@ -221,6 +232,12 @@ export const TransferDialog = ({ open, onOpenChange, preselectedWallet }: Transf
                           </div>
                         </SelectItem>
                       ))}
+                      <SelectItem value="__add_new__" className="text-primary">
+                        <div className="flex items-center gap-2">
+                          <Plus className="w-4 h-4" />
+                          <span>{t('wallets.addWallet')}</span>
+                        </div>
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
