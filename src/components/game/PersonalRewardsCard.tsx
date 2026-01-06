@@ -148,11 +148,13 @@ export const PersonalRewardsCard = () => {
                   <div>
                     <Label>Meta de XP</Label>
                     <Input
-                      type="number"
-                      min={100}
-                      step={100}
+                      type="text"
+                      inputMode="numeric"
                       value={newReward.xp_threshold}
-                      onChange={(e) => setNewReward({ ...newReward, xp_threshold: parseInt(e.target.value) || 500 })}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '');
+                        setNewReward({ ...newReward, xp_threshold: parseInt(val) || 100 });
+                      }}
                     />
                     <p className="text-xs text-muted-foreground mt-1">
                       Você tem {currentXP.toLocaleString()} XP atualmente

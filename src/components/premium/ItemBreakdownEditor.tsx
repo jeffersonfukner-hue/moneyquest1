@@ -97,12 +97,16 @@ export const ItemBreakdownEditor = ({
                 className="flex-1 h-9 text-sm"
               />
               <Input
-                type="number"
-                step="0.01"
-                min="0"
+                type="text"
+                inputMode="decimal"
                 placeholder="0,00"
                 value={item.amount || ''}
-                onChange={(e) => updateItem(item.id, 'amount', e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value.replace(',', '.');
+                  if (val === '' || /^\d*\.?\d{0,2}$/.test(val)) {
+                    updateItem(item.id, 'amount', val);
+                  }
+                }}
                 className="w-24 h-9 text-sm text-right"
               />
               <Button

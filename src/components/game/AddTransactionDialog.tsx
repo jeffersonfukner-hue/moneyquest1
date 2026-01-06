@@ -1034,12 +1034,16 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
               </Select>
               <Input
                 id="amount"
-                type="number"
-                step="0.01"
-                min="0.01"
+                type="text"
+                inputMode="decimal"
                 placeholder="0.00"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value.replace(',', '.');
+                  if (val === '' || /^\d*\.?\d{0,2}$/.test(val)) {
+                    setAmount(val);
+                  }
+                }}
                 onBlur={() => setTouched(prev => ({ ...prev, amount: true }))}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') e.preventDefault();

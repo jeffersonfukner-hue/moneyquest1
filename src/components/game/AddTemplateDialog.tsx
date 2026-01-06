@@ -185,12 +185,16 @@ export const AddTemplateDialog = ({ open, onOpenChange }: AddTemplateDialogProps
               </Select>
               <Input
                 id="template-amount"
-                type="number"
-                step="0.01"
-                min="0.01"
+                type="text"
+                inputMode="decimal"
                 placeholder="0.00"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value.replace(',', '.');
+                  if (val === '' || /^\d*\.?\d{0,2}$/.test(val)) {
+                    setAmount(val);
+                  }
+                }}
                 required
                 className="min-h-[44px] flex-1"
               />
