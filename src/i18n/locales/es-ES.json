@@ -5,7 +5,10 @@
     "addFirstCard": "Agregue su primera tarjeta para comenzar",
     "changeCard": "Cambiar",
     "supplier": "Proveedor",
-    "supplierPlaceholder": "Ej: AMAZON, MERCADOLIBRE, UBER..."
+    "supplierPlaceholder": "Ej: AMAZON, MERCADOLIBRE, UBER...",
+    "transferDetected": "Esto parece una transferencia entre cuentas.",
+    "transferSuggestion": "Usa la función de Transferencia en Billeteras para mantener tus saldos correctos y no inflar ingresos/gastos.",
+    "goToTransfers": "Ir a Transferencias →"
   },
   "creditCards": {
     "viewInvoices": "Ver Facturas",

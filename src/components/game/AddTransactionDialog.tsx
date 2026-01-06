@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Plus, ArrowUpCircle, ArrowDownCircle, CalendarIcon, Coins, AlertCircle, List, Scan, Crown, ChevronDown, ChevronUp, Wallet, CreditCard, Landmark } from 'lucide-react';
+import { Plus, ArrowUpCircle, ArrowDownCircle, CalendarIcon, Coins, AlertCircle, List, Scan, Crown, ChevronDown, ChevronUp, Wallet, CreditCard, Landmark, ArrowRightLeft } from 'lucide-react';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
@@ -147,6 +147,37 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
     wallet: sourceType !== 'card' && sourceType !== 'loan' && !walletId,
   };
   const hasErrors = errors.description || errors.amount || errors.category || errors.wallet;
+
+  // Detect if description looks like a transfer between accounts
+  const looksLikeTransfer = useMemo(() => {
+    if (!description.trim()) return false;
+    const desc = description.toUpperCase();
+    const transferPatterns = [
+      'ENVIO',
+      'TRANSFERÊNCIA',
+      'TRANSFERENCIA',
+      'PIX ENTRE',
+      'MOVIMENTAÇÃO',
+      'MOVIMENTACAO',
+      'PARA O NUBANK',
+      'PARA NUBANK',
+      'PARA O INTER',
+      'PARA INTER',
+      'PARA O ITAU',
+      'PARA ITAU',
+      'PARA O BRADESCO',
+      'PARA BRADESCO',
+      'PARA O SANTANDER',
+      'PARA SANTANDER',
+      'PARA O C6',
+      'PARA C6',
+      'RECEBIDO DE',
+      'ENTRE CONTAS',
+      'PARA CONTA',
+      'DA CONTA',
+    ];
+    return transferPatterns.some(pattern => desc.includes(pattern));
+  }, [description]);
 
   // Check if selected category has a goal
   const categoryHasGoal = useMemo(() => {
@@ -879,6 +910,33 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
               show={(touched.description || attemptedSubmit) && errors.description}
               message={t('validation.descriptionRequired')}
             />
+            
+            {/* Transfer detection warning */}
+            {looksLikeTransfer && sourceType === 'account' && (
+              <div className="flex items-start gap-2 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg mt-2">
+                <ArrowRightLeft className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-blue-700 dark:text-blue-400">
+                    {t('transactions.transferDetected', 'Isso parece uma transferência entre contas.')}
+                  </p>
+                  <p className="text-xs text-blue-600/70 dark:text-blue-500/70 mt-1">
+                    {t('transactions.transferSuggestion', 'Use a funcionalidade de Transferência na aba Carteiras para manter seus saldos corretos e não inflar receitas/despesas.')}
+                  </p>
+                  <Button
+                    type="button"
+                    variant="link"
+                    size="sm"
+                    className="text-blue-600 dark:text-blue-400 p-0 h-auto mt-2"
+                    onClick={() => {
+                      handleOpenChange(false);
+                      window.location.href = '/wallets';
+                    }}
+                  >
+                    {t('transactions.goToTransfers', 'Ir para Transferências →')}
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="space-y-2">
