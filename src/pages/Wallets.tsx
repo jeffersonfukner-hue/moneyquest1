@@ -319,10 +319,9 @@ const WalletsPage = () => {
                 setShowAddLoanDialog(true);
               }} 
               className="w-full min-h-[48px]"
-              disabled={loansLoading}
             >
               <Plus className="mr-2 h-4 w-4" />
-              {loansLoading ? 'Carregando...' : 'Novo Empréstimo'}
+              Novo Empréstimo
             </Button>
 
             {loans.length === 0 ? (
