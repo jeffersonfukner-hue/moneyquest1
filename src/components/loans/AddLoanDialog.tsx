@@ -54,6 +54,9 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
   const [notas, setNotas] = useState('');
   const [loading, setLoading] = useState(false);
   const [fieldError, setFieldError] = useState<string | null>(null);
+  const [errorField, setErrorField] = useState<
+    'tipo' | 'instituicao' | 'valorTotal' | 'parcelas' | 'valorParcela' | 'vencimento' | null
+  >(null);
 
   // Refs para foco
   const tipoRef = useRef<HTMLSelectElement>(null);
@@ -108,15 +111,18 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFieldError(null);
+    setErrorField(null);
 
     // Validação com foco no primeiro campo inválido
     if (!hasTipo) {
-      setFieldError('Selecione o tipo de empréstimo');
+      setErrorField('tipo');
+      setFieldError('Campo obrigatório');
       tipoRef.current?.focus();
       return;
     }
     if (!hasInstituicao) {
-      setFieldError('Selecione ou digite a instituição');
+      setErrorField('instituicao');
+      setFieldError('Campo obrigatório');
       if (instituicaoPessoa === 'Outro') {
         instituicaoCustomRef.current?.focus();
       } else {
@@ -125,22 +131,26 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
       return;
     }
     if (!hasValorTotal) {
-      setFieldError('Informe o valor total do empréstimo');
+      setErrorField('valorTotal');
+      setFieldError('Campo obrigatório');
       valorTotalRef.current?.focus();
       return;
     }
     if (!hasParcelas) {
-      setFieldError('Informe o número de parcelas');
+      setErrorField('parcelas');
+      setFieldError('Campo obrigatório');
       parcelasRef.current?.focus();
       return;
     }
     if (!hasValorParcela) {
-      setFieldError('Informe o valor da parcela');
+      setErrorField('valorParcela');
+      setFieldError('Campo obrigatório');
       valorParcelaRef.current?.focus();
       return;
     }
     if (!hasPrimeiroVencimento) {
-      setFieldError('Informe a data do 1º vencimento');
+      setErrorField('vencimento');
+      setFieldError('Campo obrigatório');
       vencimentoRef.current?.focus();
       return;
     }
@@ -148,27 +158,33 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
     const finalInstituicao = instituicaoPessoa === 'Outro' ? instituicaoCustom : instituicaoPessoa;
 
     setLoading(true);
-    
-    const result = await onAdd({
-      valor_total: valorTotalNum,
-      tipo_emprestimo: tipoEmprestimo as Loan['tipo_emprestimo'],
-      instituicao_pessoa: finalInstituicao.trim(),
-      quantidade_parcelas: parcelasNum,
-      valor_parcela: valorParcelaNum,
-      taxa_juros: taxaJuros ? toNumber(taxaJuros) : null,
-      primeiro_vencimento: primeiroVencimento,
-      debitar_automaticamente: debitarAutomaticamente,
-      enviar_lembrete: enviarLembrete,
-      considerar_orcamento: considerarOrcamento,
-      currency: selectedCurrency,
-      notas: notas.trim() || null,
-    });
+    try {
+      const result = await onAdd({
+        valor_total: valorTotalNum,
+        tipo_emprestimo: tipoEmprestimo as Loan['tipo_emprestimo'],
+        instituicao_pessoa: finalInstituicao.trim(),
+        quantidade_parcelas: parcelasNum,
+        valor_parcela: valorParcelaNum,
+        taxa_juros: taxaJuros ? toNumber(taxaJuros) : null,
+        primeiro_vencimento: primeiroVencimento,
+        debitar_automaticamente: debitarAutomaticamente,
+        enviar_lembrete: enviarLembrete,
+        considerar_orcamento: considerarOrcamento,
+        currency: selectedCurrency,
+        notas: notas.trim() || null,
+      });
 
-    setLoading(false);
-
-    if (result) {
-      resetForm();
-      onOpenChange(false);
+      if (result) {
+        resetForm();
+        onOpenChange(false);
+      } else {
+        setFieldError('Não foi possível cadastrar. Tente novamente.');
+      }
+    } catch (err) {
+      console.error('[AddLoanDialog] Erro ao cadastrar empréstimo:', err);
+      setFieldError('Erro ao cadastrar. Verifique os dados e tente novamente.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -218,7 +234,7 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
             <select
               ref={tipoRef}
               value={tipoEmprestimo}
-              onChange={(e) => { setTipoEmprestimo(e.target.value as Loan['tipo_emprestimo']); setFieldError(null); }}
+              onChange={(e) => { setTipoEmprestimo(e.target.value as Loan['tipo_emprestimo']); setFieldError(null); setErrorField(null); }}
               className={cn(
                 'flex h-11 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground',
                 'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ring-offset-background'
@@ -233,6 +249,9 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
                 </option>
               ))}
             </select>
+            {errorField === 'tipo' && fieldError && (
+              <p className="text-xs text-destructive font-medium">{fieldError}</p>
+            )}
           </div>
 
           {/* Instituição/Pessoa */}
@@ -241,7 +260,7 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
             <select
               ref={instituicaoRef}
               value={instituicaoPessoa}
-              onChange={(e) => { setInstituicaoPessoa(e.target.value); setFieldError(null); }}
+              onChange={(e) => { setInstituicaoPessoa(e.target.value); setFieldError(null); setErrorField(null); }}
               className={cn(
                 'flex h-11 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground',
                 'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ring-offset-background'
@@ -261,9 +280,12 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
                 ref={instituicaoCustomRef}
                 placeholder="Digite o nome da instituição ou pessoa"
                 value={instituicaoCustom}
-                onChange={(e) => { setInstituicaoCustom(e.target.value); setFieldError(null); }}
+                onChange={(e) => { setInstituicaoCustom(e.target.value); setFieldError(null); setErrorField(null); }}
                 className="min-h-[44px] mt-2"
               />
+            )}
+            {errorField === 'instituicao' && fieldError && (
+              <p className="text-xs text-destructive font-medium">{fieldError}</p>
             )}
           </div>
 
@@ -293,10 +315,17 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
                 min="0"
                 placeholder="0.00"
                 value={valorTotal}
-                onChange={(e) => { handleValorTotalChange(e.target.value); setFieldError(null); }}
+                onChange={(e) => {
+                  handleValorTotalChange(e.target.value);
+                  setFieldError(null);
+                  setErrorField(null);
+                }}
                 className="flex-1 min-h-[44px]"
               />
             </div>
+            {errorField === 'valorTotal' && fieldError && (
+              <p className="text-xs text-destructive font-medium">{fieldError}</p>
+            )}
           </div>
 
           {/* Parcelas */}
@@ -307,9 +336,9 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
                 ref={parcelasRef}
                 type="number"
                 min="1"
-                placeholder="Ex: 12"
+                placeholder=""
                 value={quantidadeParcelas}
-                onChange={(e) => { handleParcelasChange(e.target.value); setFieldError(null); }}
+                onChange={(e) => { handleParcelasChange(e.target.value); setFieldError(null); setErrorField(null); }}
                 className="min-h-[44px]"
               />
             </div>
@@ -322,12 +351,16 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
                 min="0"
                 placeholder="0.00"
                 value={valorParcela}
-                onChange={(e) => { setValorParcela(e.target.value); setFieldError(null); }}
+                onChange={(e) => { setValorParcela(e.target.value); setFieldError(null); setErrorField(null); }}
                 className="min-h-[44px]"
               />
               <p className="text-[10px] text-muted-foreground">Valor pago mensalmente</p>
             </div>
-          </div>
+           </div>
+
+           {(errorField === 'parcelas' || errorField === 'valorParcela') && fieldError && (
+             <p className="text-xs text-destructive font-medium">{fieldError}</p>
+           )}
 
           {/* Primeiro Vencimento e Taxa */}
           <div className="grid grid-cols-2 gap-3">
@@ -340,7 +373,7 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
                 ref={vencimentoRef}
                 type="date"
                 value={primeiroVencimento}
-                onChange={(e) => { setPrimeiroVencimento(e.target.value); setFieldError(null); }}
+                onChange={(e) => { setPrimeiroVencimento(e.target.value); setFieldError(null); setErrorField(null); }}
                 className="min-h-[44px]"
               />
             </div>
@@ -360,7 +393,11 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
               />
               <p className="text-[10px] text-muted-foreground">Ajuda a ver o custo real</p>
             </div>
-          </div>
+           </div>
+
+           {errorField === 'vencimento' && fieldError && (
+             <p className="text-xs text-destructive font-medium">{fieldError}</p>
+           )}
 
           {/* Opções */}
           <div className="space-y-3 pt-2 border-t border-border">
@@ -431,10 +468,9 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
             </span>
           </div>
 
-          {fieldError && (
-            <p className="text-xs text-destructive font-medium">{fieldError}</p>
-          )}
-
+           {fieldError && !errorField && (
+             <p className="text-xs text-destructive font-medium">{fieldError}</p>
+           )}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancelar
