@@ -97,11 +97,26 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!valorTotal || !tipoEmprestimo || !quantidadeParcelas || !valorParcela || !primeiroVencimento) return;
-    
+
+    if (!valorTotal || !tipoEmprestimo || !quantidadeParcelas || !valorParcela || !primeiroVencimento) {
+      console.warn('[AddLoanDialog] Form inválido (campos obrigatórios faltando)', {
+        valorTotal,
+        tipoEmprestimo,
+        quantidadeParcelas,
+        valorParcela,
+        primeiroVencimento,
+      });
+      return;
+    }
+
     const finalInstituicao = instituicaoPessoa === 'Outro' ? instituicaoCustom : instituicaoPessoa;
-    if (!finalInstituicao.trim()) return;
+    if (!finalInstituicao.trim()) {
+      console.warn('[AddLoanDialog] Form inválido (instituição vazia)', {
+        instituicaoPessoa,
+        instituicaoCustom,
+      });
+      return;
+    }
 
     setLoading(true);
     
@@ -331,6 +346,12 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
               className="min-h-[60px] resize-none"
             />
           </div>
+
+          {!isFormValid && (
+            <p className="text-xs text-muted-foreground">
+              Preencha: tipo, instituição, valor total, parcelas, valor da parcela e 1º vencimento.
+            </p>
+          )}
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
