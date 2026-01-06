@@ -604,6 +604,44 @@ export type Database = {
           },
         ]
       }
+      daily_conversion_limits: {
+        Row: {
+          coins_received: number
+          conversion_date: string
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+          xp_converted: number
+        }
+        Insert: {
+          coins_received?: number
+          conversion_date?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+          xp_converted?: number
+        }
+        Update: {
+          coins_received?: number
+          conversion_date?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+          xp_converted?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_conversion_limits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       daily_rewards: {
         Row: {
           created_at: string | null
@@ -2286,16 +2324,21 @@ export type Database = {
       }
     }
     Functions: {
-      add_user_xp: {
-        Args: {
-          p_description?: string
-          p_source: string
-          p_source_id?: string
-          p_user_id: string
-          p_xp_amount: number
-        }
-        Returns: undefined
-      }
+      add_user_xp:
+        | {
+            Args: { p_user_id: string; p_xp_amount: number }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              p_description?: string
+              p_source: string
+              p_source_id?: string
+              p_user_id: string
+              p_xp_amount: number
+            }
+            Returns: undefined
+          }
       admin_add_ip_whitelist: {
         Args: {
           p_description?: string
@@ -2598,14 +2641,16 @@ export type Database = {
         Args: { p_referred_user_id: string }
         Returns: Json
       }
-      convert_xp_to_coins: {
-        Args: {
-          p_taxa_conversao?: number
-          p_user_id: string
-          p_xp_amount: number
-        }
-        Returns: Json
-      }
+      convert_xp_to_coins:
+        | { Args: { p_user_id: string; p_xp_amount: number }; Returns: Json }
+        | {
+            Args: {
+              p_taxa_conversao?: number
+              p_user_id: string
+              p_xp_amount: number
+            }
+            Returns: Json
+          }
       create_default_categories: {
         Args: { p_user_id: string }
         Returns: undefined
@@ -2640,6 +2685,7 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      get_conversion_info: { Args: { p_user_id: string }; Returns: Json }
       get_daily_reward_status: { Args: { p_user_id: string }; Returns: Json }
       get_detailed_referral_stats: {
         Args: { p_user_id: string }
