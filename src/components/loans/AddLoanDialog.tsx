@@ -1,16 +1,16 @@
 import { useState } from 'react';
-import { Landmark, Building2, User, Calendar, Percent } from 'lucide-react';
+import { Landmark, Calendar, Percent } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { CreateLoanData, Loan } from '@/hooks/useLoans';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { SUPPORTED_CURRENCIES } from '@/i18n';
 import { SupportedCurrency } from '@/types/database';
+import { cn } from '@/lib/utils';
 import { format, addMonths } from 'date-fns';
 
 interface AddLoanDialogProps {
@@ -145,45 +145,45 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
           {/* Tipo de Empréstimo */}
           <div className="space-y-2">
             <Label>Tipo de Empréstimo</Label>
-            <Select value={tipoEmprestimo} onValueChange={(v) => setTipoEmprestimo(v as Loan['tipo_emprestimo'])}>
-              <SelectTrigger className="min-h-[44px]">
-                <SelectValue placeholder="Selecione o tipo" />
-              </SelectTrigger>
-              <SelectContent>
-                {LOAN_TYPES.map(type => (
-                  <SelectItem key={type.value} value={type.value} className="min-h-[44px]">
-                    <span className="flex items-center gap-2">
-                      <span>{type.icon}</span>
-                      {type.label}
-                    </span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <select
+              value={tipoEmprestimo}
+              onChange={(e) => setTipoEmprestimo(e.target.value as Loan['tipo_emprestimo'])}
+              className={cn(
+                'flex h-11 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground',
+                'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ring-offset-background'
+              )}
+            >
+              <option value="" disabled>
+                Selecione o tipo
+              </option>
+              {LOAN_TYPES.map((type) => (
+                <option key={type.value} value={type.value}>
+                  {type.icon} {type.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Instituição/Pessoa */}
           <div className="space-y-2">
             <Label>Instituição ou Pessoa</Label>
-            <Select value={instituicaoPessoa} onValueChange={setInstituicaoPessoa}>
-              <SelectTrigger className="min-h-[44px]">
-                <SelectValue placeholder="Selecione a instituição" />
-              </SelectTrigger>
-              <SelectContent>
-                {INSTITUTIONS.map(inst => (
-                  <SelectItem key={inst} value={inst} className="min-h-[44px]">
-                    <span className="flex items-center gap-2">
-                      {inst === 'Financeira Pessoa Física' ? (
-                        <User className="w-4 h-4" />
-                      ) : (
-                        <Building2 className="w-4 h-4" />
-                      )}
-                      {inst}
-                    </span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <select
+              value={instituicaoPessoa}
+              onChange={(e) => setInstituicaoPessoa(e.target.value)}
+              className={cn(
+                'flex h-11 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground',
+                'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ring-offset-background'
+              )}
+            >
+              <option value="" disabled>
+                Selecione a instituição
+              </option>
+              {INSTITUTIONS.map((inst) => (
+                <option key={inst} value={inst}>
+                  {inst}
+                </option>
+              ))}
+            </select>
             {instituicaoPessoa === 'Outro' && (
               <Input
                 placeholder="Digite o nome da instituição ou pessoa"
@@ -199,18 +199,20 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
             <Label>Valor Total do Empréstimo</Label>
             <p className="text-xs text-muted-foreground -mt-1">Valor total contratado, sem descontar parcelas já pagas.</p>
             <div className="flex gap-2">
-              <Select value={selectedCurrency} onValueChange={(v) => setSelectedCurrency(v as SupportedCurrency)}>
-                <SelectTrigger className="w-24 min-h-[44px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(SUPPORTED_CURRENCIES).map(([code, config]) => (
-                    <SelectItem key={code} value={code}>
-                      {config.symbol}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <select
+                value={selectedCurrency}
+                onChange={(e) => setSelectedCurrency(e.target.value as SupportedCurrency)}
+                className={cn(
+                  'h-11 w-24 rounded-md border border-input bg-background px-3 text-sm text-foreground',
+                  'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ring-offset-background'
+                )}
+              >
+                {Object.entries(SUPPORTED_CURRENCIES).map(([code, config]) => (
+                  <option key={code} value={code}>
+                    {config.symbol}
+                  </option>
+                ))}
+              </select>
               <Input
                 type="number"
                 step="0.01"
