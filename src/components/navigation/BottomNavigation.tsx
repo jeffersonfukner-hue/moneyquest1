@@ -67,17 +67,12 @@ export const BottomNavigation = ({ activeTab, onTabChange, onAddClick }: BottomN
             <button
               key={tab.id}
               onClick={() => {
-                if (tab.id === 'home') {
-                  navigate('/dashboard', { state: { tab: 'home' } });
-                } else if (tab.id === 'transactions') {
-                  // Check if we're already on dashboard
-                  if (window.location.pathname === '/dashboard') {
-                    onTabChange(tab.id);
-                  } else {
-                    navigate('/dashboard', { state: { tab: 'transactions' } });
-                  }
-                } else {
+                if (window.location.pathname === '/dashboard') {
+                  // Already on dashboard, just change tab
                   onTabChange(tab.id);
+                } else {
+                  // Navigate to dashboard with the selected tab
+                  navigate('/dashboard', { state: { tab: tab.id } });
                 }
               }}
               className={cn(
