@@ -2653,16 +2653,10 @@ export type Database = {
         Args: { p_referred_user_id: string }
         Returns: Json
       }
-      convert_xp_to_coins:
-        | { Args: { p_user_id: string; p_xp_amount: number }; Returns: Json }
-        | {
-            Args: {
-              p_taxa_conversao?: number
-              p_user_id: string
-              p_xp_amount: number
-            }
-            Returns: Json
-          }
+      convert_xp_to_coins: {
+        Args: { p_user_id: string; p_xp_amount: number }
+        Returns: Json
+      }
       create_default_categories: {
         Args: { p_user_id: string }
         Returns: undefined
