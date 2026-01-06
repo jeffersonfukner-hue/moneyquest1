@@ -30,6 +30,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useWallets } from '@/hooks/useWallets';
 import { useCategories } from '@/hooks/useCategories';
+import { useSuppliers } from '@/hooks/useSuppliers';
 import {
   useScheduledTransactions,
   CreateScheduledTransactionData,
@@ -299,6 +300,7 @@ export const ScheduledTransactionDialog = ({
   const { activeWallets } = useWallets();
   const { categories } = useCategories();
   const { profile } = useProfile();
+  const { upsertSupplier } = useSuppliers();
   const {
     createScheduledTransaction: createDefault,
     updateScheduledTransaction: updateDefault,
@@ -422,6 +424,11 @@ export const ScheduledTransactionDialog = ({
     setIsSubmitting(false);
 
     if (success) {
+      // Save supplier to table if provided (for expense transactions)
+      if (data.type === 'EXPENSE' && data.supplier?.trim()) {
+        await upsertSupplier(data.supplier, data.amount);
+      }
+      
       form.reset();
       onOpenChange(false);
     }
