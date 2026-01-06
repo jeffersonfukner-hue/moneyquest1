@@ -23,12 +23,14 @@ import { CalendarIcon, Pencil, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SupportedCurrency, Transaction } from '@/types/database';
 import { useCategories } from '@/hooks/useCategories';
+import { useSuppliers } from '@/hooks/useSuppliers';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { parseDateString, formatDateForDB } from '@/lib/dateUtils';
 import { QuickAddCategoryDialog } from '@/components/categories/QuickAddCategoryDialog';
 import { getCategoryTranslationKey } from '@/lib/gameLogic';
 import { InvoiceTransaction } from '@/hooks/useCreditCardInvoices';
 import { CreditCard } from '@/hooks/useCreditCards';
+import { SupplierAutocomplete } from '@/components/suppliers/SupplierAutocomplete';
 
 interface EditCreditCardTransactionDialogProps {
   transaction: InvoiceTransaction;
@@ -54,6 +56,8 @@ export const EditCreditCardTransactionDialog = ({
 }: EditCreditCardTransactionDialogProps) => {
   const { t } = useTranslation();
   const { dateLocale } = useLanguage();
+  const { upsertSupplier } = useSuppliers();
+  const [supplier, setSupplier] = useState((transaction as any).supplier || '');
   const [description, setDescription] = useState(transaction.description);
   const [amount, setAmount] = useState(transaction.amount.toString());
   const [category, setCategory] = useState(transaction.category);
@@ -67,6 +71,7 @@ export const EditCreditCardTransactionDialog = ({
 
   // Reset form when transaction changes
   useEffect(() => {
+    setSupplier((transaction as any).supplier || '');
     setDescription(transaction.description.toUpperCase());
     setAmount(transaction.amount.toString());
     setCategory(transaction.category);
@@ -91,15 +96,23 @@ export const EditCreditCardTransactionDialog = ({
 
     setIsSubmitting(true);
 
-    const updates: Partial<Transaction> = {
+    const updates: Partial<Transaction> & { supplier?: string | null } = {
       description: description.trim().toUpperCase(),
       amount: parseFloat(amount),
       category,
       currency,
       date: formatDateForDB(date),
+      supplier: supplier.trim() ? supplier.trim().toUpperCase() : null,
     };
 
-    const { error } = await onUpdate(transaction.id, updates);
+    const { error } = await onUpdate(transaction.id, updates as any);
+
+    if (!error) {
+      // Save supplier to table if provided
+      if (supplier.trim()) {
+        await upsertSupplier(supplier, parseFloat(amount));
+      }
+    }
 
     setIsSubmitting(false);
 
@@ -124,6 +137,12 @@ export const EditCreditCardTransactionDialog = ({
           </DialogHeader>
 
           <div className="space-y-4 py-4">
+            {/* Supplier */}
+            <SupplierAutocomplete
+              value={supplier}
+              onChange={setSupplier}
+            />
+
             {/* Description */}
             <div className="space-y-2">
               <Label htmlFor="description">{t('transactions.description', 'Descrição')}</Label>
