@@ -8,6 +8,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { SoundProvider } from "@/contexts/SoundContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { ProfileProvider } from "@/contexts/ProfileContext";
 import { LanguageGuard } from "@/components/auth/LanguageGuard";
 import { SEOProviderPublic } from "@/components/SEOProviderPublic";
 import { PWAInstallBanner } from "@/components/pwa/PWAInstallBanner";
@@ -126,18 +127,18 @@ const PageLoader = () => (
 const AuthenticatedWrapper = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<PageLoader />}>
     <LazyAuthGuard>
-      <LazyFingerprintCapture />
-      <LazyCurrencyProvider>
-        <LazySubscriptionProvider>
-          <LazyFinancialMoodProvider>
-            <LazySeasonalThemeProvider>
-              <LazySEOProvider>
-                {children}
-              </LazySEOProvider>
-            </LazySeasonalThemeProvider>
-          </LazyFinancialMoodProvider>
-        </LazySubscriptionProvider>
-      </LazyCurrencyProvider>
+      <ProfileProvider>
+        <LazyFingerprintCapture />
+        <LazyCurrencyProvider>
+          <LazySubscriptionProvider>
+            <LazyFinancialMoodProvider>
+              <LazySeasonalThemeProvider>
+                <LazySEOProvider>{children}</LazySEOProvider>
+              </LazySeasonalThemeProvider>
+            </LazyFinancialMoodProvider>
+          </LazySubscriptionProvider>
+        </LazyCurrencyProvider>
+      </ProfileProvider>
     </LazyAuthGuard>
   </Suspense>
 );

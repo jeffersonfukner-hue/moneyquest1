@@ -100,7 +100,7 @@ export const RARITY_CONFIG = {
 
 export const useShop = () => {
   const { user } = useAuth();
-  const { profile, refetch: refetchProfile } = useProfile();
+  const { profile, refetch: refetchProfile, optimisticUpdate } = useProfile();
   const [items, setItems] = useState<ShopItem[]>([]);
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [activeEffects, setActiveEffects] = useState<ActiveEffect[]>([]);
@@ -303,9 +303,15 @@ export const useShop = () => {
         return false;
       }
 
-      toast.success(`✨ Convertido: ${result.xp_spent} XP → ${result.coins_earned} MQ Coins! Novo saldo: ${result.new_balance}`);
-      
-      // Force refetch to update UI
+      // Instant UI update (no waiting for realtime / refetch)
+      if (profile && typeof result.new_balance === 'number' && typeof result.xp_spent === 'number') {
+        const newXpConversivel = Math.max(0, (profile.xp_conversivel || 0) - result.xp_spent);
+        optimisticUpdate({ mq_coins: result.new_balance, xp_conversivel: newXpConversivel });
+      }
+
+      toast.success(`✨ Convertido: ${result.xp_spent} XP → ${result.coins_earned} MQ Coins!`);
+
+      // Keep server truth in sync (fast, but not required for UI responsiveness)
       await Promise.all([
         fetchConversionInfo(),
         refetchProfile()
