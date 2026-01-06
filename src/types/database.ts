@@ -49,6 +49,9 @@ export interface Profile {
   // Discount offer fields
   discount_offer_shown: boolean;
   discount_offer_expires_at: string | null;
+  // Shop & currency fields
+  xp_conversivel: number;
+  mq_coins: number;
 }
 
 export interface Transaction {

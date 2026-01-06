@@ -81,6 +81,7 @@ const LazyReferral = lazy(() => import("./pages/Referral"));
 const LazyNotifications = lazy(() => import("./pages/Notifications"));
 const LazyDebugI18n = lazy(() => import("./pages/DebugI18n"));
 const LazyDebugAuth = lazy(() => import("./pages/DebugAuth"));
+const LazyShop = lazy(() => import("./pages/Shop"));
 
 // ===== LAZY LOADED - Admin pages =====
 const LazySuperAdminDashboard = lazy(() => import("./pages/admin/SuperAdminDashboard"));
@@ -334,6 +335,11 @@ const App = () => (
                   <Route path="/notifications" element={
                     <AuthenticatedWrapper>
                       <Suspense fallback={<PageLoader />}><LazyNotifications /></Suspense>
+                    </AuthenticatedWrapper>
+                  } />
+                  <Route path="/shop" element={
+                    <AuthenticatedWrapper>
+                      <Suspense fallback={<PageLoader />}><LazyShop /></Suspense>
                     </AuthenticatedWrapper>
                   } />
                   <Route path="/debug-i18n" element={
