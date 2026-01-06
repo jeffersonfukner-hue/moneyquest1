@@ -5,6 +5,7 @@ import { Wallet, WalletFormData, WalletType } from '@/types/wallet';
 import { SupportedCurrency } from '@/types/database';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import { emitWalletsChanged, onWalletsChanged } from '@/lib/appEvents';
 
 export const useWallets = () => {
   const { user } = useAuth();
@@ -40,6 +41,13 @@ export const useWallets = () => {
     fetchWallets();
   }, [fetchWallets]);
 
+  // Keep multiple instances of this hook in sync across the app
+  useEffect(() => {
+    return onWalletsChanged(() => {
+      fetchWallets();
+    });
+  }, [fetchWallets]);
+
   const addWallet = async (walletData: WalletFormData): Promise<Wallet | null> => {
     if (!user) return null;
 
@@ -69,6 +77,7 @@ export const useWallets = () => {
       };
 
       setWallets(prev => [...prev, newWallet]);
+      emitWalletsChanged();
       toast.success(t('wallets.created'));
       return newWallet;
     } catch (error) {
@@ -110,14 +119,16 @@ export const useWallets = () => {
 
       if (error) throw error;
 
-      setWallets(prev => prev.map(w => 
-        w.id === id ? { 
-          ...w, 
-          ...updates, 
+      setWallets(prev => prev.map(w =>
+        w.id === id ? {
+          ...w,
+          ...updates,
           current_balance: updates.initial_balance !== undefined ? newCurrentBalance : w.current_balance,
-          updated_at: new Date().toISOString() 
+          updated_at: new Date().toISOString()
         } : w
       ));
+
+      emitWalletsChanged();
       toast.success(t('wallets.updated'));
       return true;
     } catch (error) {
@@ -140,9 +151,10 @@ export const useWallets = () => {
 
       if (error) throw error;
 
-      setWallets(prev => prev.map(w => 
+      setWallets(prev => prev.map(w =>
         w.id === id ? { ...w, is_active: false } : w
       ));
+      emitWalletsChanged();
       toast.success(t('wallets.deactivated'));
       return true;
     } catch (error) {
@@ -164,9 +176,10 @@ export const useWallets = () => {
 
       if (error) throw error;
 
-      setWallets(prev => prev.map(w => 
+      setWallets(prev => prev.map(w =>
         w.id === id ? { ...w, is_active: true } : w
       ));
+      emitWalletsChanged();
       toast.success(t('wallets.reactivated'));
       return true;
     } catch (error) {
@@ -204,9 +217,10 @@ export const useWallets = () => {
         .update({ current_balance: balance })
         .eq('id', walletId);
 
-      setWallets(prev => prev.map(w => 
+      setWallets(prev => prev.map(w =>
         w.id === walletId ? { ...w, current_balance: balance } : w
       ));
+      emitWalletsChanged();
     } catch (error) {
       console.error('Error recalculating balance:', error);
     }
@@ -216,8 +230,8 @@ export const useWallets = () => {
     const wallet = wallets.find(w => w.id === walletId);
     if (!wallet) return;
 
-    const newBalance = type === 'INCOME' 
-      ? wallet.current_balance + amount 
+    const newBalance = type === 'INCOME'
+      ? wallet.current_balance + amount
       : wallet.current_balance - amount;
 
     try {
@@ -226,9 +240,10 @@ export const useWallets = () => {
         .update({ current_balance: newBalance })
         .eq('id', walletId);
 
-      setWallets(prev => prev.map(w => 
+      setWallets(prev => prev.map(w =>
         w.id === walletId ? { ...w, current_balance: newBalance } : w
       ));
+      emitWalletsChanged();
     } catch (error) {
       console.error('Error updating wallet balance:', error);
     }
@@ -239,7 +254,7 @@ export const useWallets = () => {
 
     try {
       // Update display_order for each wallet
-      const updates = walletIds.map((id, index) => 
+      const updates = walletIds.map((id, index) =>
         supabase
           .from('wallets')
           .update({ display_order: index + 1, updated_at: new Date().toISOString() })
@@ -255,12 +270,13 @@ export const useWallets = () => {
           const wallet = prev.find(w => w.id === id);
           return wallet ? { ...wallet, display_order: index + 1 } : null;
         }).filter(Boolean) as Wallet[];
-        
+
         // Add any wallets not in the reorder list (inactive ones)
         const remaining = prev.filter(w => !walletIds.includes(w.id));
         return [...reordered, ...remaining];
       });
 
+      emitWalletsChanged();
       return true;
     } catch (error) {
       console.error('Error reordering wallets:', error);

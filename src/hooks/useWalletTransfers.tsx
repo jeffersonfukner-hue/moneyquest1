@@ -6,6 +6,11 @@ import { useExchangeRates } from '@/hooks/useExchangeRates';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { SupportedCurrency } from '@/types/database';
+import {
+  emitTransfersChanged,
+  emitWalletsChanged,
+  onTransfersChanged,
+} from '@/lib/appEvents';
 
 export interface WalletTransfer {
   id: string;
@@ -131,6 +136,14 @@ export const useWalletTransfers = () => {
     fetchScheduledTransfers();
   }, [fetchTransfers, fetchScheduledTransfers]);
 
+  // Keep multiple instances of this hook in sync (dialogs vs list cards)
+  useEffect(() => {
+    return onTransfersChanged(() => {
+      fetchTransfers();
+      fetchScheduledTransfers();
+    });
+  }, [fetchTransfers, fetchScheduledTransfers]);
+
   const createTransfer = async (transferData: CreateTransferData): Promise<boolean> => {
     if (!user) return false;
 
@@ -150,8 +163,8 @@ export const useWalletTransfers = () => {
     }
 
     // Calculate amount to add to destination wallet (with conversion if needed)
-    const amountToAdd = converted_amount || 
-      (fromWallet.currency !== toWallet.currency 
+    const amountToAdd = converted_amount ||
+      (fromWallet.currency !== toWallet.currency
         ? convertCurrency(amount, fromWallet.currency, toWallet.currency)
         : amount);
 
@@ -173,7 +186,7 @@ export const useWalletTransfers = () => {
       // Subtract from source wallet
       const { error: fromError } = await supabase
         .from('wallets')
-        .update({ 
+        .update({
           current_balance: fromWallet.current_balance - amount,
           updated_at: new Date().toISOString()
         })
@@ -184,7 +197,7 @@ export const useWalletTransfers = () => {
       // Add to destination wallet (with conversion)
       const { error: toError } = await supabase
         .from('wallets')
-        .update({ 
+        .update({
           current_balance: toWallet.current_balance + amountToAdd,
           updated_at: new Date().toISOString()
         })
@@ -193,9 +206,13 @@ export const useWalletTransfers = () => {
       if (toError) throw toError;
 
       toast.success(t('wallets.transferSuccess'));
-      
+
       await Promise.all([fetchTransfers(), refetchWallets()]);
-      
+
+      // Notify the rest of the app (Wallets screen, history cards, etc.)
+      emitTransfersChanged();
+      emitWalletsChanged();
+
       return true;
     } catch (error) {
       console.error('Error creating transfer:', error);
@@ -252,7 +269,8 @@ export const useWalletTransfers = () => {
 
       toast.success(t('wallets.scheduledTransferCreated'));
       await fetchScheduledTransfers();
-      
+
+      emitTransfersChanged();
       return true;
     } catch (error) {
       console.error('Error creating scheduled transfer:', error);
@@ -272,7 +290,8 @@ export const useWalletTransfers = () => {
 
       toast.success(isActive ? t('wallets.scheduledTransferActivated') : t('wallets.scheduledTransferPaused'));
       await fetchScheduledTransfers();
-      
+
+      emitTransfersChanged();
       return true;
     } catch (error) {
       console.error('Error toggling scheduled transfer:', error);
@@ -292,7 +311,8 @@ export const useWalletTransfers = () => {
 
       toast.success(t('wallets.scheduledTransferDeleted'));
       await fetchScheduledTransfers();
-      
+
+      emitTransfersChanged();
       return true;
     } catch (error) {
       console.error('Error deleting scheduled transfer:', error);
@@ -321,7 +341,7 @@ export const useWalletTransfers = () => {
       // Revert old transfer
       await supabase
         .from('wallets')
-        .update({ 
+        .update({
           current_balance: oldFromWallet.current_balance + originalTransfer.amount,
           updated_at: new Date().toISOString()
         })
@@ -329,7 +349,7 @@ export const useWalletTransfers = () => {
 
       await supabase
         .from('wallets')
-        .update({ 
+        .update({
           current_balance: oldToWallet.current_balance - originalTransfer.amount,
           updated_at: new Date().toISOString()
         })
@@ -337,7 +357,7 @@ export const useWalletTransfers = () => {
 
       // Apply new transfer
       const newAmount = updates.amount ?? originalTransfer.amount;
-      
+
       // Recalculate with fresh balances
       const { data: freshFromWallet } = await supabase
         .from('wallets')
@@ -355,7 +375,7 @@ export const useWalletTransfers = () => {
 
       await supabase
         .from('wallets')
-        .update({ 
+        .update({
           current_balance: freshFromWallet.current_balance - newAmount,
           updated_at: new Date().toISOString()
         })
@@ -363,7 +383,7 @@ export const useWalletTransfers = () => {
 
       await supabase
         .from('wallets')
-        .update({ 
+        .update({
           current_balance: freshToWallet.current_balance + newAmount,
           updated_at: new Date().toISOString()
         })
@@ -386,7 +406,10 @@ export const useWalletTransfers = () => {
 
       toast.success(t('wallets.transferUpdated', 'Transferência atualizada'));
       await Promise.all([fetchTransfers(), refetchWallets()]);
-      
+
+      emitTransfersChanged();
+      emitWalletsChanged();
+
       return true;
     } catch (error) {
       console.error('Error updating transfer:', error);
@@ -413,7 +436,7 @@ export const useWalletTransfers = () => {
       // Revert wallet balances
       await supabase
         .from('wallets')
-        .update({ 
+        .update({
           current_balance: fromWallet.current_balance + transfer.amount,
           updated_at: new Date().toISOString()
         })
@@ -421,7 +444,7 @@ export const useWalletTransfers = () => {
 
       await supabase
         .from('wallets')
-        .update({ 
+        .update({
           current_balance: toWallet.current_balance - transfer.amount,
           updated_at: new Date().toISOString()
         })
@@ -437,7 +460,10 @@ export const useWalletTransfers = () => {
 
       toast.success(t('wallets.transferDeleted', 'Transferência excluída'));
       await Promise.all([fetchTransfers(), refetchWallets()]);
-      
+
+      emitTransfersChanged();
+      emitWalletsChanged();
+
       return true;
     } catch (error) {
       console.error('Error deleting transfer:', error);
