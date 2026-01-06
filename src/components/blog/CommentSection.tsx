@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { formatDistanceToNow } from 'date-fns';
@@ -52,6 +52,278 @@ const getLocale = (lang: string) => {
   }
 };
 
+interface CommentItemProps {
+  comment: BlogComment;
+  depth?: number;
+  currentUserId: string | null;
+  editingId: string | null;
+  editContent: string;
+  replyingTo: string | null;
+  replyContent: string;
+  submitting: boolean;
+  isAuthenticated: boolean;
+  language: string;
+  onEdit: (comment: BlogComment) => void;
+  onCancelEdit: () => void;
+  onSaveEdit: (commentId: string) => void;
+  onDelete: (commentId: string) => void;
+  onStartReply: (commentId: string) => void;
+  onCancelReply: () => void;
+  onReply: (parentId: string) => void;
+  onToggleLike: (commentId: string) => void;
+  onEditContentChange: (value: string) => void;
+  onReplyContentChange: (value: string) => void;
+}
+
+const CommentItem = ({
+  comment,
+  depth = 0,
+  currentUserId,
+  editingId,
+  editContent,
+  replyingTo,
+  replyContent,
+  submitting,
+  isAuthenticated,
+  language,
+  onEdit,
+  onCancelEdit,
+  onSaveEdit,
+  onDelete,
+  onStartReply,
+  onCancelReply,
+  onReply,
+  onToggleLike,
+  onEditContentChange,
+  onReplyContentChange,
+}: CommentItemProps) => {
+  const { t } = useTranslation();
+  const isReply = depth > 0;
+  const maxDepth = 3;
+  const canReply = depth < maxDepth && isAuthenticated;
+  const isPopular = comment.likes_count >= 3;
+
+  const formatDate = (dateString: string) => {
+    try {
+      return formatDistanceToNow(new Date(dateString), { 
+        addSuffix: true, 
+        locale: getLocale(language) 
+      });
+    } catch {
+      return '';
+    }
+  };
+
+  return (
+    <div className={cn("space-y-3", isReply && "ml-6 sm:ml-10")}>
+      <div 
+        className={cn(
+          "flex gap-3 p-3 rounded-lg transition-colors relative",
+          comment.is_hidden && "bg-yellow-500/10 border border-yellow-500/30",
+          isReply && "bg-muted/30",
+          isPopular && !comment.is_hidden && "bg-accent/5 border border-accent/30 shadow-sm shadow-accent/10"
+        )}
+      >
+        {isPopular && !comment.is_hidden && (
+          <div className="absolute -top-2 right-2 flex items-center gap-1 px-2 py-0.5 bg-accent text-accent-foreground text-[10px] font-semibold rounded-full shadow-sm">
+            <Flame className="w-3 h-3" />
+            {t('blog.comments.popular', 'Popular')}
+          </div>
+        )}
+
+        {isReply && (
+          <CornerDownRight className="w-4 h-4 text-muted-foreground shrink-0 mt-3" />
+        )}
+        
+        <Avatar className={cn("shrink-0", isReply ? "w-8 h-8" : "w-10 h-10")}>
+          {comment.profile?.avatar_url ? (
+            <AvatarImage src={comment.profile.avatar_url} />
+          ) : null}
+          <AvatarFallback className="bg-primary/10 text-lg">
+            {comment.profile?.avatar_icon || '👤'}
+          </AvatarFallback>
+        </Avatar>
+
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className={cn("font-medium", isReply ? "text-xs" : "text-sm")}>
+              {comment.profile?.display_name || t('common.anonymous', 'Anônimo')}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              {formatDate(comment.created_at)}
+            </span>
+            {comment.is_hidden && (
+              <span className="flex items-center gap-1 text-xs text-yellow-600 dark:text-yellow-400">
+                <AlertCircle className="w-3 h-3" />
+                {t('blog.comments.pendingReview', 'Em análise')}
+              </span>
+            )}
+          </div>
+
+          {editingId === comment.id ? (
+            <div className="mt-2 space-y-2">
+              <Textarea
+                value={editContent}
+                onChange={(e) => onEditContentChange(e.target.value)}
+                className="min-h-[80px] resize-none text-sm"
+                maxLength={1000}
+              />
+              <div className="flex gap-2">
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  onClick={onCancelEdit}
+                  className="h-7 px-2"
+                >
+                  <X className="w-3 h-3 mr-1" />
+                  {t('common.cancel', 'Cancelar')}
+                </Button>
+                <Button 
+                  size="sm"
+                  onClick={() => onSaveEdit(comment.id)}
+                  className="h-7 px-2"
+                >
+                  <Check className="w-3 h-3 mr-1" />
+                  {t('common.save', 'Salvar')}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <p className={cn("mt-1 whitespace-pre-wrap break-words", isReply ? "text-xs" : "text-sm")}>
+                {comment.content}
+              </p>
+
+              <div className="flex items-center gap-1 mt-2">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => onToggleLike(comment.id)}
+                  className={cn(
+                    "h-7 px-2 gap-1",
+                    comment.is_liked_by_user 
+                      ? "text-red-500 hover:text-red-600" 
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <Heart 
+                    className={cn(
+                      "w-3 h-3 transition-all",
+                      comment.is_liked_by_user && "fill-current"
+                    )} 
+                  />
+                  {comment.likes_count > 0 && (
+                    <span className="text-xs">{comment.likes_count}</span>
+                  )}
+                </Button>
+
+                {canReply && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => onStartReply(comment.id)}
+                    className="h-7 px-2 text-muted-foreground hover:text-foreground"
+                  >
+                    <Reply className="w-3 h-3 mr-1" />
+                    <span className="text-xs">{t('blog.comments.reply', 'Responder')}</span>
+                  </Button>
+                )}
+                {currentUserId === comment.user_id && (
+                  <>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => onEdit(comment)}
+                      className="h-7 px-2 text-muted-foreground hover:text-foreground"
+                    >
+                      <Edit2 className="w-3 h-3" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => onDelete(comment.id)}
+                      className="h-7 px-2 text-muted-foreground hover:text-destructive"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  </>
+                )}
+              </div>
+            </>
+          )}
+
+          {replyingTo === comment.id && (
+            <div className="mt-3 space-y-2 p-3 bg-muted/50 rounded-lg">
+              <Textarea
+                placeholder={t('blog.comments.replyPlaceholder', 'Escreva sua resposta...')}
+                value={replyContent}
+                onChange={(e) => onReplyContentChange(e.target.value)}
+                className="min-h-[80px] resize-none text-sm"
+                maxLength={1000}
+                dir="ltr"
+              />
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">
+                  {replyContent.length}/1000
+                </span>
+                <div className="flex gap-2">
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    onClick={onCancelReply}
+                    className="h-7"
+                  >
+                    {t('common.cancel', 'Cancelar')}
+                  </Button>
+                  <Button 
+                    size="sm"
+                    onClick={() => onReply(comment.id)}
+                    disabled={submitting || !replyContent.trim()}
+                    className="h-7 gap-1"
+                  >
+                    <Send className="w-3 h-3" />
+                    {t('blog.comments.send', 'Enviar')}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {comment.replies && comment.replies.length > 0 && (
+        <div className="space-y-3">
+          {comment.replies.map((reply) => (
+            <CommentItem
+              key={reply.id}
+              comment={reply}
+              depth={depth + 1}
+              currentUserId={currentUserId}
+              editingId={editingId}
+              editContent={editContent}
+              replyingTo={replyingTo}
+              replyContent={replyContent}
+              submitting={submitting}
+              isAuthenticated={isAuthenticated}
+              language={language}
+              onEdit={onEdit}
+              onCancelEdit={onCancelEdit}
+              onSaveEdit={onSaveEdit}
+              onDelete={onDelete}
+              onStartReply={onStartReply}
+              onCancelReply={onCancelReply}
+              onReply={onReply}
+              onToggleLike={onToggleLike}
+              onEditContentChange={onEditContentChange}
+              onReplyContentChange={onReplyContentChange}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const CommentSection = ({ articleSlug }: CommentSectionProps) => {
   const { t } = useTranslation();
   const { language } = useLanguage();
@@ -82,76 +354,71 @@ export const CommentSection = ({ articleSlug }: CommentSectionProps) => {
     }
   };
 
-  const handleReply = async (parentId: string) => {
+  const handleReply = useCallback(async (parentId: string) => {
     const { success } = await addComment(replyContent, parentId);
     if (success) {
       setReplyingTo(null);
       setReplyContent('');
     }
-  };
+  }, [addComment, replyContent]);
 
-  const handleEdit = (comment: BlogComment) => {
+  const handleEdit = useCallback((comment: BlogComment) => {
     setEditingId(comment.id);
     setEditContent(comment.content);
     setReplyingTo(null);
-  };
+  }, []);
 
-  const handleCancelEdit = () => {
+  const handleCancelEdit = useCallback(() => {
     setEditingId(null);
     setEditContent('');
-  };
+  }, []);
 
-  const handleSaveEdit = async (commentId: string) => {
+  const handleSaveEdit = useCallback(async (commentId: string) => {
     const { success } = await updateComment(commentId, editContent);
     if (success) {
       setEditingId(null);
       setEditContent('');
     }
-  };
+  }, [updateComment, editContent]);
 
-  const handleDelete = async (commentId: string) => {
+  const handleDelete = useCallback(async (commentId: string) => {
     if (window.confirm(t('blog.comments.confirmDelete', 'Tem certeza que deseja excluir este comentário?'))) {
       await deleteComment(commentId);
     }
-  };
+  }, [deleteComment, t]);
 
-  const handleStartReply = (commentId: string) => {
+  const handleStartReply = useCallback((commentId: string) => {
     setReplyingTo(commentId);
     setReplyContent('');
     setEditingId(null);
-  };
+  }, []);
 
-  const handleCancelReply = () => {
+  const handleCancelReply = useCallback(() => {
     setReplyingTo(null);
     setReplyContent('');
-  };
+  }, []);
 
-  const handleToggleLike = async (commentId: string) => {
+  const handleToggleLike = useCallback(async (commentId: string) => {
     await toggleLike(commentId);
-  };
+  }, [toggleLike]);
 
-  const formatDate = (dateString: string) => {
-    try {
-      return formatDistanceToNow(new Date(dateString), { 
-        addSuffix: true, 
-        locale: getLocale(language) 
-      });
-    } catch {
-      return '';
-    }
-  };
+  const handleEditContentChange = useCallback((value: string) => {
+    setEditContent(value);
+  }, []);
 
-  // Filter visible comments (approved and not hidden, or own comments)
-  const filterVisible = (commentsList: BlogComment[]): BlogComment[] => {
+  const handleReplyContentChange = useCallback((value: string) => {
+    setReplyContent(value);
+  }, []);
+
+  const filterVisible = useCallback((commentsList: BlogComment[]): BlogComment[] => {
     return commentsList
       .filter(c => (c.is_approved && !c.is_hidden) || c.user_id === currentUserId)
       .map(c => ({
         ...c,
         replies: c.replies ? filterVisible(c.replies) : []
       }));
-  };
+  }, [currentUserId]);
 
-  // Sort comments based on selected option
   const sortedComments = useMemo(() => {
     const visible = filterVisible(comments);
     
@@ -159,7 +426,6 @@ export const CommentSection = ({ articleSlug }: CommentSectionProps) => {
       const sorted = [...commentsList].sort((a, b) => {
         switch (sortBy) {
           case 'popular':
-            // Sort by likes, then by date
             if (b.likes_count !== a.likes_count) {
               return b.likes_count - a.likes_count;
             }
@@ -179,206 +445,7 @@ export const CommentSection = ({ articleSlug }: CommentSectionProps) => {
     };
     
     return sortRecursive(visible);
-  }, [comments, sortBy, currentUserId]);
-
-  // Recursive comment renderer
-  const CommentItem = ({ comment, depth = 0 }: { comment: BlogComment; depth?: number }) => {
-    const isReply = depth > 0;
-    const maxDepth = 3; // Limit nesting depth for UI clarity
-    const canReply = depth < maxDepth && isAuthenticated;
-    const isPopular = comment.likes_count >= 3; // Threshold for popular comments
-
-    return (
-      <div className={cn("space-y-3", isReply && "ml-6 sm:ml-10")}>
-        <div 
-          className={cn(
-            "flex gap-3 p-3 rounded-lg transition-colors relative",
-            comment.is_hidden && "bg-yellow-500/10 border border-yellow-500/30",
-            isReply && "bg-muted/30",
-            isPopular && !comment.is_hidden && "bg-accent/5 border border-accent/30 shadow-sm shadow-accent/10"
-          )}
-        >
-          {/* Popular Badge */}
-          {isPopular && !comment.is_hidden && (
-            <div className="absolute -top-2 right-2 flex items-center gap-1 px-2 py-0.5 bg-accent text-accent-foreground text-[10px] font-semibold rounded-full shadow-sm">
-              <Flame className="w-3 h-3" />
-              {t('blog.comments.popular', 'Popular')}
-            </div>
-          )}
-
-          {isReply && (
-            <CornerDownRight className="w-4 h-4 text-muted-foreground shrink-0 mt-3" />
-          )}
-          
-          <Avatar className={cn("shrink-0", isReply ? "w-8 h-8" : "w-10 h-10")}>
-            {comment.profile?.avatar_url ? (
-              <AvatarImage src={comment.profile.avatar_url} />
-            ) : null}
-            <AvatarFallback className="bg-primary/10 text-lg">
-              {comment.profile?.avatar_icon || '👤'}
-            </AvatarFallback>
-          </Avatar>
-
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className={cn("font-medium", isReply ? "text-xs" : "text-sm")}>
-                {comment.profile?.display_name || t('common.anonymous', 'Anônimo')}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                {formatDate(comment.created_at)}
-              </span>
-              {comment.is_hidden && (
-                <span className="flex items-center gap-1 text-xs text-yellow-600 dark:text-yellow-400">
-                  <AlertCircle className="w-3 h-3" />
-                  {t('blog.comments.pendingReview', 'Em análise')}
-                </span>
-              )}
-            </div>
-
-            {editingId === comment.id ? (
-              <div className="mt-2 space-y-2">
-                <Textarea
-                  value={editContent}
-                  onChange={(e) => setEditContent(e.target.value)}
-                  className="min-h-[80px] resize-none text-sm"
-                  maxLength={1000}
-                />
-                <div className="flex gap-2">
-                  <Button 
-                    size="sm" 
-                    variant="ghost" 
-                    onClick={handleCancelEdit}
-                    className="h-7 px-2"
-                  >
-                    <X className="w-3 h-3 mr-1" />
-                    {t('common.cancel', 'Cancelar')}
-                  </Button>
-                  <Button 
-                    size="sm"
-                    onClick={() => handleSaveEdit(comment.id)}
-                    className="h-7 px-2"
-                  >
-                    <Check className="w-3 h-3 mr-1" />
-                    {t('common.save', 'Salvar')}
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <>
-                <p className={cn("mt-1 whitespace-pre-wrap break-words", isReply ? "text-xs" : "text-sm")}>
-                  {comment.content}
-                </p>
-
-                <div className="flex items-center gap-1 mt-2">
-                  {/* Like Button */}
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleToggleLike(comment.id)}
-                    className={cn(
-                      "h-7 px-2 gap-1",
-                      comment.is_liked_by_user 
-                        ? "text-red-500 hover:text-red-600" 
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    <Heart 
-                      className={cn(
-                        "w-3 h-3 transition-all",
-                        comment.is_liked_by_user && "fill-current"
-                      )} 
-                    />
-                    {comment.likes_count > 0 && (
-                      <span className="text-xs">{comment.likes_count}</span>
-                    )}
-                  </Button>
-
-                  {canReply && (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleStartReply(comment.id)}
-                      className="h-7 px-2 text-muted-foreground hover:text-foreground"
-                    >
-                      <Reply className="w-3 h-3 mr-1" />
-                      <span className="text-xs">{t('blog.comments.reply', 'Responder')}</span>
-                    </Button>
-                  )}
-                  {currentUserId === comment.user_id && (
-                    <>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleEdit(comment)}
-                        className="h-7 px-2 text-muted-foreground hover:text-foreground"
-                      >
-                        <Edit2 className="w-3 h-3" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleDelete(comment.id)}
-                        className="h-7 px-2 text-muted-foreground hover:text-destructive"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </>
-            )}
-
-            {/* Reply Form */}
-            {replyingTo === comment.id && (
-              <div className="mt-3 space-y-2 p-3 bg-muted/50 rounded-lg">
-                <Textarea
-                  placeholder={t('blog.comments.replyPlaceholder', 'Escreva sua resposta...')}
-                  value={replyContent}
-                  onChange={(e) => setReplyContent(e.target.value)}
-                  className="min-h-[80px] resize-none text-sm"
-                  maxLength={1000}
-                  dir="ltr"
-                />
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">
-                    {replyContent.length}/1000
-                  </span>
-                  <div className="flex gap-2">
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      onClick={handleCancelReply}
-                      className="h-7"
-                    >
-                      {t('common.cancel', 'Cancelar')}
-                    </Button>
-                    <Button 
-                      size="sm"
-                      onClick={() => handleReply(comment.id)}
-                      disabled={submitting || !replyContent.trim()}
-                      className="h-7 gap-1"
-                    >
-                      <Send className="w-3 h-3" />
-                      {t('blog.comments.send', 'Enviar')}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Render replies recursively */}
-        {comment.replies && comment.replies.length > 0 && (
-          <div className="space-y-3">
-            {comment.replies.map((reply) => (
-              <CommentItem key={reply.id} comment={reply} depth={depth + 1} />
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
+  }, [comments, sortBy, filterVisible]);
 
   return (
     <Card className="bg-card/50 border-border/50 mt-8">
@@ -414,7 +481,6 @@ export const CommentSection = ({ articleSlug }: CommentSectionProps) => {
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Comment Form */}
         {isAuthenticated ? (
           <div className="space-y-3">
             <Textarea
@@ -456,7 +522,6 @@ export const CommentSection = ({ articleSlug }: CommentSectionProps) => {
           </div>
         )}
 
-        {/* Comments List */}
         <div className="space-y-4">
           {loading ? (
             Array.from({ length: 3 }).map((_, i) => (
@@ -475,7 +540,28 @@ export const CommentSection = ({ articleSlug }: CommentSectionProps) => {
             </div>
           ) : (
             sortedComments.map((comment) => (
-              <CommentItem key={comment.id} comment={comment} />
+              <CommentItem
+                key={comment.id}
+                comment={comment}
+                currentUserId={currentUserId}
+                editingId={editingId}
+                editContent={editContent}
+                replyingTo={replyingTo}
+                replyContent={replyContent}
+                submitting={submitting}
+                isAuthenticated={isAuthenticated}
+                language={language}
+                onEdit={handleEdit}
+                onCancelEdit={handleCancelEdit}
+                onSaveEdit={handleSaveEdit}
+                onDelete={handleDelete}
+                onStartReply={handleStartReply}
+                onCancelReply={handleCancelReply}
+                onReply={handleReply}
+                onToggleLike={handleToggleLike}
+                onEditContentChange={handleEditContentChange}
+                onReplyContentChange={handleReplyContentChange}
+              />
             ))
           )}
         </div>
