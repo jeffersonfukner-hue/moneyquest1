@@ -33,6 +33,7 @@ export const AddWalletDialog = ({ open, onOpenChange, onWalletCreated }: AddWall
   const { t } = useTranslation();
   const { addWallet } = useWallets();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showCustomInstitution, setShowCustomInstitution] = useState(false);
 
   const [formData, setFormData] = useState<WalletFormData>({
     name: '',
@@ -54,6 +55,16 @@ export const AddWalletDialog = ({ open, onOpenChange, onWalletCreated }: AddWall
   };
 
   const handleInstitutionChange = (institution: string) => {
+    if (institution === '__custom__') {
+      setShowCustomInstitution(true);
+      setFormData(prev => ({
+        ...prev,
+        institution: '',
+        icon: walletTypeIcons[prev.type] || '🏦',
+      }));
+      return;
+    }
+    setShowCustomInstitution(false);
     const inst = allInstitutions.find(i => i.name === institution);
     setFormData(prev => ({
       ...prev,
@@ -86,6 +97,7 @@ export const AddWalletDialog = ({ open, onOpenChange, onWalletCreated }: AddWall
       icon: '🏦',
       color: '#3B82F6',
     });
+    setShowCustomInstitution(false);
   };
 
   const walletTypes: WalletType[] = ['checking', 'savings', 'credit', 'investment', 'cash', 'other'];
@@ -113,38 +125,70 @@ export const AddWalletDialog = ({ open, onOpenChange, onWalletCreated }: AddWall
           {/* Institution */}
           <div className="space-y-2">
             <Label>{t('wallets.institution')}</Label>
-            <Select
-              value={formData.institution}
-              onValueChange={handleInstitutionChange}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={t('wallets.selectInstitution')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>{t('wallets.brazilianBanks')}</SelectLabel>
-                  {allInstitutions.filter(i => i.country === 'BR').map(inst => (
-                    <SelectItem key={inst.name} value={inst.name}>
+            {showCustomInstitution ? (
+              <div className="space-y-2">
+                <Input
+                  placeholder={t('wallets.customInstitutionPlaceholder', 'Digite o nome da instituição')}
+                  value={formData.institution}
+                  onChange={(e) => setFormData(prev => ({ ...prev, institution: e.target.value }))}
+                  autoFocus
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground"
+                  onClick={() => {
+                    setShowCustomInstitution(false);
+                    setFormData(prev => ({ ...prev, institution: '' }));
+                  }}
+                >
+                  {t('wallets.backToList', '← Voltar para lista')}
+                </Button>
+              </div>
+            ) : (
+              <Select
+                value={formData.institution}
+                onValueChange={handleInstitutionChange}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={t('wallets.selectInstitution')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>{t('wallets.brazilianBanks')}</SelectLabel>
+                    {allInstitutions.filter(i => i.country === 'BR').map(inst => (
+                      <SelectItem key={inst.name} value={inst.name}>
+                        <span className="flex items-center gap-2">
+                          <span>{inst.icon}</span>
+                          <span>{inst.name}</span>
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                  <SelectGroup>
+                    <SelectLabel>{t('wallets.internationalBanks')}</SelectLabel>
+                    {allInstitutions.filter(i => i.country !== 'BR').map(inst => (
+                      <SelectItem key={inst.name} value={inst.name}>
+                        <span className="flex items-center gap-2">
+                          <span>{inst.icon}</span>
+                          <span>{inst.name}</span>
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                  <SelectGroup>
+                    <SelectLabel>{t('wallets.other', 'Outras')}</SelectLabel>
+                    <SelectItem value="__custom__">
                       <span className="flex items-center gap-2">
-                        <span>{inst.icon}</span>
-                        <span>{inst.name}</span>
+                        <span>➕</span>
+                        <span>{t('wallets.addCustomInstitution', 'Adicionar outra instituição')}</span>
                       </span>
                     </SelectItem>
-                  ))}
-                </SelectGroup>
-                <SelectGroup>
-                  <SelectLabel>{t('wallets.internationalBanks')}</SelectLabel>
-                  {allInstitutions.filter(i => i.country !== 'BR').map(inst => (
-                    <SelectItem key={inst.name} value={inst.name}>
-                      <span className="flex items-center gap-2">
-                        <span>{inst.icon}</span>
-                        <span>{inst.name}</span>
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            )}
           </div>
 
           {/* Type */}
