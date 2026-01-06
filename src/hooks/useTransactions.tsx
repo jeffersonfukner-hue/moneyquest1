@@ -159,6 +159,7 @@ export const useTransactions = () => {
 
     const profileUpdates: Record<string, unknown> = {
       xp: newXP,
+      xp_conversivel: (profile.xp_conversivel || 0) + totalXpEarned, // Also increase convertible XP
       level: newLevel,
       level_title: newLevelTitle,
     };
