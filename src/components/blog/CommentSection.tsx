@@ -165,8 +165,8 @@ const CommentItem = ({
               <Textarea
                 value={editContent}
                 onChange={(e) => onEditContentChange(e.target.value)}
-                className="min-h-[80px] resize-none text-sm"
-                maxLength={1000}
+                className="min-h-[60px] resize-none text-sm"
+                maxLength={120}
               />
               <div className="flex gap-2">
                 <Button 
@@ -258,13 +258,13 @@ const CommentItem = ({
                 placeholder={t('blog.comments.replyPlaceholder', 'Escreva sua resposta...')}
                 value={replyContent}
                 onChange={(e) => onReplyContentChange(e.target.value)}
-                className="min-h-[80px] resize-none text-sm"
-                maxLength={1000}
+                className="min-h-[60px] resize-none text-sm"
+                maxLength={120}
                 dir="ltr"
               />
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">
-                  {replyContent.length}/1000
+                  {replyContent.length}/120
                 </span>
                 <div className="flex gap-2">
                   <Button 
@@ -487,12 +487,12 @@ export const CommentSection = ({ articleSlug }: CommentSectionProps) => {
               placeholder={t('blog.comments.placeholder', 'Deixe seu comentário...')}
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              className="min-h-[100px] resize-none"
-              maxLength={1000}
+              className="min-h-[60px] resize-none"
+              maxLength={120}
             />
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">
-                {newComment.length}/1000
+                {newComment.length}/120
               </span>
               <Button 
                 onClick={handleSubmit} 
