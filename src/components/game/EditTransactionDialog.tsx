@@ -121,7 +121,7 @@ export const EditTransactionDialog = ({
       amount: parseFloat(amount),
       category,
       currency,
-      wallet_id: isCardTransaction ? null : walletId,
+      ...(isCardTransaction ? {} : { wallet_id: walletId }),
       date: formatDateForDB(date),
       supplier: type === 'EXPENSE' && supplier.trim() ? supplier.trim().toUpperCase() : null,
     };

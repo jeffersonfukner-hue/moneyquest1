@@ -322,9 +322,9 @@ export const useTransactions = () => {
     const originalTx = transactions.find(t => t.id === id);
     if (!originalTx) return { error: new Error('Transaction not found') };
 
-    // Prepare update data
-    // Validate wallet_id is not being cleared
-    if (updates.wallet_id === null || updates.wallet_id === '') {
+    // Validate wallet_id is not being cleared (except for credit card transactions)
+    const isCreditCardTx = !!originalTx.credit_card_id;
+    if (!isCreditCardTx && (updates.wallet_id === null || updates.wallet_id === '')) {
       toast({
         title: t('validation.error'),
         description: t('validation.walletRequired'),
