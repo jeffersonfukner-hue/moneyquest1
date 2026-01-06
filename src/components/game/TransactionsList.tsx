@@ -18,6 +18,7 @@ import { getCategoryTranslationKey } from '@/lib/gameLogic';
 import { EditTransactionDialog } from './EditTransactionDialog';
 import { BatchWalletAssignDialog } from './BatchWalletAssignDialog';
 import { useWallets } from '@/hooks/useWallets';
+import { useCreditCards } from '@/hooks/useCreditCards';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
@@ -67,6 +68,7 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
   const { dateLocale } = useLanguage();
   const { formatCurrency, currency: userCurrency, formatConverted } = useCurrency();
   const { wallets } = useWallets();
+  const { creditCards } = useCreditCards();
   const { isPremium, checkFeature } = useSubscription();
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
@@ -89,6 +91,14 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
       return acc;
     }, {} as Record<string, typeof wallets[0]>);
   }, [wallets]);
+
+  // Create credit card lookup map
+  const creditCardMap = useMemo(() => {
+    return creditCards.reduce((acc, c) => {
+      acc[c.id] = c;
+      return acc;
+    }, {} as Record<string, typeof creditCards[0]>);
+  }, [creditCards]);
 
   // Filter transactions by source type
   const filteredBySource = useMemo(() => {
@@ -418,6 +428,7 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
               onToggle={() => toggleMonth(group.key)}
               userCurrency={userCurrency}
               walletMap={walletMap}
+              creditCardMap={creditCardMap}
               dateLocale={dateLocale}
               formatCurrency={formatCurrency}
               formatConverted={formatConverted}
@@ -507,6 +518,7 @@ interface MonthCardProps {
   onToggle: () => void;
   userCurrency: SupportedCurrency;
   walletMap: Record<string, any>;
+  creditCardMap: Record<string, any>;
   dateLocale: Locale;
   formatCurrency: (amount: number) => string;
   formatConverted: (amount: number, from: SupportedCurrency) => string;
@@ -525,6 +537,7 @@ const MonthCard = ({
   onToggle,
   userCurrency,
   walletMap,
+  creditCardMap,
   dateLocale,
   formatCurrency,
   formatConverted,
@@ -604,6 +617,7 @@ const MonthCard = ({
                 formatConverted={formatConverted}
                 walletName={transaction.wallet_id ? (walletMap[transaction.wallet_id]?.institution || walletMap[transaction.wallet_id]?.name) : undefined}
                 walletIcon={transaction.wallet_id ? walletMap[transaction.wallet_id]?.icon : undefined}
+                creditCardName={transaction.credit_card_id ? creditCardMap[transaction.credit_card_id]?.name : undefined}
                 t={t}
                 isSelectionMode={isSelectionMode}
                 isSelected={selectedIds.has(transaction.id)}
@@ -628,6 +642,7 @@ const TransactionItem = ({
   formatConverted,
   walletName,
   walletIcon,
+  creditCardName,
   t,
   isSelectionMode = false,
   isSelected = false,
@@ -643,6 +658,7 @@ const TransactionItem = ({
   formatConverted: (amount: number, from: SupportedCurrency) => string;
   walletName?: string;
   walletIcon?: string;
+  creditCardName?: string;
   t: (key: string) => string;
   isSelectionMode?: boolean;
   isSelected?: boolean;
@@ -696,6 +712,7 @@ const TransactionItem = ({
             {format(parseDateString(transaction.date), "d MMM", { locale: dateLocale })}
             {' • '}{displayCategory}
             {walletName && <span> • {walletIcon} {walletName}</span>}
+            {creditCardName && <span> • 💳 {creditCardName}</span>}
           </p>
         </div>
       </div>
