@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { format, isFuture, isToday } from 'date-fns';
+import { isFuture, isToday } from 'date-fns';
 import {
   Dialog,
   DialogContent,
@@ -18,14 +18,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Pencil, Plus, CreditCard } from 'lucide-react';
+import { Pencil, Plus, CreditCard } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { DatePickerInput } from '@/components/ui/date-picker-input';
 import { Transaction, SupportedCurrency, TransactionType } from '@/types/database';
 import { useCategories } from '@/hooks/useCategories';
 import { useSuppliers } from '@/hooks/useSuppliers';
-import { useLanguage } from '@/contexts/LanguageContext';
+
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { parseDateString, formatDateForDB } from '@/lib/dateUtils';
 import { QuickAddCategoryDialog } from '@/components/categories/QuickAddCategoryDialog';
@@ -56,7 +55,6 @@ export const EditTransactionDialog = ({
   onUpdate
 }: EditTransactionDialogProps) => {
   const { t } = useTranslation();
-  const { dateLocale } = useLanguage();
   const { currency: userCurrency } = useCurrency();
   const { activeWallets, refetch: refetchWallets } = useWallets();
   const { creditCards } = useCreditCards();
@@ -345,28 +343,11 @@ export const EditTransactionDialog = ({
             {/* Date */}
             <div className="space-y-2">
               <Label>{t('transactions.date')}</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {format(date, "PPP", { locale: dateLocale })}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                <Calendar
-                    mode="single"
-                    selected={date}
-                    defaultMonth={date}
-                    onSelect={(d) => d && setDate(d)}
-                    disabled={disabledDays}
-                    locale={dateLocale}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <DatePickerInput
+                value={date}
+                onChange={(d) => d && setDate(d)}
+                disabled={disabledDays}
+              />
             </div>
 
             {/* Submit Button */}
