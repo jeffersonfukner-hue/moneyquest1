@@ -314,11 +314,15 @@ const WalletsPage = () => {
           <TabsContent value="loans" className="space-y-4 mt-4">
             <Button 
               type="button"
-              onClick={() => setShowAddLoanDialog(true)} 
+              onClick={() => {
+                console.log('[Loans] Abrindo dialog de novo empréstimo');
+                setShowAddLoanDialog(true);
+              }} 
               className="w-full min-h-[48px]"
+              disabled={loansLoading}
             >
               <Plus className="mr-2 h-4 w-4" />
-              Novo Empréstimo
+              {loansLoading ? 'Carregando...' : 'Novo Empréstimo'}
             </Button>
 
             {loans.length === 0 ? (
