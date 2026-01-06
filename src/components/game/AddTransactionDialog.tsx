@@ -26,10 +26,12 @@ import { WalletSelector } from '@/components/wallets/WalletSelector';
 import { useWallets } from '@/hooks/useWallets';
 import { useCreditCards } from '@/hooks/useCreditCards';
 import { useLoans } from '@/hooks/useLoans';
+import { useSuppliers } from '@/hooks/useSuppliers';
 import { ItemBreakdownEditor, TransactionItem } from '@/components/premium/ItemBreakdownEditor';
 import { ReceiptOCRButton } from '@/components/premium/ReceiptOCRButton';
 import { PremiumUpsellModal } from '@/components/premium/PremiumFeatureGate';
 import { AddCreditCardDialog } from '@/components/creditCards/AddCreditCardDialog';
+import { SupplierAutocomplete } from '@/components/suppliers/SupplierAutocomplete';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface SessionSummary {
@@ -82,6 +84,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   const { activeWallets, refetch: refetchWallets } = useWallets();
   const { activeCards, refetch: refetchCards, addCreditCard } = useCreditCards();
   const { activeLoans } = useLoans();
+  const { upsertSupplier } = useSuppliers();
   const { user } = useAuth();
   
   const [internalOpen, setInternalOpen] = useState(false);
@@ -360,6 +363,11 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
     });
 
     if (!result.error) {
+      // Save supplier to table if provided (for card expenses)
+      if (isCardExpense && supplier.trim()) {
+        await upsertSupplier(supplier, parsedAmount);
+      }
+      
       // Refetch wallets to update balances in the selector
       refetchWallets();
       
@@ -835,22 +843,10 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
 
             {/* Supplier field - only for credit card expenses */}
             {sourceType === 'card' && (
-              <div className="space-y-2">
-                <Label htmlFor="supplier" className="flex items-center gap-1">
-                  {t('transactions.supplier', 'Fornecedor')}
-                </Label>
-                <Input
-                  id="supplier"
-                  placeholder={t('transactions.supplierPlaceholder', 'Ex: AMAZON, IFOOD, UBER...')}
-                  value={supplier}
-                  onChange={(e) => setSupplier(e.target.value.toUpperCase())}
-                  style={{ textTransform: 'uppercase' }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') e.preventDefault();
-                  }}
-                  className="min-h-[48px]"
-                />
-              </div>
+              <SupplierAutocomplete
+                value={supplier}
+                onChange={setSupplier}
+              />
             )}
 
           <div className="space-y-2">

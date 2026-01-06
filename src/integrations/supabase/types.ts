@@ -1605,6 +1605,39 @@ export type Database = {
         }
         Relationships: []
       }
+      suppliers: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_used_at: string | null
+          name: string
+          total_spent: number | null
+          updated_at: string | null
+          usage_count: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_used_at?: string | null
+          name: string
+          total_spent?: number | null
+          updated_at?: string | null
+          usage_count?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_used_at?: string | null
+          name?: string
+          total_spent?: number | null
+          updated_at?: string | null
+          usage_count?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       support_messages: {
         Row: {
           attachment_url: string | null
