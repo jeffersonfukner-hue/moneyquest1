@@ -891,6 +891,13 @@
     "noInactiveWallets": "Nenhuma carteira inativa",
     "consolidated": "Consolidado",
     "byCurrency": "Por Moeda",
+    "brazilianBanks": "Bancos Brasileiros",
+    "internationalBanks": "Bancos Internacionais",
+    "selectInstitution": "Selecionar instituição",
+    "other": "Outras",
+    "addCustomInstitution": "Adicionar outra instituição",
+    "customInstitutionPlaceholder": "Digite o nome da instituição",
+    "backToList": "← Voltar para lista",
     "types": {
       "checking": "Conta à Ordem",
       "savings": "Poupança",

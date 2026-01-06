@@ -813,6 +813,13 @@
     "noInactiveWallets": "Sin billeteras inactivas",
     "consolidated": "Consolidado",
     "byCurrency": "Por Moneda",
+    "brazilianBanks": "Bancos Brasileños",
+    "internationalBanks": "Bancos Internacionales",
+    "selectInstitution": "Seleccionar institución",
+    "other": "Otras",
+    "addCustomInstitution": "Añadir otra institución",
+    "customInstitutionPlaceholder": "Ingrese el nombre de la institución",
+    "backToList": "← Volver a la lista",
     "types": {
       "checking": "Cuenta Corriente",
       "savings": "Ahorros",
