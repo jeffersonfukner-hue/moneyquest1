@@ -297,12 +297,12 @@ const ScheduledTransactions = () => {
     <AppLayout>
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border safe-area-top">
         <div className="flex items-center justify-between h-14 px-4 max-w-md mx-auto">
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => navigate(-1)}
-              className="mr-2"
+              className="h-9 w-9"
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
@@ -312,19 +312,19 @@ const ScheduledTransactions = () => {
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button size="sm">
-                <Plus className="h-4 w-4 mr-1" />
-                {t('scheduled.add')}
-                <ChevronDown className="h-3 w-3 ml-1" />
+              <Button size="sm" className="h-9 gap-1.5">
+                <Plus className="h-4 w-4" />
+                <span className="hidden xs:inline">{t('scheduled.add')}</span>
+                <ChevronDown className="h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setShowTransactionDialog(true)}>
-                <TrendingDown className="h-4 w-4 mr-2" />
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => setShowTransactionDialog(true)} className="gap-2">
+                <TrendingDown className="h-4 w-4" />
                 {t('scheduled.addTransaction')}
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setShowTransferDialog(true)}>
-                <ArrowLeftRight className="h-4 w-4 mr-2" />
+              <DropdownMenuItem onClick={() => setShowTransferDialog(true)} className="gap-2">
+                <ArrowLeftRight className="h-4 w-4" />
                 {t('scheduled.addTransfer')}
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -332,217 +332,199 @@ const ScheduledTransactions = () => {
         </div>
       </header>
 
-      <main className="p-4 space-y-4 max-w-md mx-auto pb-24">
-        {/* Summary Cards */}
-        <div className="grid grid-cols-3 gap-2">
-          <Card className="p-3">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-primary">{totalActive}</p>
-              <p className="text-xs text-muted-foreground">{t('scheduled.active')}</p>
+      <main className="p-3 space-y-3 max-w-md mx-auto pb-24">
+        {/* Summary Row - More Compact */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1">
+          <div className="flex-shrink-0 bg-primary/10 rounded-full px-3 py-1.5 flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <span className="text-sm font-medium">{totalActive} {t('scheduled.active')}</span>
+          </div>
+          {totalPaused > 0 && (
+            <div className="flex-shrink-0 bg-muted rounded-full px-3 py-1.5">
+              <span className="text-sm text-muted-foreground">{totalPaused} {t('scheduled.paused')}</span>
             </div>
-          </Card>
-          <Card className="p-3">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-muted-foreground">{totalPaused}</p>
-              <p className="text-xs text-muted-foreground">{t('scheduled.paused')}</p>
-            </div>
-          </Card>
-          <Card className="p-3">
-            <div className="text-center">
-              <p className="text-lg font-bold text-foreground">{upcomingEntries.length}</p>
-              <p className="text-xs text-muted-foreground">{t('scheduled.next30Days')}</p>
-            </div>
-          </Card>
+          )}
+          <div className="flex-shrink-0 bg-muted/50 rounded-full px-3 py-1.5">
+            <span className="text-sm text-muted-foreground">{upcomingEntries.length} próx.</span>
+          </div>
         </div>
 
-        {/* Monthly Totals */}
-        {totalActive > 0 && (
+        {/* Monthly Totals - Compact Cards */}
+        {totalActive > 0 && (totalMonthlyIncome > 0 || totalMonthlyExpenses > 0) && (
           <div className="grid grid-cols-2 gap-2">
-            {(totalMonthlyIncome > 0 || activeTransactionsCount > 0) && (
-              <Card className="bg-gradient-to-br from-green-500/5 to-green-500/10 border-green-500/20">
-                <CardContent className="p-3">
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-green-500" />
-                    <span className="text-xs text-muted-foreground">{t('scheduled.income')}</span>
-                  </div>
-                  <p className="text-lg font-bold text-green-600 dark:text-green-400">
-                    +{formatCurrency(totalMonthlyIncome, 'BRL')}
-                  </p>
-                </CardContent>
-              </Card>
-            )}
-            {(totalMonthlyExpenses > 0 || totalMonthlyTransfers > 0 || activeTransfersCount > 0) && (
-              <Card className="bg-gradient-to-br from-red-500/5 to-red-500/10 border-red-500/20">
-                <CardContent className="p-3">
-                  <div className="flex items-center gap-2">
-                    <TrendingDown className="h-4 w-4 text-red-500" />
-                    <span className="text-xs text-muted-foreground">{t('scheduled.expense')}</span>
-                  </div>
-                  <p className="text-lg font-bold text-red-600 dark:text-red-400">
-                    -{formatCurrency(totalMonthlyExpenses, 'BRL')}
-                  </p>
-                </CardContent>
-              </Card>
-            )}
+            <div className="bg-gradient-to-br from-green-500/10 to-green-500/5 rounded-xl p-3 border border-green-500/20">
+              <div className="flex items-center gap-1.5 mb-1">
+                <TrendingUp className="h-3.5 w-3.5 text-green-500" />
+                <span className="text-[11px] text-muted-foreground uppercase tracking-wide">Receitas</span>
+              </div>
+              <p className="text-base font-bold text-green-600 dark:text-green-400">
+                +{formatCurrency(totalMonthlyIncome, 'BRL')}
+              </p>
+            </div>
+            <div className="bg-gradient-to-br from-red-500/10 to-red-500/5 rounded-xl p-3 border border-red-500/20">
+              <div className="flex items-center gap-1.5 mb-1">
+                <TrendingDown className="h-3.5 w-3.5 text-red-500" />
+                <span className="text-[11px] text-muted-foreground uppercase tracking-wide">Despesas</span>
+              </div>
+              <p className="text-base font-bold text-red-600 dark:text-red-400">
+                -{formatCurrency(totalMonthlyExpenses, 'BRL')}
+              </p>
+            </div>
           </div>
         )}
 
         {/* Transfer total if any */}
         {totalMonthlyTransfers > 0 && (
-          <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">{t('scheduled.transfers')} ({t('scheduled.monthly')})</p>
-                  <p className="text-xl font-bold text-foreground">
-                    {formatCurrency(totalMonthlyTransfers, 'BRL')}
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Repeat className="h-5 w-5 text-primary" />
-                </div>
+          <div className="flex items-center justify-between bg-primary/5 rounded-xl p-3 border border-primary/20">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                <ArrowLeftRight className="h-4 w-4 text-primary" />
               </div>
-            </CardContent>
-          </Card>
+              <div>
+                <p className="text-xs text-muted-foreground">Transferências/mês</p>
+                <p className="text-base font-bold text-foreground">
+                  {formatCurrency(totalMonthlyTransfers, 'BRL')}
+                </p>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'upcoming' | 'all')}>
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="upcoming">
-              <Calendar className="h-4 w-4 mr-1" />
+          <TabsList className="grid w-full grid-cols-2 h-10">
+            <TabsTrigger value="upcoming" className="gap-1.5 text-sm">
+              <Calendar className="h-4 w-4" />
               {t('scheduled.upcoming')}
             </TabsTrigger>
-            <TabsTrigger value="all">
-              <Clock className="h-4 w-4 mr-1" />
+            <TabsTrigger value="all" className="gap-1.5 text-sm">
+              <Clock className="h-4 w-4" />
               {t('scheduled.allScheduled')}
             </TabsTrigger>
           </TabsList>
 
-          {/* Sub Tabs for filtering */}
-          <div className="flex gap-2 mt-3">
-            <Button
-              variant={activeSubTab === 'all' ? 'default' : 'outline'}
-              size="sm"
+          {/* Sub Tabs for filtering - Scrollable chips */}
+          <div className="flex gap-1.5 mt-3 overflow-x-auto pb-1 -mx-1 px-1">
+            <button
               onClick={() => setActiveSubTab('all')}
+              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                activeSubTab === 'all'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
+              }`}
             >
-              {t('scheduled.allScheduled')}
-            </Button>
-            <Button
-              variant={activeSubTab === 'transactions' ? 'default' : 'outline'}
-              size="sm"
+              Todos
+            </button>
+            <button
               onClick={() => setActiveSubTab('transactions')}
+              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                activeSubTab === 'transactions'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
+              }`}
             >
-              {t('scheduled.transactions')}
-            </Button>
-            <Button
-              variant={activeSubTab === 'transfers' ? 'default' : 'outline'}
-              size="sm"
+              Receitas/Despesas
+            </button>
+            <button
               onClick={() => setActiveSubTab('transfers')}
+              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                activeSubTab === 'transfers'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
+              }`}
             >
-              {t('scheduled.transfers')}
-            </Button>
+              Transferências
+            </button>
           </div>
 
           {/* Upcoming Tab */}
-          <TabsContent value="upcoming" className="space-y-4 mt-4">
+          <TabsContent value="upcoming" className="space-y-3 mt-3">
             {Object.keys(groupedEntries).length === 0 ? (
-              <Card>
-                <CardContent className="p-8 text-center">
-                  <CalendarClock className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-                  <p className="text-muted-foreground">{t('scheduled.noUpcoming')}</p>
-                  <div className="flex gap-2 justify-center mt-4">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setShowTransactionDialog(true)}
-                    >
-                      <Plus className="h-4 w-4 mr-1" />
-                      {t('scheduled.addTransaction')}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="text-center py-12">
+                <CalendarClock className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
+                <p className="text-muted-foreground text-sm">{t('scheduled.noUpcoming')}</p>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setShowTransactionDialog(true)}
+                  className="mt-4 gap-1.5"
+                >
+                  <Plus className="h-4 w-4" />
+                  {t('scheduled.addTransaction')}
+                </Button>
+              </div>
             ) : (
               Object.entries(groupedEntries).map(([dateKey, entries]) => (
-                <div key={dateKey}>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
-                    <Calendar className="h-4 w-4" />
+                <div key={dateKey} className="space-y-1.5">
+                  <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide flex items-center gap-1.5 px-1">
+                    <Calendar className="h-3 w-3" />
                     {format(new Date(dateKey), 'EEEE, dd MMM', { locale: dateLocale })}
                   </h3>
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     {entries.map((entry, idx) => (
-                      <Card key={`${entry.type}-${entry.type === 'transfer' ? entry.transfer.id : entry.transaction.id}-${idx}`} className="overflow-hidden">
-                        <CardContent className="p-3">
-                          {entry.type === 'transfer' ? (
-                            <div className="flex items-center gap-3">
-                              <div className="flex items-center gap-1 text-lg">
-                                <span>{getWalletIcon(entry.transfer.from_wallet_id)}</span>
-                                <ArrowRight className="h-3 w-3 text-muted-foreground" />
-                                <span>{getWalletIcon(entry.transfer.to_wallet_id)}</span>
+                      <div 
+                        key={`${entry.type}-${entry.type === 'transfer' ? entry.transfer.id : entry.transaction.id}-${idx}`} 
+                        className="bg-card rounded-xl border border-border/50 p-3 shadow-sm"
+                      >
+                        {entry.type === 'transfer' ? (
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                              <ArrowLeftRight className="h-4 w-4 text-primary" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-1 text-sm font-medium">
+                                <span className="truncate">{getWalletName(entry.transfer.from_wallet_id)}</span>
+                                <ArrowRight className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                                <span className="truncate">{getWalletName(entry.transfer.to_wallet_id)}</span>
                               </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-1 text-sm font-medium truncate">
-                                  <span className="truncate">{getWalletName(entry.transfer.from_wallet_id)}</span>
-                                  <ArrowRight className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-                                  <span className="truncate">{getWalletName(entry.transfer.to_wallet_id)}</span>
-                                </div>
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                  <span>{getFrequencyIcon(entry.transfer.frequency)}</span>
-                                  <span>{getTransferFrequencyLabel(entry.transfer)}</span>
-                                  {entry.transfer.total_occurrences && (
-                                    <Badge variant="outline" className="text-[10px] gap-0.5 px-1 py-0">
-                                      {entry.transfer.remaining_occurrences}/{entry.transfer.total_occurrences}
-                                    </Badge>
-                                  )}
-                                </div>
-                              </div>
-                              <div className="text-right">
-                                <p className="font-semibold text-foreground">
-                                  {formatCurrency(entry.transfer.amount, entry.transfer.currency)}
-                                </p>
+                              <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mt-0.5">
+                                <span>{getTransferFrequencyLabel(entry.transfer)}</span>
+                                {entry.transfer.total_occurrences && (
+                                  <span className="bg-muted px-1.5 py-0.5 rounded text-[10px]">
+                                    {entry.transfer.remaining_occurrences}/{entry.transfer.total_occurrences}
+                                  </span>
+                                )}
                               </div>
                             </div>
-                          ) : (
-                            <div className="flex items-center gap-3">
-                              <div className="text-2xl">
-                                {getCategoryIcon(entry.transaction.category)}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium truncate">{entry.transaction.description}</p>
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                  <span>{entry.transaction.category}</span>
-                                  <span>•</span>
-                                  <span>{getFrequencyIcon(entry.transaction.frequency)}</span>
-                                  <span>{getTransactionFrequencyLabel(entry.transaction)}</span>
-                                  {entry.transaction.total_occurrences && (
-                                    <Badge variant="outline" className="text-[10px] gap-0.5 px-1 py-0">
-                                      {entry.transaction.remaining_occurrences}/{entry.transaction.total_occurrences}
-                                    </Badge>
-                                  )}
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <div className="text-right">
-                                  <p className={`font-semibold ${entry.transaction.type === 'INCOME' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                                    {entry.transaction.type === 'INCOME' ? '+' : '-'}
-                                    {formatCurrency(entry.transaction.amount, entry.transaction.currency)}
-                                  </p>
-                                </div>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8"
-                                  onClick={() => handleEditTransaction(entry.transaction)}
-                                  aria-label={t('scheduled.editTransaction')}
-                                >
-                                  <Pencil className="h-4 w-4" />
-                                </Button>
+                            <p className="font-semibold text-sm text-foreground">
+                              {formatCurrency(entry.transfer.amount, entry.transfer.currency)}
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center flex-shrink-0 text-lg">
+                              {getCategoryIcon(entry.transaction.category)}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">{entry.transaction.description}</p>
+                              <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mt-0.5">
+                                <span>{entry.transaction.category}</span>
+                                <span>•</span>
+                                <span>{getTransactionFrequencyLabel(entry.transaction)}</span>
+                                {entry.transaction.total_occurrences && (
+                                  <span className="bg-muted px-1.5 py-0.5 rounded text-[10px]">
+                                    {entry.transaction.remaining_occurrences}/{entry.transaction.total_occurrences}
+                                  </span>
+                                )}
                               </div>
                             </div>
-                          )}
-                        </CardContent>
-                      </Card>
+                            <div className="flex items-center gap-1.5">
+                              <p className={`font-semibold text-sm ${entry.transaction.type === 'INCOME' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                                {entry.transaction.type === 'INCOME' ? '+' : '-'}
+                                {formatCurrency(entry.transaction.amount, entry.transaction.currency)}
+                              </p>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7"
+                                onClick={() => handleEditTransaction(entry.transaction)}
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -551,201 +533,168 @@ const ScheduledTransactions = () => {
           </TabsContent>
 
           {/* All Scheduled Tab */}
-          <TabsContent value="all" className="space-y-3 mt-4">
+          <TabsContent value="all" className="space-y-2 mt-3">
             {allScheduledItems.length === 0 ? (
-              <Card>
-                <CardContent className="p-8 text-center">
-                  <ArrowLeftRight className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-                  <p className="text-muted-foreground">{t('scheduled.noScheduled')}</p>
-                  <div className="flex gap-2 justify-center mt-4">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setShowTransactionDialog(true)}
-                    >
-                      <Plus className="h-4 w-4 mr-1" />
-                      {t('scheduled.addTransaction')}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="text-center py-12">
+                <ArrowLeftRight className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
+                <p className="text-muted-foreground text-sm">{t('scheduled.noScheduled')}</p>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setShowTransactionDialog(true)}
+                  className="mt-4 gap-1.5"
+                >
+                  <Plus className="h-4 w-4" />
+                  {t('scheduled.addTransaction')}
+                </Button>
+              </div>
             ) : (
               allScheduledItems.map((scheduled) => {
                 if (scheduled.type === 'transfer') {
                   const transfer = scheduled.item as ScheduledTransfer;
                   return (
-                    <Card 
+                    <div 
                       key={`transfer-${transfer.id}`}
-                      className={!transfer.is_active ? 'opacity-60' : ''}
+                      className={`bg-card rounded-xl border border-border/50 p-3 shadow-sm ${!transfer.is_active ? 'opacity-50' : ''}`}
                     >
-                      <CardContent className="p-4">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex items-center gap-2 text-lg">
-                            <span>{getWalletIcon(transfer.from_wallet_id)}</span>
-                            <ArrowRight className="h-3 w-3 text-muted-foreground" />
-                            <span>{getWalletIcon(transfer.to_wallet_id)}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() => toggleScheduledTransfer(transfer.id, !transfer.is_active)}
-                            >
-                              {transfer.is_active ? (
-                                <Pause className="h-4 w-4" />
-                              ) : (
-                                <Play className="h-4 w-4" />
-                              )}
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-destructive hover:text-destructive"
-                              onClick={() => deleteScheduledTransfer(transfer.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <ArrowLeftRight className="h-4 w-4 text-primary" />
                         </div>
-
-                        <div className="mt-2">
-                          <div className="flex items-center gap-1 text-sm">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1 text-sm font-medium">
                             <span className="truncate">{getWalletName(transfer.from_wallet_id)}</span>
                             <ArrowRight className="h-3 w-3 text-muted-foreground flex-shrink-0" />
                             <span className="truncate">{getWalletName(transfer.to_wallet_id)}</span>
                           </div>
-                          
-                          <div className="flex items-center justify-between mt-3">
-                            <div className="flex items-center gap-2">
-                              <Badge variant={transfer.is_active ? 'default' : 'secondary'}>
-                                {transfer.is_active ? t('scheduled.active') : t('scheduled.paused')}
-                              </Badge>
-                              <span className="text-xs text-muted-foreground">
-                                {getFrequencyIcon(transfer.frequency)} {getTransferFrequencyLabel(transfer)}
-                              </span>
-                            </div>
-                            <span className="font-bold text-lg">
-                              {formatCurrency(transfer.amount, transfer.currency)}
+                          <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                            <span className={`text-[10px] px-1.5 py-0.5 rounded ${transfer.is_active ? 'bg-green-500/10 text-green-600' : 'bg-muted text-muted-foreground'}`}>
+                              {transfer.is_active ? 'Ativo' : 'Pausado'}
                             </span>
-                          </div>
-
-                          <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
-                            <div className="flex items-center gap-1">
-                              <Calendar className="h-3 w-3" />
-                              <span>
-                                {t('wallets.nextRun')}: {format(new Date(transfer.next_run_date), 'dd MMM yyyy', { locale: dateLocale })}
-                              </span>
-                            </div>
+                            <span className="text-[11px] text-muted-foreground">
+                              {getTransferFrequencyLabel(transfer)}
+                            </span>
                             {transfer.total_occurrences && (
-                              <Badge variant="outline" className="text-[10px] gap-1">
-                                <Repeat className="h-3 w-3" />
+                              <span className="text-[10px] bg-muted px-1.5 py-0.5 rounded">
                                 {transfer.remaining_occurrences}/{transfer.total_occurrences}
-                              </Badge>
+                              </span>
                             )}
                           </div>
-
-                          {transfer.description && (
-                            <p className="text-xs text-muted-foreground mt-1 truncate">
-                              {transfer.description}
-                            </p>
-                          )}
                         </div>
-                      </CardContent>
-                    </Card>
+                        <div className="flex flex-col items-end gap-1">
+                          <p className="font-semibold text-sm">
+                            {formatCurrency(transfer.amount, transfer.currency)}
+                          </p>
+                          <div className="flex items-center gap-0.5">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7"
+                              onClick={() => toggleScheduledTransfer(transfer.id, !transfer.is_active)}
+                            >
+                              {transfer.is_active ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 text-destructive hover:text-destructive"
+                              onClick={() => deleteScheduledTransfer(transfer.id)}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 mt-2 text-[11px] text-muted-foreground pl-[52px]">
+                        <Calendar className="h-3 w-3" />
+                        <span>Próximo: {format(new Date(transfer.next_run_date), 'dd MMM', { locale: dateLocale })}</span>
+                        {transfer.description && (
+                          <>
+                            <span>•</span>
+                            <span className="truncate">{transfer.description}</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
                   );
                 } else {
                   const transaction = scheduled.item as ScheduledTransaction;
                   return (
-                    <Card 
+                    <div 
                       key={`transaction-${transaction.id}`}
-                      className={!transaction.is_active ? 'opacity-60' : ''}
+                      className={`bg-card rounded-xl border border-border/50 p-3 shadow-sm ${!transaction.is_active ? 'opacity-50' : ''}`}
                     >
-                      <CardContent className="p-4">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex items-center gap-2">
-                            <span className="text-2xl">{getCategoryIcon(transaction.category)}</span>
-                            <div>
-                              <p className="font-medium">{transaction.description}</p>
-                              <p className="text-xs text-muted-foreground">{transaction.category}</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() => handleEditTransaction(transaction)}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() => toggleScheduledTransaction(transaction.id, !transaction.is_active)}
-                            >
-                              {transaction.is_active ? (
-                                <Pause className="h-4 w-4" />
-                              ) : (
-                                <Play className="h-4 w-4" />
-                              )}
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-destructive hover:text-destructive"
-                              onClick={() => deleteScheduledTransaction(transaction.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 text-lg ${
+                          transaction.type === 'INCOME' ? 'bg-green-500/10' : 'bg-red-500/10'
+                        }`}>
+                          {getCategoryIcon(transaction.category)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{transaction.description}</p>
+                          <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                            <span className={`text-[10px] px-1.5 py-0.5 rounded ${transaction.is_active ? 'bg-green-500/10 text-green-600' : 'bg-muted text-muted-foreground'}`}>
+                              {transaction.is_active ? 'Ativo' : 'Pausado'}
+                            </span>
+                            <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                              transaction.type === 'INCOME' ? 'bg-green-500/10 text-green-600' : 'bg-red-500/10 text-red-600'
+                            }`}>
+                              {transaction.type === 'INCOME' ? 'Receita' : 'Despesa'}
+                            </span>
+                            <span className="text-[11px] text-muted-foreground">
+                              {getTransactionFrequencyLabel(transaction)}
+                            </span>
+                            {transaction.total_occurrences && (
+                              <span className="text-[10px] bg-muted px-1.5 py-0.5 rounded">
+                                {transaction.remaining_occurrences}/{transaction.total_occurrences}
+                              </span>
+                            )}
                           </div>
                         </div>
-
-                        <div className="flex items-center justify-between mt-3">
-                          <div className="flex items-center gap-2">
-                            <Badge variant={transaction.is_active ? 'default' : 'secondary'}>
-                              {transaction.is_active ? t('scheduled.active') : t('scheduled.paused')}
-                            </Badge>
-                            <Badge variant={transaction.type === 'INCOME' ? 'outline' : 'destructive'} className="gap-1">
-                              {transaction.type === 'INCOME' ? (
-                                <TrendingUp className="h-3 w-3" />
-                              ) : (
-                                <TrendingDown className="h-3 w-3" />
-                              )}
-                              {transaction.type === 'INCOME' ? t('transactions.income') : t('transactions.expense')}
-                            </Badge>
-                          </div>
-                          <span className={`font-bold text-lg ${transaction.type === 'INCOME' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                        <div className="flex flex-col items-end gap-1">
+                          <p className={`font-semibold text-sm ${transaction.type === 'INCOME' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                             {transaction.type === 'INCOME' ? '+' : '-'}
                             {formatCurrency(transaction.amount, transaction.currency)}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                          <span>{getFrequencyIcon(transaction.frequency)} {getTransactionFrequencyLabel(transaction)}</span>
-                          {transaction.total_occurrences && (
-                            <Badge variant="outline" className="text-[10px] gap-1">
-                              <Repeat className="h-3 w-3" />
-                              {transaction.remaining_occurrences}/{transaction.total_occurrences}
-                            </Badge>
-                          )}
-                        </div>
-
-                        <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
-                          <Calendar className="h-3 w-3" />
-                          <span>
-                            {t('wallets.nextRun')}: {format(new Date(transaction.next_run_date), 'dd MMM yyyy', { locale: dateLocale })}
-                          </span>
-                        </div>
-
-                        {transaction.wallet_id && (
-                          <p className="text-xs text-muted-foreground mt-1">
-                            💳 {getTxWalletName(transaction.wallet_id)}
                           </p>
+                          <div className="flex items-center gap-0.5">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7"
+                              onClick={() => handleEditTransaction(transaction)}
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7"
+                              onClick={() => toggleScheduledTransaction(transaction.id, !transaction.is_active)}
+                            >
+                              {transaction.is_active ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 text-destructive hover:text-destructive"
+                              onClick={() => deleteScheduledTransaction(transaction.id)}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 mt-2 text-[11px] text-muted-foreground pl-[52px]">
+                        <Calendar className="h-3 w-3" />
+                        <span>Próximo: {format(new Date(transaction.next_run_date), 'dd MMM', { locale: dateLocale })}</span>
+                        {transaction.wallet_id && (
+                          <>
+                            <span>•</span>
+                            <span>💳 {getTxWalletName(transaction.wallet_id)}</span>
+                          </>
                         )}
-                      </CardContent>
-                    </Card>
+                      </div>
+                    </div>
                   );
                 }
               })
