@@ -164,40 +164,52 @@ const Shop = () => {
 
           {/* Shop Tab */}
           <TabsContent value="loja" className="space-y-6">
-            {/* Shop Category Tabs */}
-            <div className="overflow-x-auto -mx-4 px-4">
-              <div className="flex gap-2 min-w-max pb-2">
-                {SHOP_TABS.map((tab) => {
-                  const Icon = tab.icon;
-                  const isActive = activeTab === tab.id;
-                  return (
-                    <Button
-                      key={tab.id}
-                      variant={isActive ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`
-                        flex items-center gap-2 whitespace-nowrap transition-all
-                        ${isActive ? 'bg-gradient-to-r from-accent to-accent/80 shadow-lg shadow-accent/30' : ''}
-                        ${tab.id === 'premium' || tab.id === 'exclusivo' ? 'border-purple-500/50' : ''}
-                      `}
-                    >
-                      <Icon className={`w-4 h-4 ${tab.id === 'premium' || tab.id === 'exclusivo' ? 'text-purple-400' : ''}`} />
+            {/* Shop Category Tabs - Grid Layout */}
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+              {SHOP_TABS.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                const isPremiumTab = tab.id === 'premium' || tab.id === 'exclusivo';
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`
+                      flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl border transition-all
+                      ${isActive 
+                        ? 'bg-accent text-accent-foreground border-accent shadow-lg shadow-accent/30' 
+                        : 'bg-card hover:bg-muted/50 border-border'
+                      }
+                      ${isPremiumTab && !isActive ? 'border-purple-500/30 bg-purple-500/5' : ''}
+                    `}
+                  >
+                    <div className={`
+                      w-10 h-10 rounded-lg flex items-center justify-center
+                      ${isActive 
+                        ? 'bg-accent-foreground/10' 
+                        : isPremiumTab 
+                          ? 'bg-purple-500/10' 
+                          : 'bg-muted'
+                      }
+                    `}>
+                      <Icon className={`w-5 h-5 ${isPremiumTab && !isActive ? 'text-purple-400' : ''}`} />
+                    </div>
+                    <span className="text-xs font-medium text-center leading-tight">
                       {tab.label}
-                    </Button>
-                  );
-                })}
-              </div>
+                    </span>
+                  </button>
+                );
+              })}
             </div>
 
             {/* Tab Description */}
-            <div className="flex items-center gap-2 text-muted-foreground">
+            <div className="flex items-center gap-2 px-1 text-sm text-muted-foreground">
               {(() => {
                 const currentTab = SHOP_TABS.find(t => t.id === activeTab);
                 const Icon = currentTab?.icon || Star;
                 return (
                   <>
-                    <Icon className="w-5 h-5" />
+                    <Icon className="w-4 h-4 text-accent" />
                     <span>{currentTab?.description}</span>
                   </>
                 );
