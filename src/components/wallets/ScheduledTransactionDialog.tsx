@@ -3,7 +3,7 @@ import { useForm, useController } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
-import { Clock, TrendingUp, TrendingDown, Repeat } from 'lucide-react';
+import { Clock, TrendingUp, TrendingDown, Repeat, Plus } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -39,6 +39,8 @@ import {
 } from '@/hooks/useScheduledTransactions';
 import { useProfile } from '@/hooks/useProfile';
 import { SupplierAutocomplete } from '@/components/suppliers/SupplierAutocomplete';
+import { QuickAddCategoryDialog } from '@/components/categories/QuickAddCategoryDialog';
+import { AddWalletDialog } from '@/components/wallets/AddWalletDialog';
 import { SupportedCurrency } from '@/types/database';
 
 const scheduledTransactionSchema = z.object({
@@ -306,6 +308,8 @@ export const ScheduledTransactionDialog = ({
     updateScheduledTransaction: updateDefault,
   } = useScheduledTransactions();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showAddCategoryDialog, setShowAddCategoryDialog] = useState(false);
+  const [showAddWalletDialog, setShowAddWalletDialog] = useState(false);
 
   const createScheduledTransaction = createFromProps ?? createDefault;
   const updateScheduledTransaction = updateFromProps ?? updateDefault;
@@ -435,6 +439,7 @@ export const ScheduledTransactionDialog = ({
   };
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
@@ -520,7 +525,16 @@ export const ScheduledTransactionDialog = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('transactions.category')}</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select 
+                    onValueChange={(value) => {
+                      if (value === '__add_new__') {
+                        setShowAddCategoryDialog(true);
+                      } else {
+                        field.onChange(value);
+                      }
+                    }} 
+                    value={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder={t('transactions.selectCategory')} />
@@ -535,6 +549,12 @@ export const ScheduledTransactionDialog = ({
                           </div>
                         </SelectItem>
                       ))}
+                      <SelectItem value="__add_new__" className="text-primary">
+                        <div className="flex items-center gap-2">
+                          <Plus className="w-4 h-4" />
+                          <span>{t('categories.addCategory')}</span>
+                        </div>
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -549,7 +569,16 @@ export const ScheduledTransactionDialog = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('transactions.wallet')} ({t('common.optional')})</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select 
+                    onValueChange={(value) => {
+                      if (value === '__add_new__') {
+                        setShowAddWalletDialog(true);
+                      } else {
+                        field.onChange(value);
+                      }
+                    }} 
+                    value={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder={t('wallets.selectWallet')} />
@@ -565,6 +594,12 @@ export const ScheduledTransactionDialog = ({
                           </div>
                         </SelectItem>
                       ))}
+                      <SelectItem value="__add_new__" className="text-primary">
+                        <div className="flex items-center gap-2">
+                          <Plus className="w-4 h-4" />
+                          <span>{t('wallets.addWallet')}</span>
+                        </div>
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -699,5 +734,24 @@ export const ScheduledTransactionDialog = ({
         </Form>
       </DialogContent>
     </Dialog>
+
+      <QuickAddCategoryDialog
+        open={showAddCategoryDialog}
+        onOpenChange={setShowAddCategoryDialog}
+        type={watchType}
+        onAdd={async (name) => {
+          form.setValue('category', name);
+        }}
+      />
+
+      <AddWalletDialog
+        open={showAddWalletDialog}
+        onOpenChange={setShowAddWalletDialog}
+        onWalletCreated={(wallet) => {
+          form.setValue('wallet_id', wallet.id);
+          setShowAddWalletDialog(false);
+        }}
+      />
+    </>
   );
 };
