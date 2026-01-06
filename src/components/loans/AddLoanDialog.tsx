@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Landmark, Calendar, Percent } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Landmark, Calendar, Percent, Check, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -53,6 +53,16 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
   const [considerarOrcamento, setConsiderarOrcamento] = useState(true);
   const [notas, setNotas] = useState('');
   const [loading, setLoading] = useState(false);
+  const [fieldError, setFieldError] = useState<string | null>(null);
+
+  // Refs para foco
+  const tipoRef = useRef<HTMLSelectElement>(null);
+  const instituicaoRef = useRef<HTMLSelectElement>(null);
+  const instituicaoCustomRef = useRef<HTMLInputElement>(null);
+  const valorTotalRef = useRef<HTMLInputElement>(null);
+  const parcelasRef = useRef<HTMLInputElement>(null);
+  const valorParcelaRef = useRef<HTMLInputElement>(null);
+  const vencimentoRef = useRef<HTMLInputElement>(null);
 
   const resetForm = () => {
     setValorTotal('');
@@ -97,32 +107,51 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFieldError(null);
 
-    if (!valorTotal || !tipoEmprestimo || !quantidadeParcelas || !valorParcela || !primeiroVencimento) {
-      console.warn('[AddLoanDialog] Form inválido (campos obrigatórios faltando)', {
-        valorTotal,
-        tipoEmprestimo,
-        quantidadeParcelas,
-        valorParcela,
-        primeiroVencimento,
-      });
+    // Validação com foco no primeiro campo inválido
+    if (!hasTipo) {
+      setFieldError('Selecione o tipo de empréstimo');
+      tipoRef.current?.focus();
+      return;
+    }
+    if (!hasInstituicao) {
+      setFieldError('Selecione ou digite a instituição');
+      if (instituicaoPessoa === 'Outro') {
+        instituicaoCustomRef.current?.focus();
+      } else {
+        instituicaoRef.current?.focus();
+      }
+      return;
+    }
+    if (!hasValorTotal) {
+      setFieldError('Informe o valor total do empréstimo');
+      valorTotalRef.current?.focus();
+      return;
+    }
+    if (!hasParcelas) {
+      setFieldError('Informe o número de parcelas');
+      parcelasRef.current?.focus();
+      return;
+    }
+    if (!hasValorParcela) {
+      setFieldError('Informe o valor da parcela');
+      valorParcelaRef.current?.focus();
+      return;
+    }
+    if (!hasPrimeiroVencimento) {
+      setFieldError('Informe a data do 1º vencimento');
+      vencimentoRef.current?.focus();
       return;
     }
 
     const finalInstituicao = instituicaoPessoa === 'Outro' ? instituicaoCustom : instituicaoPessoa;
-    if (!finalInstituicao.trim()) {
-      console.warn('[AddLoanDialog] Form inválido (instituição vazia)', {
-        instituicaoPessoa,
-        instituicaoCustom,
-      });
-      return;
-    }
 
     setLoading(true);
     
     const result = await onAdd({
       valor_total: valorTotalNum,
-      tipo_emprestimo: tipoEmprestimo,
+      tipo_emprestimo: tipoEmprestimo as Loan['tipo_emprestimo'],
       instituicao_pessoa: finalInstituicao.trim(),
       quantidade_parcelas: parcelasNum,
       valor_parcela: valorParcelaNum,
@@ -187,8 +216,9 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
           <div className="space-y-2">
             <Label>Tipo de Empréstimo</Label>
             <select
+              ref={tipoRef}
               value={tipoEmprestimo}
-              onChange={(e) => setTipoEmprestimo(e.target.value as Loan['tipo_emprestimo'])}
+              onChange={(e) => { setTipoEmprestimo(e.target.value as Loan['tipo_emprestimo']); setFieldError(null); }}
               className={cn(
                 'flex h-11 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground',
                 'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ring-offset-background'
@@ -209,8 +239,9 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
           <div className="space-y-2">
             <Label>Instituição ou Pessoa</Label>
             <select
+              ref={instituicaoRef}
               value={instituicaoPessoa}
-              onChange={(e) => setInstituicaoPessoa(e.target.value)}
+              onChange={(e) => { setInstituicaoPessoa(e.target.value); setFieldError(null); }}
               className={cn(
                 'flex h-11 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground',
                 'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ring-offset-background'
@@ -227,9 +258,10 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
             </select>
             {instituicaoPessoa === 'Outro' && (
               <Input
+                ref={instituicaoCustomRef}
                 placeholder="Digite o nome da instituição ou pessoa"
                 value={instituicaoCustom}
-                onChange={(e) => setInstituicaoCustom(e.target.value)}
+                onChange={(e) => { setInstituicaoCustom(e.target.value); setFieldError(null); }}
                 className="min-h-[44px] mt-2"
               />
             )}
@@ -255,12 +287,13 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
                 ))}
               </select>
               <Input
+                ref={valorTotalRef}
                 type="number"
                 step="0.01"
                 min="0"
                 placeholder="0.00"
                 value={valorTotal}
-                onChange={(e) => handleValorTotalChange(e.target.value)}
+                onChange={(e) => { handleValorTotalChange(e.target.value); setFieldError(null); }}
                 className="flex-1 min-h-[44px]"
               />
             </div>
@@ -271,23 +304,25 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
             <div className="space-y-2">
               <Label>Nº de Parcelas</Label>
               <Input
+                ref={parcelasRef}
                 type="number"
                 min="1"
-                placeholder="12"
+                placeholder="Ex: 12"
                 value={quantidadeParcelas}
-                onChange={(e) => handleParcelasChange(e.target.value)}
+                onChange={(e) => { handleParcelasChange(e.target.value); setFieldError(null); }}
                 className="min-h-[44px]"
               />
             </div>
             <div className="space-y-2">
               <Label>Valor da Parcela</Label>
               <Input
+                ref={valorParcelaRef}
                 type="number"
                 step="0.01"
                 min="0"
                 placeholder="0.00"
                 value={valorParcela}
-                onChange={(e) => setValorParcela(e.target.value)}
+                onChange={(e) => { setValorParcela(e.target.value); setFieldError(null); }}
                 className="min-h-[44px]"
               />
               <p className="text-[10px] text-muted-foreground">Valor pago mensalmente</p>
@@ -302,9 +337,10 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
                 1º Vencimento
               </Label>
               <Input
+                ref={vencimentoRef}
                 type="date"
                 value={primeiroVencimento}
-                onChange={(e) => setPrimeiroVencimento(e.target.value)}
+                onChange={(e) => { setPrimeiroVencimento(e.target.value); setFieldError(null); }}
                 className="min-h-[44px]"
               />
             </div>
@@ -373,17 +409,31 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
             />
           </div>
 
-          <div className="space-y-1 text-xs">
-            <p className="text-muted-foreground">Checklist:</p>
-            <ul className="space-y-0.5">
-              <li className={hasTipo ? 'text-primary' : 'text-destructive'}>Tipo {hasTipo ? 'ok' : 'precisa de atenção'}</li>
-              <li className={hasInstituicao ? 'text-primary' : 'text-destructive'}>Instituição {hasInstituicao ? 'ok' : 'precisa de atenção'}</li>
-              <li className={hasValorTotal ? 'text-primary' : 'text-destructive'}>Valor total {hasValorTotal ? 'ok' : 'precisa de atenção'}</li>
-              <li className={hasParcelas ? 'text-primary' : 'text-destructive'}>Parcelas {hasParcelas ? 'ok' : 'precisa de atenção'}</li>
-              <li className={hasValorParcela ? 'text-primary' : 'text-destructive'}>Valor da parcela {hasValorParcela ? 'ok' : 'precisa de atenção'}</li>
-              <li className={hasPrimeiroVencimento ? 'text-primary' : 'text-destructive'}>1º vencimento {hasPrimeiroVencimento ? 'ok' : 'precisa de atenção'}</li>
-            </ul>
+          {/* Checklist lado a lado */}
+          <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
+            <span className={cn('flex items-center gap-1', hasTipo ? 'text-primary' : 'text-muted-foreground')}>
+              {hasTipo ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />} Tipo
+            </span>
+            <span className={cn('flex items-center gap-1', hasInstituicao ? 'text-primary' : 'text-muted-foreground')}>
+              {hasInstituicao ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />} Instituição
+            </span>
+            <span className={cn('flex items-center gap-1', hasValorTotal ? 'text-primary' : 'text-muted-foreground')}>
+              {hasValorTotal ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />} Valor
+            </span>
+            <span className={cn('flex items-center gap-1', hasParcelas ? 'text-primary' : 'text-muted-foreground')}>
+              {hasParcelas ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />} Parcelas
+            </span>
+            <span className={cn('flex items-center gap-1', hasValorParcela ? 'text-primary' : 'text-muted-foreground')}>
+              {hasValorParcela ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />} Valor parcela
+            </span>
+            <span className={cn('flex items-center gap-1', hasPrimeiroVencimento ? 'text-primary' : 'text-muted-foreground')}>
+              {hasPrimeiroVencimento ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />} Vencimento
+            </span>
           </div>
+
+          {fieldError && (
+            <p className="text-xs text-destructive font-medium">{fieldError}</p>
+          )}
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
@@ -392,7 +442,7 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
             <Button 
               type="submit" 
               variant="gold"
-              disabled={loading || !isFormValid}
+              disabled={loading}
             >
               {loading ? 'Salvando...' : 'Cadastrar Empréstimo'}
             </Button>
