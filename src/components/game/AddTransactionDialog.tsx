@@ -222,7 +222,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   // Handle dialog close and session complete
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen) {
-      // Reset source selection when dialog closes
+      // Reset all form state when dialog closes
       setSourceType(null);
       setSelectedCardId(null);
       setShowCardSelection(false);
@@ -230,6 +230,13 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
       setShowLoanSelection(false);
       setType('EXPENSE');
       setCategory('');
+      setSupplier('');
+      setDescription('');
+      setAmount('');
+      setTouched({ description: false, amount: false, category: false, wallet: false });
+      setAttemptedSubmit(false);
+      setShowBreakdown(false);
+      setBreakdownItems([]);
       
       if (sessionData.transactionCount > 0) {
         // Dialog is closing and we have transactions in session
@@ -413,7 +420,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
         xpGained: prev.xpGained + (result.xpEarned || 10),
       }));
       
-      // Reset form for next transaction (keep date and wallet for convenience)
+      // Reset form for next transaction (keep date, wallet, and sourceType for convenience)
       setSupplier('');
       setDescription('');
       setAmount('');
@@ -421,16 +428,24 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
       setSelectedCurrency(currency);
       setShowBreakdown(false);
       setBreakdownItems([]);
-      // Reset loan selection after successful transaction
+      
+      // Handle source-specific resets
       if (sourceType === 'loan') {
+        // Reset loan selection after successful transaction to allow selecting another loan
         setSelectedLoanId(null);
         setShowLoanSelection(true);
+      } else if (sourceType === 'account') {
+        // Ensure card/loan selection states are false for account transactions
+        setShowCardSelection(false);
+        setShowLoanSelection(false);
       }
+      // For card transactions, keep selectedCardId to allow multiple transactions on same card
+      
       // Wallet and date are intentionally kept for multiple transactions
       setTouched({ description: false, amount: false, category: false, wallet: false });
       setAttemptedSubmit(false);
       
-      // Focus on description field for next transaction
+      // Focus on supplier field for next expense, description for income
       setTimeout(() => {
         descriptionInputRef.current?.focus();
       }, 100);
