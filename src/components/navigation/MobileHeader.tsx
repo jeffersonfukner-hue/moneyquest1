@@ -56,11 +56,14 @@ export const MobileHeader = ({ onSettingsClick, onProfileClick }: MobileHeaderPr
   return (
     <>
       <header className="sticky top-0 z-40 bg-background border-b border-border safe-area-top">
-        <div className="flex items-center justify-center h-14 px-2 max-w-md mx-auto">
-          <div className="flex items-center gap-1">
-            <div className="flex items-center justify-center min-h-[44px] min-w-[44px]">
-              <Logo size="xs" variant="full" />
-            </div>
+        <div className="flex items-center justify-between h-14 px-2 max-w-md mx-auto">
+          {/* Logo */}
+          <div className="flex items-center justify-center min-h-[44px] min-w-[44px] shrink-0">
+            <Logo size="xs" variant="full" />
+          </div>
+          
+          {/* Actions */}
+          <div className="flex items-center gap-0.5">
             <SoundToggle />
             <NotificationBell />
             {isSuperAdmin && (
