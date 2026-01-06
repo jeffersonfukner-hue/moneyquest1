@@ -43,6 +43,7 @@ export interface CreateScheduledTransactionData {
 
 export interface UpdateScheduledTransactionData extends Partial<CreateScheduledTransactionData> {
   id: string;
+  remaining_occurrences?: number | null;
 }
 
 export const useScheduledTransactions = () => {
@@ -184,6 +185,10 @@ export const useScheduledTransactions = () => {
         if (nextRunDate) {
           updateData.next_run_date = nextRunDate.toISOString().split('T')[0];
         }
+      }
+      if (data.total_occurrences !== undefined) {
+        updateData.total_occurrences = data.total_occurrences;
+        updateData.remaining_occurrences = data.total_occurrences;
       }
 
       const { error } = await supabase

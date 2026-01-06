@@ -175,6 +175,7 @@ export const ScheduledTransactionDialog = ({ open, onOpenChange, editTransaction
         day_of_week: data.frequency === 'weekly' ? data.day_of_week : undefined,
         day_of_month: ['monthly', 'yearly'].includes(data.frequency) ? data.day_of_month : undefined,
         month_of_year: data.frequency === 'yearly' ? data.month_of_year : undefined,
+        total_occurrences: data.has_limit ? data.total_occurrences : null,
       });
     } else {
       const transactionData: CreateScheduledTransactionData = {
