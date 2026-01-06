@@ -290,14 +290,21 @@ export const ScheduledTransactionDialog = ({
                   <FormLabel>{t('transactions.amount')}</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
+                      type="text"
                       inputMode="decimal"
-                      step="0.01"
-                      min="0.01"
                       placeholder="0.00"
-                      className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      {...field}
-                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                      className="[appearance:textfield]"
+                      value={field.value === 0 ? '' : field.value}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(',', '.');
+                        if (val === '' || /^\d*\.?\d*$/.test(val)) {
+                          field.onChange(val === '' ? 0 : parseFloat(val) || val);
+                        }
+                      }}
+                      onBlur={(e) => {
+                        const parsed = parseFloat(e.target.value.replace(',', '.'));
+                        field.onChange(isNaN(parsed) ? 0 : parsed);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
