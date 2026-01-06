@@ -2286,6 +2286,16 @@ export type Database = {
       }
     }
     Functions: {
+      add_user_xp: {
+        Args: {
+          p_description?: string
+          p_source: string
+          p_source_id?: string
+          p_user_id: string
+          p_xp_amount: number
+        }
+        Returns: undefined
+      }
       admin_add_ip_whitelist: {
         Args: {
           p_description?: string
@@ -2586,6 +2596,14 @@ export type Database = {
       }
       complete_referral_reward: {
         Args: { p_referred_user_id: string }
+        Returns: Json
+      }
+      convert_xp_to_coins: {
+        Args: {
+          p_taxa_conversao?: number
+          p_user_id: string
+          p_xp_amount: number
+        }
         Returns: Json
       }
       create_default_categories: {
