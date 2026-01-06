@@ -18,13 +18,10 @@ interface ShopItemCardProps {
 // Map theme items to CSS class names for preview
 const THEME_CLASS_MAP: Record<string, string> = {
   // Dark themes
-  'dark_finance': 'theme-dark-finance',
-  'neon_budget': 'theme-neon-budget',
   'black_card': 'theme-black-card',
   'crypto_neon': 'theme-crypto-neon',
   'galactic_wealth': 'theme-galactic-wealth',
   'executive_diamond': 'theme-executive-diamond',
-  'black_friday': 'theme-black-friday',
   'executive_dark': 'theme-executive-dark',
   'gold_luxury': 'theme-gold-luxury',
   'obsidian_wealth': 'theme-obsidian-wealth',
@@ -32,13 +29,12 @@ const THEME_CLASS_MAP: Record<string, string> = {
   'midnight_wealth': 'theme-midnight-wealth',
   'royal_crown': 'theme-royal-crown',
   'legacy_gold': 'theme-legacy-gold',
-  // Light themes
+  // Light/Nature themes
   'minimal_white_pro': 'theme-minimal-white',
-  'ocean_breeze': 'theme-ocean-breeze',
-  'sunrise_gold': 'theme-sunrise-gold',
-  'forest_light': 'theme-forest-light',
-  'lavender_dream': 'theme-lavender-dream',
+  'ocean_blue_wealth': 'theme-ocean-blue-wealth',
   'emerald_balance': 'theme-emerald-balance',
+  'forest_wealth': 'theme-forest-wealth',
+  'sunset_balance': 'theme-sunset-balance',
 };
 
 export const ShopItemCard = ({ 
