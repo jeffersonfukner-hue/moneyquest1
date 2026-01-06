@@ -99,7 +99,7 @@ export const EditTransactionDialog = ({
   const filteredCategories = categories.filter(c => c.type === type);
 
   // Check if this is a credit card transaction (doesn't need wallet)
-  const isCardTransaction = !!(transaction as any).credit_card_id;
+  const isCardTransaction = !!transaction.credit_card_id;
 
   const isDescriptionValid = description.trim().length > 0;
   const isAmountValid = parseFloat(amount) > 0;
