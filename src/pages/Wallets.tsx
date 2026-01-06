@@ -423,6 +423,9 @@ const WalletsPage = () => {
       <AddWalletDialog
         open={showAddDialog}
         onOpenChange={setShowAddDialog}
+        onWalletCreated={() => {
+          refetchWallets();
+        }}
       />
 
       <EditWalletDialog
