@@ -188,13 +188,17 @@ export const QuickAddGoalPrompt = ({ category, onSuccess, onDismiss }: QuickAddG
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground text-sm">{currency}</span>
                 <Input
-                  type="number"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="0.00"
                   value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(',', '.');
+                    if (val === '' || /^\d*\.?\d{0,2}$/.test(val)) {
+                      setAmount(val);
+                    }
+                  }}
                   className="min-h-[48px] text-lg"
-                  min="0"
-                  step="0.01"
                   autoFocus
                 />
               </div>

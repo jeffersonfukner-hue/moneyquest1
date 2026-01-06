@@ -134,13 +134,14 @@ export function PayOffLoanDialog({
                   </Button>
                   <Input
                     id="installments"
-                    type="number"
-                    min={1}
-                    max={remainingInstallments}
+                    type="text"
+                    inputMode="numeric"
                     value={installmentsToPrepay}
-                    onChange={(e) => setInstallmentsToPrepay(
-                      Math.min(remainingInstallments, Math.max(1, parseInt(e.target.value) || 1))
-                    )}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '');
+                      const num = parseInt(val) || 1;
+                      setInstallmentsToPrepay(Math.min(remainingInstallments, Math.max(1, num)));
+                    }}
                     className="text-center w-20"
                   />
                   <Button

@@ -67,7 +67,7 @@ export const ScheduledTransferDialog = ({ open, onOpenChange }: ScheduledTransfe
   const { createScheduledTransfer } = useWalletTransfers();
   const { getRate } = useExchangeRates();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [amountDisplay, setAmountDisplay] = useState('');
   const form = useForm<ScheduledTransferFormData>({
     resolver: zodResolver(scheduledTransferSchema),
     defaultValues: {
@@ -133,6 +133,7 @@ export const ScheduledTransferDialog = ({ open, onOpenChange }: ScheduledTransfe
 
     if (success) {
       form.reset();
+      setAmountDisplay('');
       onOpenChange(false);
     }
   };
@@ -245,12 +246,17 @@ export const ScheduledTransferDialog = ({ open, onOpenChange }: ScheduledTransfe
                   </FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
-                      step="0.01"
-                      min="0.01"
+                      type="text"
+                      inputMode="decimal"
                       placeholder="0.00"
-                      {...field}
-                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                      value={amountDisplay}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(',', '.');
+                        if (val === '' || /^\d*\.?\d{0,2}$/.test(val)) {
+                          setAmountDisplay(val);
+                          field.onChange(val === '' ? 0 : parseFloat(val) || 0);
+                        }
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -323,11 +329,14 @@ export const ScheduledTransferDialog = ({ open, onOpenChange }: ScheduledTransfe
                     <FormLabel>{t('wallets.dayOfMonth')}</FormLabel>
                     <FormControl>
                       <Input
-                        type="number"
-                        min={1}
-                        max={31}
-                        {...field}
-                        onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
+                        type="text"
+                        inputMode="numeric"
+                        value={field.value || ''}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, '');
+                          const num = parseInt(val) || 0;
+                          field.onChange(Math.min(31, Math.max(0, num)) || undefined);
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -383,11 +392,14 @@ export const ScheduledTransferDialog = ({ open, onOpenChange }: ScheduledTransfe
                       <FormLabel>Repetir por quantos {getFrequencyLabel()}?</FormLabel>
                       <FormControl>
                         <Input
-                          type="number"
-                          min={1}
-                          max={120}
-                          {...field}
-                          onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
+                          type="text"
+                          inputMode="numeric"
+                          value={field.value || ''}
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/\D/g, '');
+                            const num = parseInt(val) || 0;
+                            field.onChange(Math.min(120, Math.max(0, num)) || undefined);
+                          }}
                         />
                       </FormControl>
                       <p className="text-xs text-muted-foreground">

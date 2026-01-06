@@ -61,7 +61,7 @@ export const TransferDialog = ({ open, onOpenChange, preselectedWallet }: Transf
   const { formatCurrency } = useCurrency();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAddWalletDialog, setShowAddWalletDialog] = useState(false);
-
+  const [amountDisplay, setAmountDisplay] = useState('');
   const form = useForm<TransferFormData>({
     resolver: zodResolver(transferSchema),
     defaultValues: {
@@ -127,6 +127,7 @@ export const TransferDialog = ({ open, onOpenChange, preselectedWallet }: Transf
 
     if (success) {
       form.reset();
+      setAmountDisplay('');
       onOpenChange(false);
     }
   };
@@ -260,11 +261,11 @@ export const TransferDialog = ({ open, onOpenChange, preselectedWallet }: Transf
                       type="text"
                       inputMode="decimal"
                       placeholder="0.00"
-                      className="[appearance:textfield]"
-                      value={field.value || ''}
+                      value={amountDisplay}
                       onChange={(e) => {
                         const val = e.target.value.replace(',', '.');
                         if (val === '' || /^\d*\.?\d{0,2}$/.test(val)) {
+                          setAmountDisplay(val);
                           field.onChange(val === '' ? 0 : parseFloat(val) || 0);
                         }
                       }}
