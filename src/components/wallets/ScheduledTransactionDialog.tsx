@@ -37,6 +37,7 @@ import {
   ScheduledTransaction,
 } from '@/hooks/useScheduledTransactions';
 import { useProfile } from '@/hooks/useProfile';
+import { SupplierAutocomplete } from '@/components/suppliers/SupplierAutocomplete';
 import { SupportedCurrency } from '@/types/database';
 
 const scheduledTransactionSchema = z.object({
@@ -477,15 +478,10 @@ export const ScheduledTransactionDialog = ({
                 name="supplier"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('transactions.supplier', 'Fornecedor')}</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder={t('transactions.supplierPlaceholder', 'Ex: AMAZON, IFOOD, UBER...')} 
-                        {...field} 
-                        onChange={(e) => field.onChange(e.target.value.toUpperCase())}
-                        style={{ textTransform: 'uppercase' }}
-                      />
-                    </FormControl>
+                    <SupplierAutocomplete
+                      value={field.value || ''}
+                      onChange={field.onChange}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
