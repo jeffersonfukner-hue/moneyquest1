@@ -313,8 +313,9 @@ const WalletsPage = () => {
           {/* Loans Tab */}
           <TabsContent value="loans" className="space-y-4 mt-4">
             <Button 
+              type="button"
               onClick={() => setShowAddLoanDialog(true)} 
-              className="w-full"
+              className="w-full min-h-[48px]"
             >
               <Plus className="mr-2 h-4 w-4" />
               Novo Empréstimo
