@@ -70,7 +70,9 @@ const ScheduledTransactions = () => {
     scheduledTransactions,
     loading: loadingTransactions,
     toggleScheduledTransaction,
-    deleteScheduledTransaction
+    deleteScheduledTransaction,
+    createScheduledTransaction,
+    updateScheduledTransaction,
   } = useScheduledTransactions();
   
   const { categories } = useCategories();
@@ -761,6 +763,8 @@ const ScheduledTransactions = () => {
         open={showTransactionDialog}
         onOpenChange={handleCloseTransactionDialog}
         editTransaction={editingTransaction}
+        createScheduledTransaction={createScheduledTransaction}
+        updateScheduledTransaction={updateScheduledTransaction}
       />
     </AppLayout>
   );

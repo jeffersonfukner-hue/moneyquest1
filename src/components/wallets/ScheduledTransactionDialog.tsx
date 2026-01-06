@@ -30,7 +30,12 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useWallets } from '@/hooks/useWallets';
 import { useCategories } from '@/hooks/useCategories';
-import { useScheduledTransactions, CreateScheduledTransactionData, ScheduledTransaction } from '@/hooks/useScheduledTransactions';
+import {
+  useScheduledTransactions,
+  CreateScheduledTransactionData,
+  UpdateScheduledTransactionData,
+  ScheduledTransaction,
+} from '@/hooks/useScheduledTransactions';
 import { useProfile } from '@/hooks/useProfile';
 import { SupportedCurrency } from '@/types/database';
 
@@ -54,6 +59,8 @@ interface ScheduledTransactionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   editTransaction?: ScheduledTransaction | null;
+  createScheduledTransaction?: (data: CreateScheduledTransactionData) => Promise<boolean>;
+  updateScheduledTransaction?: (data: UpdateScheduledTransactionData) => Promise<boolean>;
 }
 
 const DAYS_OF_WEEK = [
@@ -81,13 +88,25 @@ const MONTHS = [
   { value: 12, label: 'december' },
 ];
 
-export const ScheduledTransactionDialog = ({ open, onOpenChange, editTransaction }: ScheduledTransactionDialogProps) => {
+export const ScheduledTransactionDialog = ({
+  open,
+  onOpenChange,
+  editTransaction,
+  createScheduledTransaction: createFromProps,
+  updateScheduledTransaction: updateFromProps,
+}: ScheduledTransactionDialogProps) => {
   const { t } = useTranslation();
   const { activeWallets } = useWallets();
   const { categories } = useCategories();
   const { profile } = useProfile();
-  const { createScheduledTransaction, updateScheduledTransaction } = useScheduledTransactions();
+  const {
+    createScheduledTransaction: createDefault,
+    updateScheduledTransaction: updateDefault,
+  } = useScheduledTransactions();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const createScheduledTransaction = createFromProps ?? createDefault;
+  const updateScheduledTransaction = updateFromProps ?? updateDefault;
 
   const isEditMode = !!editTransaction;
 
