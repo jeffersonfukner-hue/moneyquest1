@@ -157,12 +157,20 @@ const OccurrencesInput = ({ control, getFrequencyLabel }: { control: any; getFre
           onChange={(e) => {
             const val = e.target.value.replace(/\D/g, '');
             setDisplayValue(val);
-            if (val !== '') {
-              const num = Math.min(parseInt(val, 10), 999);
-              field.onChange(num);
+
+            // Allow clearing the field on mobile without it snapping back
+            if (val === '') {
+              field.onChange(undefined);
+              return;
             }
+
+            const num = Math.min(parseInt(val, 10), 999);
+            field.onChange(num);
           }}
           onBlur={() => {
+            // If user left it empty, keep it empty and let validation handle it
+            if (displayValue.trim() === '') return;
+
             const parsed = parseInt(displayValue, 10);
             const finalValue = isNaN(parsed) || parsed < 1 ? 1 : Math.min(parsed, 999);
             field.onChange(finalValue);
@@ -171,7 +179,7 @@ const OccurrencesInput = ({ control, getFrequencyLabel }: { control: any; getFre
         />
       </FormControl>
       <p className="text-xs text-muted-foreground">
-        Após {field.value || 1} execuções, o agendamento será desativado automaticamente.
+        Após {field.value ?? '—'} execuções, o agendamento será desativado automaticamente.
       </p>
       <FormMessage />
     </FormItem>
