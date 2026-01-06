@@ -40,17 +40,46 @@ import { useProfile } from '@/hooks/useProfile';
 import { SupportedCurrency } from '@/types/database';
 
 const scheduledTransactionSchema = z.object({
-  description: z.string().min(1, 'Required'),
-  amount: z.number().positive('Must be positive'),
+  description: z.string().min(1, 'Descrição é obrigatória'),
+  amount: z.number({ required_error: 'Valor é obrigatório', invalid_type_error: 'Valor é obrigatório' }).positive('Valor deve ser maior que zero'),
   type: z.enum(['INCOME', 'EXPENSE']),
-  category: z.string().min(1, 'Required'),
+  category: z.string().min(1, 'Categoria é obrigatória'),
   wallet_id: z.string().optional(),
   frequency: z.enum(['daily', 'weekly', 'monthly', 'yearly']),
-  day_of_week: z.number().optional(),
-  day_of_month: z.number().optional(),
-  month_of_year: z.number().optional(),
+  day_of_week: z.number().min(0).max(6).optional(),
+  day_of_month: z.number().min(1, 'Dia deve ser entre 1 e 31').max(31, 'Dia deve ser entre 1 e 31').optional(),
+  month_of_year: z.number().min(1).max(12).optional(),
   has_limit: z.boolean().optional(),
-  total_occurrences: z.number().min(1).optional(),
+  total_occurrences: z.number({ invalid_type_error: 'Informe a quantidade' }).min(1, 'Quantidade deve ser no mínimo 1').optional(),
+}).superRefine((data, ctx) => {
+  if (data.frequency === 'weekly' && data.day_of_week === undefined) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Selecione o dia da semana',
+      path: ['day_of_week'],
+    });
+  }
+  if (['monthly', 'yearly'].includes(data.frequency) && data.day_of_month === undefined) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Informe o dia do mês',
+      path: ['day_of_month'],
+    });
+  }
+  if (data.frequency === 'yearly' && data.month_of_year === undefined) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Selecione o mês',
+      path: ['month_of_year'],
+    });
+  }
+  if (data.has_limit && data.total_occurrences === undefined) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Informe a quantidade de repetições',
+      path: ['total_occurrences'],
+    });
+  }
 });
 
 type ScheduledTransactionFormData = z.infer<typeof scheduledTransactionSchema>;
@@ -91,13 +120,16 @@ const MONTHS = [
 // Separate component for amount input to use hooks properly
 const AmountInput = ({ control }: { control: any }) => {
   const { t } = useTranslation();
-  const { field } = useController({ control, name: 'amount' });
-  const [displayValue, setDisplayValue] = useState(
-    field.value === 0 ? '' : String(field.value)
-  );
+  const { field, fieldState } = useController({ control, name: 'amount' });
+  const [displayValue, setDisplayValue] = useState('');
 
   useEffect(() => {
-    setDisplayValue(field.value === 0 ? '' : String(field.value));
+    // Only sync if field has a real value (not 0 or undefined)
+    if (field.value && field.value > 0) {
+      setDisplayValue(String(field.value));
+    } else {
+      setDisplayValue('');
+    }
   }, [field.value]);
 
   return (
@@ -107,42 +139,53 @@ const AmountInput = ({ control }: { control: any }) => {
         <Input
           type="text"
           inputMode="decimal"
-          placeholder="0,00"
+          placeholder=""
           value={displayValue}
           onChange={(e) => {
             const val = e.target.value.replace(',', '.');
             if (val === '' || /^\d*\.?\d*$/.test(val)) {
               setDisplayValue(e.target.value);
-              const parsed = parseFloat(val);
-              if (!isNaN(parsed)) {
-                field.onChange(parsed);
-              } else if (val === '') {
-                field.onChange(0);
+              if (val === '') {
+                field.onChange(undefined);
+              } else {
+                const parsed = parseFloat(val);
+                if (!isNaN(parsed)) {
+                  field.onChange(parsed);
+                }
               }
             }
           }}
           onBlur={() => {
+            if (displayValue.trim() === '') {
+              field.onChange(undefined);
+              return;
+            }
             const parsed = parseFloat(displayValue.replace(',', '.'));
-            const finalValue = isNaN(parsed) ? 0 : parsed;
-            field.onChange(finalValue);
-            setDisplayValue(finalValue === 0 ? '' : String(finalValue));
+            if (!isNaN(parsed) && parsed > 0) {
+              field.onChange(parsed);
+              setDisplayValue(String(parsed));
+            }
           }}
         />
       </FormControl>
-      <FormMessage />
+      {fieldState.error && (
+        <p className="text-sm font-medium text-destructive">{fieldState.error.message}</p>
+      )}
     </FormItem>
   );
 };
 
 // Separate component for occurrences input to use hooks properly
 const OccurrencesInput = ({ control, getFrequencyLabel }: { control: any; getFrequencyLabel: () => string }) => {
-  const { field } = useController({ control, name: 'total_occurrences' });
-  const [displayValue, setDisplayValue] = useState(
-    field.value ? String(field.value) : ''
-  );
+  const { field, fieldState } = useController({ control, name: 'total_occurrences' });
+  const [displayValue, setDisplayValue] = useState('');
 
   useEffect(() => {
-    setDisplayValue(field.value ? String(field.value) : '');
+    if (field.value && field.value > 0) {
+      setDisplayValue(String(field.value));
+    } else {
+      setDisplayValue('');
+    }
   }, [field.value]);
 
   return (
@@ -152,36 +195,40 @@ const OccurrencesInput = ({ control, getFrequencyLabel }: { control: any; getFre
         <Input
           type="text"
           inputMode="numeric"
-          placeholder="12"
+          placeholder=""
           value={displayValue}
           onChange={(e) => {
             const val = e.target.value.replace(/\D/g, '');
             setDisplayValue(val);
-
-            // Allow clearing the field on mobile without it snapping back
             if (val === '') {
+              field.onChange(undefined);
+            } else {
+              const num = Math.min(parseInt(val, 10), 999);
+              field.onChange(num);
+            }
+          }}
+          onBlur={() => {
+            if (displayValue.trim() === '') {
               field.onChange(undefined);
               return;
             }
-
-            const num = Math.min(parseInt(val, 10), 999);
-            field.onChange(num);
-          }}
-          onBlur={() => {
-            // If user left it empty, keep it empty and let validation handle it
-            if (displayValue.trim() === '') return;
-
             const parsed = parseInt(displayValue, 10);
-            const finalValue = isNaN(parsed) || parsed < 1 ? 1 : Math.min(parsed, 999);
-            field.onChange(finalValue);
-            setDisplayValue(String(finalValue));
+            if (!isNaN(parsed) && parsed >= 1) {
+              const clamped = Math.min(parsed, 999);
+              field.onChange(clamped);
+              setDisplayValue(String(clamped));
+            }
           }}
         />
       </FormControl>
-      <p className="text-xs text-muted-foreground">
-        Após {field.value ?? '—'} execuções, o agendamento será desativado automaticamente.
-      </p>
-      <FormMessage />
+      {field.value ? (
+        <p className="text-xs text-muted-foreground">
+          Após {field.value} execuções, o agendamento será desativado automaticamente.
+        </p>
+      ) : null}
+      {fieldState.error && (
+        <p className="text-sm font-medium text-destructive">{fieldState.error.message}</p>
+      )}
     </FormItem>
   );
 };
@@ -212,14 +259,14 @@ export const ScheduledTransactionDialog = ({
     resolver: zodResolver(scheduledTransactionSchema),
     defaultValues: {
       description: '',
-      amount: 0,
+      amount: undefined,
       type: 'EXPENSE',
       category: '',
       wallet_id: '',
       frequency: 'monthly',
-      day_of_week: 1,
-      day_of_month: 5,
-      month_of_year: 1,
+      day_of_week: undefined,
+      day_of_month: undefined,
+      month_of_year: undefined,
       has_limit: false,
       total_occurrences: undefined,
     },
@@ -235,23 +282,23 @@ export const ScheduledTransactionDialog = ({
         category: editTransaction.category,
         wallet_id: editTransaction.wallet_id || 'none',
         frequency: editTransaction.frequency,
-        day_of_week: editTransaction.day_of_week ?? 1,
-        day_of_month: editTransaction.day_of_month ?? 5,
-        month_of_year: editTransaction.month_of_year ?? 1,
+        day_of_week: editTransaction.day_of_week ?? undefined,
+        day_of_month: editTransaction.day_of_month ?? undefined,
+        month_of_year: editTransaction.month_of_year ?? undefined,
         has_limit: editTransaction.total_occurrences !== null,
         total_occurrences: editTransaction.total_occurrences ?? undefined,
       });
     } else if (open && !editTransaction) {
       form.reset({
         description: '',
-        amount: 0,
+        amount: undefined,
         type: 'EXPENSE',
         category: '',
         wallet_id: '',
         frequency: 'monthly',
-        day_of_week: 1,
-        day_of_month: 5,
-        month_of_year: 1,
+        day_of_week: undefined,
+        day_of_month: undefined,
+        month_of_year: undefined,
         has_limit: false,
         total_occurrences: undefined,
       });
@@ -502,14 +549,14 @@ export const ScheduledTransactionDialog = ({
               <FormField
                 control={form.control}
                 name="day_of_month"
-                render={({ field }) => (
+                render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel>{t('wallets.dayOfMonth')}</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
                         inputMode="numeric"
-                        placeholder="5"
+                        placeholder=""
                         value={field.value?.toString() ?? ''}
                         onChange={(e) => {
                           const val = e.target.value.replace(/\D/g, '');
@@ -519,16 +566,16 @@ export const ScheduledTransactionDialog = ({
                           }
                           field.onChange(parseInt(val, 10));
                         }}
-                        onBlur={(e) => {
-                          const val = e.target.value.replace(/\D/g, '');
-                          if (val === '') return;
-                          const parsed = parseInt(val, 10);
-                          const clamped = Math.min(Math.max(parsed, 1), 31);
+                        onBlur={() => {
+                          if (field.value === undefined) return;
+                          const clamped = Math.min(Math.max(field.value, 1), 31);
                           field.onChange(clamped);
                         }}
                       />
                     </FormControl>
-                    <FormMessage />
+                    {fieldState.error && (
+                      <p className="text-sm font-medium text-destructive">{fieldState.error.message}</p>
+                    )}
                   </FormItem>
                 )}
               />
