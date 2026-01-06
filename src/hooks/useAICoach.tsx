@@ -71,11 +71,11 @@ export const useAICoach = () => {
         Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({
-        transactions,
+        transactions: transactions.slice(0, 100), // Limit to 100 most recent
         profile,
         requestType,
         userMessage,
-        conversationHistory: messages.map(m => ({ role: m.role, content: m.content })),
+        conversationHistory: messages.slice(-20).map(m => ({ role: m.role, content: m.content })),
         language,
         currency,
       }),
