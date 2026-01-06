@@ -18,7 +18,32 @@ export interface ShopItem {
   raridade: string;
   visivel_para_free: boolean;
   ativo: boolean;
+  // Rotation fields
+  rotation_week: number | null;
+  is_limited: boolean;
+  stock_total: number | null;
+  stock_remaining: number | null;
 }
+
+// Calculate current rotation week (1-8 cycle)
+// Start date: Monday of a reference week
+const ROTATION_START_DATE = new Date('2025-01-06'); // First Monday of 2025
+
+export const getCurrentRotationWeek = (): number => {
+  const now = new Date();
+  const diffTime = now.getTime() - ROTATION_START_DATE.getTime();
+  const diffWeeks = Math.floor(diffTime / (7 * 24 * 60 * 60 * 1000));
+  return (diffWeeks % 8) + 1; // 1-8 cycle
+};
+
+export const getNextRotationDate = (): Date => {
+  const now = new Date();
+  const currentWeek = getCurrentRotationWeek();
+  const diffTime = now.getTime() - ROTATION_START_DATE.getTime();
+  const weeksElapsed = Math.floor(diffTime / (7 * 24 * 60 * 60 * 1000));
+  const nextWeekStart = new Date(ROTATION_START_DATE.getTime() + (weeksElapsed + 1) * 7 * 24 * 60 * 60 * 1000);
+  return nextWeekStart;
+};
 
 export interface Purchase {
   id: string;
@@ -87,6 +112,8 @@ export const useShop = () => {
     profile?.premium_override === 'force_on' ||
     (profile?.trial_end_date && new Date(profile.trial_end_date) > new Date());
 
+  const currentWeek = getCurrentRotationWeek();
+
   const fetchItems = async () => {
     const { data, error } = await supabase
       .from('shop_items')
@@ -97,10 +124,19 @@ export const useShop = () => {
       .order('preco_mq_coins');
 
     if (!error && data) {
-      // Filter items based on visibility and cast to ShopItem
-      const visibleItems = (data as unknown as ShopItem[]).filter(item => 
-        isPremium || item.visivel_para_free
-      );
+      // Filter items based on visibility, rotation week, and stock
+      const visibleItems = (data as unknown as ShopItem[]).filter(item => {
+        // Check visibility
+        if (!isPremium && !item.visivel_para_free) return false;
+        
+        // Check rotation: null means always available, otherwise must match current week
+        if (item.rotation_week !== null && item.rotation_week !== currentWeek) return false;
+        
+        // Check limited stock: hide if sold out
+        if (item.is_limited && item.stock_remaining !== null && item.stock_remaining <= 0) return false;
+        
+        return true;
+      });
       setItems(visibleItems);
     }
   };

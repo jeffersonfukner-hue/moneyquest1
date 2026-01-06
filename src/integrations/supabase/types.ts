@@ -1542,11 +1542,15 @@ export type Database = {
           icone: string | null
           id: string
           imagem_url: string | null
+          is_limited: boolean | null
           metadata: Json | null
           nome: string
           preco_mq_coins: number
           premium_only: boolean
           raridade: string
+          rotation_week: number | null
+          stock_remaining: number | null
+          stock_total: number | null
           tipo: string
           updated_at: string
           visivel_para_free: boolean
@@ -1559,11 +1563,15 @@ export type Database = {
           icone?: string | null
           id?: string
           imagem_url?: string | null
+          is_limited?: boolean | null
           metadata?: Json | null
           nome: string
           preco_mq_coins?: number
           premium_only?: boolean
           raridade?: string
+          rotation_week?: number | null
+          stock_remaining?: number | null
+          stock_total?: number | null
           tipo: string
           updated_at?: string
           visivel_para_free?: boolean
@@ -1576,11 +1584,15 @@ export type Database = {
           icone?: string | null
           id?: string
           imagem_url?: string | null
+          is_limited?: boolean | null
           metadata?: Json | null
           nome?: string
           preco_mq_coins?: number
           premium_only?: boolean
           raridade?: string
+          rotation_week?: number | null
+          stock_remaining?: number | null
+          stock_total?: number | null
           tipo?: string
           updated_at?: string
           visivel_para_free?: boolean

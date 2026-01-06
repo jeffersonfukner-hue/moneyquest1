@@ -25,12 +25,20 @@ const THEME_CLASS_MAP: Record<string, string> = {
   'galactic_wealth': 'theme-galactic-wealth',
   'executive_diamond': 'theme-executive-diamond',
   'black_friday': 'theme-black-friday',
+  'executive_dark': 'theme-executive-dark',
+  'gold_luxury': 'theme-gold-luxury',
+  'obsidian_wealth': 'theme-obsidian-wealth',
+  'dark_samurai': 'theme-dark-samurai',
+  'midnight_wealth': 'theme-midnight-wealth',
+  'royal_crown': 'theme-royal-crown',
+  'legacy_gold': 'theme-legacy-gold',
   // Light themes
   'minimal_white_pro': 'theme-minimal-white',
   'ocean_breeze': 'theme-ocean-breeze',
   'sunrise_gold': 'theme-sunrise-gold',
   'forest_light': 'theme-forest-light',
   'lavender_dream': 'theme-lavender-dream',
+  'emerald_balance': 'theme-emerald-balance',
 };
 
 export const ShopItemCard = ({ 
@@ -191,7 +199,13 @@ export const ShopItemCard = ({
             </Badge>
           )}
 
-          {item.duracao_em_horas && (
+          {item.is_limited && (
+            <Badge className="text-[10px] px-1.5 py-0 bg-red-500/80 text-white border-0 animate-pulse">
+              🔥 Limitado
+            </Badge>
+          )}
+
+          {item.duracao_em_horas && item.duracao_em_horas > 0 && (
             <Badge variant="outline" className="text-[10px] px-1.5 py-0 text-blue-400 border-blue-500/30">
               <Timer className="w-2.5 h-2.5 mr-0.5" />
               {formatDuration(item.duracao_em_horas)}
@@ -205,6 +219,15 @@ export const ShopItemCard = ({
             </Badge>
           )}
         </div>
+
+        {/* Limited Stock Indicator */}
+        {item.is_limited && item.stock_remaining !== null && (
+          <div className="mb-2 py-1 px-2 bg-red-500/10 border border-red-500/20 rounded text-center">
+            <span className="text-[10px] font-bold text-red-400">
+              Restam apenas {item.stock_remaining} de {item.stock_total}!
+            </span>
+          </div>
+        )}
 
         {/* Name */}
         <h3 className="font-bold text-sm text-center mb-1 line-clamp-1">{item.nome}</h3>
