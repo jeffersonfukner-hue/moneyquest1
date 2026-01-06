@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format, subMonths, startOfMonth, endOfMonth, Locale } from 'date-fns';
 import { ptBR, enUS, es } from 'date-fns/locale';
-import { ArrowRight, Calendar, Filter, X, History } from 'lucide-react';
+import { ArrowRight, Calendar, Filter, X, History, Pencil } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,6 +18,7 @@ import { useWalletTransfers, WalletTransfer } from '@/hooks/useWalletTransfers';
 import { useWallets } from '@/hooks/useWallets';
 import { SupportedCurrency } from '@/types/database';
 import { cn } from '@/lib/utils';
+import { EditTransferDialog } from './EditTransferDialog';
 
 const getDateLocale = (lang: string) => {
   if (lang.startsWith('pt')) return ptBR;
@@ -31,7 +32,7 @@ interface TransferHistoryCardProps {
 
 export const TransferHistoryCard = ({ expanded = false }: TransferHistoryCardProps) => {
   const { t, i18n } = useTranslation();
-  const { transfers, loading, getWalletName, getWalletIcon, applyFilters, clearFilters, filters } = useWalletTransfers();
+  const { transfers, loading, getWalletName, getWalletIcon, applyFilters, clearFilters, filters, updateTransfer, deleteTransfer } = useWalletTransfers();
   const { activeWallets, inactiveWallets } = useWallets();
   const allWallets = [...activeWallets, ...inactiveWallets];
 
@@ -39,6 +40,7 @@ export const TransferHistoryCard = ({ expanded = false }: TransferHistoryCardPro
   const [startDate, setStartDate] = useState<Date | undefined>(filters.startDate);
   const [endDate, setEndDate] = useState<Date | undefined>(filters.endDate);
   const [selectedWallet, setSelectedWallet] = useState<string>(filters.walletId || 'all');
+  const [editingTransfer, setEditingTransfer] = useState<WalletTransfer | null>(null);
 
   const dateLocale = getDateLocale(i18n.language);
 
@@ -222,7 +224,15 @@ export const TransferHistoryCard = ({ expanded = false }: TransferHistoryCardPro
         ) : (
           <div className="space-y-3">
             {displayedTransfers.map((transfer) => (
-              <TransferItem key={transfer.id} transfer={transfer} formatCurrency={formatCurrency} getWalletName={getWalletName} getWalletIcon={getWalletIcon} dateLocale={dateLocale} />
+              <TransferItem 
+                key={transfer.id} 
+                transfer={transfer} 
+                formatCurrency={formatCurrency} 
+                getWalletName={getWalletName} 
+                getWalletIcon={getWalletIcon} 
+                dateLocale={dateLocale}
+                onEdit={() => setEditingTransfer(transfer)}
+              />
             ))}
             
             {!expanded && transfers.length > 5 && (
@@ -233,6 +243,17 @@ export const TransferHistoryCard = ({ expanded = false }: TransferHistoryCardPro
           </div>
         )}
       </CardContent>
+
+      {editingTransfer && (
+        <EditTransferDialog
+          transfer={editingTransfer}
+          wallets={allWallets}
+          open={!!editingTransfer}
+          onOpenChange={(open) => !open && setEditingTransfer(null)}
+          onUpdate={updateTransfer}
+          onDelete={deleteTransfer}
+        />
+      )}
     </Card>
   );
 };
@@ -243,11 +264,15 @@ interface TransferItemProps {
   getWalletName: (id: string) => string;
   getWalletIcon: (id: string) => string;
   dateLocale: Locale;
+  onEdit: () => void;
 }
 
-const TransferItem = ({ transfer, formatCurrency, getWalletName, getWalletIcon, dateLocale }: TransferItemProps) => {
+const TransferItem = ({ transfer, formatCurrency, getWalletName, getWalletIcon, dateLocale, onEdit }: TransferItemProps) => {
   return (
-    <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+    <div 
+      className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer group"
+      onClick={onEdit}
+    >
       <div className="flex items-center gap-1 text-lg">
         <span>{getWalletIcon(transfer.from_wallet_id)}</span>
         <ArrowRight className="h-3 w-3 text-muted-foreground" />
@@ -264,8 +289,11 @@ const TransferItem = ({ transfer, formatCurrency, getWalletName, getWalletIcon, 
           {transfer.description && ` • ${transfer.description}`}
         </div>
       </div>
-      <div className="text-sm font-semibold text-foreground">
-        {formatCurrency(transfer.amount, transfer.currency)}
+      <div className="flex items-center gap-2">
+        <span className="text-sm font-semibold text-foreground">
+          {formatCurrency(transfer.amount, transfer.currency)}
+        </span>
+        <Pencil className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
     </div>
   );

@@ -301,6 +301,151 @@ export const useWalletTransfers = () => {
     }
   };
 
+  const updateTransfer = async (id: string, updates: Partial<WalletTransfer>): Promise<boolean> => {
+    if (!user) return false;
+
+    const originalTransfer = transfers.find(t => t.id === id);
+    if (!originalTransfer) return false;
+
+    const oldFromWallet = wallets.find(w => w.id === originalTransfer.from_wallet_id);
+    const oldToWallet = wallets.find(w => w.id === originalTransfer.to_wallet_id);
+    const newFromWallet = wallets.find(w => w.id === (updates.from_wallet_id || originalTransfer.from_wallet_id));
+    const newToWallet = wallets.find(w => w.id === (updates.to_wallet_id || originalTransfer.to_wallet_id));
+
+    if (!oldFromWallet || !oldToWallet || !newFromWallet || !newToWallet) {
+      toast.error(t('common.error'));
+      return false;
+    }
+
+    try {
+      // Revert old transfer
+      await supabase
+        .from('wallets')
+        .update({ 
+          current_balance: oldFromWallet.current_balance + originalTransfer.amount,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', originalTransfer.from_wallet_id);
+
+      await supabase
+        .from('wallets')
+        .update({ 
+          current_balance: oldToWallet.current_balance - originalTransfer.amount,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', originalTransfer.to_wallet_id);
+
+      // Apply new transfer
+      const newAmount = updates.amount ?? originalTransfer.amount;
+      
+      // Recalculate with fresh balances
+      const { data: freshFromWallet } = await supabase
+        .from('wallets')
+        .select('current_balance')
+        .eq('id', updates.from_wallet_id || originalTransfer.from_wallet_id)
+        .maybeSingle();
+
+      const { data: freshToWallet } = await supabase
+        .from('wallets')
+        .select('current_balance')
+        .eq('id', updates.to_wallet_id || originalTransfer.to_wallet_id)
+        .maybeSingle();
+
+      if (!freshFromWallet || !freshToWallet) throw new Error('Wallet not found');
+
+      await supabase
+        .from('wallets')
+        .update({ 
+          current_balance: freshFromWallet.current_balance - newAmount,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', updates.from_wallet_id || originalTransfer.from_wallet_id);
+
+      await supabase
+        .from('wallets')
+        .update({ 
+          current_balance: freshToWallet.current_balance + newAmount,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', updates.to_wallet_id || originalTransfer.to_wallet_id);
+
+      // Update the transfer record
+      const { error: updateError } = await supabase
+        .from('wallet_transfers')
+        .update({
+          from_wallet_id: updates.from_wallet_id,
+          to_wallet_id: updates.to_wallet_id,
+          amount: updates.amount,
+          currency: updates.currency,
+          description: updates.description,
+          date: updates.date,
+        })
+        .eq('id', id);
+
+      if (updateError) throw updateError;
+
+      toast.success(t('wallets.transferUpdated', 'Transferência atualizada'));
+      await Promise.all([fetchTransfers(), refetchWallets()]);
+      
+      return true;
+    } catch (error) {
+      console.error('Error updating transfer:', error);
+      toast.error(t('common.error'));
+      return false;
+    }
+  };
+
+  const deleteTransfer = async (id: string): Promise<boolean> => {
+    if (!user) return false;
+
+    const transfer = transfers.find(t => t.id === id);
+    if (!transfer) return false;
+
+    const fromWallet = wallets.find(w => w.id === transfer.from_wallet_id);
+    const toWallet = wallets.find(w => w.id === transfer.to_wallet_id);
+
+    if (!fromWallet || !toWallet) {
+      toast.error(t('common.error'));
+      return false;
+    }
+
+    try {
+      // Revert wallet balances
+      await supabase
+        .from('wallets')
+        .update({ 
+          current_balance: fromWallet.current_balance + transfer.amount,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', transfer.from_wallet_id);
+
+      await supabase
+        .from('wallets')
+        .update({ 
+          current_balance: toWallet.current_balance - transfer.amount,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', transfer.to_wallet_id);
+
+      // Delete transfer record
+      const { error } = await supabase
+        .from('wallet_transfers')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast.success(t('wallets.transferDeleted', 'Transferência excluída'));
+      await Promise.all([fetchTransfers(), refetchWallets()]);
+      
+      return true;
+    } catch (error) {
+      console.error('Error deleting transfer:', error);
+      toast.error(t('common.error'));
+      return false;
+    }
+  };
+
   const getWalletName = (walletId: string): string => {
     const wallet = wallets.find(w => w.id === walletId);
     return wallet?.name || 'Unknown';
@@ -331,6 +476,8 @@ export const useWalletTransfers = () => {
     loading,
     filters,
     createTransfer,
+    updateTransfer,
+    deleteTransfer,
     createScheduledTransfer,
     toggleScheduledTransfer,
     deleteScheduledTransfer,

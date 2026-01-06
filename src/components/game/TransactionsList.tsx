@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Locale } from 'date-fns';
 import { Transaction, SupportedCurrency } from '@/types/database';
-import { ArrowUpCircle, ArrowDownCircle, Trash2, Pencil, MoreVertical, CheckSquare, X, Wallet, Lock, Copy, ChevronDown, ChevronRight, TrendingUp, TrendingDown, Calendar, CreditCard, Landmark, Banknote } from 'lucide-react';
+import { ArrowUpCircle, ArrowDownCircle, Trash2, Pencil, MoreVertical, CheckSquare, X, Wallet, Lock, Copy, ChevronDown, ChevronRight, TrendingUp, TrendingDown, Calendar, CreditCard, Landmark, Banknote, ArrowRightLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -19,6 +19,8 @@ import { EditTransactionDialog } from './EditTransactionDialog';
 import { BatchWalletAssignDialog } from './BatchWalletAssignDialog';
 import { useWallets } from '@/hooks/useWallets';
 import { useCreditCards } from '@/hooks/useCreditCards';
+import { useWalletTransfers, WalletTransfer } from '@/hooks/useWalletTransfers';
+import { EditTransferDialog } from '@/components/wallets/EditTransferDialog';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
@@ -61,16 +63,18 @@ interface MonthGroup {
   balance: number;
 }
 
-type SourceTab = 'account' | 'card' | 'loan';
+type SourceTab = 'account' | 'card' | 'loan' | 'transfer';
 
 export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpdateWallet, onBatchDelete, onDuplicate }: TransactionsListProps) => {
   const { t } = useTranslation();
   const { dateLocale } = useLanguage();
   const { formatCurrency, currency: userCurrency, formatConverted } = useCurrency();
-  const { wallets } = useWallets();
+  const { wallets, activeWallets, inactiveWallets } = useWallets();
   const { creditCards } = useCreditCards();
+  const { transfers, updateTransfer, deleteTransfer, getWalletName, getWalletIcon } = useWalletTransfers();
   const { isPremium, checkFeature } = useSubscription();
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const [editingTransfer, setEditingTransfer] = useState<WalletTransfer | null>(null);
   const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
   const [activeSourceTab, setActiveSourceTab] = useState<SourceTab>('account');
   
@@ -124,8 +128,9 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
       account: accountTxs.length,
       card: cardTxs.length,
       loan: loanTxs.length,
+      transfer: transfers.length,
     };
-  }, [transactions]);
+  }, [transactions, transfers]);
 
   // Group transactions by month with summaries
   const monthGroups = useMemo(() => {
@@ -357,6 +362,24 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
+          <TooltipProvider delayDuration={300}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <TabsTrigger value="transfer" className="flex items-center gap-1.5 py-2 text-xs">
+                  <ArrowRightLeft className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Transferências</span>
+                  {sourceCounts.transfer > 0 && (
+                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 ml-0.5">
+                      {sourceCounts.transfer}
+                    </Badge>
+                  )}
+                </TabsTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Transferências entre carteiras</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </TabsList>
       </Tabs>
 
@@ -404,53 +427,98 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
         </div>
       )}
 
-      {/* Month cards or empty state */}
-      {filteredBySource.length === 0 ? (
-        <div className="bg-card rounded-2xl p-6 shadow-md text-center">
-          <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
-            {activeSourceTab === 'account' && <Landmark className="w-6 h-6 text-muted-foreground" />}
-            {activeSourceTab === 'card' && <CreditCard className="w-6 h-6 text-muted-foreground" />}
-            {activeSourceTab === 'loan' && <Banknote className="w-6 h-6 text-muted-foreground" />}
-          </div>
-          <p className="text-sm text-muted-foreground">
-            {activeSourceTab === 'account' && 'Nenhuma transação de conta bancária'}
-            {activeSourceTab === 'card' && 'Nenhuma transação de cartão de crédito'}
-            {activeSourceTab === 'loan' && 'Nenhuma transação de empréstimo'}
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {monthGroups.map((group) => (
-            <MonthCard
-              key={group.key}
-              group={group}
-              isExpanded={expandedMonths.has(group.key)}
-              onToggle={() => toggleMonth(group.key)}
-              userCurrency={userCurrency}
-              walletMap={walletMap}
-              creditCardMap={creditCardMap}
-              dateLocale={dateLocale}
-              formatCurrency={formatCurrency}
-              formatConverted={formatConverted}
-              t={t}
-              onDelete={onDelete}
-              onEdit={setEditingTransaction}
-              onDuplicate={onDuplicate}
-              isSelectionMode={isSelectionMode}
-              selectedIds={selectedIds}
-              onToggleSelect={toggleSelection}
+      {/* Month cards or empty state - for transactions */}
+      {activeSourceTab !== 'transfer' && (
+        <>
+          {filteredBySource.length === 0 ? (
+            <div className="bg-card rounded-2xl p-6 shadow-md text-center">
+              <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
+                {activeSourceTab === 'account' && <Landmark className="w-6 h-6 text-muted-foreground" />}
+                {activeSourceTab === 'card' && <CreditCard className="w-6 h-6 text-muted-foreground" />}
+                {activeSourceTab === 'loan' && <Banknote className="w-6 h-6 text-muted-foreground" />}
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {activeSourceTab === 'account' && 'Nenhuma transação de conta bancária'}
+                {activeSourceTab === 'card' && 'Nenhuma transação de cartão de crédito'}
+                {activeSourceTab === 'loan' && 'Nenhuma transação de empréstimo'}
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {monthGroups.map((group) => (
+                <MonthCard
+                  key={group.key}
+                  group={group}
+                  isExpanded={expandedMonths.has(group.key)}
+                  onToggle={() => toggleMonth(group.key)}
+                  userCurrency={userCurrency}
+                  walletMap={walletMap}
+                  creditCardMap={creditCardMap}
+                  dateLocale={dateLocale}
+                  formatCurrency={formatCurrency}
+                  formatConverted={formatConverted}
+                  t={t}
+                  onDelete={onDelete}
+                  onEdit={setEditingTransaction}
+                  onDuplicate={onDuplicate}
+                  isSelectionMode={isSelectionMode}
+                  selectedIds={selectedIds}
+                  onToggleSelect={toggleSelection}
+                />
+              ))}
+            </div>
+          )}
+
+          {editingTransaction && (
+            <EditTransactionDialog
+              transaction={editingTransaction}
+              open={!!editingTransaction}
+              onOpenChange={(open) => !open && setEditingTransaction(null)}
+              onUpdate={onUpdate}
             />
-          ))}
-        </div>
+          )}
+        </>
       )}
 
-      {editingTransaction && (
-        <EditTransactionDialog
-          transaction={editingTransaction}
-          open={!!editingTransaction}
-          onOpenChange={(open) => !open && setEditingTransaction(null)}
-          onUpdate={onUpdate}
-        />
+      {/* Transfers list */}
+      {activeSourceTab === 'transfer' && (
+        <>
+          {transfers.length === 0 ? (
+            <div className="bg-card rounded-2xl p-6 shadow-md text-center">
+              <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
+                <ArrowRightLeft className="w-6 h-6 text-muted-foreground" />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Nenhuma transferência entre carteiras
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {transfers.map((transfer) => (
+                <TransferListItem
+                  key={transfer.id}
+                  transfer={transfer}
+                  getWalletName={getWalletName}
+                  getWalletIcon={getWalletIcon}
+                  dateLocale={dateLocale}
+                  formatCurrency={(amt, cur) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: cur }).format(amt)}
+                  onEdit={() => setEditingTransfer(transfer)}
+                />
+              ))}
+            </div>
+          )}
+
+          {editingTransfer && (
+            <EditTransferDialog
+              transfer={editingTransfer}
+              wallets={[...activeWallets, ...inactiveWallets]}
+              open={!!editingTransfer}
+              onOpenChange={(open) => !open && setEditingTransfer(null)}
+              onUpdate={updateTransfer}
+              onDelete={deleteTransfer}
+            />
+          )}
+        </>
       )}
 
       <BatchWalletAssignDialog
@@ -759,6 +827,48 @@ const TransactionItem = ({
             </DropdownMenuContent>
           </DropdownMenu>
         )}
+      </div>
+    </div>
+  );
+};
+
+// Transfer list item component
+interface TransferListItemProps {
+  transfer: WalletTransfer;
+  getWalletName: (id: string) => string;
+  getWalletIcon: (id: string) => string;
+  dateLocale: Locale;
+  formatCurrency: (amount: number, currency: string) => string;
+  onEdit: () => void;
+}
+
+const TransferListItem = ({ transfer, getWalletName, getWalletIcon, dateLocale, formatCurrency, onEdit }: TransferListItemProps) => {
+  return (
+    <div 
+      className="flex items-center gap-3 p-3 bg-card rounded-lg hover:bg-muted/50 transition-colors cursor-pointer group"
+      onClick={onEdit}
+    >
+      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+        <ArrowRightLeft className="w-5 h-5 text-primary" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1 text-sm font-medium truncate">
+          <span>{getWalletIcon(transfer.from_wallet_id)}</span>
+          <span className="truncate">{getWalletName(transfer.from_wallet_id)}</span>
+          <ArrowRightLeft className="w-3 h-3 text-muted-foreground flex-shrink-0 mx-1" />
+          <span>{getWalletIcon(transfer.to_wallet_id)}</span>
+          <span className="truncate">{getWalletName(transfer.to_wallet_id)}</span>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          {format(new Date(transfer.date), 'd MMM yyyy', { locale: dateLocale })}
+          {transfer.description && ` • ${transfer.description}`}
+        </p>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="text-sm font-semibold text-foreground">
+          {formatCurrency(transfer.amount, transfer.currency)}
+        </span>
+        <Pencil className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
     </div>
   );
