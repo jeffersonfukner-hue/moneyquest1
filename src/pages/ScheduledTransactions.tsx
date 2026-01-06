@@ -488,6 +488,11 @@ const ScheduledTransactions = () => {
                                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                   <span>{getFrequencyIcon(entry.transfer.frequency)}</span>
                                   <span>{getTransferFrequencyLabel(entry.transfer)}</span>
+                                  {entry.transfer.total_occurrences && (
+                                    <Badge variant="outline" className="text-[10px] gap-0.5 px-1 py-0">
+                                      {entry.transfer.remaining_occurrences}/{entry.transfer.total_occurrences}
+                                    </Badge>
+                                  )}
                                 </div>
                               </div>
                               <div className="text-right">
@@ -508,6 +513,11 @@ const ScheduledTransactions = () => {
                                   <span>•</span>
                                   <span>{getFrequencyIcon(entry.transaction.frequency)}</span>
                                   <span>{getTransactionFrequencyLabel(entry.transaction)}</span>
+                                  {entry.transaction.total_occurrences && (
+                                    <Badge variant="outline" className="text-[10px] gap-0.5 px-1 py-0">
+                                      {entry.transaction.remaining_occurrences}/{entry.transaction.total_occurrences}
+                                    </Badge>
+                                  )}
                                 </div>
                               </div>
                               <div className="flex items-center gap-2">
@@ -618,11 +628,19 @@ const ScheduledTransactions = () => {
                             </span>
                           </div>
 
-                          <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
-                            <Calendar className="h-3 w-3" />
-                            <span>
-                              {t('wallets.nextRun')}: {format(new Date(transfer.next_run_date), 'dd MMM yyyy', { locale: dateLocale })}
-                            </span>
+                          <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+                            <div className="flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              <span>
+                                {t('wallets.nextRun')}: {format(new Date(transfer.next_run_date), 'dd MMM yyyy', { locale: dateLocale })}
+                              </span>
+                            </div>
+                            {transfer.total_occurrences && (
+                              <Badge variant="outline" className="text-[10px] gap-1">
+                                <Repeat className="h-3 w-3" />
+                                {transfer.remaining_occurrences}/{transfer.total_occurrences}
+                              </Badge>
+                            )}
                           </div>
 
                           {transfer.description && (
@@ -704,6 +722,12 @@ const ScheduledTransactions = () => {
 
                         <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
                           <span>{getFrequencyIcon(transaction.frequency)} {getTransactionFrequencyLabel(transaction)}</span>
+                          {transaction.total_occurrences && (
+                            <Badge variant="outline" className="text-[10px] gap-1">
+                              <Repeat className="h-3 w-3" />
+                              {transaction.remaining_occurrences}/{transaction.total_occurrences}
+                            </Badge>
+                          )}
                         </div>
 
                         <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
