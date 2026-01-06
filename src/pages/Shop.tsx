@@ -5,23 +5,25 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useShop, ShopItem } from '@/hooks/useShop';
+import { useShop, ShopItem, getCurrentRotationWeek, getNextRotationDate } from '@/hooks/useShop';
 import { useProfile } from '@/hooks/useProfile';
 import { ShopItemCard } from '@/components/shop/ShopItemCard';
 import { XpConversionCard } from '@/components/shop/XpConversionCard';
 import { ActiveEffectsCard } from '@/components/shop/ActiveEffectsCard';
 import { PurchaseHistoryCard } from '@/components/shop/PurchaseHistoryCard';
 import { PurchaseConfirmDialog } from '@/components/shop/PurchaseConfirmDialog';
-import { Coins, Crown, Sparkles, ShoppingBag, History, Zap, Star, Palette, Flame, Award, Lock } from 'lucide-react';
+import { Coins, Crown, Sparkles, ShoppingBag, History, Zap, Star, Palette, Flame, Award, Lock, Clock, CalendarDays } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 const SHOP_TABS = [
+  { id: 'rotacao', label: 'Semana', icon: CalendarDays, description: 'Itens da semana atual' },
   { id: 'destaques', label: 'Destaques', icon: Star, description: 'Os melhores itens da loja' },
   { id: 'temas', label: 'Temas', icon: Palette, description: 'Personalize sua experiência' },
   { id: 'boosts', label: 'Boosts', icon: Zap, description: 'Acelere seu progresso' },
   { id: 'status', label: 'Status', icon: Award, description: 'Destaque-se na comunidade' },
-  { id: 'premium', label: 'Premium', icon: Crown, description: 'Itens exclusivos' },
-  { id: 'exclusivo', label: 'Exclusivo Premium', icon: Lock, description: 'Só para assinantes' },
+  { id: 'permanentes', label: 'Sempre', icon: ShoppingBag, description: 'Sempre disponíveis' },
 ];
 
 const Shop = () => {
@@ -36,26 +38,32 @@ const Shop = () => {
   } = useShop();
   
   const [selectedItem, setSelectedItem] = useState<ShopItem | null>(null);
-  const [activeTab, setActiveTab] = useState<string>('destaques');
+  const [activeTab, setActiveTab] = useState<string>('rotacao');
+
+  const currentWeek = getCurrentRotationWeek();
+  const nextRotation = getNextRotationDate();
+  const timeUntilRotation = formatDistanceToNow(nextRotation, { locale: ptBR, addSuffix: false });
 
   // Filter items based on tab
   const getFilteredItems = (tabId: string): ShopItem[] => {
     switch (tabId) {
+      case 'rotacao':
+        // Current week rotation items
+        return items.filter(item => item.rotation_week === currentWeek);
       case 'destaques':
-        // Featured: legendary and epic items, or best sellers
+        // Featured: legendary and epic items
         return items.filter(item => 
           item.raridade === 'lendario' || item.raridade === 'epico'
-        ).slice(0, 6);
+        ).slice(0, 8);
       case 'temas':
         return items.filter(item => item.tipo === 'tema');
       case 'boosts':
         return items.filter(item => item.tipo === 'booster');
       case 'status':
         return items.filter(item => item.tipo === 'status' || item.tipo === 'avatar');
-      case 'premium':
-        return items.filter(item => item.premium_only);
-      case 'exclusivo':
-        return items.filter(item => item.premium_only && item.raridade === 'lendario');
+      case 'permanentes':
+        // Items always available (no rotation)
+        return items.filter(item => item.rotation_week === null);
       default:
         return items;
     }
@@ -105,6 +113,45 @@ const Shop = () => {
             )}
           </div>
         </div>
+
+        {/* Rotation Week Banner */}
+        <Card className="bg-gradient-to-r from-accent/10 via-accent/5 to-transparent border-accent/30">
+          <CardContent className="py-3 px-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center">
+                  <CalendarDays className="w-5 h-5 text-accent" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold flex items-center gap-2">
+                    Semana {currentWeek} de 8
+                    <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-accent/50 text-accent">
+                      Ciclo Ativo
+                    </Badge>
+                  </p>
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    Próxima rotação em {timeUntilRotation}
+                  </p>
+                </div>
+              </div>
+              <div className="hidden sm:flex items-center gap-1">
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((week) => (
+                  <div
+                    key={week}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      week === currentWeek 
+                        ? 'bg-accent w-3' 
+                        : week < currentWeek 
+                          ? 'bg-muted-foreground/50' 
+                          : 'bg-muted'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Premium Banner for Free Users */}
         {!isPremium && (

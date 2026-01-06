@@ -757,6 +757,134 @@
   --gradient-hero: linear-gradient(135deg, hsl(270 60% 60%), hsl(300 50% 55%));
 }
 
+/* Executive Dark - Executivo sofisticado */
+.theme-executive-dark {
+  --background: 220 25% 6%;
+  --foreground: 220 10% 92%;
+  --card: 220 20% 10%;
+  --card-foreground: 220 10% 92%;
+  --primary: 220 50% 45%;
+  --primary-foreground: 0 0% 100%;
+  --accent: 45 80% 50%;
+  --accent-foreground: 220 25% 6%;
+  --muted: 220 15% 15%;
+  --muted-foreground: 220 10% 55%;
+  --border: 220 15% 20%;
+  --gradient-hero: linear-gradient(135deg, hsl(220 50% 45%), hsl(220 40% 30%));
+}
+
+/* Gold Luxury - Luxo dourado */
+.theme-gold-luxury {
+  --background: 40 30% 8%;
+  --foreground: 45 80% 90%;
+  --card: 40 25% 12%;
+  --card-foreground: 45 80% 90%;
+  --primary: 45 100% 50%;
+  --primary-foreground: 40 30% 8%;
+  --accent: 35 100% 55%;
+  --accent-foreground: 40 30% 8%;
+  --muted: 40 20% 18%;
+  --muted-foreground: 45 50% 60%;
+  --border: 45 40% 25%;
+  --gradient-hero: linear-gradient(135deg, hsl(45 100% 50%), hsl(35 100% 55%));
+}
+
+/* Emerald Balance - Verde esmeralda */
+.theme-emerald-balance {
+  --background: 160 30% 96%;
+  --foreground: 160 40% 15%;
+  --card: 160 40% 99%;
+  --card-foreground: 160 40% 15%;
+  --primary: 160 70% 35%;
+  --primary-foreground: 0 0% 100%;
+  --accent: 145 60% 40%;
+  --accent-foreground: 0 0% 100%;
+  --muted: 160 20% 92%;
+  --muted-foreground: 160 30% 45%;
+  --border: 160 25% 85%;
+  --gradient-hero: linear-gradient(135deg, hsl(160 70% 35%), hsl(145 60% 40%));
+}
+
+/* Obsidian Wealth - Preto obsidiano */
+.theme-obsidian-wealth {
+  --background: 0 0% 3%;
+  --foreground: 0 0% 90%;
+  --card: 0 0% 6%;
+  --card-foreground: 0 0% 90%;
+  --primary: 270 60% 50%;
+  --primary-foreground: 0 0% 100%;
+  --accent: 280 70% 55%;
+  --accent-foreground: 0 0% 100%;
+  --muted: 0 0% 10%;
+  --muted-foreground: 0 0% 55%;
+  --border: 270 30% 20%;
+  --gradient-hero: linear-gradient(135deg, hsl(270 60% 50%), hsl(280 70% 55%));
+}
+
+/* Dark Samurai - Samurai escuro */
+.theme-dark-samurai {
+  --background: 0 20% 5%;
+  --foreground: 0 10% 92%;
+  --card: 0 15% 9%;
+  --card-foreground: 0 10% 92%;
+  --primary: 0 70% 45%;
+  --primary-foreground: 0 0% 100%;
+  --accent: 45 80% 45%;
+  --accent-foreground: 0 20% 5%;
+  --muted: 0 10% 14%;
+  --muted-foreground: 0 10% 55%;
+  --border: 0 20% 18%;
+  --gradient-hero: linear-gradient(135deg, hsl(0 70% 45%), hsl(0 50% 30%));
+}
+
+/* Midnight Wealth - Meia-noite */
+.theme-midnight-wealth {
+  --background: 240 40% 5%;
+  --foreground: 240 20% 92%;
+  --card: 240 35% 9%;
+  --card-foreground: 240 20% 92%;
+  --primary: 240 60% 55%;
+  --primary-foreground: 0 0% 100%;
+  --accent: 200 80% 50%;
+  --accent-foreground: 240 40% 5%;
+  --muted: 240 25% 14%;
+  --muted-foreground: 240 20% 55%;
+  --border: 240 30% 20%;
+  --gradient-hero: linear-gradient(135deg, hsl(240 60% 55%), hsl(200 80% 50%));
+}
+
+/* Royal Crown - Real majestoso */
+.theme-royal-crown {
+  --background: 270 35% 6%;
+  --foreground: 45 60% 92%;
+  --card: 270 30% 10%;
+  --card-foreground: 45 60% 92%;
+  --primary: 45 100% 50%;
+  --primary-foreground: 270 35% 6%;
+  --accent: 270 60% 55%;
+  --accent-foreground: 0 0% 100%;
+  --muted: 270 25% 15%;
+  --muted-foreground: 45 40% 60%;
+  --border: 270 25% 22%;
+  --gradient-hero: linear-gradient(135deg, hsl(45 100% 50%), hsl(270 60% 55%));
+}
+
+/* Legacy Gold - Legado dourado */
+.theme-legacy-gold {
+  --background: 35 25% 7%;
+  --foreground: 45 70% 90%;
+  --card: 35 20% 11%;
+  --card-foreground: 45 70% 90%;
+  --primary: 40 90% 50%;
+  --primary-foreground: 35 25% 7%;
+  --accent: 30 95% 55%;
+  --accent-foreground: 35 25% 7%;
+  --muted: 35 15% 16%;
+  --muted-foreground: 40 50% 58%;
+  --border: 40 35% 22%;
+  --gradient-hero: linear-gradient(135deg, hsl(40 90% 50%), hsl(30 95% 55%));
+}
+
 /* ========================================
    SCROLLBAR CUSTOMIZATION
    ========================================
