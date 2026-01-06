@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { format, isFuture, isToday } from 'date-fns';
+import { isFuture, isToday } from 'date-fns';
 import {
   Dialog,
   DialogContent,
@@ -17,14 +17,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Pencil, Plus } from 'lucide-react';
+import { Pencil, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { DatePickerInput } from '@/components/ui/date-picker-input';
 import { SupportedCurrency, Transaction } from '@/types/database';
 import { useCategories } from '@/hooks/useCategories';
 import { useSuppliers } from '@/hooks/useSuppliers';
-import { useLanguage } from '@/contexts/LanguageContext';
+
 import { parseDateString, formatDateForDB } from '@/lib/dateUtils';
 import { QuickAddCategoryDialog } from '@/components/categories/QuickAddCategoryDialog';
 import { getCategoryTranslationKey } from '@/lib/gameLogic';
@@ -55,7 +54,6 @@ export const EditCreditCardTransactionDialog = ({
   onUpdate
 }: EditCreditCardTransactionDialogProps) => {
   const { t } = useTranslation();
-  const { dateLocale } = useLanguage();
   const { upsertSupplier } = useSuppliers();
   const [supplier, setSupplier] = useState((transaction as any).supplier || '');
   const [description, setDescription] = useState(transaction.description);
@@ -245,28 +243,11 @@ export const EditCreditCardTransactionDialog = ({
             {/* Date */}
             <div className="space-y-2">
               <Label>{t('transactions.date', 'Data')}</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {format(date, "PPP", { locale: dateLocale })}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    defaultMonth={date}
-                    onSelect={(d) => d && setDate(d)}
-                    disabled={disabledDays}
-                    locale={dateLocale}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <DatePickerInput
+                value={date}
+                onChange={(d) => d && setDate(d)}
+                disabled={disabledDays}
+              />
             </div>
 
             {/* Submit Button */}

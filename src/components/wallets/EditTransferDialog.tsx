@@ -18,12 +18,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, ArrowRightLeft, Trash2 } from 'lucide-react';
+import { ArrowRightLeft, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { DatePickerInput } from '@/components/ui/date-picker-input';
 import { SupportedCurrency } from '@/types/database';
-import { useLanguage } from '@/contexts/LanguageContext';
+
 import { parseDateString } from '@/lib/dateUtils';
 import { WalletTransfer } from '@/hooks/useWalletTransfers';
 import { Wallet } from '@/types/wallet';
@@ -56,7 +55,6 @@ export const EditTransferDialog = ({
   onDelete,
 }: EditTransferDialogProps) => {
   const { t } = useTranslation();
-  const { dateLocale } = useLanguage();
   
   const [fromWalletId, setFromWalletId] = useState(transfer.from_wallet_id);
   const [toWalletId, setToWalletId] = useState(transfer.to_wallet_id);
@@ -207,28 +205,11 @@ export const EditTransferDialog = ({
             {/* Date */}
             <div className="space-y-2">
               <Label>{t('transactions.date', 'Data')}</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {format(date, "PPP", { locale: dateLocale })}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    defaultMonth={date}
-                    onSelect={(d) => d && setDate(d)}
-                    disabled={disabledDays}
-                    locale={dateLocale}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <DatePickerInput
+                value={date}
+                onChange={(d) => d && setDate(d)}
+                disabled={disabledDays}
+              />
             </div>
 
             {/* Actions */}
