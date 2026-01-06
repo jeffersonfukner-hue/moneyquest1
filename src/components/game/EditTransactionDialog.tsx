@@ -24,6 +24,7 @@ import { CalendarIcon, Pencil, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Transaction, SupportedCurrency, TransactionType } from '@/types/database';
 import { useCategories } from '@/hooks/useCategories';
+import { useSuppliers } from '@/hooks/useSuppliers';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { parseDateString, formatDateForDB } from '@/lib/dateUtils';
@@ -31,6 +32,7 @@ import { QuickAddCategoryDialog } from '@/components/categories/QuickAddCategory
 import { getCategoryTranslationKey } from '@/lib/gameLogic';
 import { WalletSelector } from '@/components/wallets/WalletSelector';
 import { useWallets } from '@/hooks/useWallets';
+import { SupplierAutocomplete } from '@/components/suppliers/SupplierAutocomplete';
 
 interface EditTransactionDialogProps {
   transaction: Transaction;
@@ -56,7 +58,9 @@ export const EditTransactionDialog = ({
   const { dateLocale } = useLanguage();
   const { currency: userCurrency } = useCurrency();
   const { activeWallets, refetch: refetchWallets } = useWallets();
+  const { upsertSupplier } = useSuppliers();
   const [type, setType] = useState<TransactionType>(transaction.type);
+  const [supplier, setSupplier] = useState((transaction as any).supplier || '');
   const [description, setDescription] = useState(transaction.description);
   const [amount, setAmount] = useState(transaction.amount.toString());
   const [category, setCategory] = useState(transaction.category);
@@ -72,6 +76,7 @@ export const EditTransactionDialog = ({
   // Reset form when transaction changes
   useEffect(() => {
     setType(transaction.type);
+    setSupplier((transaction as any).supplier || '');
     setDescription(transaction.description.toUpperCase());
     setAmount(transaction.amount.toString());
     setCategory(transaction.category);
@@ -80,6 +85,7 @@ export const EditTransactionDialog = ({
     setDate(parseDateString(transaction.date));
     setAttemptedSubmit(false);
   }, [transaction]);
+
 
   // Reset category when type changes (if current category doesn't match new type)
   useEffect(() => {
@@ -106,7 +112,7 @@ export const EditTransactionDialog = ({
 
     setIsSubmitting(true);
 
-    const updates: Partial<Omit<Transaction, 'id' | 'user_id' | 'xp_earned' | 'created_at'>> = {
+    const updates: Partial<Omit<Transaction, 'id' | 'user_id' | 'xp_earned' | 'created_at'>> & { supplier?: string | null } = {
       type,
       description: description.trim(),
       amount: parseFloat(amount),
@@ -114,9 +120,17 @@ export const EditTransactionDialog = ({
       currency,
       wallet_id: walletId,
       date: formatDateForDB(date),
+      supplier: type === 'EXPENSE' && supplier.trim() ? supplier.trim().toUpperCase() : null,
     };
 
-    const { error } = await onUpdate(transaction.id, updates);
+    const { error } = await onUpdate(transaction.id, updates as any);
+
+    if (!error) {
+      // Save supplier to table if provided
+      if (type === 'EXPENSE' && supplier.trim()) {
+        await upsertSupplier(supplier, parseFloat(amount));
+      }
+    }
 
     setIsSubmitting(false);
 
@@ -174,6 +188,14 @@ export const EditTransactionDialog = ({
                 </ToggleGroupItem>
               </ToggleGroup>
             </div>
+
+            {/* Supplier - for expenses only */}
+            {type === 'EXPENSE' && (
+              <SupplierAutocomplete
+                value={supplier}
+                onChange={setSupplier}
+              />
+            )}
 
             {/* Description */}
             <div className="space-y-2">
