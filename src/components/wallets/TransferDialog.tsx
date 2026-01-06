@@ -257,12 +257,17 @@ export const TransferDialog = ({ open, onOpenChange, preselectedWallet }: Transf
                   </FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
-                      step="0.01"
-                      min="0.01"
+                      type="text"
+                      inputMode="decimal"
                       placeholder="0.00"
-                      {...field}
-                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                      className="[appearance:textfield]"
+                      value={field.value || ''}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(',', '.');
+                        if (val === '' || /^\d*\.?\d{0,2}$/.test(val)) {
+                          field.onChange(val === '' ? 0 : parseFloat(val) || 0);
+                        }
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
