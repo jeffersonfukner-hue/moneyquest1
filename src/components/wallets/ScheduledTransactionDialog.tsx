@@ -221,7 +221,7 @@ export const ScheduledTransactionDialog = ({
       day_of_month: 5,
       month_of_year: 1,
       has_limit: false,
-      total_occurrences: 12,
+      total_occurrences: undefined,
     },
   });
 
@@ -239,7 +239,7 @@ export const ScheduledTransactionDialog = ({
         day_of_month: editTransaction.day_of_month ?? 5,
         month_of_year: editTransaction.month_of_year ?? 1,
         has_limit: editTransaction.total_occurrences !== null,
-        total_occurrences: editTransaction.total_occurrences ?? 12,
+        total_occurrences: editTransaction.total_occurrences ?? undefined,
       });
     } else if (open && !editTransaction) {
       form.reset({
@@ -253,7 +253,7 @@ export const ScheduledTransactionDialog = ({
         day_of_month: 5,
         month_of_year: 1,
         has_limit: false,
-        total_occurrences: 12,
+        total_occurrences: undefined,
       });
     }
   }, [open, editTransaction, form]);
@@ -507,11 +507,25 @@ export const ScheduledTransactionDialog = ({
                     <FormLabel>{t('wallets.dayOfMonth')}</FormLabel>
                     <FormControl>
                       <Input
-                        type="number"
-                        min={1}
-                        max={31}
-                        {...field}
-                        onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="5"
+                        value={field.value?.toString() ?? ''}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, '');
+                          if (val === '') {
+                            field.onChange(undefined);
+                            return;
+                          }
+                          field.onChange(parseInt(val, 10));
+                        }}
+                        onBlur={(e) => {
+                          const val = e.target.value.replace(/\D/g, '');
+                          if (val === '') return;
+                          const parsed = parseInt(val, 10);
+                          const clamped = Math.min(Math.max(parsed, 1), 31);
+                          field.onChange(clamped);
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
