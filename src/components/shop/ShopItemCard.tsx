@@ -21,6 +21,7 @@ const THEME_CLASS_MAP: Record<string, string> = {
   'dark_finance': 'theme-dark-finance',
   'neon_budget': 'theme-neon-budget',
   'black_card': 'theme-black-card',
+  'crypto_neon': 'theme-crypto-neon',
   'galactic_wealth': 'theme-galactic-wealth',
   'executive_diamond': 'theme-executive-diamond',
   'black_friday': 'theme-black-friday',

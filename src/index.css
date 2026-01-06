@@ -677,6 +677,22 @@
   --gradient-hero: linear-gradient(135deg, hsl(0 90% 55%), hsl(45 100% 50%));
 }
 
+/* Crypto Neon - Estética crypto futurista */
+.theme-crypto-neon {
+  --background: 240 30% 6%;
+  --foreground: 160 100% 80%;
+  --card: 240 25% 10%;
+  --card-foreground: 160 100% 80%;
+  --primary: 160 100% 45%;
+  --primary-foreground: 240 30% 6%;
+  --accent: 45 100% 55%;
+  --accent-foreground: 240 30% 6%;
+  --muted: 240 20% 15%;
+  --muted-foreground: 160 60% 60%;
+  --border: 160 50% 25%;
+  --gradient-hero: linear-gradient(135deg, hsl(160 100% 45%), hsl(45 100% 55%));
+}
+
 /* Ocean Breeze - Azul oceano refrescante */
 .theme-ocean-breeze {
   --background: 200 30% 97%;
