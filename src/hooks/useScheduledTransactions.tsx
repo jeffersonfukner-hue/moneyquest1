@@ -67,7 +67,6 @@ export const useScheduledTransactions = () => {
         .order('next_run_date', { ascending: true });
 
       if (error) throw error;
-      console.log('[ScheduledTransactions] Fetched:', data?.length, 'items');
       setScheduledTransactions((data || []) as ScheduledTransaction[]);
     } catch (error) {
       console.error('Error fetching scheduled transactions:', error);
@@ -79,6 +78,9 @@ export const useScheduledTransactions = () => {
   useEffect(() => {
     fetchScheduledTransactions();
   }, [fetchScheduledTransactions]);
+
+  const sortByNextRun = (items: ScheduledTransaction[]) =>
+    [...items].sort((a, b) => a.next_run_date.localeCompare(b.next_run_date));
 
   const createScheduledTransaction = async (data: CreateScheduledTransactionData): Promise<boolean> => {
     if (!user) return false;
@@ -106,7 +108,7 @@ export const useScheduledTransactions = () => {
     }
 
     try {
-      const { error } = await supabase
+      const { data: inserted, error } = await supabase
         .from('scheduled_transactions')
         .insert({
           user_id: user.id,
@@ -123,13 +125,18 @@ export const useScheduledTransactions = () => {
           next_run_date: nextRunDate.toISOString().split('T')[0],
           total_occurrences: data.total_occurrences || null,
           remaining_occurrences: data.total_occurrences || null,
-        });
+        })
+        .select('*')
+        .single();
 
       if (error) throw error;
 
+      // Instant UI update
+      if (inserted) {
+        setScheduledTransactions((prev) => sortByNextRun([...(prev || []), inserted as ScheduledTransaction]));
+      }
+
       toast.success(t('scheduled.transactionCreated'));
-      await fetchScheduledTransactions();
-      
       return true;
     } catch (error) {
       console.error('Error creating scheduled transaction:', error);
@@ -190,18 +197,27 @@ export const useScheduledTransactions = () => {
         updateData.total_occurrences = data.total_occurrences;
         updateData.remaining_occurrences = data.total_occurrences;
       }
+      if (data.remaining_occurrences !== undefined) {
+        updateData.remaining_occurrences = data.remaining_occurrences;
+      }
 
-      const { error } = await supabase
+      const { data: updated, error } = await supabase
         .from('scheduled_transactions')
         .update(updateData)
         .eq('id', data.id)
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .select('*')
+        .single();
 
       if (error) throw error;
 
+      if (updated) {
+        setScheduledTransactions((prev) =>
+          sortByNextRun(prev.map((tx) => (tx.id === data.id ? (updated as ScheduledTransaction) : tx)))
+        );
+      }
+
       toast.success(t('scheduled.transactionUpdated'));
-      await fetchScheduledTransactions();
-      
       return true;
     } catch (error) {
       console.error('Error updating scheduled transaction:', error);
@@ -212,16 +228,22 @@ export const useScheduledTransactions = () => {
 
   const toggleScheduledTransaction = async (id: string, isActive: boolean): Promise<boolean> => {
     try {
-      const { error } = await supabase
+      const { data: updated, error } = await supabase
         .from('scheduled_transactions')
         .update({ is_active: isActive, updated_at: new Date().toISOString() })
-        .eq('id', id);
+        .eq('id', id)
+        .select('*')
+        .single();
 
       if (error) throw error;
 
+      if (updated) {
+        setScheduledTransactions((prev) =>
+          sortByNextRun(prev.map((tx) => (tx.id === id ? (updated as ScheduledTransaction) : tx)))
+        );
+      }
+
       toast.success(isActive ? t('scheduled.transactionActivated') : t('scheduled.transactionPaused'));
-      await fetchScheduledTransactions();
-      
       return true;
     } catch (error) {
       console.error('Error toggling scheduled transaction:', error);
@@ -239,9 +261,9 @@ export const useScheduledTransactions = () => {
 
       if (error) throw error;
 
+      setScheduledTransactions((prev) => prev.filter((tx) => tx.id !== id));
+
       toast.success(t('scheduled.transactionDeleted'));
-      await fetchScheduledTransactions();
-      
       return true;
     } catch (error) {
       console.error('Error deleting scheduled transaction:', error);
