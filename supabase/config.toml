@@ -10,7 +10,7 @@ verify_jwt = false
 verify_jwt = true
 
 [functions.ai-financial-coach]
-verify_jwt = true
+verify_jwt = false
 
 [functions.narrative-engine]
 verify_jwt = false
