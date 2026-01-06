@@ -81,8 +81,9 @@ const Shop = () => {
               <ShoppingBag className="w-7 h-7 text-accent" />
               Loja MoneyQuest
             </h1>
-            <p className="text-muted-foreground mt-1">
-              Troque seus MQ Coins por itens exclusivos
+            <p className="text-muted-foreground mt-1 max-w-md">
+              Use seu XP para desbloquear itens, boosts e experiências exclusivas.{' '}
+              <span className="text-accent font-medium">Seu progresso nunca é perdido.</span>
             </p>
           </div>
           
@@ -122,9 +123,10 @@ const Shop = () => {
                     <Crown className="w-7 h-7 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg">Desbloqueie o Premium</h3>
+                    <h3 className="font-bold text-lg">Itens Premium</h3>
                     <p className="text-sm text-muted-foreground">
-                      Melhor taxa de conversão • +20% XP conversível • Itens exclusivos
+                      Mostre seu status e desbloqueie o máximo do MoneyQuest.{' '}
+                      <span className="text-purple-400">Experimente o Premium por tempo limitado.</span>
                     </p>
                   </div>
                 </div>
