@@ -3,7 +3,9 @@
     "selectCard": "Select the card:",
     "noCards": "No cards registered",
     "addFirstCard": "Add your first card to get started",
-    "changeCard": "Change"
+    "changeCard": "Change",
+    "supplier": "Supplier",
+    "supplierPlaceholder": "E.g.: AMAZON, WALMART, UBER..."
   },
   "creditCards": {
     "viewInvoices": "View Invoices",

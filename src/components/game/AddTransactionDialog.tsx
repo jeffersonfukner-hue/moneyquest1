@@ -63,6 +63,7 @@ interface AddTransactionDialogProps {
     source_type?: string;
     transaction_subtype?: string;
     credit_card_id?: string;
+    supplier?: string;
     items?: Array<{ name: string; amount: number }>;
   }) => Promise<{ error: Error | null; xpEarned?: number }>;
   open?: boolean;
@@ -95,6 +96,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   const [showLoanSelection, setShowLoanSelection] = useState(false);
   
   const [type, setType] = useState<TransactionType>('EXPENSE');
+  const [supplier, setSupplier] = useState('');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
@@ -263,6 +265,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   const handleBackToCardSelection = () => {
     setShowCardSelection(true);
     setSelectedCardId(null);
+    setSupplier('');
     setDescription('');
     setAmount('');
     setCategory('');
@@ -290,6 +293,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
     setShowLoanSelection(false);
     setType('EXPENSE');
     setCategory('');
+    setSupplier('');
     setDescription('');
     setAmount('');
     setTouched({ description: false, amount: false, category: false, wallet: false });
@@ -339,6 +343,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
         source_type: 'card',
         transaction_subtype: 'card_expense',
         credit_card_id: selectedCardId || undefined,
+        supplier: supplier.trim() || undefined,
       }),
       // Set source_type and transaction_subtype for loan payments
       ...(isLoanPayment && selectedLoanId && {
@@ -367,6 +372,7 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
       }));
       
       // Reset form for next transaction (keep date and wallet for convenience)
+      setSupplier('');
       setDescription('');
       setAmount('');
       setCategory('');
@@ -826,6 +832,26 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
                 </button>
               );
             })()}
+
+            {/* Supplier field - only for credit card expenses */}
+            {sourceType === 'card' && (
+              <div className="space-y-2">
+                <Label htmlFor="supplier" className="flex items-center gap-1">
+                  {t('transactions.supplier', 'Fornecedor')}
+                </Label>
+                <Input
+                  id="supplier"
+                  placeholder={t('transactions.supplierPlaceholder', 'Ex: AMAZON, IFOOD, UBER...')}
+                  value={supplier}
+                  onChange={(e) => setSupplier(e.target.value.toUpperCase())}
+                  style={{ textTransform: 'uppercase' }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') e.preventDefault();
+                  }}
+                  className="min-h-[48px]"
+                />
+              </div>
+            )}
 
           <div className="space-y-2">
             <Label htmlFor="description" className="flex items-center gap-1">

@@ -3,7 +3,9 @@
     "selectCard": "Selecione o cartão:",
     "noCards": "Nenhum cartão cadastrado",
     "addFirstCard": "Adicione seu primeiro cartão para começar",
-    "changeCard": "Alterar"
+    "changeCard": "Alterar",
+    "supplier": "Fornecedor",
+    "supplierPlaceholder": "Ex: AMAZON, IFOOD, UBER..."
   },
   "creditCards": {
     "viewInvoices": "Ver Faturas",

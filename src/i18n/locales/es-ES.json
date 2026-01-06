@@ -3,7 +3,9 @@
     "selectCard": "Seleccione la tarjeta:",
     "noCards": "Ninguna tarjeta registrada",
     "addFirstCard": "Agregue su primera tarjeta para comenzar",
-    "changeCard": "Cambiar"
+    "changeCard": "Cambiar",
+    "supplier": "Proveedor",
+    "supplierPlaceholder": "Ej: AMAZON, MERCADOLIBRE, UBER..."
   },
   "creditCards": {
     "viewInvoices": "Ver Facturas",
