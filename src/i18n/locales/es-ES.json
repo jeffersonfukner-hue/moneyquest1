@@ -10,7 +10,10 @@
     "incomeSourcePlaceholder": "Ej: EMPRESA X, CLIENTE Y, BANCO...",
     "transferDetected": "Esto parece una transferencia entre cuentas.",
     "transferSuggestion": "Usa la función de Transferencia en Billeteras para mantener tus saldos correctos y no inflar ingresos/gastos.",
-    "goToTransfers": "Ir a Transferencias →"
+    "goToTransfers": "Ir a Transferencias →",
+    "paymentMethod": "Forma de Pago",
+    "debit": "Débito",
+    "credit": "Crédito"
   },
   "creditCards": {
     "viewInvoices": "Ver Facturas",

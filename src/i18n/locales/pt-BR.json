@@ -10,7 +10,10 @@
     "incomeSourcePlaceholder": "Ex: EMPRESA X, CLIENTE Y, NUBANK...",
     "transferDetected": "Isso parece uma transferência entre contas.",
     "transferSuggestion": "Use a funcionalidade de Transferência na aba Carteiras para manter seus saldos corretos e não inflar receitas/despesas.",
-    "goToTransfers": "Ir para Transferências →"
+    "goToTransfers": "Ir para Transferências →",
+    "paymentMethod": "Forma de Pagamento",
+    "debit": "Débito",
+    "credit": "Crédito"
   },
   "creditCards": {
     "viewInvoices": "Ver Faturas",
