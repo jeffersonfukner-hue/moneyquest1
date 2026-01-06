@@ -73,6 +73,9 @@ export const EditTransactionDialog = ({
 
   const { categories } = useCategories();
 
+  // Check if this is a credit card transaction (doesn't need wallet)
+  const isCardTransaction = !!transaction.credit_card_id;
+
   // Reset form when transaction changes
   useEffect(() => {
     setType(transaction.type);
@@ -98,9 +101,6 @@ export const EditTransactionDialog = ({
 
   const filteredCategories = categories.filter(c => c.type === type);
 
-  // Check if this is a credit card transaction (doesn't need wallet)
-  const isCardTransaction = !!transaction.credit_card_id;
-
   const isDescriptionValid = description.trim().length > 0;
   const isAmountValid = parseFloat(amount) > 0;
   const isCategoryValid = category.length > 0 && category !== '__new__';
@@ -121,7 +121,7 @@ export const EditTransactionDialog = ({
       amount: parseFloat(amount),
       category,
       currency,
-      wallet_id: walletId,
+      wallet_id: isCardTransaction ? null : walletId,
       date: formatDateForDB(date),
       supplier: type === 'EXPENSE' && supplier.trim() ? supplier.trim().toUpperCase() : null,
     };
