@@ -531,11 +531,19 @@ export const ScheduledTransactionDialog = ({
                       <FormLabel>Repetir por quantos {getFrequencyLabel()}?</FormLabel>
                       <FormControl>
                         <Input
-                          type="number"
-                          min={1}
-                          max={120}
-                          {...field}
-                          onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
+                          type="text"
+                          inputMode="numeric"
+                          placeholder="12"
+                          value={field.value === 0 ? '' : field.value}
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/\D/g, '');
+                            if (val === '') {
+                              field.onChange(1);
+                            } else {
+                              const num = Math.min(Math.max(parseInt(val, 10), 1), 999);
+                              field.onChange(num);
+                            }
+                          }}
                         />
                       </FormControl>
                       <p className="text-xs text-muted-foreground">
