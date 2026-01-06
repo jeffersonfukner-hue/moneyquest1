@@ -796,6 +796,7 @@
     "name": "Nombre de la billetera",
     "institution": "Institución",
     "type": "Tipo de cuenta",
+    "currency": "Moneda",
     "balance": "Saldo",
     "initialBalance": "Saldo inicial",
     "currentBalance": "Saldo actual",
