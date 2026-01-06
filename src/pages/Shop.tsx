@@ -87,29 +87,24 @@ const Shop = () => {
             </p>
           </div>
           
-          {/* Balance Card */}
-          <Card className="bg-gradient-to-r from-amber-500/10 via-yellow-500/10 to-orange-500/10 border-amber-500/30">
-            <CardContent className="py-4 px-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/30">
-                  <Coins className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Seu saldo</p>
-                  <p className="text-2xl font-bold text-amber-500">
-                    {profile?.mq_coins?.toLocaleString('pt-BR') || 0}
-                    <span className="text-sm font-normal ml-1">MQ Coins</span>
-                  </p>
-                </div>
-                {isPremium && (
-                  <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 ml-2">
-                    <Crown className="w-3 h-3 mr-1" />
-                    Premium
-                  </Badge>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          {/* Balance Card - Compact */}
+          <div className="flex items-center gap-3 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 rounded-xl px-3 py-2">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+              <Coins className="w-4 h-4 text-white" />
+            </div>
+            <div className="flex items-baseline gap-1">
+              <span className="text-lg font-bold text-amber-500">
+                {profile?.mq_coins?.toLocaleString('pt-BR') || 0}
+              </span>
+              <span className="text-xs text-muted-foreground">MQ</span>
+            </div>
+            {isPremium && (
+              <Badge className="bg-purple-500/80 text-white border-0 text-[10px] px-1.5 py-0">
+                <Crown className="w-2.5 h-2.5 mr-0.5" />
+                PRO
+              </Badge>
+            )}
+          </div>
         </div>
 
         {/* Premium Banner for Free Users */}
@@ -163,9 +158,9 @@ const Shop = () => {
           </TabsList>
 
           {/* Shop Tab */}
-          <TabsContent value="loja" className="space-y-6">
-            {/* Shop Category Tabs - Grid Layout */}
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+          <TabsContent value="loja" className="space-y-4">
+            {/* Shop Category Tabs - Compact Pills */}
+            <div className="flex flex-wrap gap-1.5">
               {SHOP_TABS.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -175,45 +170,19 @@ const Shop = () => {
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     className={`
-                      flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl border transition-all
+                      flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all
                       ${isActive 
-                        ? 'bg-accent text-accent-foreground border-accent shadow-lg shadow-accent/30' 
-                        : 'bg-card hover:bg-muted/50 border-border'
+                        ? 'bg-accent text-accent-foreground shadow-md' 
+                        : 'bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground'
                       }
-                      ${isPremiumTab && !isActive ? 'border-purple-500/30 bg-purple-500/5' : ''}
+                      ${isPremiumTab && !isActive ? 'bg-purple-500/10 text-purple-400' : ''}
                     `}
                   >
-                    <div className={`
-                      w-10 h-10 rounded-lg flex items-center justify-center
-                      ${isActive 
-                        ? 'bg-accent-foreground/10' 
-                        : isPremiumTab 
-                          ? 'bg-purple-500/10' 
-                          : 'bg-muted'
-                      }
-                    `}>
-                      <Icon className={`w-5 h-5 ${isPremiumTab && !isActive ? 'text-purple-400' : ''}`} />
-                    </div>
-                    <span className="text-xs font-medium text-center leading-tight">
-                      {tab.label}
-                    </span>
+                    <Icon className="w-3.5 h-3.5" />
+                    {tab.label}
                   </button>
                 );
               })}
-            </div>
-
-            {/* Tab Description */}
-            <div className="flex items-center gap-2 px-1 text-sm text-muted-foreground">
-              {(() => {
-                const currentTab = SHOP_TABS.find(t => t.id === activeTab);
-                const Icon = currentTab?.icon || Star;
-                return (
-                  <>
-                    <Icon className="w-4 h-4 text-accent" />
-                    <span>{currentTab?.description}</span>
-                  </>
-                );
-              })()}
             </div>
 
             {/* Items Grid */}
