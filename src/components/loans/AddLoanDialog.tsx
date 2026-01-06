@@ -121,12 +121,12 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
     setLoading(true);
     
     const result = await onAdd({
-      valor_total: parseFloat(valorTotal),
+      valor_total: valorTotalNum,
       tipo_emprestimo: tipoEmprestimo,
       instituicao_pessoa: finalInstituicao.trim(),
-      quantidade_parcelas: parseInt(quantidadeParcelas),
-      valor_parcela: parseFloat(valorParcela),
-      taxa_juros: taxaJuros ? parseFloat(taxaJuros) : null,
+      quantidade_parcelas: parcelasNum,
+      valor_parcela: valorParcelaNum,
+      taxa_juros: taxaJuros ? toNumber(taxaJuros) : null,
       primeiro_vencimento: primeiroVencimento,
       debitar_automaticamente: debitarAutomaticamente,
       enviar_lembrete: enviarLembrete,
@@ -143,8 +143,34 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
     }
   };
 
-  const isFormValid = valorTotal && tipoEmprestimo && quantidadeParcelas && valorParcela && primeiroVencimento && 
-    (instituicaoPessoa === 'Outro' ? instituicaoCustom.trim() : instituicaoPessoa);
+  const toNumber = (raw: string) => {
+    const s = raw.trim();
+    if (!s) return Number.NaN;
+    // Suporta formatos pt-BR ("1.234,56") e en-US ("1234.56")
+    const normalized = s.includes(',') ? s.replace(/\./g, '').replace(/,/g, '.') : s;
+    return Number(normalized);
+  };
+
+  const valorTotalNum = toNumber(valorTotal);
+  const parcelasNum = Number.parseInt(quantidadeParcelas, 10);
+  const valorParcelaNum = toNumber(valorParcela);
+
+  const hasTipo = Boolean(tipoEmprestimo);
+  const hasInstituicao = Boolean(
+    (instituicaoPessoa === 'Outro' ? instituicaoCustom.trim() : instituicaoPessoa).trim()
+  );
+  const hasValorTotal = Number.isFinite(valorTotalNum) && valorTotalNum > 0;
+  const hasParcelas = Number.isFinite(parcelasNum) && parcelasNum > 0;
+  const hasValorParcela = Number.isFinite(valorParcelaNum) && valorParcelaNum > 0;
+  const hasPrimeiroVencimento = Boolean(primeiroVencimento);
+
+  const isFormValid =
+    hasTipo &&
+    hasInstituicao &&
+    hasValorTotal &&
+    hasParcelas &&
+    hasValorParcela &&
+    hasPrimeiroVencimento;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -347,11 +373,17 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
             />
           </div>
 
-          {!isFormValid && (
-            <p className="text-xs text-muted-foreground">
-              Preencha: tipo, instituição, valor total, parcelas, valor da parcela e 1º vencimento.
-            </p>
-          )}
+          <div className="space-y-1 text-xs">
+            <p className="text-muted-foreground">Checklist:</p>
+            <ul className="space-y-0.5">
+              <li className={hasTipo ? 'text-primary' : 'text-destructive'}>Tipo {hasTipo ? 'ok' : 'precisa de atenção'}</li>
+              <li className={hasInstituicao ? 'text-primary' : 'text-destructive'}>Instituição {hasInstituicao ? 'ok' : 'precisa de atenção'}</li>
+              <li className={hasValorTotal ? 'text-primary' : 'text-destructive'}>Valor total {hasValorTotal ? 'ok' : 'precisa de atenção'}</li>
+              <li className={hasParcelas ? 'text-primary' : 'text-destructive'}>Parcelas {hasParcelas ? 'ok' : 'precisa de atenção'}</li>
+              <li className={hasValorParcela ? 'text-primary' : 'text-destructive'}>Valor da parcela {hasValorParcela ? 'ok' : 'precisa de atenção'}</li>
+              <li className={hasPrimeiroVencimento ? 'text-primary' : 'text-destructive'}>1º vencimento {hasPrimeiroVencimento ? 'ok' : 'precisa de atenção'}</li>
+            </ul>
+          </div>
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
