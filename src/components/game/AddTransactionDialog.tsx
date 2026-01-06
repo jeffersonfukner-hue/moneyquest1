@@ -379,8 +379,8 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
       date: format(date, 'yyyy-MM-dd'),
       currency: selectedCurrency,
       wallet_id: walletId!,
-      // Add supplier for all expense transactions
-      ...(type === 'EXPENSE' && supplier.trim() && {
+      // Add supplier for all transactions (expenses and income)
+      ...(supplier.trim() && {
         supplier: supplier.trim(),
       }),
       // Set source_type and transaction_subtype for card expenses
@@ -404,9 +404,10 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
     });
 
     if (!result.error) {
-      // Save supplier to table if provided (for all expenses)
-      if (type === 'EXPENSE' && supplier.trim()) {
-        await upsertSupplier(supplier, parsedAmount);
+      // Save supplier to table if provided (for all transactions - expenses and income)
+      if (supplier.trim()) {
+        // For income, we track as 0 spent (since it's money received, not spent)
+        await upsertSupplier(supplier, type === 'EXPENSE' ? parsedAmount : 0);
       }
       
       // Refetch wallets to update balances in the selector
