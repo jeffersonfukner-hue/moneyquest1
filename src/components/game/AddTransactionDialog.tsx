@@ -341,12 +341,15 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
       date: format(date, 'yyyy-MM-dd'),
       currency: selectedCurrency,
       wallet_id: walletId!,
+      // Add supplier for all expense transactions
+      ...(type === 'EXPENSE' && supplier.trim() && {
+        supplier: supplier.trim(),
+      }),
       // Set source_type and transaction_subtype for card expenses
       ...(isCardExpense && {
         source_type: 'card',
         transaction_subtype: 'card_expense',
         credit_card_id: selectedCardId || undefined,
-        supplier: supplier.trim() || undefined,
       }),
       // Set source_type and transaction_subtype for loan payments
       ...(isLoanPayment && selectedLoanId && {
@@ -363,8 +366,8 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
     });
 
     if (!result.error) {
-      // Save supplier to table if provided (for card expenses)
-      if (isCardExpense && supplier.trim()) {
+      // Save supplier to table if provided (for all expenses)
+      if (type === 'EXPENSE' && supplier.trim()) {
         await upsertSupplier(supplier, parsedAmount);
       }
       
@@ -841,8 +844,8 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
               );
             })()}
 
-            {/* Supplier field - only for credit card expenses */}
-            {sourceType === 'card' && (
+            {/* Supplier field - for all expense transactions */}
+            {type === 'EXPENSE' && (
               <SupplierAutocomplete
                 value={supplier}
                 onChange={setSupplier}
