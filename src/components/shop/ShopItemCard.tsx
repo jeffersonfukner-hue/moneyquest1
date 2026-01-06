@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -19,8 +19,11 @@ interface ShopItemCardProps {
 const THEME_MAP: Record<string, 'light' | 'dark'> = {
   'dark_finance': 'dark',
   'neon_budget': 'dark',
+  'minimal_white_pro': 'light',
   'black_card': 'dark',
   'galactic_wealth': 'dark',
+  'executive_diamond': 'dark',
+  'black_friday': 'dark',
 };
 
 export const ShopItemCard = ({ 
@@ -38,7 +41,8 @@ export const ShopItemCard = ({
   const isTheme = item.tipo === 'tema';
 
   const { theme: currentTheme, setTheme } = useTheme();
-  const [originalTheme, setOriginalTheme] = useState<string | undefined>(undefined);
+  const originalThemeRef = useRef<string | null>(null);
+  const isPreviewingRef = useRef(false);
 
   const formatDuration = (hours: number | null) => {
     if (!hours) return null;
@@ -48,28 +52,29 @@ export const ShopItemCard = ({
   };
 
   const handleMouseEnter = () => {
-    if (!isTheme || isLocked) return;
+    if (!isTheme || isLocked || isPreviewingRef.current) return;
     
     // Get theme_id from metadata
     const metadata = item.metadata as Record<string, unknown> | null;
     const themeId = metadata?.theme_id as string | undefined;
     
-    if (themeId) {
-      // Save current theme
-      setOriginalTheme(currentTheme);
+    if (themeId && THEME_MAP[themeId]) {
+      // Save current theme only once
+      originalThemeRef.current = currentTheme || 'system';
+      isPreviewingRef.current = true;
       
       // Apply preview theme
-      const previewTheme = THEME_MAP[themeId] || 'dark';
-      setTheme(previewTheme);
+      setTheme(THEME_MAP[themeId]);
     }
   };
 
   const handleMouseLeave = () => {
-    if (!isTheme || isLocked || !originalTheme) return;
+    if (!isTheme || !isPreviewingRef.current || !originalThemeRef.current) return;
     
     // Restore original theme
-    setTheme(originalTheme);
-    setOriginalTheme(undefined);
+    setTheme(originalThemeRef.current);
+    originalThemeRef.current = null;
+    isPreviewingRef.current = false;
   };
 
   return (
