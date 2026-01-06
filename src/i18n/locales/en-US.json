@@ -816,6 +816,7 @@
     "name": "Wallet name",
     "institution": "Institution",
     "type": "Account type",
+    "currency": "Currency",
     "balance": "Balance",
     "initialBalance": "Initial balance",
     "currentBalance": "Current balance",

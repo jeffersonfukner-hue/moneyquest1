@@ -874,6 +874,7 @@
     "name": "Nome da carteira",
     "institution": "Instituição",
     "type": "Tipo de conta",
+    "currency": "Moeda",
     "balance": "Saldo",
     "initialBalance": "Saldo inicial",
     "currentBalance": "Saldo atual",
