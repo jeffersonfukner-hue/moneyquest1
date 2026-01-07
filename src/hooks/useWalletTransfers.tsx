@@ -73,7 +73,7 @@ export interface TransferFilters {
 
 export const useWalletTransfers = () => {
   const { user } = useAuth();
-  const { wallets, refetch: refetchWallets } = useWallets();
+  const { wallets, refetch: refetchWallets, recalculateBalance } = useWallets();
   const { convertCurrency } = useExchangeRates();
   const { t } = useTranslation();
   const [transfers, setTransfers] = useState<WalletTransfer[]>([]);
@@ -161,13 +161,6 @@ export const useWalletTransfers = () => {
       toast.error(t('common.error'));
       return false;
     }
-
-    // Calculate amount to add to destination wallet (with conversion if needed)
-    const amountToAdd = converted_amount ||
-      (fromWallet.currency !== toWallet.currency
-        ? convertCurrency(amount, fromWallet.currency, toWallet.currency)
-        : amount);
-
     try {
       const { error: transferError } = await supabase
         .from('wallet_transfers')
@@ -183,27 +176,11 @@ export const useWalletTransfers = () => {
 
       if (transferError) throw transferError;
 
-      // Subtract from source wallet
-      const { error: fromError } = await supabase
-        .from('wallets')
-        .update({
-          current_balance: fromWallet.current_balance - amount,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', from_wallet_id);
-
-      if (fromError) throw fromError;
-
-      // Add to destination wallet (with conversion)
-      const { error: toError } = await supabase
-        .from('wallets')
-        .update({
-          current_balance: toWallet.current_balance + amountToAdd,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', to_wallet_id);
-
-      if (toError) throw toError;
+      // Recalculate both wallets to avoid drift from stale client balances
+      await Promise.all([
+        recalculateBalance(from_wallet_id),
+        recalculateBalance(to_wallet_id),
+      ]);
 
       toast.success(t('wallets.transferSuccess'));
 
@@ -338,56 +315,8 @@ export const useWalletTransfers = () => {
     }
 
     try {
-      // Revert old transfer
-      await supabase
-        .from('wallets')
-        .update({
-          current_balance: oldFromWallet.current_balance + originalTransfer.amount,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', originalTransfer.from_wallet_id);
-
-      await supabase
-        .from('wallets')
-        .update({
-          current_balance: oldToWallet.current_balance - originalTransfer.amount,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', originalTransfer.to_wallet_id);
-
-      // Apply new transfer
-      const newAmount = updates.amount ?? originalTransfer.amount;
-
-      // Recalculate with fresh balances
-      const { data: freshFromWallet } = await supabase
-        .from('wallets')
-        .select('current_balance')
-        .eq('id', updates.from_wallet_id || originalTransfer.from_wallet_id)
-        .maybeSingle();
-
-      const { data: freshToWallet } = await supabase
-        .from('wallets')
-        .select('current_balance')
-        .eq('id', updates.to_wallet_id || originalTransfer.to_wallet_id)
-        .maybeSingle();
-
-      if (!freshFromWallet || !freshToWallet) throw new Error('Wallet not found');
-
-      await supabase
-        .from('wallets')
-        .update({
-          current_balance: freshFromWallet.current_balance - newAmount,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', updates.from_wallet_id || originalTransfer.from_wallet_id);
-
-      await supabase
-        .from('wallets')
-        .update({
-          current_balance: freshToWallet.current_balance + newAmount,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', updates.to_wallet_id || originalTransfer.to_wallet_id);
+      const newFromWalletId = updates.from_wallet_id || originalTransfer.from_wallet_id;
+      const newToWalletId = updates.to_wallet_id || originalTransfer.to_wallet_id;
 
       // Update the transfer record
       const { error: updateError } = await supabase
@@ -403,6 +332,16 @@ export const useWalletTransfers = () => {
         .eq('id', id);
 
       if (updateError) throw updateError;
+
+      // Recalculate all involved wallets (old and new) to avoid drift
+      const affectedWalletIds = Array.from(new Set([
+        originalTransfer.from_wallet_id,
+        originalTransfer.to_wallet_id,
+        newFromWalletId,
+        newToWalletId,
+      ]));
+
+      await Promise.all(affectedWalletIds.map(wid => recalculateBalance(wid)));
 
       toast.success(t('wallets.transferUpdated', 'Transferência atualizada'));
       await Promise.all([fetchTransfers(), refetchWallets()]);
@@ -433,30 +372,19 @@ export const useWalletTransfers = () => {
     }
 
     try {
-      // Revert wallet balances
-      await supabase
-        .from('wallets')
-        .update({
-          current_balance: fromWallet.current_balance + transfer.amount,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', transfer.from_wallet_id);
-
-      await supabase
-        .from('wallets')
-        .update({
-          current_balance: toWallet.current_balance - transfer.amount,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', transfer.to_wallet_id);
-
-      // Delete transfer record
+      // Delete transfer record first
       const { error } = await supabase
         .from('wallet_transfers')
         .delete()
         .eq('id', id);
 
       if (error) throw error;
+
+      // Recalculate both wallets to avoid drift
+      await Promise.all([
+        recalculateBalance(transfer.from_wallet_id),
+        recalculateBalance(transfer.to_wallet_id),
+      ]);
 
       toast.success(t('wallets.transferDeleted', 'Transferência excluída'));
       await Promise.all([fetchTransfers(), refetchWallets()]);
