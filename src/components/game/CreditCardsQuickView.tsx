@@ -13,8 +13,9 @@ export const CreditCardsQuickView = () => {
   return (
     <div className="bg-card rounded-xl p-2 shadow-md border border-border animate-slide-up">
       {/* Header row */}
-      <div className="grid grid-cols-3 text-[9px] sm:text-[10px] text-muted-foreground mb-1 px-1">
+      <div className="grid grid-cols-4 text-[9px] sm:text-[10px] text-muted-foreground mb-1 px-1">
         <span>{t('creditCards.card', 'Cartão')}</span>
+        <span className="text-center">{t('creditCards.dueDay', 'Venc.')}</span>
         <span className="text-center">{t('creditCards.available', 'Disponível')}</span>
         <span className="text-right">{t('creditCards.used', 'Usado')}</span>
       </div>
@@ -23,11 +24,14 @@ export const CreditCardsQuickView = () => {
         {activeCards.map((card) => {
           const usedLimit = card.total_limit - card.available_limit;
           return (
-            <div key={card.id} className="grid grid-cols-3 items-center px-1 py-0.5 bg-muted/30 rounded">
+            <div key={card.id} className="grid grid-cols-4 items-center px-1 py-0.5 bg-muted/30 rounded">
               <div className="flex items-center gap-1 min-w-0">
                 <CreditCard className="w-3 h-3 text-primary flex-shrink-0" />
                 <span className="text-[10px] sm:text-xs font-medium truncate">{card.name}</span>
               </div>
+              <span className="text-[10px] sm:text-xs font-medium text-muted-foreground text-center">
+                {t('creditCards.day', 'Dia')} {card.due_day}
+              </span>
               <span className="text-[10px] sm:text-xs font-bold text-success text-center">
                 {formatCurrency(card.available_limit)}
               </span>
