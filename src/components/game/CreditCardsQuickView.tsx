@@ -30,7 +30,7 @@ export const CreditCardsQuickView = () => {
                 <span className="text-[10px] sm:text-xs font-medium truncate">{card.name}</span>
               </div>
               <span className="text-[10px] sm:text-xs font-medium text-muted-foreground text-center">
-                {t('creditCards.day', 'Dia')} {card.due_day}
+                {card.due_day}
               </span>
               <span className="text-[10px] sm:text-xs font-bold text-success text-center">
                 {formatCurrency(card.available_limit)}
