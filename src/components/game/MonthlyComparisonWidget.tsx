@@ -100,8 +100,10 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
 
   // Calculate bar widths for visual comparison
   const maxExpense = Math.max(currentMonthExpenses, prevMonthExpenses, 1);
-  const pastBarWidth = (pastExpenses / maxExpense) * 100;
-  const futureBarWidth = (futureExpenses / maxExpense) * 100;
+  const currentMonthBarWidth = (currentMonthExpenses / maxExpense) * 100;
+  // Proportional split within current month bar
+  const pastRatio = currentMonthExpenses > 0 ? (pastExpenses / currentMonthExpenses) * 100 : 0;
+  const futureRatio = currentMonthExpenses > 0 ? (futureExpenses / currentMonthExpenses) * 100 : 0;
   const prevBarWidth = (prevMonthExpenses / maxExpense) * 100;
 
   if (currentMonthExpenses === 0 && prevMonthExpenses === 0) {
@@ -154,21 +156,26 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
                 )}
               </div>
             </div>
-            <div className="h-3 bg-muted rounded-full overflow-hidden flex">
-              {/* Past expenses bar */}
+            <div className="h-3 bg-muted rounded-full overflow-hidden">
               <div 
-                className={`h-full transition-all duration-500 ${
-                  isIncrease ? 'bg-red-500' : 'bg-primary'
-                }`}
-                style={{ width: `${pastBarWidth}%` }}
-              />
-              {/* Future expenses bar */}
-              {futureExpenses > 0 && (
+                className="h-full flex transition-all duration-500"
+                style={{ width: `${currentMonthBarWidth}%` }}
+              >
+                {/* Past expenses bar - proportional within current month */}
                 <div 
-                  className="h-full bg-amber-500 transition-all duration-500"
-                  style={{ width: `${futureBarWidth}%` }}
+                  className={`h-full transition-all duration-500 ${
+                    isIncrease ? 'bg-red-500' : 'bg-primary'
+                  }`}
+                  style={{ width: `${pastRatio}%` }}
                 />
-              )}
+                {/* Future expenses bar - proportional within current month */}
+                {futureExpenses > 0 && (
+                  <div 
+                    className="h-full bg-amber-500 transition-all duration-500"
+                    style={{ width: `${futureRatio}%` }}
+                  />
+                )}
+              </div>
             </div>
           </div>
 
