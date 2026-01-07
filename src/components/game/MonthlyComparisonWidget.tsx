@@ -5,6 +5,7 @@ import { TrendingUp, TrendingDown, Minus, BarChart3 } from 'lucide-react';
 import { Transaction, SupportedCurrency } from '@/types/database';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { parseDateString } from '@/lib/dateUtils';
+import { useScheduledTransactions } from '@/hooks/useScheduledTransactions';
 
 interface MonthlyComparisonWidgetProps {
   transactions: Transaction[];
@@ -13,18 +14,31 @@ interface MonthlyComparisonWidgetProps {
 export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidgetProps) => {
   const { t } = useTranslation();
   const { formatCurrency, convertToUserCurrency } = useCurrency();
+  const { scheduledTransactions } = useScheduledTransactions();
 
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
+  const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
   
   // Previous month calculation
   const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
   const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
 
-  // Separate past and future expenses for current month
-  const { pastExpenses, futureExpenses } = useMemo(() => {
+  // Calculate scheduled expenses for the rest of current month
+  const scheduledFutureExpenses = useMemo(() => {
+    return scheduledTransactions
+      .filter(st => {
+        if (st.type !== 'EXPENSE' || !st.is_active) return false;
+        const nextRun = parseDateString(st.next_run_date);
+        return nextRun > today && nextRun <= lastDayOfMonth;
+      })
+      .reduce((sum, st) => sum + convertToUserCurrency(st.amount, (st.currency || 'BRL') as SupportedCurrency), 0);
+  }, [scheduledTransactions, today, lastDayOfMonth, convertToUserCurrency]);
+
+  // Separate past and future expenses for current month (from transactions)
+  const { pastExpenses, futureTransactionExpenses } = useMemo(() => {
     let past = 0;
     let future = 0;
     
@@ -44,8 +58,11 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
       }
     });
     
-    return { pastExpenses: past, futureExpenses: future };
+    return { pastExpenses: past, futureTransactionExpenses: future };
   }, [transactions, currentMonth, currentYear, today, convertToUserCurrency]);
+
+  // Future expenses = scheduled + already registered future transactions
+  const futureExpenses = scheduledFutureExpenses + futureTransactionExpenses;
 
   const currentMonthExpenses = pastExpenses + futureExpenses;
 
