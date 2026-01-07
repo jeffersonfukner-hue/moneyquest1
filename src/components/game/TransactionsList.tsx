@@ -724,13 +724,33 @@ const MonthCard = ({
         
         <CollapsibleContent>
           <div className="px-3 pb-3 space-y-1.5 border-t bg-muted/30 pt-2">
-            {/* Combined and sorted by date */}
-            {[
-              ...group.transactions.map(tx => ({ type: 'transaction' as const, item: tx, date: parseDateString(tx.date) })),
-              ...group.transfers.map(tf => ({ type: 'transfer' as const, item: tf, date: parseDateString(tf.date) })),
-            ]
-              .sort((a, b) => b.date.getTime() - a.date.getTime())
-              .map(entry => 
+            {/* Combined and sorted by date with running balance */}
+            {(() => {
+              // Combine and sort oldest first to calculate running balance
+              const allItems = [
+                ...group.transactions.map(tx => ({ 
+                  type: 'transaction' as const, 
+                  item: tx, 
+                  date: parseDateString(tx.date),
+                  effect: tx.type === 'INCOME' ? tx.amount : -tx.amount
+                })),
+                ...group.transfers.map(tf => ({ 
+                  type: 'transfer' as const, 
+                  item: tf, 
+                  date: parseDateString(tf.date),
+                  effect: tf.amount
+                })),
+              ].sort((a, b) => a.date.getTime() - b.date.getTime());
+
+              // Calculate running balance for each item
+              let runningBalance = group.openingBalance;
+              const itemsWithBalance = allItems.map(entry => {
+                runningBalance += entry.effect;
+                return { ...entry, balanceAfter: runningBalance };
+              });
+
+              // Reverse to show newest first
+              return itemsWithBalance.reverse().map(entry => 
                 entry.type === 'transaction' ? (
                   <TransactionItem
                     key={entry.item.id}
@@ -749,6 +769,7 @@ const MonthCard = ({
                     isSelectionMode={isSelectionMode}
                     isSelected={selectedIds.has(entry.item.id)}
                     onToggleSelect={() => onToggleSelect(entry.item.id)}
+                    runningBalance={entry.balanceAfter}
                   />
                 ) : (
                   <MonthTransferItem
@@ -759,9 +780,11 @@ const MonthCard = ({
                     dateLocale={dateLocale}
                     userCurrency={userCurrency}
                     onEdit={() => onEditTransfer(entry.item as WalletTransfer)}
+                    runningBalance={entry.balanceAfter}
                   />
                 )
-              )}
+              );
+            })()}
           </div>
         </CollapsibleContent>
       </Collapsible>
@@ -785,7 +808,8 @@ const TransactionItem = ({
   isSelectionMode = false,
   isSelected = false,
   onToggleSelect,
-}: { 
+  runningBalance,
+}: {
   transaction: Transaction; 
   onDelete: (id: string) => void;
   onEdit: () => void;
@@ -801,6 +825,7 @@ const TransactionItem = ({
   isSelectionMode?: boolean;
   isSelected?: boolean;
   onToggleSelect?: () => void;
+  runningBalance?: number;
 }) => {
   const transactionCurrency = transaction.currency || 'BRL';
   const isDifferentCurrency = transactionCurrency !== userCurrency;
@@ -851,6 +876,11 @@ const TransactionItem = ({
             {' • '}{displayCategory}
             {walletName && <span> • {walletIcon} {walletName}</span>}
             {creditCardName && <span> • 💳 {creditCardName}</span>}
+            {runningBalance !== undefined && (
+              <span className={cn("ml-1", runningBalance >= 0 ? "text-income" : "text-expense")}>
+                • Saldo: {formatMoney(runningBalance, userCurrency)}
+              </span>
+            )}
           </p>
         </div>
       </div>
@@ -952,9 +982,10 @@ interface MonthTransferItemProps {
   dateLocale: Locale;
   userCurrency: SupportedCurrency;
   onEdit: () => void;
+  runningBalance?: number;
 }
 
-const MonthTransferItem = ({ transfer, getWalletName, getWalletIcon, dateLocale, userCurrency, onEdit }: MonthTransferItemProps) => {
+const MonthTransferItem = ({ transfer, getWalletName, getWalletIcon, dateLocale, userCurrency, onEdit, runningBalance }: MonthTransferItemProps) => {
   return (
     <div 
       className="flex items-center gap-2 p-2 bg-card/50 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer group"
@@ -974,6 +1005,11 @@ const MonthTransferItem = ({ transfer, getWalletName, getWalletIcon, dateLocale,
         <p className="text-[10px] text-muted-foreground">
           {format(parseDateString(transfer.date), 'd MMM', { locale: dateLocale })}
           {transfer.description && ` • ${transfer.description}`}
+          {runningBalance !== undefined && (
+            <span className={cn("ml-1", runningBalance >= 0 ? "text-income" : "text-expense")}>
+              • Saldo: {formatMoney(runningBalance, userCurrency)}
+            </span>
+          )}
         </p>
       </div>
       <div className="flex items-center gap-1.5">
