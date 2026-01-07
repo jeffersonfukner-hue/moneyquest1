@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
-import { PieChart as PieChartIcon, Filter, Lock, CreditCard, Wallet } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell } from 'recharts';
+import { BarChart3, Filter, Lock, CreditCard, Wallet } from 'lucide-react';
 import { Transaction, SupportedCurrency } from '@/types/database';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { parseDateString } from '@/lib/dateUtils';
@@ -151,7 +151,7 @@ export const SpendingByCategoryChart = ({ transactions }: SpendingByCategoryChar
       <CardHeader className="pb-1">
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
-            <PieChartIcon className="w-4 h-4" />
+            <BarChart3 className="w-4 h-4" />
             {t('dashboard.spendingByCategory')}
           </CardTitle>
           
@@ -261,60 +261,59 @@ export const SpendingByCategoryChart = ({ transactions }: SpendingByCategoryChar
             {t('common.noData')}
           </div>
         ) : (
-          <>
-            <div className="h-44">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={chartData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={40}
-                    outerRadius={65}
-                    paddingAngle={2}
-                    dataKey="value"
-                  >
-                    {chartData.map((_, index) => (
-                      <Cell 
-                        key={`cell-${index}`} 
-                        fill={COLORS[index % COLORS.length]}
-                        className="stroke-background"
-                        strokeWidth={2}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        const data = payload[0].payload;
-                        const percentage = ((data.value / total) * 100).toFixed(1);
-                        return (
-                          <div className="bg-popover border border-border rounded-lg px-3 py-2 shadow-lg">
-                            <p className="text-sm font-medium text-foreground">{data.name}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {formatCurrency(data.value)} ({percentage}%)
-                            </p>
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="flex flex-wrap gap-2 mt-2 justify-center">
-              {chartData.map((item, index) => (
-                <div key={item.name} className="flex items-center gap-1 text-xs">
-                  <div
-                    className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                  />
-                  <span className="text-muted-foreground truncate max-w-[80px]">{item.name}</span>
-                </div>
-              ))}
-            </div>
-          </>
+          <div className="h-52">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={chartData}
+                layout="vertical"
+                margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
+              >
+                <XAxis 
+                  type="number" 
+                  hide 
+                  domain={[0, 'dataMax']}
+                />
+                <YAxis 
+                  type="category" 
+                  dataKey="name" 
+                  width={80}
+                  tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <Tooltip
+                  cursor={{ fill: 'hsl(var(--muted)/0.3)' }}
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      const data = payload[0].payload;
+                      const percentage = ((data.value / total) * 100).toFixed(1);
+                      return (
+                        <div className="bg-popover border border-border rounded-lg px-3 py-2 shadow-lg">
+                          <p className="text-sm font-medium text-foreground">{data.name}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {formatCurrency(data.value)} ({percentage}%)
+                          </p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Bar 
+                  dataKey="value" 
+                  radius={[0, 4, 4, 0]}
+                  maxBarSize={24}
+                >
+                  {chartData.map((_, index) => (
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         )}
       </CardContent>
     </Card>
