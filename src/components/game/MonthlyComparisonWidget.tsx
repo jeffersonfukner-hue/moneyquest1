@@ -6,6 +6,7 @@ import { Transaction, SupportedCurrency } from '@/types/database';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { parseDateString } from '@/lib/dateUtils';
 import { useScheduledTransactions } from '@/hooks/useScheduledTransactions';
+import { useWalletTransfers } from '@/hooks/useWalletTransfers';
 
 interface MonthlyComparisonWidgetProps {
   transactions: Transaction[];
@@ -15,6 +16,7 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
   const { t } = useTranslation();
   const { formatCurrency, convertToUserCurrency } = useCurrency();
   const { scheduledTransactions } = useScheduledTransactions();
+  const { transfers } = useWalletTransfers();
 
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -25,6 +27,31 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
   // Previous month calculation
   const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
   const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+  // Calculate transfers out (money leaving accounts) for current month
+  const { currentMonthTransfersOut, prevMonthTransfersOut } = useMemo(() => {
+    let currentOut = 0;
+    let prevOut = 0;
+    
+    transfers.forEach((transfer) => {
+      const transferDate = parseDateString(transfer.date);
+      const amount = convertToUserCurrency(transfer.amount, (transfer.currency || 'BRL') as SupportedCurrency);
+      
+      if (
+        transferDate.getMonth() === currentMonth &&
+        transferDate.getFullYear() === currentYear
+      ) {
+        currentOut += amount;
+      } else if (
+        transferDate.getMonth() === prevMonth &&
+        transferDate.getFullYear() === prevYear
+      ) {
+        prevOut += amount;
+      }
+    });
+    
+    return { currentMonthTransfersOut: currentOut, prevMonthTransfersOut: prevOut };
+  }, [transfers, currentMonth, currentYear, prevMonth, prevYear, convertToUserCurrency]);
 
   // Calculate scheduled expenses for the rest of current month
   const scheduledFutureExpenses = useMemo(() => {
@@ -64,10 +91,11 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
   // Future expenses = scheduled + already registered future transactions
   const futureExpenses = scheduledFutureExpenses + futureTransactionExpenses;
 
-  const currentMonthExpenses = pastExpenses + futureExpenses;
+  // Include transfers out in total expenses
+  const currentMonthExpenses = pastExpenses + futureExpenses + currentMonthTransfersOut;
 
   const prevMonthExpenses = useMemo(() => {
-    return transactions
+    const txExpenses = transactions
       .filter((tx) => {
         const txDate = parseDateString(tx.date);
         return (
@@ -77,7 +105,10 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
         );
       })
       .reduce((sum, tx) => sum + convertToUserCurrency(tx.amount, (tx.currency || 'BRL') as SupportedCurrency), 0);
-  }, [transactions, prevMonth, prevYear, convertToUserCurrency]);
+    
+    // Include transfers out in previous month expenses
+    return txExpenses + prevMonthTransfersOut;
+  }, [transactions, prevMonth, prevYear, convertToUserCurrency, prevMonthTransfersOut]);
 
   // Calculate percentage change
   const percentChange = prevMonthExpenses > 0 
@@ -101,9 +132,6 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
   // Calculate bar widths for visual comparison
   const maxExpense = Math.max(currentMonthExpenses, prevMonthExpenses, 1);
   const currentMonthBarWidth = (currentMonthExpenses / maxExpense) * 100;
-  // Proportional split within current month bar
-  const pastRatio = currentMonthExpenses > 0 ? (pastExpenses / currentMonthExpenses) * 100 : 0;
-  const futureRatio = currentMonthExpenses > 0 ? (futureExpenses / currentMonthExpenses) * 100 : 0;
   const prevBarWidth = (prevMonthExpenses / maxExpense) * 100;
 
   if (currentMonthExpenses === 0 && prevMonthExpenses === 0) {
@@ -138,11 +166,11 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
 
         {/* Bar comparison */}
         <div className="space-y-2">
-          {/* Current month with past/future split */}
+          {/* Current month with past/future/transfers split */}
           <div className="space-y-1">
             <div className="flex justify-between text-xs">
               <span className="text-foreground font-medium">{currentMonthName}</span>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 flex-wrap justify-end">
                 <span className={isIncrease ? 'text-red-500' : 'text-primary'}>
                   {formatCurrency(pastExpenses)}
                 </span>
@@ -154,6 +182,14 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
                     </span>
                   </>
                 )}
+                {currentMonthTransfersOut > 0 && (
+                  <>
+                    <span className="text-muted-foreground">+</span>
+                    <span className="text-blue-500">
+                      {formatCurrency(currentMonthTransfersOut)}
+                    </span>
+                  </>
+                )}
               </div>
             </div>
             <div className="h-3 bg-muted rounded-full overflow-hidden">
@@ -161,18 +197,25 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
                 className="h-full flex transition-all duration-500"
                 style={{ width: `${currentMonthBarWidth}%` }}
               >
-                {/* Past expenses bar - proportional within current month */}
+                {/* Past expenses bar */}
                 <div 
                   className={`h-full transition-all duration-500 ${
                     isIncrease ? 'bg-red-500' : 'bg-primary'
                   }`}
-                  style={{ width: `${pastRatio}%` }}
+                  style={{ width: `${currentMonthExpenses > 0 ? (pastExpenses / currentMonthExpenses) * 100 : 0}%` }}
                 />
-                {/* Future expenses bar - proportional within current month */}
+                {/* Future expenses bar */}
                 {futureExpenses > 0 && (
                   <div 
                     className="h-full bg-amber-500 transition-all duration-500"
-                    style={{ width: `${futureRatio}%` }}
+                    style={{ width: `${(futureExpenses / currentMonthExpenses) * 100}%` }}
+                  />
+                )}
+                {/* Transfers out bar */}
+                {currentMonthTransfersOut > 0 && (
+                  <div 
+                    className="h-full bg-blue-500 transition-all duration-500"
+                    style={{ width: `${(currentMonthTransfersOut / currentMonthExpenses) * 100}%` }}
                   />
                 )}
               </div>
@@ -194,17 +237,25 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
           </div>
         </div>
 
-        {/* Legend for future expenses */}
-        {futureExpenses > 0 && (
-          <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+        {/* Legend for expenses breakdown */}
+        {(futureExpenses > 0 || currentMonthTransfersOut > 0) && (
+          <div className="flex items-center gap-3 text-[10px] text-muted-foreground flex-wrap">
             <div className="flex items-center gap-1">
               <div className={`w-2 h-2 rounded-full ${isIncrease ? 'bg-red-500' : 'bg-primary'}`} />
               <span>{t('dashboard.pastExpenses')}</span>
             </div>
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 rounded-full bg-amber-500" />
-              <span>{t('dashboard.futureExpenses')}</span>
-            </div>
+            {futureExpenses > 0 && (
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-amber-500" />
+                <span>{t('dashboard.futureExpenses')}</span>
+              </div>
+            )}
+            {currentMonthTransfersOut > 0 && (
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-blue-500" />
+                <span>{t('dashboard.transfers')}</span>
+              </div>
+            )}
           </div>
         )}
 
