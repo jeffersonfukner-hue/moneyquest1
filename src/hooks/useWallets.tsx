@@ -111,20 +111,22 @@ export const useWallets = () => {
         updateData.current_balance = newCurrentBalance;
       }
 
-      const { error } = await supabase
+      const { data: updatedWallet, error } = await supabase
         .from('wallets')
         .update(updateData)
         .eq('id', id)
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (error || !updatedWallet) throw error || new Error('Update failed');
 
       setWallets(prev => prev.map(w =>
         w.id === id ? {
           ...w,
-          ...updates,
-          current_balance: updates.initial_balance !== undefined ? newCurrentBalance : w.current_balance,
-          updated_at: new Date().toISOString()
+          ...updatedWallet,
+          type: updatedWallet.type as WalletType,
+          currency: updatedWallet.currency as SupportedCurrency,
         } : w
       ));
 

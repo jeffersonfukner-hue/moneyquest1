@@ -19,6 +19,7 @@ import { useWallets } from '@/hooks/useWallets';
 import { SupportedCurrency } from '@/types/database';
 import { cn } from '@/lib/utils';
 import { EditTransferDialog } from './EditTransferDialog';
+import { parseDateString } from '@/lib/dateUtils';
 
 const getDateLocale = (lang: string) => {
   if (lang.startsWith('pt')) return ptBR;
@@ -285,7 +286,7 @@ const TransferItem = ({ transfer, formatCurrency, getWalletName, getWalletIcon, 
           <span className="truncate">{getWalletName(transfer.to_wallet_id)}</span>
         </div>
         <div className="text-xs text-muted-foreground">
-          {format(new Date(transfer.date), 'dd MMM yyyy', { locale: dateLocale })}
+          {format(parseDateString(transfer.date), 'dd MMM yyyy', { locale: dateLocale })}
           {transfer.description && ` • ${transfer.description}`}
         </div>
       </div>

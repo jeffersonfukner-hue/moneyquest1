@@ -308,7 +308,7 @@ export const useWalletTransfers = () => {
       const newToWalletId = updates.to_wallet_id || originalTransfer.to_wallet_id;
 
       // Update the transfer record
-      const { error: updateError } = await supabase
+      const { data: updatedTransfer, error: updateError } = await supabase
         .from('wallet_transfers')
         .update({
           from_wallet_id: updates.from_wallet_id,
@@ -319,9 +319,11 @@ export const useWalletTransfers = () => {
           date: updates.date,
         })
         .eq('id', id)
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .select()
+        .single();
 
-      if (updateError) throw updateError;
+      if (updateError || !updatedTransfer) throw updateError || new Error('Update failed');
 
       // Recalculate all involved wallets (old and new) to avoid drift
       const affectedWalletIds = Array.from(new Set([
