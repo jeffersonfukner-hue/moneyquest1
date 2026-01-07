@@ -876,22 +876,28 @@ const TransactionItem = ({
             {' • '}{displayCategory}
             {walletName && <span> • {walletIcon} {walletName}</span>}
             {creditCardName && <span> • 💳 {creditCardName}</span>}
-            {runningBalance !== undefined && (
-              <span className={cn("ml-1", runningBalance >= 0 ? "text-income" : "text-expense")}>
-                • Saldo: {formatMoney(runningBalance, userCurrency)}
-              </span>
-            )}
           </p>
         </div>
       </div>
       
       <div className="flex items-center gap-1">
-        <p className={cn(
-          "text-sm font-medium",
-          transaction.type === 'INCOME' ? 'text-income' : 'text-expense'
-        )}>
-          {transaction.type === 'INCOME' ? '+' : '-'}{formattedAmount}
-        </p>
+        <div className="text-right">
+          <p className={cn(
+            "text-sm font-medium",
+            transaction.type === 'INCOME' ? 'text-income' : 'text-expense'
+          )}>
+            {transaction.type === 'INCOME' ? '+' : '-'}{formattedAmount}
+          </p>
+          {runningBalance !== undefined && (
+            <p className={cn(
+              "text-[10px] px-1.5 py-0.5 rounded mt-0.5 inline-block",
+              "bg-muted",
+              runningBalance >= 0 ? "text-income" : "text-expense"
+            )}>
+              {formatMoney(runningBalance, userCurrency)}
+            </p>
+          )}
+        </div>
         
         {!isSelectionMode && (
           <DropdownMenu>
@@ -1005,17 +1011,23 @@ const MonthTransferItem = ({ transfer, getWalletName, getWalletIcon, dateLocale,
         <p className="text-[10px] text-muted-foreground">
           {format(parseDateString(transfer.date), 'd MMM', { locale: dateLocale })}
           {transfer.description && ` • ${transfer.description}`}
-          {runningBalance !== undefined && (
-            <span className={cn("ml-1", runningBalance >= 0 ? "text-income" : "text-expense")}>
-              • Saldo: {formatMoney(runningBalance, userCurrency)}
-            </span>
-          )}
         </p>
       </div>
       <div className="flex items-center gap-1.5">
-        <span className="text-xs font-semibold text-blue-500">
-          {formatMoney(transfer.amount, userCurrency)}
-        </span>
+        <div className="text-right">
+          <span className="text-xs font-semibold text-blue-500">
+            {formatMoney(transfer.amount, userCurrency)}
+          </span>
+          {runningBalance !== undefined && (
+            <p className={cn(
+              "text-[10px] px-1.5 py-0.5 rounded mt-0.5 inline-block",
+              "bg-muted",
+              runningBalance >= 0 ? "text-income" : "text-expense"
+            )}>
+              {formatMoney(runningBalance, userCurrency)}
+            </p>
+          )}
+        </div>
         <Pencil className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
     </div>
