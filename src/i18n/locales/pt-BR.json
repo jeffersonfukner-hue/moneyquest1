@@ -1229,7 +1229,9 @@
     "spentMore": "gastou mais que o mês anterior",
     "spentLess": "gastou menos que o mês anterior",
     "spentSame": "mesmo valor do mês anterior",
-    "difference": "Diferença"
+    "difference": "Diferença",
+    "pastExpenses": "Realizados",
+    "futureExpenses": "Futuros"
   },
   "months": {
     "jan": "Jan", "feb": "Fev", "mar": "Mar", "apr": "Abr",

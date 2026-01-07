@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, TrendingDown, Minus, BarChart3 } from 'lucide-react';
@@ -14,6 +15,7 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
   const { formatCurrency, convertToUserCurrency } = useCurrency();
 
   const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
   
@@ -21,28 +23,44 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
   const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
   const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
 
-  // Filter transactions by month with currency conversion
-  const currentMonthExpenses = transactions
-    .filter((tx) => {
+  // Separate past and future expenses for current month
+  const { pastExpenses, futureExpenses } = useMemo(() => {
+    let past = 0;
+    let future = 0;
+    
+    transactions.forEach((tx) => {
       const txDate = parseDateString(tx.date);
-      return (
+      if (
         tx.type === 'EXPENSE' &&
         txDate.getMonth() === currentMonth &&
         txDate.getFullYear() === currentYear
-      );
-    })
-    .reduce((sum, tx) => sum + convertToUserCurrency(tx.amount, (tx.currency || 'BRL') as SupportedCurrency), 0);
+      ) {
+        const amount = convertToUserCurrency(tx.amount, (tx.currency || 'BRL') as SupportedCurrency);
+        if (txDate <= today) {
+          past += amount;
+        } else {
+          future += amount;
+        }
+      }
+    });
+    
+    return { pastExpenses: past, futureExpenses: future };
+  }, [transactions, currentMonth, currentYear, today, convertToUserCurrency]);
 
-  const prevMonthExpenses = transactions
-    .filter((tx) => {
-      const txDate = parseDateString(tx.date);
-      return (
-        tx.type === 'EXPENSE' &&
-        txDate.getMonth() === prevMonth &&
-        txDate.getFullYear() === prevYear
-      );
-    })
-    .reduce((sum, tx) => sum + convertToUserCurrency(tx.amount, (tx.currency || 'BRL') as SupportedCurrency), 0);
+  const currentMonthExpenses = pastExpenses + futureExpenses;
+
+  const prevMonthExpenses = useMemo(() => {
+    return transactions
+      .filter((tx) => {
+        const txDate = parseDateString(tx.date);
+        return (
+          tx.type === 'EXPENSE' &&
+          txDate.getMonth() === prevMonth &&
+          txDate.getFullYear() === prevYear
+        );
+      })
+      .reduce((sum, tx) => sum + convertToUserCurrency(tx.amount, (tx.currency || 'BRL') as SupportedCurrency), 0);
+  }, [transactions, prevMonth, prevYear, convertToUserCurrency]);
 
   // Calculate percentage change
   const percentChange = prevMonthExpenses > 0 
@@ -65,7 +83,8 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
 
   // Calculate bar widths for visual comparison
   const maxExpense = Math.max(currentMonthExpenses, prevMonthExpenses, 1);
-  const currentBarWidth = (currentMonthExpenses / maxExpense) * 100;
+  const pastBarWidth = (pastExpenses / maxExpense) * 100;
+  const futureBarWidth = (futureExpenses / maxExpense) * 100;
   const prevBarWidth = (prevMonthExpenses / maxExpense) * 100;
 
   if (currentMonthExpenses === 0 && prevMonthExpenses === 0) {
@@ -100,19 +119,39 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
 
         {/* Bar comparison */}
         <div className="space-y-2">
-          {/* Current month */}
+          {/* Current month with past/future split */}
           <div className="space-y-1">
             <div className="flex justify-between text-xs">
               <span className="text-foreground font-medium">{currentMonthName}</span>
-              <span className="text-foreground">{formatCurrency(currentMonthExpenses)}</span>
+              <div className="flex items-center gap-1">
+                <span className={isIncrease ? 'text-red-500' : 'text-primary'}>
+                  {formatCurrency(pastExpenses)}
+                </span>
+                {futureExpenses > 0 && (
+                  <>
+                    <span className="text-muted-foreground">+</span>
+                    <span className="text-amber-500">
+                      {formatCurrency(futureExpenses)}
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
-            <div className="h-3 bg-muted rounded-full overflow-hidden">
+            <div className="h-3 bg-muted rounded-full overflow-hidden flex">
+              {/* Past expenses bar */}
               <div 
-                className={`h-full rounded-full transition-all duration-500 ${
+                className={`h-full transition-all duration-500 ${
                   isIncrease ? 'bg-red-500' : 'bg-primary'
                 }`}
-                style={{ width: `${currentBarWidth}%` }}
+                style={{ width: `${pastBarWidth}%` }}
               />
+              {/* Future expenses bar */}
+              {futureExpenses > 0 && (
+                <div 
+                  className="h-full bg-amber-500 transition-all duration-500"
+                  style={{ width: `${futureBarWidth}%` }}
+                />
+              )}
             </div>
           </div>
 
@@ -130,6 +169,20 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
             </div>
           </div>
         </div>
+
+        {/* Legend for future expenses */}
+        {futureExpenses > 0 && (
+          <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+            <div className="flex items-center gap-1">
+              <div className={`w-2 h-2 rounded-full ${isIncrease ? 'bg-red-500' : 'bg-primary'}`} />
+              <span>{t('dashboard.pastExpenses')}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 rounded-full bg-amber-500" />
+              <span>{t('dashboard.futureExpenses')}</span>
+            </div>
+          </div>
+        )}
 
         {/* Difference */}
         <div className="pt-2 border-t border-border/30 flex justify-between items-center text-xs">
