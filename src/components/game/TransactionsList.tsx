@@ -61,8 +61,9 @@ interface MonthGroup {
   transfers: WalletTransfer[];
   totalIncome: number;
   totalExpense: number;
-  totalTransfersOut: number;
-  balance: number;
+  totalTransfers: number;
+  openingBalance: number;
+  closingBalance: number;
 }
 
 type SourceTab = 'account' | 'card' | 'loan' | 'transfer';
@@ -157,8 +158,9 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
           transfers: [],
           totalIncome: 0,
           totalExpense: 0,
-          totalTransfersOut: 0,
-          balance: 0,
+          totalTransfers: 0,
+          openingBalance: 0,
+          closingBalance: 0,
         };
       }
       
@@ -185,24 +187,28 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
           transfers: [],
           totalIncome: 0,
           totalExpense: 0,
-          totalTransfersOut: 0,
-          balance: 0,
+          totalTransfers: 0,
+          openingBalance: 0,
+          closingBalance: 0,
         };
       }
       
       groups[monthKey].transfers.push(transfer);
-      groups[monthKey].totalTransfersOut += transfer.amount;
+      groups[monthKey].totalTransfers += transfer.amount;
     });
     
-    // Calculate balance and sort transactions within each month
-    Object.values(groups).forEach(group => {
-      group.balance = group.totalIncome - group.totalExpense;
-      group.transactions.sort((a, b) => 
-        new Date(b.date).getTime() - new Date(a.date).getTime()
-      );
-      group.transfers.sort((a, b) => 
-        new Date(b.date).getTime() - new Date(a.date).getTime()
-      );
+    // Calculate opening/closing balance (rolling) and sort items within each month
+    const sortedMonthKeys = Object.keys(groups).sort((a, b) => a.localeCompare(b));
+    let rollingBalance = 0;
+
+    sortedMonthKeys.forEach((monthKey) => {
+      const group = groups[monthKey];
+      group.openingBalance = rollingBalance;
+      group.closingBalance = rollingBalance + group.totalIncome + group.totalTransfers - group.totalExpense;
+      rollingBalance = group.closingBalance;
+
+      group.transactions.sort((a, b) => parseDateString(b.date).getTime() - parseDateString(a.date).getTime());
+      group.transfers.sort((a, b) => parseDateString(b.date).getTime() - parseDateString(a.date).getTime());
     });
     
     // Sort months from newest to oldest
@@ -665,16 +671,9 @@ const MonthCard = ({
   getWalletIcon,
   onEditTransfer,
 }: MonthCardProps) => {
-  // Check if this is the current month
-  const currentMonthKey = format(new Date(), 'yyyy-MM');
-  const isCurrentMonth = group.key === currentMonthKey;
-  
-  // Para o mês atual: saldo disponível = carteiras + receitas
-  // Para meses anteriores: apenas receitas - despesas
-  const monthBalance = group.totalIncome - group.totalExpense;
-  const availableBalance = isCurrentMonth ? totalWalletBalance + group.totalIncome : group.totalIncome;
-  const finalBalance = isCurrentMonth ? availableBalance - group.totalExpense : monthBalance;
-  const isPositive = finalBalance >= 0;
+  const openingBalance = group.openingBalance;
+  const closingBalance = group.closingBalance;
+  const isPositive = closingBalance >= 0;
   
   return (
     <Card className="overflow-hidden">
@@ -699,19 +698,9 @@ const MonthCard = ({
                 </Badge>
               </div>
               <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                {isCurrentMonth && (
-                  <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-                    <Wallet className="w-3 h-3" />
-                    {formatMoney(availableBalance, userCurrency)}
-                  </span>
-                )}
-                <span className="text-[10px] text-income flex items-center gap-0.5">
-                  <TrendingUp className="w-3 h-3" />
-                  {formatMoney(group.totalIncome, userCurrency)}
-                </span>
-                <span className="text-[10px] text-expense flex items-center gap-0.5">
-                  <TrendingDown className="w-3 h-3" />
-                  {formatMoney(group.totalExpense, userCurrency)}
+                <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                  <Wallet className="w-3 h-3" />
+                  Saldo inicial: {formatMoney(openingBalance, userCurrency)}
                 </span>
               </div>
             </div>
@@ -721,7 +710,7 @@ const MonthCard = ({
                 "font-bold text-sm",
                 isPositive ? "text-income" : "text-expense"
               )}>
-                {isPositive ? '+' : ''}{formatMoney(finalBalance, userCurrency)}
+                {isPositive ? '+' : ''}{formatMoney(closingBalance, userCurrency)}
               </p>
             </div>
             
