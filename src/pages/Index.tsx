@@ -14,6 +14,7 @@ import { useDailyReward } from '@/hooks/useDailyReward';
 import { useRealtimeXP } from '@/hooks/useRealtimeXP';
 import { LevelProgress } from '@/components/game/LevelProgress';
 import { StatsCards } from '@/components/game/StatsCards';
+import { CreditCardsQuickView } from '@/components/game/CreditCardsQuickView';
 import { ResourceBars } from '@/components/game/ResourceBars';
 import { LeaderboardCard } from '@/components/game/LeaderboardCard';
 import { DailyRewardBanner } from '@/components/game/DailyRewardBanner';
@@ -196,6 +197,7 @@ const Index = () => {
             <LevelProgress profile={profile} />
             <ShopQuickAccessCard />
             <StatsCards profile={profile} />
+            <CreditCardsQuickView />
             
             {/* Session summary - appears after finishing transaction session */}
             {sessionSummary && (
