@@ -15,7 +15,11 @@
     "debit": "Debit",
     "credit": "Credit",
     "dateFormat": "mm/dd/yyyy",
-    "today": "Today"
+    "today": "Today",
+    "source": "Source",
+    "bankAccount": "Bank Account",
+    "creditCard": "Credit Card",
+    "category": "Category"
   },
   "creditCards": {
     "viewInvoices": "View Invoices",
@@ -1027,7 +1031,9 @@
     "seconds": "SEC",
     "anonymous": "Anonymous",
     "actions": "Actions",
-    "noName": "No name"
+    "noName": "No name",
+    "filters": "Filters",
+    "clearFilters": "Clear filters"
   },
   "auth": {
     "login": "Sign In",
