@@ -288,7 +288,7 @@ export const SpendingByCategoryChart = ({ transactions }: SpendingByCategoryChar
                 <span>{t('transactions.bankAccount')}</span>
               </div>
               <div className="flex items-center gap-1">
-                <div className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: 'hsl(var(--chart-4))' }} />
+                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: 'hsl(var(--chart-4))' }} />
                 <CreditCard className="w-3 h-3" />
                 <span>{t('transactions.creditCard')}</span>
               </div>
