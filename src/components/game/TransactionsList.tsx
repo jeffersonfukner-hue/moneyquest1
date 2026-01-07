@@ -307,7 +307,7 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
 
       {/* Source Type Tabs */}
       <Tabs value={activeSourceTab} onValueChange={(v) => setActiveSourceTab(v as SourceTab)} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 h-auto p-1">
+        <TabsList className="grid w-full grid-cols-4 h-auto p-1">
           <TooltipProvider delayDuration={300}>
             <Tooltip>
               <TooltipTrigger asChild>
