@@ -58,8 +58,10 @@ interface MonthGroup {
   key: string;
   label: string;
   transactions: Transaction[];
+  transfers: WalletTransfer[];
   totalIncome: number;
   totalExpense: number;
+  totalTransfersOut: number;
   balance: number;
 }
 
@@ -137,10 +139,11 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
     };
   }, [transactions, transfers]);
 
-  // Group transactions by month with summaries
+  // Group transactions by month with summaries (including transfers)
   const monthGroups = useMemo(() => {
     const groups: Record<string, MonthGroup> = {};
     
+    // Add transactions to groups
     filteredBySource.forEach(tx => {
       const txDate = parseDateString(tx.date);
       const monthKey = format(txDate, 'yyyy-MM');
@@ -151,8 +154,10 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
           key: monthKey,
           label: monthLabel,
           transactions: [],
+          transfers: [],
           totalIncome: 0,
           totalExpense: 0,
+          totalTransfersOut: 0,
           balance: 0,
         };
       }
@@ -166,17 +171,43 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
       }
     });
     
+    // Add transfers to their respective months
+    transfers.forEach(transfer => {
+      const transferDate = new Date(transfer.date);
+      const monthKey = format(transferDate, 'yyyy-MM');
+      const monthLabel = format(transferDate, 'MMMM yyyy', { locale: dateLocale });
+      
+      if (!groups[monthKey]) {
+        groups[monthKey] = {
+          key: monthKey,
+          label: monthLabel,
+          transactions: [],
+          transfers: [],
+          totalIncome: 0,
+          totalExpense: 0,
+          totalTransfersOut: 0,
+          balance: 0,
+        };
+      }
+      
+      groups[monthKey].transfers.push(transfer);
+      groups[monthKey].totalTransfersOut += transfer.amount;
+    });
+    
     // Calculate balance and sort transactions within each month
     Object.values(groups).forEach(group => {
       group.balance = group.totalIncome - group.totalExpense;
       group.transactions.sort((a, b) => 
         new Date(b.date).getTime() - new Date(a.date).getTime()
       );
+      group.transfers.sort((a, b) => 
+        new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
     });
     
     // Sort months from newest to oldest
     return Object.values(groups).sort((a, b) => b.key.localeCompare(a.key));
-  }, [filteredBySource, dateLocale]);
+  }, [filteredBySource, transfers, dateLocale]);
 
   // Reset expanded months when switching tabs
   useEffect(() => {
@@ -470,6 +501,9 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
                   selectedIds={selectedIds}
                   onToggleSelect={toggleSelection}
                   totalWalletBalance={totalWalletBalance}
+                  getWalletName={getWalletName}
+                  getWalletIcon={getWalletIcon}
+                  onEditTransfer={setEditingTransfer}
                 />
               ))}
             </div>
@@ -604,6 +638,9 @@ interface MonthCardProps {
   selectedIds: Set<string>;
   onToggleSelect: (id: string) => void;
   totalWalletBalance: number;
+  getWalletName: (id: string) => string;
+  getWalletIcon: (id: string) => string;
+  onEditTransfer: (transfer: WalletTransfer) => void;
 }
 
 const MonthCard = ({
@@ -624,6 +661,9 @@ const MonthCard = ({
   selectedIds,
   onToggleSelect,
   totalWalletBalance,
+  getWalletName,
+  getWalletIcon,
+  onEditTransfer,
 }: MonthCardProps) => {
   // Saldo disponível = soma das carteiras + receitas do mês
   const availableBalance = totalWalletBalance + group.totalIncome;
@@ -688,6 +728,7 @@ const MonthCard = ({
         
         <CollapsibleContent>
           <div className="px-3 pb-3 space-y-1.5 border-t bg-muted/30 pt-2">
+            {/* Transactions */}
             {group.transactions.map(transaction => (
               <TransactionItem
                 key={transaction.id}
@@ -706,6 +747,19 @@ const MonthCard = ({
                 isSelectionMode={isSelectionMode}
                 isSelected={selectedIds.has(transaction.id)}
                 onToggleSelect={() => onToggleSelect(transaction.id)}
+              />
+            ))}
+            
+            {/* Transfers */}
+            {group.transfers.map(transfer => (
+              <MonthTransferItem
+                key={transfer.id}
+                transfer={transfer}
+                getWalletName={getWalletName}
+                getWalletIcon={getWalletIcon}
+                dateLocale={dateLocale}
+                userCurrency={userCurrency}
+                onEdit={() => onEditTransfer(transfer)}
               />
             ))}
           </div>
@@ -848,7 +902,7 @@ const TransactionItem = ({
   );
 };
 
-// Transfer list item component
+// Transfer list item component (for separate tab)
 interface TransferListItemProps {
   transfer: WalletTransfer;
   getWalletName: (id: string) => string;
@@ -885,6 +939,48 @@ const TransferListItem = ({ transfer, getWalletName, getWalletIcon, dateLocale, 
           {formatCurrency(transfer.amount, transfer.currency)}
         </span>
         <Pencil className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+      </div>
+    </div>
+  );
+};
+
+// Transfer item for inside month cards (compact version)
+interface MonthTransferItemProps {
+  transfer: WalletTransfer;
+  getWalletName: (id: string) => string;
+  getWalletIcon: (id: string) => string;
+  dateLocale: Locale;
+  userCurrency: SupportedCurrency;
+  onEdit: () => void;
+}
+
+const MonthTransferItem = ({ transfer, getWalletName, getWalletIcon, dateLocale, userCurrency, onEdit }: MonthTransferItemProps) => {
+  return (
+    <div 
+      className="flex items-center gap-2 p-2 bg-card/50 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer group"
+      onClick={onEdit}
+    >
+      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+        <ArrowRightLeft className="w-4 h-4 text-primary" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1 text-xs font-medium truncate">
+          <span>{getWalletIcon(transfer.from_wallet_id)}</span>
+          <span className="truncate max-w-[60px]">{getWalletName(transfer.from_wallet_id)}</span>
+          <ArrowRightLeft className="w-2.5 h-2.5 text-muted-foreground flex-shrink-0" />
+          <span>{getWalletIcon(transfer.to_wallet_id)}</span>
+          <span className="truncate max-w-[60px]">{getWalletName(transfer.to_wallet_id)}</span>
+        </div>
+        <p className="text-[10px] text-muted-foreground">
+          {format(new Date(transfer.date), 'd MMM', { locale: dateLocale })}
+          {transfer.description && ` • ${transfer.description}`}
+        </p>
+      </div>
+      <div className="flex items-center gap-1.5">
+        <span className="text-xs font-semibold text-primary">
+          {formatMoney(transfer.amount, userCurrency)}
+        </span>
+        <Pencil className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
     </div>
   );
