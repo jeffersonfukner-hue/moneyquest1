@@ -195,21 +195,52 @@ export const useWallets = () => {
       const wallet = wallets.find(w => w.id === walletId);
       if (!wallet) return;
 
-      const { data: transactions, error } = await supabase
+      // Fetch transactions
+      const { data: transactions, error: txError } = await supabase
         .from('transactions')
         .select('amount, type')
         .eq('wallet_id', walletId)
         .eq('user_id', user.id);
 
-      if (error) throw error;
+      if (txError) throw txError;
+
+      // Fetch transfers OUT (this wallet is the source)
+      const { data: transfersOut, error: outError } = await supabase
+        .from('wallet_transfers')
+        .select('amount')
+        .eq('from_wallet_id', walletId)
+        .eq('user_id', user.id);
+
+      if (outError) throw outError;
+
+      // Fetch transfers IN (this wallet is the destination)
+      const { data: transfersIn, error: inError } = await supabase
+        .from('wallet_transfers')
+        .select('amount')
+        .eq('to_wallet_id', walletId)
+        .eq('user_id', user.id);
+
+      if (inError) throw inError;
 
       let balance = wallet.initial_balance;
+
+      // Apply transactions
       (transactions || []).forEach(t => {
         if (t.type === 'INCOME') {
           balance += Number(t.amount);
         } else {
           balance -= Number(t.amount);
         }
+      });
+
+      // Apply transfers out (subtract)
+      (transfersOut || []).forEach(t => {
+        balance -= Number(t.amount);
+      });
+
+      // Apply transfers in (add)
+      (transfersIn || []).forEach(t => {
+        balance += Number(t.amount);
       });
 
       await supabase
