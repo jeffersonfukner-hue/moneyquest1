@@ -724,40 +724,44 @@ const MonthCard = ({
         
         <CollapsibleContent>
           <div className="px-3 pb-3 space-y-1.5 border-t bg-muted/30 pt-2">
-            {/* Transactions */}
-            {group.transactions.map(transaction => (
-              <TransactionItem
-                key={transaction.id}
-                transaction={transaction}
-                onDelete={onDelete}
-                onEdit={() => onEdit(transaction)}
-                onDuplicate={onDuplicate ? () => onDuplicate(transaction) : undefined}
-                dateLocale={dateLocale}
-                formatCurrency={formatCurrency}
-                userCurrency={userCurrency}
-                formatConverted={formatConverted}
-                walletName={transaction.wallet_id ? (walletMap[transaction.wallet_id]?.institution || walletMap[transaction.wallet_id]?.name) : undefined}
-                walletIcon={transaction.wallet_id ? walletMap[transaction.wallet_id]?.icon : undefined}
-                creditCardName={transaction.credit_card_id ? creditCardMap[transaction.credit_card_id]?.name : undefined}
-                t={t}
-                isSelectionMode={isSelectionMode}
-                isSelected={selectedIds.has(transaction.id)}
-                onToggleSelect={() => onToggleSelect(transaction.id)}
-              />
-            ))}
-            
-            {/* Transfers */}
-            {group.transfers.map(transfer => (
-              <MonthTransferItem
-                key={transfer.id}
-                transfer={transfer}
-                getWalletName={getWalletName}
-                getWalletIcon={getWalletIcon}
-                dateLocale={dateLocale}
-                userCurrency={userCurrency}
-                onEdit={() => onEditTransfer(transfer)}
-              />
-            ))}
+            {/* Combined and sorted by date */}
+            {[
+              ...group.transactions.map(tx => ({ type: 'transaction' as const, item: tx, date: parseDateString(tx.date) })),
+              ...group.transfers.map(tf => ({ type: 'transfer' as const, item: tf, date: parseDateString(tf.date) })),
+            ]
+              .sort((a, b) => b.date.getTime() - a.date.getTime())
+              .map(entry => 
+                entry.type === 'transaction' ? (
+                  <TransactionItem
+                    key={entry.item.id}
+                    transaction={entry.item as Transaction}
+                    onDelete={onDelete}
+                    onEdit={() => onEdit(entry.item as Transaction)}
+                    onDuplicate={onDuplicate ? () => onDuplicate(entry.item as Transaction) : undefined}
+                    dateLocale={dateLocale}
+                    formatCurrency={formatCurrency}
+                    userCurrency={userCurrency}
+                    formatConverted={formatConverted}
+                    walletName={(entry.item as Transaction).wallet_id ? (walletMap[(entry.item as Transaction).wallet_id!]?.institution || walletMap[(entry.item as Transaction).wallet_id!]?.name) : undefined}
+                    walletIcon={(entry.item as Transaction).wallet_id ? walletMap[(entry.item as Transaction).wallet_id!]?.icon : undefined}
+                    creditCardName={(entry.item as Transaction).credit_card_id ? creditCardMap[(entry.item as Transaction).credit_card_id!]?.name : undefined}
+                    t={t}
+                    isSelectionMode={isSelectionMode}
+                    isSelected={selectedIds.has(entry.item.id)}
+                    onToggleSelect={() => onToggleSelect(entry.item.id)}
+                  />
+                ) : (
+                  <MonthTransferItem
+                    key={entry.item.id}
+                    transfer={entry.item as WalletTransfer}
+                    getWalletName={getWalletName}
+                    getWalletIcon={getWalletIcon}
+                    dateLocale={dateLocale}
+                    userCurrency={userCurrency}
+                    onEdit={() => onEditTransfer(entry.item as WalletTransfer)}
+                  />
+                )
+              )}
           </div>
         </CollapsibleContent>
       </Collapsible>
