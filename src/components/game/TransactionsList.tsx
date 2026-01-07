@@ -173,7 +173,7 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
     
     // Add transfers to their respective months
     transfers.forEach(transfer => {
-      const transferDate = new Date(transfer.date);
+      const transferDate = parseDateString(transfer.date);
       const monthKey = format(transferDate, 'yyyy-MM');
       const monthLabel = format(transferDate, 'MMMM yyyy', { locale: dateLocale });
       
@@ -930,7 +930,7 @@ const TransferListItem = ({ transfer, getWalletName, getWalletIcon, dateLocale, 
           <span className="truncate">{getWalletName(transfer.to_wallet_id)}</span>
         </div>
         <p className="text-xs text-muted-foreground">
-          {format(new Date(transfer.date), 'd MMM yyyy', { locale: dateLocale })}
+          {format(parseDateString(transfer.date), 'd MMM yyyy', { locale: dateLocale })}
           {transfer.description && ` • ${transfer.description}`}
         </p>
       </div>
@@ -972,7 +972,7 @@ const MonthTransferItem = ({ transfer, getWalletName, getWalletIcon, dateLocale,
           <span className="truncate max-w-[60px]">{getWalletName(transfer.to_wallet_id)}</span>
         </div>
         <p className="text-[10px] text-muted-foreground">
-          {format(new Date(transfer.date), 'd MMM', { locale: dateLocale })}
+          {format(parseDateString(transfer.date), 'd MMM', { locale: dateLocale })}
           {transfer.description && ` • ${transfer.description}`}
         </p>
       </div>
