@@ -665,10 +665,15 @@ const MonthCard = ({
   getWalletIcon,
   onEditTransfer,
 }: MonthCardProps) => {
-  // Saldo disponível = soma das carteiras + receitas do mês
-  const availableBalance = totalWalletBalance + group.totalIncome;
-  // Saldo final = disponível - despesas
-  const finalBalance = availableBalance - group.totalExpense;
+  // Check if this is the current month
+  const currentMonthKey = format(new Date(), 'yyyy-MM');
+  const isCurrentMonth = group.key === currentMonthKey;
+  
+  // Para o mês atual: saldo disponível = carteiras + receitas
+  // Para meses anteriores: apenas receitas - despesas
+  const monthBalance = group.totalIncome - group.totalExpense;
+  const availableBalance = isCurrentMonth ? totalWalletBalance + group.totalIncome : group.totalIncome;
+  const finalBalance = isCurrentMonth ? availableBalance - group.totalExpense : monthBalance;
   const isPositive = finalBalance >= 0;
   
   return (
@@ -690,14 +695,16 @@ const MonthCard = ({
               <div className="flex items-center gap-1.5 flex-wrap">
                 <p className="font-medium text-sm capitalize truncate">{group.label}</p>
                 <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                  {group.transactions.length} {group.transactions.length === 1 ? 'lançamento' : 'lançamentos'}
+                  {group.transactions.length + group.transfers.length} {(group.transactions.length + group.transfers.length) === 1 ? 'lançamento' : 'lançamentos'}
                 </Badge>
               </div>
               <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-                  <Wallet className="w-3 h-3" />
-                  {formatMoney(availableBalance, userCurrency)}
-                </span>
+                {isCurrentMonth && (
+                  <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                    <Wallet className="w-3 h-3" />
+                    {formatMoney(availableBalance, userCurrency)}
+                  </span>
+                )}
                 <span className="text-[10px] text-income flex items-center gap-0.5">
                   <TrendingUp className="w-3 h-3" />
                   {formatMoney(group.totalIncome, userCurrency)}
