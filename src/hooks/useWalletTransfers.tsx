@@ -11,6 +11,7 @@ import {
   emitWalletsChanged,
   onTransfersChanged,
 } from '@/lib/appEvents';
+import { XP_VALUES } from '@/lib/gameLogic';
 
 export interface WalletTransfer {
   id: string;
@@ -176,13 +177,87 @@ export const useWalletTransfers = () => {
 
       if (transferError) throw transferError;
 
+      // Award XP for transfer (respecting daily limit)
+      let xpAwarded = 0;
+      const today = new Date().toISOString().split('T')[0];
+      
+      // Check daily XP limit
+      const { data: limitData } = await supabase
+        .from('daily_transaction_xp_limits')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('transaction_date', today)
+        .maybeSingle();
+
+      const currentCount = limitData?.transactions_with_xp || 0;
+      const MAX_DAILY_XP_TRANSACTIONS = 15;
+
+      if (currentCount < MAX_DAILY_XP_TRANSACTIONS) {
+        xpAwarded = XP_VALUES.TRANSACTION;
+
+        // Update or insert daily limit record
+        if (limitData) {
+          await supabase
+            .from('daily_transaction_xp_limits')
+            .update({ 
+              transactions_with_xp: currentCount + 1,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', limitData.id);
+        } else {
+          await supabase
+            .from('daily_transaction_xp_limits')
+            .insert({
+              user_id: user.id,
+              transaction_date: today,
+              transactions_with_xp: 1
+            });
+        }
+
+        // Update user's XP
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('xp, xp_conversivel')
+          .eq('id', user.id)
+          .single();
+
+        if (profile) {
+          const xpBefore = profile.xp;
+          const xpAfter = xpBefore + xpAwarded;
+          
+          await supabase
+            .from('profiles')
+            .update({
+              xp: xpAfter,
+              xp_conversivel: profile.xp_conversivel + xpAwarded,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', user.id);
+
+          // Log XP history
+          await supabase
+            .from('xp_history')
+            .insert({
+              user_id: user.id,
+              xp_change: xpAwarded,
+              xp_before: xpBefore,
+              xp_after: xpAfter,
+              source: 'wallet_transfer',
+              description: `Transferência: ${fromWallet.name} → ${toWallet.name}`
+            });
+        }
+      }
+
       // Recalculate both wallets to avoid drift from stale client balances
       await Promise.all([
         recalculateBalance(from_wallet_id),
         recalculateBalance(to_wallet_id),
       ]);
 
-      toast.success(t('wallets.transferSuccess'));
+      const successMsg = xpAwarded > 0 
+        ? `${t('wallets.transferSuccess')} (+${xpAwarded} XP)`
+        : t('wallets.transferSuccess');
+      toast.success(successMsg);
 
       await Promise.all([fetchTransfers(), refetchWallets()]);
 
