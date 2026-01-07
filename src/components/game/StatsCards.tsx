@@ -20,40 +20,40 @@ export const StatsCards = ({ profile }: StatsCardsProps) => {
     <div className="bg-card rounded-xl p-2 shadow-md border border-border animate-slide-up">
       <div className="grid grid-cols-3 divide-x divide-border">
         {/* Receita */}
-        <div className="flex flex-col items-center text-center px-1">
-          <div className="flex items-center gap-1">
-            <TrendingUp className="w-4 h-4 text-success flex-shrink-0" />
-            <p className="text-sm font-bold text-success truncate">
+        <div className="flex flex-col items-center text-center px-0.5 sm:px-1">
+          <div className="flex items-center gap-0.5 sm:gap-1 min-w-0">
+            <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-success flex-shrink-0" />
+            <p className="text-[11px] sm:text-sm font-bold text-success truncate">
               {formatCurrency(profile.total_income)}
             </p>
           </div>
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-[9px] sm:text-[10px] text-muted-foreground">
             {t('stats.totalIncome')}
           </p>
         </div>
 
         {/* Despesas */}
-        <div className="flex flex-col items-center text-center px-1">
-          <div className="flex items-center gap-1">
-            <TrendingDown className="w-4 h-4 text-destructive flex-shrink-0" />
-            <p className="text-sm font-bold text-destructive truncate">
+        <div className="flex flex-col items-center text-center px-0.5 sm:px-1">
+          <div className="flex items-center gap-0.5 sm:gap-1 min-w-0">
+            <TrendingDown className="w-3 h-3 sm:w-4 sm:h-4 text-destructive flex-shrink-0" />
+            <p className="text-[11px] sm:text-sm font-bold text-destructive truncate">
               {formatCurrency(profile.total_expenses)}
             </p>
           </div>
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-[9px] sm:text-[10px] text-muted-foreground">
             {t('stats.totalExpenses')}
           </p>
         </div>
 
         {/* Saldo */}
-        <div className="flex flex-col items-center text-center px-1">
-          <div className="flex items-center gap-1">
-            <Wallet className="w-4 h-4 text-primary flex-shrink-0" />
-            <p className={`text-sm font-bold truncate ${balance >= 0 ? 'text-success' : 'text-destructive'}`}>
+        <div className="flex flex-col items-center text-center px-0.5 sm:px-1">
+          <div className="flex items-center gap-0.5 sm:gap-1 min-w-0">
+            <Wallet className="w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0" />
+            <p className={`text-[11px] sm:text-sm font-bold truncate ${balance >= 0 ? 'text-success' : 'text-destructive'}`}>
               {formatCurrency(balance)}
             </p>
           </div>
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-[9px] sm:text-[10px] text-muted-foreground">
             {t('stats.balance')}
           </p>
         </div>
