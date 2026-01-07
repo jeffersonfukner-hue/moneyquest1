@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { BarChart3, Filter, Lock, CreditCard, Wallet } from 'lucide-react';
 import { Transaction, SupportedCurrency } from '@/types/database';
 import { useCurrency } from '@/contexts/CurrencyContext';
@@ -25,29 +25,15 @@ interface SpendingByCategoryChartProps {
   transactions: Transaction[];
 }
 
-type SourceFilter = 'all' | 'bank' | 'card';
-
-const COLORS = [
-  'hsl(var(--primary))',
-  'hsl(var(--chart-2))',
-  'hsl(var(--chart-3))',
-  'hsl(var(--chart-4))',
-  'hsl(var(--chart-5))',
-  'hsl(262, 80%, 50%)',
-  'hsl(199, 89%, 48%)',
-  'hsl(43, 96%, 56%)',
-];
-
 export const SpendingByCategoryChart = ({ transactions }: SpendingByCategoryChartProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { formatCurrency, convertToUserCurrency } = useCurrency();
   const { isPremium } = useSubscription();
   
-  const [sourceFilter, setSourceFilter] = useState<SourceFilter>('all');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
-  // Filter only expenses from current month (including credit card expenses)
+  // Filter only expenses from current month
   const now = new Date();
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
@@ -70,47 +56,55 @@ export const SpendingByCategoryChart = ({ transactions }: SpendingByCategoryChar
     return Array.from(cats).sort();
   }, [monthlyExpenses]);
 
-  // Apply filters
+  // Apply category filter
   const filteredExpenses = useMemo(() => {
-    let filtered = monthlyExpenses;
-
-    // Source filter (bank vs card)
-    if (sourceFilter === 'bank') {
-      filtered = filtered.filter(tx => tx.source_type !== 'card' && !tx.credit_card_id);
-    } else if (sourceFilter === 'card') {
-      filtered = filtered.filter(tx => tx.source_type === 'card' || tx.credit_card_id);
-    }
-
-    // Category filter
     if (selectedCategories.length > 0) {
-      filtered = filtered.filter(tx => selectedCategories.includes(tx.category || 'Outros'));
+      return monthlyExpenses.filter(tx => selectedCategories.includes(tx.category || 'Outros'));
     }
+    return monthlyExpenses;
+  }, [monthlyExpenses, selectedCategories]);
 
-    return filtered;
-  }, [monthlyExpenses, sourceFilter, selectedCategories]);
-
-  // Group by category with currency conversion
-  const categoryTotals = useMemo(() => {
-    return filteredExpenses.reduce((acc, tx) => {
-      const category = tx.category || 'Outros';
-      const convertedAmount = convertToUserCurrency(tx.amount, (tx.currency || 'BRL') as SupportedCurrency);
-      acc[category] = (acc[category] || 0) + convertedAmount;
-      return acc;
-    }, {} as Record<string, number>);
-  }, [filteredExpenses, convertToUserCurrency]);
-
+  // Group by category with bank/card split
   const chartData = useMemo(() => {
-    return Object.entries(categoryTotals)
-      .map(([name, value]) => {
+    const categoryData: Record<string, { bank: number; card: number }> = {};
+    
+    filteredExpenses.forEach(tx => {
+      const category = tx.category || 'Outros';
+      const amount = convertToUserCurrency(tx.amount, (tx.currency || 'BRL') as SupportedCurrency);
+      const isCard = tx.source_type === 'card' || !!tx.credit_card_id;
+      
+      if (!categoryData[category]) {
+        categoryData[category] = { bank: 0, card: 0 };
+      }
+      
+      if (isCard) {
+        categoryData[category].card += amount;
+      } else {
+        categoryData[category].bank += amount;
+      }
+    });
+
+    return Object.entries(categoryData)
+      .map(([name, values]) => {
         const translationKey = getCategoryTranslationKey(name, 'EXPENSE');
         const displayName = translationKey ? t(`transactions.categories.${translationKey}`) : name;
-        return { name: displayName, originalName: name, value };
+        // Shorten long category names for mobile
+        const shortName = displayName.length > 8 ? displayName.substring(0, 7) + '…' : displayName;
+        return { 
+          name: shortName,
+          fullName: displayName,
+          originalName: name, 
+          bank: values.bank,
+          card: values.card,
+          total: values.bank + values.card
+        };
       })
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 6);
-  }, [categoryTotals, t]);
+      .sort((a, b) => b.total - a.total)
+      .slice(0, 5);
+  }, [filteredExpenses, convertToUserCurrency, t]);
 
-  const total = chartData.reduce((sum, item) => sum + item.value, 0);
+  const total = chartData.reduce((sum, item) => sum + item.total, 0);
+  const hasActiveFilters = selectedCategories.length > 0;
 
   const handleFilterClick = (action: () => void) => {
     if (!isPremium) {
@@ -126,10 +120,6 @@ export const SpendingByCategoryChart = ({ transactions }: SpendingByCategoryChar
     action();
   };
 
-  const handleSourceChange = (source: SourceFilter) => {
-    handleFilterClick(() => setSourceFilter(source));
-  };
-
   const handleCategoryToggle = (category: string) => {
     handleFilterClick(() => {
       setSelectedCategories(prev => 
@@ -139,8 +129,6 @@ export const SpendingByCategoryChart = ({ transactions }: SpendingByCategoryChar
       );
     });
   };
-
-  const hasActiveFilters = sourceFilter !== 'all' || selectedCategories.length > 0;
 
   if (chartData.length === 0 && !hasActiveFilters) {
     return null;
@@ -166,7 +154,7 @@ export const SpendingByCategoryChart = ({ transactions }: SpendingByCategoryChar
                 <Filter className="w-3 h-3" />
                 {hasActiveFilters && (
                   <Badge variant="secondary" className="h-4 px-1 text-[10px]">
-                    {(sourceFilter !== 'all' ? 1 : 0) + selectedCategories.length}
+                    {selectedCategories.length}
                   </Badge>
                 )}
                 {!isPremium && <Lock className="w-3 h-3 text-muted-foreground" />}
@@ -182,39 +170,6 @@ export const SpendingByCategoryChart = ({ transactions }: SpendingByCategoryChar
                   </Badge>
                 )}
               </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              
-              {/* Source Filter */}
-              <DropdownMenuLabel className="text-xs text-muted-foreground flex items-center gap-1">
-                {t('transactions.source')}
-              </DropdownMenuLabel>
-              <DropdownMenuCheckboxItem
-                checked={sourceFilter === 'all'}
-                onCheckedChange={() => handleSourceChange('all')}
-              >
-                <span className="flex items-center gap-2">
-                  {t('common.all')}
-                </span>
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem
-                checked={sourceFilter === 'bank'}
-                onCheckedChange={() => handleSourceChange('bank')}
-              >
-                <span className="flex items-center gap-2">
-                  <Wallet className="w-3 h-3" />
-                  {t('transactions.bankAccount')}
-                </span>
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem
-                checked={sourceFilter === 'card'}
-                onCheckedChange={() => handleSourceChange('card')}
-              >
-                <span className="flex items-center gap-2">
-                  <CreditCard className="w-3 h-3" />
-                  {t('transactions.creditCard')}
-                </span>
-              </DropdownMenuCheckboxItem>
-              
               <DropdownMenuSeparator />
               
               {/* Category Filter */}
@@ -242,10 +197,7 @@ export const SpendingByCategoryChart = ({ transactions }: SpendingByCategoryChar
                     variant="ghost"
                     size="sm"
                     className="w-full justify-start text-xs h-8"
-                    onClick={() => {
-                      setSourceFilter('all');
-                      setSelectedCategories([]);
-                    }}
+                    onClick={() => setSelectedCategories([])}
                   >
                     {t('common.clearFilters')}
                   </Button>
@@ -261,59 +213,87 @@ export const SpendingByCategoryChart = ({ transactions }: SpendingByCategoryChar
             {t('common.noData')}
           </div>
         ) : (
-          <div className="h-52">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={chartData}
-                layout="vertical"
-                margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
-              >
-                <XAxis 
-                  type="number" 
-                  hide 
-                  domain={[0, 'dataMax']}
-                />
-                <YAxis 
-                  type="category" 
-                  dataKey="name" 
-                  width={80}
-                  tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <Tooltip
-                  cursor={{ fill: 'hsl(var(--muted)/0.3)' }}
-                  content={({ active, payload }) => {
-                    if (active && payload && payload.length) {
-                      const data = payload[0].payload;
-                      const percentage = ((data.value / total) * 100).toFixed(1);
-                      return (
-                        <div className="bg-popover border border-border rounded-lg px-3 py-2 shadow-lg">
-                          <p className="text-sm font-medium text-foreground">{data.name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {formatCurrency(data.value)} ({percentage}%)
-                          </p>
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
-                <Bar 
-                  dataKey="value" 
-                  radius={[0, 4, 4, 0]}
-                  maxBarSize={24}
+          <>
+            <div className="h-48">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={chartData}
+                  margin={{ top: 10, right: 10, left: -10, bottom: 5 }}
                 >
-                  {chartData.map((_, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+                  <XAxis 
+                    dataKey="name" 
+                    tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                    tickLine={false}
+                    axisLine={false}
+                    interval={0}
+                  />
+                  <YAxis 
+                    hide 
+                    domain={[0, 'dataMax']}
+                  />
+                  <Tooltip
+                    cursor={{ fill: 'hsl(var(--muted)/0.3)' }}
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const data = payload[0].payload;
+                        const percentage = total > 0 ? ((data.total / total) * 100).toFixed(1) : '0';
+                        return (
+                          <div className="bg-popover border border-border rounded-lg px-3 py-2 shadow-lg">
+                            <p className="text-sm font-medium text-foreground">{data.fullName}</p>
+                            <div className="text-xs text-muted-foreground space-y-0.5 mt-1">
+                              {data.bank > 0 && (
+                                <p className="flex items-center gap-1">
+                                  <Wallet className="w-3 h-3" />
+                                  {t('transactions.bankAccount')}: {formatCurrency(data.bank)}
+                                </p>
+                              )}
+                              {data.card > 0 && (
+                                <p className="flex items-center gap-1">
+                                  <CreditCard className="w-3 h-3" />
+                                  {t('transactions.creditCard')}: {formatCurrency(data.card)}
+                                </p>
+                              )}
+                              <p className="font-medium text-foreground pt-1 border-t border-border/50">
+                                Total: {formatCurrency(data.total)} ({percentage}%)
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Bar 
+                    dataKey="bank" 
+                    name={t('transactions.bankAccount')}
+                    fill="hsl(var(--primary))"
+                    radius={[4, 4, 0, 0]}
+                    maxBarSize={32}
+                  />
+                  <Bar 
+                    dataKey="card" 
+                    name={t('transactions.creditCard')}
+                    fill="hsl(var(--chart-4))"
+                    radius={[4, 4, 0, 0]}
+                    maxBarSize={32}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            {/* Legend */}
+            <div className="flex items-center justify-center gap-4 text-[10px] text-muted-foreground mt-1">
+              <div className="flex items-center gap-1">
+                <div className="w-2.5 h-2.5 rounded-sm bg-primary" />
+                <Wallet className="w-3 h-3" />
+                <span>{t('transactions.bankAccount')}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: 'hsl(var(--chart-4))' }} />
+                <CreditCard className="w-3 h-3" />
+                <span>{t('transactions.creditCard')}</span>
+              </div>
+            </div>
+          </>
         )}
       </CardContent>
     </Card>
