@@ -303,17 +303,6 @@ export const useWalletTransfers = () => {
 
     const originalTransfer = transfers.find(t => t.id === id);
     if (!originalTransfer) return false;
-
-    const oldFromWallet = wallets.find(w => w.id === originalTransfer.from_wallet_id);
-    const oldToWallet = wallets.find(w => w.id === originalTransfer.to_wallet_id);
-    const newFromWallet = wallets.find(w => w.id === (updates.from_wallet_id || originalTransfer.from_wallet_id));
-    const newToWallet = wallets.find(w => w.id === (updates.to_wallet_id || originalTransfer.to_wallet_id));
-
-    if (!oldFromWallet || !oldToWallet || !newFromWallet || !newToWallet) {
-      toast.error(t('common.error'));
-      return false;
-    }
-
     try {
       const newFromWalletId = updates.from_wallet_id || originalTransfer.from_wallet_id;
       const newToWalletId = updates.to_wallet_id || originalTransfer.to_wallet_id;
@@ -329,7 +318,8 @@ export const useWalletTransfers = () => {
           description: updates.description,
           date: updates.date,
         })
-        .eq('id', id);
+        .eq('id', id)
+        .eq('user_id', user.id);
 
       if (updateError) throw updateError;
 
@@ -362,21 +352,13 @@ export const useWalletTransfers = () => {
 
     const transfer = transfers.find(t => t.id === id);
     if (!transfer) return false;
-
-    const fromWallet = wallets.find(w => w.id === transfer.from_wallet_id);
-    const toWallet = wallets.find(w => w.id === transfer.to_wallet_id);
-
-    if (!fromWallet || !toWallet) {
-      toast.error(t('common.error'));
-      return false;
-    }
-
     try {
       // Delete transfer record first
       const { error } = await supabase
         .from('wallet_transfers')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .eq('user_id', user.id);
 
       if (error) throw error;
 
