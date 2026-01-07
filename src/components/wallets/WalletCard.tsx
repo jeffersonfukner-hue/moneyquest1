@@ -95,7 +95,13 @@ export const WalletCard = ({ wallet, onEdit, onToggleActive, onTransfer }: Walle
         </DropdownMenu>
       </div>
 
-      <div className="mt-4 pt-4 border-t border-border">
+      <div className="mt-4 pt-4 border-t border-border space-y-2">
+        <div className="flex justify-between items-center">
+          <span className="text-sm text-muted-foreground">{t('wallets.initialBalance')}</span>
+          <span className="text-sm text-muted-foreground">
+            {formatBalance(wallet.initial_balance, wallet.currency)}
+          </span>
+        </div>
         <div className="flex justify-between items-center">
           <span className="text-sm text-muted-foreground">{t('wallets.currentBalance')}</span>
           <span className={cn("text-lg font-bold", balanceColor)}>
