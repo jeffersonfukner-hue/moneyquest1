@@ -1222,7 +1222,7 @@
     }
   },
   "dashboard": {
-    "spendingByCategory": "Top 5 Expenses",
+    "spendingByCategory": "Top 5 Expenses by Category",
     "monthlySavings": "Monthly Savings",
     "saved": "Saved",
     "target": "Target",

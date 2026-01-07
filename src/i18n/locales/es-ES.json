@@ -1145,7 +1145,7 @@
     }
   },
   "dashboard": {
-    "spendingByCategory": "Top 5 Gastos",
+    "spendingByCategory": "Top 5 Gastos por Categoría",
     "monthlySavings": "Ahorro Mensual",
     "saved": "Ahorrado",
     "target": "Meta",
