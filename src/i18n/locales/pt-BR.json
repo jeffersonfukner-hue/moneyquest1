@@ -1227,7 +1227,7 @@
     }
   },
   "dashboard": {
-    "spendingByCategory": "Gastos por Categoria",
+    "spendingByCategory": "Top 5 Despesas",
     "monthlySavings": "Economia Mensal",
     "saved": "Economizado",
     "target": "Meta",

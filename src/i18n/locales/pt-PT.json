@@ -1223,7 +1223,7 @@
     }
   },
   "dashboard": {
-    "spendingByCategory": "Gastos por Categoria",
+    "spendingByCategory": "Top 5 Despesas",
     "monthlySavings": "Poupança Mensal",
     "saved": "Poupado",
     "target": "Meta",
