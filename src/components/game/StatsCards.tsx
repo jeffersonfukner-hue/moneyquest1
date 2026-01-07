@@ -2,6 +2,7 @@ import { TrendingUp, TrendingDown, Wallet } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Profile } from '@/types/database';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useWallets } from '@/hooks/useWallets';
 
 interface StatsCardsProps {
   profile: Profile;
@@ -10,7 +11,10 @@ interface StatsCardsProps {
 export const StatsCards = ({ profile }: StatsCardsProps) => {
   const { t } = useTranslation();
   const { formatCurrency } = useCurrency();
-  const balance = profile.total_income - profile.total_expenses;
+  const { activeWallets } = useWallets();
+  
+  // Calculate balance from actual wallet balances
+  const balance = activeWallets.reduce((sum, wallet) => sum + wallet.current_balance, 0);
 
   return (
     <div className="bg-card rounded-xl p-3 shadow-md border border-border animate-slide-up">
