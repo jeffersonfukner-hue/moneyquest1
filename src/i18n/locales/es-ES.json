@@ -1156,7 +1156,11 @@
     "difference": "Diferencia",
     "pastExpenses": "Realizados",
     "futureExpenses": "Futuros",
-    "transfers": "Transferencias"
+    "transfers": "Transferencias",
+    "availableBudget": "Saldo Disponible",
+    "monthlyIncome": "Ingresos del mes",
+    "monthlyExpenses": "Gastos del mes",
+    "monthBalance": "Saldo del mes"
   },
   "months": {
     "jan": "Ene", "feb": "Feb", "mar": "Mar", "apr": "Abr",
