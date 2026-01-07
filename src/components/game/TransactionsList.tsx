@@ -88,6 +88,11 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
 
   const canBatchEdit = checkFeature('batch_edit') || isPremium;
 
+  // Calculate total wallet balance
+  const totalWalletBalance = useMemo(() => {
+    return activeWallets.reduce((sum, w) => sum + w.current_balance, 0);
+  }, [activeWallets]);
+
   // Create wallet lookup map
   const walletMap = useMemo(() => {
     return wallets.reduce((acc, w) => {
@@ -464,6 +469,7 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
                   isSelectionMode={isSelectionMode}
                   selectedIds={selectedIds}
                   onToggleSelect={toggleSelection}
+                  totalWalletBalance={totalWalletBalance}
                 />
               ))}
             </div>
@@ -597,6 +603,7 @@ interface MonthCardProps {
   isSelectionMode: boolean;
   selectedIds: Set<string>;
   onToggleSelect: (id: string) => void;
+  totalWalletBalance: number;
 }
 
 const MonthCard = ({
@@ -616,8 +623,13 @@ const MonthCard = ({
   isSelectionMode,
   selectedIds,
   onToggleSelect,
+  totalWalletBalance,
 }: MonthCardProps) => {
-  const isPositive = group.balance >= 0;
+  // Saldo disponível = soma das carteiras + receitas do mês
+  const availableBalance = totalWalletBalance + group.totalIncome;
+  // Saldo final = disponível - despesas
+  const finalBalance = availableBalance - group.totalExpense;
+  const isPositive = finalBalance >= 0;
   
   return (
     <Card className="overflow-hidden">
@@ -641,7 +653,11 @@ const MonthCard = ({
                   {group.transactions.length} {group.transactions.length === 1 ? 'lançamento' : 'lançamentos'}
                 </Badge>
               </div>
-              <div className="flex items-center gap-2 mt-0.5">
+              <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                  <Wallet className="w-3 h-3" />
+                  {formatMoney(availableBalance, userCurrency)}
+                </span>
                 <span className="text-[10px] text-income flex items-center gap-0.5">
                   <TrendingUp className="w-3 h-3" />
                   {formatMoney(group.totalIncome, userCurrency)}
@@ -658,7 +674,7 @@ const MonthCard = ({
                 "font-bold text-sm",
                 isPositive ? "text-income" : "text-expense"
               )}>
-                {isPositive ? '+' : ''}{formatMoney(group.balance, userCurrency)}
+                {isPositive ? '+' : ''}{formatMoney(finalBalance, userCurrency)}
               </p>
             </div>
             
