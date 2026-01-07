@@ -1,12 +1,13 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { TrendingUp, TrendingDown, Minus, BarChart3 } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, BarChart3, Wallet } from 'lucide-react';
 import { Transaction, SupportedCurrency } from '@/types/database';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { parseDateString } from '@/lib/dateUtils';
 import { useScheduledTransactions } from '@/hooks/useScheduledTransactions';
 import { useWalletTransfers } from '@/hooks/useWalletTransfers';
+import { useWallets } from '@/hooks/useWallets';
 
 interface MonthlyComparisonWidgetProps {
   transactions: Transaction[];
@@ -17,6 +18,7 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
   const { formatCurrency, convertToUserCurrency } = useCurrency();
   const { scheduledTransactions } = useScheduledTransactions();
   const { transfers } = useWalletTransfers();
+  const { wallets } = useWallets();
 
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -27,6 +29,27 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
   // Previous month calculation
   const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
   const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+  // Calculate total wallet balance (sum of all active wallets)
+  const totalWalletBalance = useMemo(() => {
+    return wallets
+      .filter(w => w.is_active)
+      .reduce((sum, w) => sum + convertToUserCurrency(w.current_balance, w.currency), 0);
+  }, [wallets, convertToUserCurrency]);
+
+  // Calculate current month income
+  const currentMonthIncome = useMemo(() => {
+    return transactions
+      .filter((tx) => {
+        const txDate = parseDateString(tx.date);
+        return (
+          tx.type === 'INCOME' &&
+          txDate.getMonth() === currentMonth &&
+          txDate.getFullYear() === currentYear
+        );
+      })
+      .reduce((sum, tx) => sum + convertToUserCurrency(tx.amount, (tx.currency || 'BRL') as SupportedCurrency), 0);
+  }, [transactions, currentMonth, currentYear, convertToUserCurrency]);
 
   // Calculate transfers out (money leaving accounts) for current month
   const { currentMonthTransfersOut, prevMonthTransfersOut } = useMemo(() => {
@@ -134,6 +157,11 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
   const currentMonthBarWidth = (currentMonthExpenses / maxExpense) * 100;
   const prevBarWidth = (prevMonthExpenses / maxExpense) * 100;
 
+  // Calculate available budget (wallet balance is already the result of all past transactions)
+  // So available = current balance + future income - future expenses
+  const availableBudget = totalWalletBalance;
+  const monthBalance = currentMonthIncome - currentMonthExpenses;
+
   if (currentMonthExpenses === 0 && prevMonthExpenses === 0) {
     return null;
   }
@@ -147,6 +175,29 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3 pt-0">
+        {/* Available Budget Summary */}
+        <div className="flex items-center justify-between p-2 bg-muted/30 rounded-lg">
+          <div className="flex items-center gap-2">
+            <Wallet className="w-4 h-4 text-primary" />
+            <span className="text-xs text-muted-foreground">{t('dashboard.availableBudget')}</span>
+          </div>
+          <span className={`text-sm font-bold ${availableBudget >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+            {formatCurrency(availableBudget)}
+          </span>
+        </div>
+
+        {/* Income vs Expenses summary for current month */}
+        <div className="grid grid-cols-2 gap-2 text-xs">
+          <div className="flex flex-col p-2 bg-green-500/10 rounded-lg">
+            <span className="text-muted-foreground">{t('dashboard.monthlyIncome')}</span>
+            <span className="font-semibold text-green-500">{formatCurrency(currentMonthIncome)}</span>
+          </div>
+          <div className="flex flex-col p-2 bg-red-500/10 rounded-lg">
+            <span className="text-muted-foreground">{t('dashboard.monthlyExpenses')}</span>
+            <span className="font-semibold text-red-500">{formatCurrency(currentMonthExpenses)}</span>
+          </div>
+        </div>
+
         {/* Change indicator */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -266,6 +317,14 @@ export const MonthlyComparisonWidget = ({ transactions }: MonthlyComparisonWidge
             isIncrease ? 'text-red-500' : isDecrease ? 'text-green-500' : 'text-muted-foreground'
           }`}>
             {isIncrease ? '+' : ''}{formatCurrency(currentMonthExpenses - prevMonthExpenses)}
+          </span>
+        </div>
+
+        {/* Month balance */}
+        <div className="flex justify-between items-center text-xs">
+          <span className="text-muted-foreground">{t('dashboard.monthBalance')}</span>
+          <span className={`font-medium ${monthBalance >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+            {monthBalance >= 0 ? '+' : ''}{formatCurrency(monthBalance)}
           </span>
         </div>
       </CardContent>
