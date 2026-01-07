@@ -192,8 +192,16 @@ export const useWallets = () => {
     if (!user) return;
 
     try {
-      const wallet = wallets.find(w => w.id === walletId);
-      if (!wallet) return;
+      // Fetch wallet from DB to get fresh initial_balance (avoid stale state)
+      const { data: walletData, error: walletError } = await supabase
+        .from('wallets')
+        .select('initial_balance')
+        .eq('id', walletId)
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (walletError) throw walletError;
+      if (!walletData) return;
 
       // Fetch transactions
       const { data: transactions, error: txError } = await supabase
@@ -222,7 +230,7 @@ export const useWallets = () => {
 
       if (inError) throw inError;
 
-      let balance = wallet.initial_balance;
+      let balance = walletData.initial_balance;
 
       // Apply transactions
       (transactions || []).forEach(t => {
@@ -245,7 +253,7 @@ export const useWallets = () => {
 
       await supabase
         .from('wallets')
-        .update({ current_balance: balance })
+        .update({ current_balance: balance, updated_at: new Date().toISOString() })
         .eq('id', walletId);
 
       setWallets(prev => prev.map(w =>
