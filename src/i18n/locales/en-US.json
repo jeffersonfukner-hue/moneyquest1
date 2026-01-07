@@ -1224,7 +1224,9 @@
     "spentMore": "spent more than last month",
     "spentLess": "spent less than last month",
     "spentSame": "same as last month",
-    "difference": "Difference"
+    "difference": "Difference",
+    "pastExpenses": "Past",
+    "futureExpenses": "Scheduled"
   },
   "months": {
     "jan": "Jan", "feb": "Feb", "mar": "Mar", "apr": "Apr",
