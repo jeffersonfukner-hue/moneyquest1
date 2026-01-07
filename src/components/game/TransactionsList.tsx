@@ -726,7 +726,14 @@ const MonthCard = ({
           <div className="px-3 pb-3 space-y-1.5 border-t bg-muted/30 pt-2">
             {/* Combined and sorted by date with running balance */}
             {(() => {
-              // Combine and sort oldest first to calculate running balance
+              // Priority for same-day sorting: transfers first, then income, then expenses
+              const getPriority = (entry: { type: 'transaction' | 'transfer', item: Transaction | WalletTransfer }) => {
+                if (entry.type === 'transfer') return 0; // Transfers first
+                const tx = entry.item as Transaction;
+                return tx.type === 'INCOME' ? 1 : 2; // Income before expenses
+              };
+
+              // Combine and sort: oldest first, then by priority (transfers > income > expenses)
               const allItems = [
                 ...group.transactions.map(tx => ({ 
                   type: 'transaction' as const, 
@@ -740,7 +747,12 @@ const MonthCard = ({
                   date: parseDateString(tf.date),
                   effect: tf.amount
                 })),
-              ].sort((a, b) => a.date.getTime() - b.date.getTime());
+              ].sort((a, b) => {
+                const dateCompare = a.date.getTime() - b.date.getTime();
+                if (dateCompare !== 0) return dateCompare;
+                // Same day: sort by priority (transfers > income > expenses)
+                return getPriority(a) - getPriority(b);
+              });
 
               // Calculate running balance for each item
               let runningBalance = group.openingBalance;
