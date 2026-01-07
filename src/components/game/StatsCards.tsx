@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, Wallet } from 'lucide-react';
+import { TrendingUp, TrendingDown, Wallet, PiggyBank } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Profile } from '@/types/database';
 import { useCurrency } from '@/contexts/CurrencyContext';
@@ -13,12 +13,28 @@ export const StatsCards = ({ profile }: StatsCardsProps) => {
   const { formatCurrency } = useCurrency();
   const { activeWallets } = useWallets();
   
-  // Calculate balance from actual wallet balances
+  // Calculate initial balance from all wallets
+  const initialBalance = activeWallets.reduce((sum, wallet) => sum + wallet.initial_balance, 0);
+  
+  // Calculate current balance from actual wallet balances
   const balance = activeWallets.reduce((sum, wallet) => sum + wallet.current_balance, 0);
 
   return (
     <div className="bg-card rounded-xl p-2 shadow-md border border-border animate-slide-up">
-      <div className="grid grid-cols-3 divide-x divide-border">
+      <div className="grid grid-cols-4 divide-x divide-border">
+        {/* Saldo Inicial */}
+        <div className="flex flex-col items-center text-center px-0.5 sm:px-1">
+          <div className="flex items-center gap-0.5 sm:gap-1 min-w-0">
+            <PiggyBank className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
+            <p className="text-[11px] sm:text-sm font-bold text-muted-foreground truncate">
+              {formatCurrency(initialBalance)}
+            </p>
+          </div>
+          <p className="text-[9px] sm:text-[10px] text-muted-foreground">
+            {t('stats.initialBalance')}
+          </p>
+        </div>
+
         {/* Receita */}
         <div className="flex flex-col items-center text-center px-0.5 sm:px-1">
           <div className="flex items-center gap-0.5 sm:gap-1 min-w-0">
