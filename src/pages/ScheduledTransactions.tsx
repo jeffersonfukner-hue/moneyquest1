@@ -486,9 +486,19 @@ const ScheduledTransactions = () => {
                                 )}
                               </div>
                             </div>
-                            <p className="font-semibold text-sm text-foreground">
-                              {formatCurrency(entry.transfer.amount, entry.transfer.currency)}
-                            </p>
+                            <div className="flex items-center gap-1">
+                              <p className="font-semibold text-sm text-foreground">
+                                {formatCurrency(entry.transfer.amount, entry.transfer.currency)}
+                              </p>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 text-destructive hover:text-destructive"
+                                onClick={() => deleteScheduledTransfer(entry.transfer.id)}
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
                           </div>
                         ) : (
                           <div className="flex items-center gap-3">
@@ -508,7 +518,7 @@ const ScheduledTransactions = () => {
                                 )}
                               </div>
                             </div>
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-1">
                               <p className={`font-semibold text-sm ${entry.transaction.type === 'INCOME' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                                 {entry.transaction.type === 'INCOME' ? '+' : '-'}
                                 {formatCurrency(entry.transaction.amount, entry.transaction.currency)}
@@ -520,6 +530,14 @@ const ScheduledTransactions = () => {
                                 onClick={() => handleEditTransaction(entry.transaction)}
                               >
                                 <Pencil className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 text-destructive hover:text-destructive"
+                                onClick={() => deleteScheduledTransaction(entry.transaction.id)}
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
                               </Button>
                             </div>
                           </div>
