@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { isRestrictedRoute } from '@/lib/routeConfig';
+import { isRestrictedRoute, NOINDEX_PUBLIC_ROUTES } from '@/lib/routeConfig';
 
 interface SEOConfig {
   title?: string;
@@ -16,9 +16,33 @@ const DEFAULT_IMAGE = `${BASE_URL}/og-image.png`;
 const SITE_NAME = 'MoneyQuest';
 const TWITTER_HANDLE = '@moneyquestapp';
 
+/**
+ * Check if route should have noindex meta tag
+ * Includes: all authenticated routes + specific public routes (/login, /signup, /premium)
+ */
+const shouldNoIndex = (pathname: string, configNoIndex?: boolean): boolean => {
+  // Explicit override from config takes precedence
+  if (configNoIndex !== undefined) {
+    return configNoIndex;
+  }
+  
+  // Check if it's a noindex public route (login, signup, premium, etc.)
+  const isNoIndexPublic = NOINDEX_PUBLIC_ROUTES.some(
+    route => pathname === route || pathname.startsWith(`${route}/`)
+  );
+  
+  if (isNoIndexPublic) {
+    return true;
+  }
+  
+  // Check if it's a restricted (authenticated) route
+  return isRestrictedRoute(pathname);
+};
+
 // Page-specific SEO configurations
+// All pages get their canonical URL set to their own absolute URL
 const pageConfigs: Record<string, SEOConfig> = {
-  // === PUBLIC PAGES (index, follow) ===
+  // === PUBLIC INDEXABLE PAGES (index, follow) ===
   '/': {
     title: 'MoneyQuest – App Financeiro Gamificado',
     description: 'MoneyQuest é um app financeiro gamificado para controlar gastos, criar hábitos financeiros, ganhar pontos, subir de nível e economizar dinheiro jogando.',
@@ -39,21 +63,13 @@ const pageConfigs: Record<string, SEOConfig> = {
     title: 'App de Finanças Pessoais | MoneyQuest',
     description: 'MoneyQuest é o melhor app de finanças pessoais com gamificação. Controle gastos, defina metas e economize dinheiro de forma divertida.',
   },
-  '/login': {
-    title: 'Entrar | MoneyQuest',
-    description: 'Faça login na sua conta MoneyQuest e continue sua jornada financeira. Acompanhe seus gastos, metas e conquistas.',
-  },
-  '/signup': {
-    title: 'Criar Conta | MoneyQuest',
-    description: 'Comece sua aventura financeira! Crie sua conta gratuita no MoneyQuest e transforme o controle de gastos em um jogo divertido.',
-  },
   '/features': {
     title: 'Recursos | MoneyQuest',
     description: 'Conheça todos os recursos do MoneyQuest: gamificação, metas financeiras, coach IA e modo premium sem anúncios.',
   },
-  '/premium': {
-    title: 'MoneyQuest Premium - Recursos Exclusivos',
-    description: 'Desbloqueie todo o potencial do MoneyQuest! Relatórios avançados, IA Coach, temas exclusivos e muito mais.',
+  '/about': {
+    title: 'Sobre Nós | MoneyQuest',
+    description: 'Conheça a equipe por trás do MoneyQuest, nossa missão de democratizar a educação financeira e tornar o controle de gastos divertido.',
   },
   '/terms': {
     title: 'Termos de Uso | MoneyQuest',
@@ -64,50 +80,83 @@ const pageConfigs: Record<string, SEOConfig> = {
     description: 'Saiba como o MoneyQuest protege seus dados. Nossa Política de Privacidade em conformidade com a LGPD.',
   },
 
-  // === AUTHENTICATED PAGES (noindex, nofollow) ===
+  // === PUBLIC NOINDEX PAGES (noindex, follow) ===
+  // These are accessible but should not appear in search results
+  '/login': {
+    title: 'Entrar | MoneyQuest',
+    description: 'Faça login na sua conta MoneyQuest.',
+    noIndex: true,
+  },
+  '/signup': {
+    title: 'Criar Conta | MoneyQuest',
+    description: 'Crie sua conta gratuita no MoneyQuest.',
+    noIndex: true,
+  },
+  '/premium': {
+    title: 'MoneyQuest Premium - Recursos Exclusivos',
+    description: 'Desbloqueie todo o potencial do MoneyQuest com o plano Premium.',
+    noIndex: true,
+  },
+  '/select-language': {
+    title: 'Selecionar Idioma | MoneyQuest',
+    description: 'Escolha seu idioma preferido para usar o MoneyQuest.',
+    noIndex: true,
+  },
+
+  // === AUTHENTICATED PAGES (noindex, follow) ===
+  '/dashboard': {
+    title: 'Dashboard | MoneyQuest',
+    description: 'Seu painel financeiro gamificado.',
+    noIndex: true,
+  },
   '/onboarding': {
     title: 'Configuração Inicial | MoneyQuest',
-    description: 'Configure sua conta MoneyQuest e personalize sua experiência financeira.',
+    description: 'Configure sua conta MoneyQuest.',
     noIndex: true,
   },
   '/ai-coach': {
     title: 'Coach Financeiro IA | MoneyQuest',
-    description: 'Receba conselhos personalizados de um coach financeiro inteligente.',
+    description: 'Receba conselhos financeiros personalizados.',
     noIndex: true,
   },
   '/category-goals': {
     title: 'Metas por Categoria | MoneyQuest',
-    description: 'Defina e acompanhe metas de orçamento para cada categoria de gastos.',
+    description: 'Defina metas de orçamento por categoria.',
     noIndex: true,
   },
   '/categories': {
     title: 'Categorias | MoneyQuest',
-    description: 'Gerencie suas categorias de receitas e despesas.',
+    description: 'Gerencie suas categorias.',
     noIndex: true,
   },
   '/leaderboard': {
     title: 'Ranking | MoneyQuest',
-    description: 'Veja sua posição no ranking global!',
+    description: 'Veja sua posição no ranking.',
     noIndex: true,
   },
   '/journal': {
     title: 'Diário de Aventuras | MoneyQuest',
-    description: 'Acompanhe sua jornada financeira com narrativas personalizadas.',
+    description: 'Sua jornada financeira.',
     noIndex: true,
   },
   '/wallets': {
     title: 'Carteiras | MoneyQuest',
-    description: 'Gerencie todas as suas contas e carteiras em um só lugar.',
+    description: 'Gerencie suas carteiras.',
+    noIndex: true,
+  },
+  '/scheduled': {
+    title: 'Agendamentos | MoneyQuest',
+    description: 'Transações e transferências agendadas.',
     noIndex: true,
   },
   '/cash-flow': {
     title: 'Fluxo de Caixa | MoneyQuest',
-    description: 'Visualize seu fluxo de caixa com gráficos detalhados.',
+    description: 'Visualize seu fluxo de caixa.',
     noIndex: true,
   },
   '/period-comparison': {
     title: 'Comparação de Períodos | MoneyQuest',
-    description: 'Compare seus gastos entre diferentes períodos.',
+    description: 'Compare seus gastos entre períodos.',
     noIndex: true,
   },
   '/referral': {
@@ -117,37 +166,42 @@ const pageConfigs: Record<string, SEOConfig> = {
   },
   '/notifications': {
     title: 'Notificações | MoneyQuest',
-    description: 'Acompanhe suas notificações e alertas.',
+    description: 'Suas notificações.',
     noIndex: true,
   },
   '/support': {
     title: 'Suporte | MoneyQuest',
-    description: 'Central de ajuda e suporte ao usuário.',
+    description: 'Central de ajuda.',
     noIndex: true,
   },
   '/upgrade': {
     title: 'Upgrade Premium | MoneyQuest',
-    description: 'Faça upgrade para o plano premium.',
+    description: 'Faça upgrade para o Premium.',
     noIndex: true,
   },
   '/premium-success': {
     title: 'Assinatura Confirmada | MoneyQuest',
-    description: 'Sua assinatura premium foi ativada com sucesso.',
+    description: 'Sua assinatura foi ativada.',
     noIndex: true,
   },
   '/settings': {
     title: 'Configurações | MoneyQuest',
-    description: 'Personalize sua experiência no MoneyQuest.',
+    description: 'Personalize sua experiência.',
     noIndex: true,
   },
   '/profile': {
     title: 'Perfil | MoneyQuest',
-    description: 'Visualize e edite seu perfil MoneyQuest.',
+    description: 'Seu perfil MoneyQuest.',
     noIndex: true,
   },
   '/my-messages': {
     title: 'Mensagens | MoneyQuest',
-    description: 'Suas mensagens e comunicações.',
+    description: 'Suas mensagens.',
+    noIndex: true,
+  },
+  '/shop': {
+    title: 'Loja | MoneyQuest',
+    description: 'Loja de itens e recompensas.',
     noIndex: true,
   },
 };
@@ -162,9 +216,12 @@ export function useSEO(customConfig?: SEOConfig) {
 
     // Default fallback
     const title = config.title || `${SITE_NAME} – App Financeiro Gamificado`;
-    const description = config.description || 'MoneyQuest é um app financeiro gamificado para controlar gastos, criar hábitos financeiros, ganhar pontos, subir de nível e economizar dinheiro jogando.';
+    const description = config.description || 'MoneyQuest é um app financeiro gamificado para controlar gastos e economizar dinheiro jogando.';
     const image = config.image || DEFAULT_IMAGE;
     const type = config.type || 'website';
+    
+    // CRITICAL: Canonical URL MUST point to the page's own absolute URL
+    // NEVER use "/" as canonical for internal pages
     const url = `${BASE_URL}${pathname}`;
     const locale = i18n.language === 'pt-BR' ? 'pt_BR' : i18n.language === 'es-ES' ? 'es_ES' : 'en_US';
 
@@ -187,13 +244,14 @@ export function useSEO(customConfig?: SEOConfig) {
     setMeta('description', description, true);
     setMeta('author', 'MoneyQuest', true);
 
-    // Robots - use centralized route config, with override support
-    const shouldNoIndex = config.noIndex !== undefined 
-      ? config.noIndex 
-      : isRestrictedRoute(pathname);
+    // Robots - use centralized logic
+    // noindex pages: /login, /signup, /premium, /dashboard, and all authenticated routes
+    // index pages: /, /about, /features, /blog, /blog/*, etc.
+    const isNoIndex = shouldNoIndex(pathname, config.noIndex);
     
-    if (shouldNoIndex) {
-      setMeta('robots', 'noindex, nofollow', true);
+    if (isNoIndex) {
+      // noindex but follow - allows link equity to flow
+      setMeta('robots', 'noindex, follow', true);
     } else {
       setMeta('robots', 'index, follow', true);
     }
@@ -218,7 +276,8 @@ export function useSEO(customConfig?: SEOConfig) {
     setMeta('twitter:image', image, true);
     setMeta('twitter:image:alt', `${SITE_NAME} - ${title}`, true);
 
-    // Canonical URL
+    // Canonical URL - MUST point to the page's own absolute URL
+    // This is critical for SEO - each page declares its own canonical
     let canonical = document.querySelector('link[rel="canonical"]');
     if (!canonical) {
       canonical = document.createElement('link');

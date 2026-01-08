@@ -8,7 +8,8 @@ const corsHeaders = {
 
 const DOMAIN = "https://moneyquest.app.br";
 
-// Static pages with their priorities and change frequencies
+// Static pages that SHOULD be indexed (matching routeConfig.ts INDEXABLE_ROUTES)
+// EXCLUDES: /login, /signup, /premium, /dashboard, and all authenticated routes
 const staticPages = [
   // Homepage - highest priority
   { loc: "/", priority: "1.0", changefreq: "daily" },
@@ -19,10 +20,7 @@ const staticPages = [
   { loc: "/desafios-financeiros", priority: "0.9", changefreq: "weekly" },
   { loc: "/app-financas-pessoais", priority: "0.9", changefreq: "weekly" },
   
-  // Premium page
-  { loc: "/premium", priority: "0.9", changefreq: "weekly" },
-  
-  // Features & Info
+  // Features & Info (public indexable pages)
   { loc: "/features", priority: "0.8", changefreq: "weekly" },
   { loc: "/about", priority: "0.8", changefreq: "monthly" },
   
@@ -84,7 +82,8 @@ Deno.serve(async (req) => {
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   
-  <!-- PUBLIC PAGES - Auto-generated -->
+  <!-- PUBLIC INDEXABLE PAGES ONLY -->
+  <!-- Excludes: /login, /signup, /premium, /dashboard, and all authenticated routes -->
 `;
 
     // Add static pages
