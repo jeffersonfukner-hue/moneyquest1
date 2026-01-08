@@ -912,7 +912,8 @@
       "cash": "Dinheiro",
       "other": "Outro"
     },
-    "accounts": "Contas"
+    "accounts": "Contas",
+    "dueDay": "Dia de vencimento"
   },
   "creditCards": {
     "title": "Cartões",
