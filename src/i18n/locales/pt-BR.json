@@ -889,7 +889,7 @@
     "frequencyMonthly": "Mensal",
     "dayOfWeek": "Dia da semana",
     "dayOfMonth": "Dia do mês",
-    "dueDay": "Dia do vencimento",
+    "dueDay": "Primeiro vencimento",
     "dayNumber": "Dia {{day}}",
     "nextRun": "Próxima execução",
     "paused": "Pausada",

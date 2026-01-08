@@ -30,6 +30,7 @@ import { Button } from '@/components/ui/button';
 import { useWallets } from '@/hooks/useWallets';
 import { useWalletTransfers, CreateScheduledTransferData } from '@/hooks/useWalletTransfers';
 import { useExchangeRates } from '@/hooks/useExchangeRates';
+import { DatePickerInput } from '@/components/ui/date-picker-input';
 import { SupportedCurrency } from '@/types/database';
 
 const scheduledTransferSchema = z.object({
@@ -39,9 +40,17 @@ const scheduledTransferSchema = z.object({
   description: z.string().optional(),
   frequency: z.enum(['daily', 'weekly', 'monthly']),
   day_of_week: z.number().optional(),
-  day_of_month: z.number().optional(),
+  start_date: z.date().optional(),
   has_limit: z.boolean().optional(),
   total_occurrences: z.number().min(1).optional(),
+}).superRefine((data, ctx) => {
+  if (data.frequency === 'monthly' && !data.start_date) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Informe a data do primeiro vencimento',
+      path: ['start_date'],
+    });
+  }
 });
 
 type ScheduledTransferFormData = z.infer<typeof scheduledTransferSchema>;
@@ -77,7 +86,7 @@ export const ScheduledTransferDialog = ({ open, onOpenChange }: ScheduledTransfe
       description: '',
       frequency: 'monthly',
       day_of_week: 1,
-      day_of_month: 5,
+      start_date: undefined,
       has_limit: false,
       total_occurrences: 12,
     },
@@ -115,6 +124,8 @@ export const ScheduledTransferDialog = ({ open, onOpenChange }: ScheduledTransfe
 
     setIsSubmitting(true);
     
+    const dayOfMonth = data.start_date ? data.start_date.getDate() : undefined;
+    
     const transferData: CreateScheduledTransferData = {
       from_wallet_id: data.from_wallet_id,
       to_wallet_id: data.to_wallet_id,
@@ -123,7 +134,7 @@ export const ScheduledTransferDialog = ({ open, onOpenChange }: ScheduledTransfe
       description: data.description,
       frequency: data.frequency,
       day_of_week: data.frequency === 'weekly' ? data.day_of_week : undefined,
-      day_of_month: data.frequency === 'monthly' ? data.day_of_month : undefined,
+      day_of_month: data.frequency === 'monthly' ? dayOfMonth : undefined,
       total_occurrences: data.has_limit ? data.total_occurrences : null,
     };
 
@@ -319,24 +330,19 @@ export const ScheduledTransferDialog = ({ open, onOpenChange }: ScheduledTransfe
               />
             )}
 
-            {/* Day of Month (for monthly) */}
+            {/* Start Date (for monthly) */}
             {watchFrequency === 'monthly' && (
               <FormField
                 control={form.control}
-                name="day_of_month"
+                name="start_date"
                 render={({ field }) => (
-              <FormItem>
+                  <FormItem>
                     <FormLabel>{t('wallets.dueDay')}</FormLabel>
                     <FormControl>
-                      <Input
-                        type="text"
-                        inputMode="numeric"
-                        value={field.value || ''}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/\D/g, '');
-                          const num = parseInt(val) || 0;
-                          field.onChange(Math.min(31, Math.max(0, num)) || undefined);
-                        }}
+                      <DatePickerInput
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder={t('transactions.selectDate')}
                       />
                     </FormControl>
                     <FormMessage />
