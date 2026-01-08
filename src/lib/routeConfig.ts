@@ -5,13 +5,11 @@
 
 // Public pages that SHOULD be indexed by Google
 // These are the ONLY pages where Google AdSense can be displayed
+// NOTE: /login and /signup are intentionally NOT indexable (noindex via meta robots)
 export const INDEXABLE_ROUTES = [
   '/',
   '/about',
-  '/login',
-  '/signup',
   '/features',
-  '/premium',
   '/terms',
   '/privacy',
   '/blog',
@@ -20,6 +18,16 @@ export const INDEXABLE_ROUTES = [
   '/educacao-financeira-gamificada',
   '/desafios-financeiros',
   '/app-financas-pessoais',
+] as const;
+
+// Routes that are public but should NOT be indexed (noindex, follow)
+// These pages are accessible but excluded from search results
+export const NOINDEX_PUBLIC_ROUTES = [
+  '/login',
+  '/signup',
+  '/premium',
+  '/r', // referral redirect
+  '/select-language',
 ] as const;
 
 export type IndexableRoute = typeof INDEXABLE_ROUTES[number];

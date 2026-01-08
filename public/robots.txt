@@ -1,5 +1,8 @@
 # MoneyQuest - robots.txt
 # https://moneyquest.app.br
+# 
+# STRATEGY: Use meta robots noindex for auth/app pages (not Disallow)
+# This allows Google to see the pages but not index them
 
 # Google crawlers
 User-agent: Googlebot
@@ -38,29 +41,12 @@ Allow: /
 User-agent: *
 Allow: /
 
-# Protected/private routes
-Disallow: /dashboard
-Disallow: /login
-Disallow: /app
+# API and internal routes (block completely)
 Disallow: /api/
 Disallow: /_next/
 Disallow: /admin/
 Disallow: /super-admin/
-Disallow: /onboarding
-Disallow: /settings
-Disallow: /profile
-Disallow: /ai-coach
-Disallow: /category-goals
-Disallow: /categories
-Disallow: /leaderboard
-Disallow: /journal
-Disallow: /wallets
-Disallow: /cash-flow
-Disallow: /period-comparison
-Disallow: /support
-Disallow: /referral
-Disallow: /notifications
-Disallow: /premium-success
+Disallow: /debug-*
 
 # Sitemap
 Sitemap: https://moneyquest.app.br/sitemap.xml
