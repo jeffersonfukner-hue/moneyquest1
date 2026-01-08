@@ -325,8 +325,8 @@ export const ScheduledTransferDialog = ({ open, onOpenChange }: ScheduledTransfe
                 control={form.control}
                 name="day_of_month"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('wallets.dayOfMonth')}</FormLabel>
+              <FormItem>
+                    <FormLabel>{t('wallets.dueDay')}</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
