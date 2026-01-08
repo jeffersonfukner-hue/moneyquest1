@@ -254,7 +254,7 @@ const DayOfMonthInput = ({ control }: { control: any }) => {
 
   return (
     <FormItem>
-      <FormLabel>{t('wallets.dayOfMonth')}</FormLabel>
+      <FormLabel>{t('wallets.dueDay')}</FormLabel>
       <FormControl>
         <Input
           type="text"
