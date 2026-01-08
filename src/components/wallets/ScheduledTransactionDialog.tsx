@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
 import { Clock, TrendingUp, TrendingDown, Repeat, Plus } from 'lucide-react';
+import { format } from 'date-fns';
 import {
   Dialog,
   DialogContent,
@@ -41,6 +42,7 @@ import { useProfile } from '@/hooks/useProfile';
 import { SupplierAutocomplete } from '@/components/suppliers/SupplierAutocomplete';
 import { QuickAddCategoryDialog } from '@/components/categories/QuickAddCategoryDialog';
 import { AddWalletDialog } from '@/components/wallets/AddWalletDialog';
+import { DatePickerInput } from '@/components/ui/date-picker-input';
 import { SupportedCurrency } from '@/types/database';
 
 const scheduledTransactionSchema = z.object({
@@ -52,8 +54,7 @@ const scheduledTransactionSchema = z.object({
   wallet_id: z.string().optional(),
   frequency: z.enum(['daily', 'weekly', 'monthly', 'yearly']),
   day_of_week: z.number().min(0).max(6).optional(),
-  day_of_month: z.number().min(1, 'Dia deve ser entre 1 e 31').max(31, 'Dia deve ser entre 1 e 31').optional(),
-  month_of_year: z.number().min(1).max(12).optional(),
+  start_date: z.date({ required_error: 'Data é obrigatória' }).optional(),
   has_limit: z.boolean().optional(),
   total_occurrences: z.number({ invalid_type_error: 'Informe a quantidade' }).min(1, 'Quantidade deve ser no mínimo 1').optional(),
 }).superRefine((data, ctx) => {
@@ -64,18 +65,11 @@ const scheduledTransactionSchema = z.object({
       path: ['day_of_week'],
     });
   }
-  if (['monthly', 'yearly'].includes(data.frequency) && data.day_of_month === undefined) {
+  if (['monthly', 'yearly'].includes(data.frequency) && !data.start_date) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: 'Informe o dia do mês',
-      path: ['day_of_month'],
-    });
-  }
-  if (data.frequency === 'yearly' && data.month_of_year === undefined) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: 'Selecione o mês',
-      path: ['month_of_year'],
+      message: 'Informe a data do primeiro vencimento',
+      path: ['start_date'],
     });
   }
   if (data.has_limit && data.total_occurrences === undefined) {
@@ -105,21 +99,6 @@ const DAYS_OF_WEEK = [
   { value: 4, label: 'thursday' },
   { value: 5, label: 'friday' },
   { value: 6, label: 'saturday' },
-];
-
-const MONTHS = [
-  { value: 1, label: 'january' },
-  { value: 2, label: 'february' },
-  { value: 3, label: 'march' },
-  { value: 4, label: 'april' },
-  { value: 5, label: 'may' },
-  { value: 6, label: 'june' },
-  { value: 7, label: 'july' },
-  { value: 8, label: 'august' },
-  { value: 9, label: 'september' },
-  { value: 10, label: 'october' },
-  { value: 11, label: 'november' },
-  { value: 12, label: 'december' },
 ];
 
 // Separate component for amount input to use hooks properly
@@ -238,50 +217,19 @@ const OccurrencesInput = ({ control, getFrequencyLabel }: { control: any; getFre
   );
 };
 
-// Separate component for day of month input to use hooks properly
-const DayOfMonthInput = ({ control }: { control: any }) => {
+// Start date input component using DatePickerInput
+const StartDateInput = ({ control }: { control: any }) => {
   const { t } = useTranslation();
-  const { field, fieldState } = useController({ control, name: 'day_of_month' });
-  const [displayValue, setDisplayValue] = useState('');
-
-  useEffect(() => {
-    if (field.value !== undefined && field.value !== null) {
-      setDisplayValue(String(field.value));
-    } else {
-      setDisplayValue('');
-    }
-  }, [field.value]);
+  const { field, fieldState } = useController({ control, name: 'start_date' });
 
   return (
     <FormItem>
       <FormLabel>{t('wallets.dueDay')}</FormLabel>
       <FormControl>
-        <Input
-          type="text"
-          inputMode="numeric"
-          placeholder=""
-          value={displayValue}
-          onChange={(e) => {
-            const val = e.target.value.replace(/\D/g, '');
-            setDisplayValue(val);
-            if (val === '') {
-              field.onChange(undefined);
-            } else {
-              field.onChange(parseInt(val, 10));
-            }
-          }}
-          onBlur={() => {
-            if (displayValue.trim() === '') {
-              field.onChange(undefined);
-              return;
-            }
-            const parsed = parseInt(displayValue, 10);
-            if (!isNaN(parsed)) {
-              const clamped = Math.min(Math.max(parsed, 1), 31);
-              field.onChange(clamped);
-              setDisplayValue(String(clamped));
-            }
-          }}
+        <DatePickerInput
+          value={field.value}
+          onChange={field.onChange}
+          placeholder={t('transactions.selectDate')}
         />
       </FormControl>
       {fieldState.error && (
@@ -327,8 +275,7 @@ export const ScheduledTransactionDialog = ({
       wallet_id: '',
       frequency: 'monthly',
       day_of_week: undefined,
-      day_of_month: undefined,
-      month_of_year: undefined,
+      start_date: undefined,
       has_limit: false,
       total_occurrences: undefined,
     },
@@ -337,6 +284,8 @@ export const ScheduledTransactionDialog = ({
   // Reset form when dialog opens with edit data
   useEffect(() => {
     if (open && editTransaction) {
+      // Convert next_run_date to Date for the form
+      const startDate = editTransaction.next_run_date ? new Date(editTransaction.next_run_date + 'T12:00:00') : undefined;
       form.reset({
         description: editTransaction.description,
         supplier: editTransaction.supplier || '',
@@ -346,8 +295,7 @@ export const ScheduledTransactionDialog = ({
         wallet_id: editTransaction.wallet_id || 'none',
         frequency: editTransaction.frequency,
         day_of_week: editTransaction.day_of_week ?? undefined,
-        day_of_month: editTransaction.day_of_month ?? undefined,
-        month_of_year: editTransaction.month_of_year ?? undefined,
+        start_date: startDate,
         has_limit: editTransaction.total_occurrences !== null,
         total_occurrences: editTransaction.total_occurrences ?? undefined,
       });
@@ -361,8 +309,7 @@ export const ScheduledTransactionDialog = ({
         wallet_id: '',
         frequency: 'monthly',
         day_of_week: undefined,
-        day_of_month: undefined,
-        month_of_year: undefined,
+        start_date: undefined,
         has_limit: false,
         total_occurrences: undefined,
       });
@@ -390,6 +337,10 @@ export const ScheduledTransactionDialog = ({
     
     let success = false;
 
+    // Extract day/month from start_date for backend
+    const dayOfMonth = data.start_date ? data.start_date.getDate() : undefined;
+    const monthOfYear = data.start_date ? data.start_date.getMonth() + 1 : undefined;
+
     if (isEditMode && editTransaction) {
       success = await updateScheduledTransaction({
         id: editTransaction.id,
@@ -402,8 +353,8 @@ export const ScheduledTransactionDialog = ({
         wallet_id: data.wallet_id === 'none' ? null : data.wallet_id || null,
         frequency: data.frequency,
         day_of_week: data.frequency === 'weekly' ? data.day_of_week : undefined,
-        day_of_month: ['monthly', 'yearly'].includes(data.frequency) ? data.day_of_month : undefined,
-        month_of_year: data.frequency === 'yearly' ? data.month_of_year : undefined,
+        day_of_month: ['monthly', 'yearly'].includes(data.frequency) ? dayOfMonth : undefined,
+        month_of_year: data.frequency === 'yearly' ? monthOfYear : undefined,
         total_occurrences: data.has_limit ? data.total_occurrences : null,
       });
     } else {
@@ -417,8 +368,8 @@ export const ScheduledTransactionDialog = ({
         wallet_id: data.wallet_id === 'none' ? null : data.wallet_id || null,
         frequency: data.frequency,
         day_of_week: data.frequency === 'weekly' ? data.day_of_week : undefined,
-        day_of_month: ['monthly', 'yearly'].includes(data.frequency) ? data.day_of_month : undefined,
-        month_of_year: data.frequency === 'yearly' ? data.month_of_year : undefined,
+        day_of_month: ['monthly', 'yearly'].includes(data.frequency) ? dayOfMonth : undefined,
+        month_of_year: data.frequency === 'yearly' ? monthOfYear : undefined,
         total_occurrences: data.has_limit ? data.total_occurrences : null,
       };
 
@@ -663,40 +614,9 @@ export const ScheduledTransactionDialog = ({
               />
             )}
 
-            {/* Day of Month (for monthly/yearly) */}
+            {/* Start Date (for monthly/yearly) */}
             {['monthly', 'yearly'].includes(watchFrequency) && (
-              <DayOfMonthInput control={form.control} />
-            )}
-
-            {/* Month of Year (for yearly) */}
-            {watchFrequency === 'yearly' && (
-              <FormField
-                control={form.control}
-                name="month_of_year"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('scheduled.month')}</FormLabel>
-                    <Select 
-                      onValueChange={(v) => field.onChange(parseInt(v))} 
-                      value={field.value?.toString()}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {MONTHS.map((month) => (
-                          <SelectItem key={month.value} value={month.value.toString()}>
-                            {t(`scheduled.months.${month.label}`)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <StartDateInput control={form.control} />
             )}
 
             {/* Occurrence Limit */}

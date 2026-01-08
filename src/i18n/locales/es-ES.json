@@ -835,7 +835,7 @@
       "other": "Otro"
     },
     "accounts": "Cuentas",
-    "dueDay": "Día de vencimiento"
+    "dueDay": "Primer vencimiento"
   },
   "creditCards": {
     "title": "Tarjetas",
