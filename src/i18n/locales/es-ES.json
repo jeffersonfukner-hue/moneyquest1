@@ -834,7 +834,8 @@
       "cash": "Efectivo",
       "other": "Otro"
     },
-    "accounts": "Cuentas"
+    "accounts": "Cuentas",
+    "dueDay": "Día de vencimiento"
   },
   "creditCards": {
     "title": "Tarjetas",

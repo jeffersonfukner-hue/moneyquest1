@@ -887,6 +887,7 @@
     "frequencyMonthly": "Monthly",
     "dayOfWeek": "Day of week",
     "dayOfMonth": "Day of month",
+    "dueDay": "Due day",
     "dayNumber": "Day {{day}}",
     "nextRun": "Next run",
     "paused": "Paused",
