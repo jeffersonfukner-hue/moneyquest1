@@ -2584,5 +2584,26 @@
   "quests": {
     "title": "Quests",
     "subtitle": "Complete challenges and earn XP"
+  },
+  "suppliers": {
+    "title": "Suppliers",
+    "subtitle": "Manage your suppliers and sources",
+    "searchPlaceholder": "Search supplier...",
+    "empty": "No suppliers registered yet",
+    "noResults": "No suppliers found",
+    "use": "use",
+    "uses": "uses",
+    "stats": {
+      "total": "Total",
+      "spent": "Total Spent",
+      "transactions": "Transactions"
+    },
+    "emptyName": "Name cannot be empty",
+    "updateSuccess": "Supplier updated!",
+    "updateError": "Error updating supplier",
+    "deleteTitle": "Delete Supplier",
+    "deleteDescription": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+    "deleteSuccess": "Supplier deleted!",
+    "deleteError": "Error deleting supplier"
   }
 }

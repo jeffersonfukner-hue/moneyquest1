@@ -2762,5 +2762,26 @@
   "quests": {
     "title": "Missões",
     "subtitle": "Complete desafios e ganhe XP"
+  },
+  "suppliers": {
+    "title": "Fornecedores",
+    "subtitle": "Gerencie seus fornecedores e origens",
+    "searchPlaceholder": "Buscar fornecedor...",
+    "empty": "Nenhum fornecedor cadastrado ainda",
+    "noResults": "Nenhum fornecedor encontrado",
+    "use": "uso",
+    "uses": "usos",
+    "stats": {
+      "total": "Total",
+      "spent": "Gasto Total",
+      "transactions": "Lançamentos"
+    },
+    "emptyName": "O nome não pode estar vazio",
+    "updateSuccess": "Fornecedor atualizado!",
+    "updateError": "Erro ao atualizar fornecedor",
+    "deleteTitle": "Excluir Fornecedor",
+    "deleteDescription": "Tem certeza que deseja excluir \"{{name}}\"? Esta ação não pode ser desfeita.",
+    "deleteSuccess": "Fornecedor excluído!",
+    "deleteError": "Erro ao excluir fornecedor"
   }
 }

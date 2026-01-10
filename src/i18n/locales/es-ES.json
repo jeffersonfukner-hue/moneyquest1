@@ -2380,5 +2380,26 @@
       "tooLarge": "Archivo muy grande",
       "maxSize": "Tamaño máximo: 10MB"
     }
+  },
+  "suppliers": {
+    "title": "Proveedores",
+    "subtitle": "Gestiona tus proveedores y orígenes",
+    "searchPlaceholder": "Buscar proveedor...",
+    "empty": "Ningún proveedor registrado aún",
+    "noResults": "Ningún proveedor encontrado",
+    "use": "uso",
+    "uses": "usos",
+    "stats": {
+      "total": "Total",
+      "spent": "Gasto Total",
+      "transactions": "Transacciones"
+    },
+    "emptyName": "El nombre no puede estar vacío",
+    "updateSuccess": "¡Proveedor actualizado!",
+    "updateError": "Error al actualizar proveedor",
+    "deleteTitle": "Eliminar Proveedor",
+    "deleteDescription": "¿Estás seguro de que deseas eliminar \"{{name}}\"? Esta acción no se puede deshacer.",
+    "deleteSuccess": "¡Proveedor eliminado!",
+    "deleteError": "Error al eliminar proveedor"
   }
 }
