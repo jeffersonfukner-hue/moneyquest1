@@ -183,7 +183,8 @@ serve(async (req) => {
   try {
     // Verify authentication
     const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
+    if (!authHeader?.startsWith('Bearer ')) {
+      console.error('Auth error: Missing or invalid authorization header');
       return new Response(JSON.stringify({ error: 'Unauthorized: Missing authorization header' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -193,19 +194,24 @@ serve(async (req) => {
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      { auth: { persistSession: false } }
+      { 
+        global: { headers: { Authorization: authHeader } },
+        auth: { persistSession: false } 
+      }
     );
 
     const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
+    const { data: claimsData, error: claimsError } = await supabaseClient.auth.getClaims(token);
     
-    if (userError || !user) {
-      console.error('Auth error:', userError?.message);
+    if (claimsError || !claimsData?.claims?.sub) {
+      console.error('Auth error:', claimsError?.message || 'Auth session missing!');
       return new Response(JSON.stringify({ error: 'Unauthorized: Invalid or expired token' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    const userId = claimsData.claims.sub;
 
     // Parse and validate input
     const rawBody = await req.json();
@@ -236,7 +242,7 @@ serve(async (req) => {
 
 Create an immersive RPG-style message for this ${eventType}.`;
 
-    console.log(`Narrative request: user=${user.id}, eventType=${eventType}, impact=${impact}, language=${language}`);
+    console.log(`Narrative request: user=${userId}, eventType=${eventType}, impact=${impact}, language=${language}`);
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
