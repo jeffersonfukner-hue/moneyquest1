@@ -4,6 +4,32 @@ import { Check, ChevronDown, ChevronUp } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
+// Helper function to focus next focusable element
+const focusNextElement = (currentElement: HTMLElement) => {
+  const focusableSelectors = [
+    'input:not([disabled]):not([tabindex="-1"])',
+    'select:not([disabled]):not([tabindex="-1"])',
+    'textarea:not([disabled]):not([tabindex="-1"])',
+    'button:not([disabled]):not([tabindex="-1"]):not([data-radix-collection-item])',
+    '[tabindex]:not([tabindex="-1"]):not([disabled])',
+  ].join(', ');
+
+  const form = currentElement.closest('form') || document.body;
+  const allFocusable = Array.from(form.querySelectorAll<HTMLElement>(focusableSelectors))
+    .filter(el => {
+      // Exclude elements inside radix select content
+      if (el.closest('[data-radix-select-content]')) return false;
+      // Exclude hidden elements
+      if (el.offsetParent === null && el.tagName !== 'BODY') return false;
+      return true;
+    });
+
+  const currentIndex = allFocusable.indexOf(currentElement);
+  if (currentIndex !== -1 && currentIndex < allFocusable.length - 1) {
+    allFocusable[currentIndex + 1]?.focus();
+  }
+};
+
 const Select = SelectPrimitive.Root;
 
 const SelectGroup = SelectPrimitive.Group;
@@ -101,24 +127,40 @@ SelectLabel.displayName = SelectPrimitive.Label.displayName;
 const SelectItem = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>
->(({ className, children, ...props }, ref) => (
-  <SelectPrimitive.Item
-    ref={ref}
-    className={cn(
-      "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 focus:bg-accent focus:text-accent-foreground",
-      className,
-    )}
-    {...props}
-  >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-      <SelectPrimitive.ItemIndicator>
-        <Check className="h-4 w-4" />
-      </SelectPrimitive.ItemIndicator>
-    </span>
+>(({ className, children, onKeyDown, ...props }, ref) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter') {
+      // Let the selection happen first, then focus next element
+      setTimeout(() => {
+        const trigger = document.querySelector<HTMLElement>('[data-radix-select-trigger][data-state="closed"]');
+        if (trigger) {
+          focusNextElement(trigger);
+        }
+      }, 10);
+    }
+    onKeyDown?.(e);
+  };
 
-    <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
-  </SelectPrimitive.Item>
-));
+  return (
+    <SelectPrimitive.Item
+      ref={ref}
+      className={cn(
+        "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 focus:bg-accent focus:text-accent-foreground",
+        className,
+      )}
+      onKeyDown={handleKeyDown}
+      {...props}
+    >
+      <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+        <SelectPrimitive.ItemIndicator>
+          <Check className="h-4 w-4" />
+        </SelectPrimitive.ItemIndicator>
+      </span>
+
+      <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+    </SelectPrimitive.Item>
+  );
+});
 SelectItem.displayName = SelectPrimitive.Item.displayName;
 
 const SelectSeparator = React.forwardRef<
