@@ -2022,5 +2022,26 @@
       "tooLarge": "Ficheiro muito grande",
       "maxSize": "Tamanho máximo: 10MB"
     }
+  },
+  "suppliers": {
+    "title": "Fornecedores",
+    "subtitle": "Gere os teus fornecedores e origens",
+    "searchPlaceholder": "Procurar fornecedor...",
+    "empty": "Nenhum fornecedor registado ainda",
+    "noResults": "Nenhum fornecedor encontrado",
+    "use": "uso",
+    "uses": "usos",
+    "stats": {
+      "total": "Total",
+      "spent": "Gasto Total",
+      "transactions": "Lançamentos"
+    },
+    "emptyName": "O nome não pode estar vazio",
+    "updateSuccess": "Fornecedor atualizado!",
+    "updateError": "Erro ao atualizar fornecedor",
+    "deleteTitle": "Eliminar Fornecedor",
+    "deleteDescription": "Tens a certeza que queres eliminar \"{{name}}\"? Esta ação não pode ser desfeita.",
+    "deleteSuccess": "Fornecedor eliminado!",
+    "deleteError": "Erro ao eliminar fornecedor"
   }
 }

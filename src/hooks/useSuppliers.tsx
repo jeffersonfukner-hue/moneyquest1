@@ -109,11 +109,61 @@ export const useSuppliers = () => {
       .slice(0, 10);
   }, [suppliers]);
 
+  const updateSupplier = useCallback(async (id: string, name: string) => {
+    if (!user || !name.trim()) return { error: new Error('Invalid data') };
+
+    const normalizedName = name.trim().toUpperCase();
+
+    try {
+      const { data, error } = await supabase
+        .from('suppliers')
+        .update({ name: normalizedName, updated_at: new Date().toISOString() })
+        .eq('id', id)
+        .eq('user_id', user.id)
+        .select('*')
+        .single();
+
+      if (error) throw error;
+
+      setSuppliers(prev => 
+        prev.map(s => s.id === id ? (data as Supplier) : s)
+      );
+
+      return { error: null };
+    } catch (error) {
+      console.error('Error updating supplier:', error);
+      return { error: error as Error };
+    }
+  }, [user]);
+
+  const deleteSupplier = useCallback(async (id: string) => {
+    if (!user) return { error: new Error('Not authenticated') };
+
+    try {
+      const { error } = await supabase
+        .from('suppliers')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      setSuppliers(prev => prev.filter(s => s.id !== id));
+
+      return { error: null };
+    } catch (error) {
+      console.error('Error deleting supplier:', error);
+      return { error: error as Error };
+    }
+  }, [user]);
+
   return {
     suppliers,
     loading,
     fetchSuppliers,
     upsertSupplier,
     searchSuppliers,
+    updateSupplier,
+    deleteSupplier,
   };
 };
