@@ -20,12 +20,16 @@ export const SupplierAutocomplete = ({ value, onChange, className, isIncome = fa
   const { formatCurrency } = useCurrency();
   const [isOpen, setIsOpen] = useState(false);
   const [suggestions, setSuggestions] = useState(suppliers.slice(0, 10));
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
   // Update suggestions when value changes
   useEffect(() => {
-    setSuggestions(searchSuppliers(value));
+    const results = searchSuppliers(value);
+    setSuggestions(results);
+    setHighlightedIndex(-1);
   }, [value, searchSuppliers]);
 
   // Close dropdown when clicking outside
@@ -33,12 +37,21 @@ export const SupplierAutocomplete = ({ value, onChange, className, isIncome = fa
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false);
+        setHighlightedIndex(-1);
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Scroll highlighted item into view
+  useEffect(() => {
+    if (highlightedIndex >= 0 && listRef.current) {
+      const items = listRef.current.querySelectorAll('button');
+      items[highlightedIndex]?.scrollIntoView({ block: 'nearest' });
+    }
+  }, [highlightedIndex]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value.toUpperCase();
@@ -49,7 +62,29 @@ export const SupplierAutocomplete = ({ value, onChange, className, isIncome = fa
   const handleSelect = (name: string) => {
     onChange(name);
     setIsOpen(false);
-    inputRef.current?.blur();
+    setHighlightedIndex(-1);
+    // Focus next field after selection
+    setTimeout(() => {
+      const focusableSelectors = [
+        'input:not([disabled]):not([tabindex="-1"])',
+        'select:not([disabled]):not([tabindex="-1"])',
+        'textarea:not([disabled]):not([tabindex="-1"])',
+        'button:not([disabled]):not([tabindex="-1"]):not([type="button"])',
+        '[tabindex]:not([tabindex="-1"]):not([disabled])',
+      ].join(', ');
+
+      const form = inputRef.current?.closest('form') || document.body;
+      const allFocusable = Array.from(form.querySelectorAll<HTMLElement>(focusableSelectors))
+        .filter(el => {
+          if (el.offsetParent === null && el.tagName !== 'BODY') return false;
+          return true;
+        });
+
+      const currentIndex = allFocusable.indexOf(inputRef.current!);
+      if (currentIndex !== -1 && currentIndex < allFocusable.length - 1) {
+        allFocusable[currentIndex + 1]?.focus();
+      }
+    }, 10);
   };
 
   const handleFocus = () => {
@@ -58,11 +93,45 @@ export const SupplierAutocomplete = ({ value, onChange, className, isIncome = fa
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      setIsOpen(false);
-    } else if (e.key === 'Escape') {
-      setIsOpen(false);
+    if (!isOpen || suggestions.length === 0) {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        setIsOpen(true);
+        setSuggestions(searchSuppliers(value));
+        e.preventDefault();
+      }
+      return;
+    }
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setHighlightedIndex(prev => 
+          prev < suggestions.length - 1 ? prev + 1 : 0
+        );
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setHighlightedIndex(prev => 
+          prev > 0 ? prev - 1 : suggestions.length - 1
+        );
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (highlightedIndex >= 0 && suggestions[highlightedIndex]) {
+          handleSelect(suggestions[highlightedIndex].name);
+        } else {
+          setIsOpen(false);
+        }
+        break;
+      case 'Escape':
+        e.preventDefault();
+        setIsOpen(false);
+        setHighlightedIndex(-1);
+        break;
+      case 'Tab':
+        setIsOpen(false);
+        setHighlightedIndex(-1);
+        break;
     }
   };
 
@@ -108,13 +177,22 @@ export const SupplierAutocomplete = ({ value, onChange, className, isIncome = fa
 
       {/* Suggestions dropdown */}
       {isOpen && suggestions.length > 0 && (
-        <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-lg max-h-60 overflow-y-auto">
-          {suggestions.map((supplier) => (
+        <div 
+          ref={listRef}
+          className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-lg max-h-60 overflow-y-auto"
+        >
+          {suggestions.map((supplier, index) => (
             <button
               key={supplier.id}
               type="button"
-              className="w-full px-3 py-2 text-left hover:bg-accent flex items-center justify-between gap-2 transition-colors"
+              className={cn(
+                "w-full px-3 py-2 text-left flex items-center justify-between gap-2 transition-colors",
+                index === highlightedIndex 
+                  ? "bg-accent text-accent-foreground" 
+                  : "hover:bg-accent/50"
+              )}
               onClick={() => handleSelect(supplier.name)}
+              onMouseEnter={() => setHighlightedIndex(index)}
             >
               <div className="flex items-center gap-2 min-w-0">
                 <Icon className="w-4 h-4 text-muted-foreground flex-shrink-0" />
