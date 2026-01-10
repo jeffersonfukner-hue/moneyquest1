@@ -107,16 +107,6 @@ export const WEEKLY_CHALLENGES_POOL: WeeklyChallenge[] = [
 
   // === DISCIPLINE CHALLENGES ===
   {
-    key: 'frugal_friday',
-    titleKey: 'weeklyChallenges.frugal_friday.title',
-    descriptionKey: 'weeklyChallenges.frugal_friday.description',
-    xpReward: 150,
-    progressTarget: 1,
-    difficulty: 'easy',
-    category: 'discipline',
-    icon: '🧘'
-  },
-  {
     key: 'spending_freeze',
     titleKey: 'weeklyChallenges.spending_freeze.title',
     descriptionKey: 'weeklyChallenges.spending_freeze.description',
