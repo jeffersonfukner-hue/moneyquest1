@@ -235,13 +235,13 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
 
   const toggleMonth = (monthKey: string) => {
     setExpandedMonths(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(monthKey)) {
-        newSet.delete(monthKey);
+      // Accordion behavior: if clicking on already expanded month, collapse it
+      // Otherwise, expand only this month (collapsing others)
+      if (prev.has(monthKey)) {
+        return new Set();
       } else {
-        newSet.add(monthKey);
+        return new Set([monthKey]);
       }
-      return newSet;
     });
   };
 
