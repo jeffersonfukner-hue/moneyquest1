@@ -885,6 +885,7 @@ const TransactionItem = ({
           <p className="text-sm font-medium truncate">{transaction.description}</p>
           <p className="text-[10px] text-muted-foreground truncate">
             {format(parseDateString(transaction.date), "d MMM", { locale: dateLocale })}
+            {transaction.supplier && <span> • {transaction.supplier}</span>}
             {' • '}{displayCategory}
             {walletName && <span> • {walletIcon} {walletName}</span>}
             {creditCardName && <span> • 💳 {creditCardName}</span>}

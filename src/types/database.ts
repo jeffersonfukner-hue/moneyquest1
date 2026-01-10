@@ -71,6 +71,7 @@ export interface Transaction {
   transaction_subtype?: string;
   has_items?: boolean;
   is_manual?: boolean;
+  supplier?: string | null;
   created_at: string;
 }
 
