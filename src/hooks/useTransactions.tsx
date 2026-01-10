@@ -342,6 +342,7 @@ export const useTransactions = () => {
     if (updates.date !== undefined) updateData.date = updates.date;
     if (updates.currency !== undefined) updateData.currency = updates.currency;
     if (updates.wallet_id !== undefined) updateData.wallet_id = updates.wallet_id;
+    if (updates.supplier !== undefined) updateData.supplier = updates.supplier?.toUpperCase() || null;
 
     // Update the transaction in DB
     const { error: txError } = await supabase
