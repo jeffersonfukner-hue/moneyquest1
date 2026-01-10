@@ -45,6 +45,13 @@ const dateFormatMap: Record<string, string> = {
   'pt-PT': 'dd/MM/yyyy',
 };
 
+const placeholderMap: Record<string, string> = {
+  'pt-BR': 'DD/MM/AAAA',
+  'en-US': 'MM/DD/YYYY',
+  'es-ES': 'DD/MM/AAAA',
+  'pt-PT': 'DD/MM/AAAA',
+};
+
 const getMonthsForLocale = (locale: Locale) => {
   return Array.from({ length: 12 }, (_, i) => ({
     value: i,
@@ -63,6 +70,7 @@ export function DatePickerInput({
   const { language } = useLanguage();
   const locale = localeMap[language] || ptBR;
   const dateFormat = dateFormatMap[language] || 'dd/MM/yyyy';
+  const datePlaceholder = placeholderMap[language] || 'DD/MM/AAAA';
   
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
@@ -77,16 +85,39 @@ export function DatePickerInput({
     }
   }, [value, dateFormat]);
 
-  // Handle typed input
+  // Apply date mask (DD/MM/YYYY or MM/DD/YYYY)
+  const applyDateMask = (value: string, format: string): string => {
+    // Remove non-digits
+    const digits = value.replace(/\D/g, '');
+    
+    if (format === 'MM/dd/yyyy') {
+      // US format: MM/DD/YYYY
+      if (digits.length <= 2) return digits;
+      if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+      return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4, 8)}`;
+    } else {
+      // Default: DD/MM/YYYY
+      if (digits.length <= 2) return digits;
+      if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+      return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4, 8)}`;
+    }
+  };
+
+  // Handle typed input with mask
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
-    setInputValue(raw);
     
-    // Try to parse the date
-    const parsed = parse(raw, dateFormat, new Date());
-    if (isValid(parsed) && raw.length === 10) {
-      onChange(parsed);
-      setDisplayMonth(parsed);
+    // Apply mask
+    const masked = applyDateMask(raw, dateFormat);
+    setInputValue(masked);
+    
+    // Try to parse the date when complete (10 chars: DD/MM/YYYY)
+    if (masked.length === 10) {
+      const parsed = parse(masked, dateFormat, new Date());
+      if (isValid(parsed)) {
+        onChange(parsed);
+        setDisplayMonth(parsed);
+      }
     }
   };
 
@@ -143,7 +174,7 @@ export function DatePickerInput({
           <Input
             ref={inputRef}
             type="text"
-            placeholder={placeholder || dateFormat.toLowerCase()}
+            placeholder={placeholder || datePlaceholder}
             value={inputValue}
             onChange={handleInputChange}
             onBlur={handleInputBlur}
