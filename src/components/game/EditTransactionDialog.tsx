@@ -120,7 +120,7 @@ export const EditTransactionDialog = ({
 
     const updates: Partial<Omit<Transaction, 'id' | 'user_id' | 'xp_earned' | 'created_at'>> & { supplier?: string | null } = {
       type,
-      description: description.trim(),
+      description: description.trim().toUpperCase(),
       amount: parseFloat(amount),
       category,
       currency,
@@ -224,10 +224,10 @@ export const EditTransactionDialog = ({
               <Input
                 id="description"
                 value={description}
-                onChange={(e) => setDescription(e.target.value.toUpperCase())}
+                onChange={(e) => setDescription(e.target.value)}
                 placeholder={t('transactions.description')}
-                style={{ textTransform: 'uppercase' }}
                 className={cn(
+                  "uppercase",
                   attemptedSubmit && !isDescriptionValid && "border-destructive ring-1 ring-destructive"
                 )}
               />
