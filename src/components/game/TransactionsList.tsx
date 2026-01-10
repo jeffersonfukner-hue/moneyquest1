@@ -723,7 +723,7 @@ const MonthCard = ({
         </CollapsibleTrigger>
         
         <CollapsibleContent>
-          <div className="px-3 pb-3 space-y-1.5 border-t bg-muted/30 pt-2">
+          <div className="px-3 pb-3 border-t bg-muted/30 pt-2">
             {/* Combined and sorted by date with running balance */}
             {(() => {
               // Priority for same-day sorting: transfers first, then income, then expenses
@@ -762,40 +762,62 @@ const MonthCard = ({
               });
 
               // Reverse to show newest first
-              return itemsWithBalance.reverse().map(entry => 
-                entry.type === 'transaction' ? (
-                  <TransactionItem
-                    key={entry.item.id}
-                    transaction={entry.item as Transaction}
-                    onDelete={onDelete}
-                    onEdit={() => onEdit(entry.item as Transaction)}
-                    onDuplicate={onDuplicate ? () => onDuplicate(entry.item as Transaction) : undefined}
-                    dateLocale={dateLocale}
-                    formatCurrency={formatCurrency}
-                    userCurrency={userCurrency}
-                    formatConverted={formatConverted}
-                    walletName={(entry.item as Transaction).wallet_id ? (walletMap[(entry.item as Transaction).wallet_id!]?.institution || walletMap[(entry.item as Transaction).wallet_id!]?.name) : undefined}
-                    walletIcon={(entry.item as Transaction).wallet_id ? walletMap[(entry.item as Transaction).wallet_id!]?.icon : undefined}
-                    creditCardName={(entry.item as Transaction).credit_card_id ? creditCardMap[(entry.item as Transaction).credit_card_id!]?.name : undefined}
-                    t={t}
-                    isSelectionMode={isSelectionMode}
-                    isSelected={selectedIds.has(entry.item.id)}
-                    onToggleSelect={() => onToggleSelect(entry.item.id)}
-                    runningBalance={entry.balanceAfter}
-                  />
-                ) : (
-                  <MonthTransferItem
-                    key={entry.item.id}
-                    transfer={entry.item as WalletTransfer}
-                    getWalletName={getWalletName}
-                    getWalletIcon={getWalletIcon}
-                    dateLocale={dateLocale}
-                    userCurrency={userCurrency}
-                    onEdit={() => onEditTransfer(entry.item as WalletTransfer)}
-                    runningBalance={entry.balanceAfter}
-                  />
-                )
-              );
+              const reversed = itemsWithBalance.reverse();
+              
+              // Group items by day for rendering with separators
+              let lastDateKey: string | null = null;
+              
+              return reversed.map((entry, index) => {
+                const dateKey = format(entry.date, 'yyyy-MM-dd');
+                const showDaySeparator = lastDateKey !== null && lastDateKey !== dateKey;
+                lastDateKey = dateKey;
+                
+                return (
+                  <div key={entry.item.id}>
+                    {showDaySeparator && (
+                      <div className="flex items-center gap-2 my-3">
+                        <div className="flex-1 h-px bg-border" />
+                        <span className="text-[10px] text-muted-foreground font-medium px-2">
+                          {format(entry.date, "EEEE, d", { locale: dateLocale })}
+                        </span>
+                        <div className="flex-1 h-px bg-border" />
+                      </div>
+                    )}
+                    <div className="mb-1.5">
+                      {entry.type === 'transaction' ? (
+                        <TransactionItem
+                          transaction={entry.item as Transaction}
+                          onDelete={onDelete}
+                          onEdit={() => onEdit(entry.item as Transaction)}
+                          onDuplicate={onDuplicate ? () => onDuplicate(entry.item as Transaction) : undefined}
+                          dateLocale={dateLocale}
+                          formatCurrency={formatCurrency}
+                          userCurrency={userCurrency}
+                          formatConverted={formatConverted}
+                          walletName={(entry.item as Transaction).wallet_id ? (walletMap[(entry.item as Transaction).wallet_id!]?.institution || walletMap[(entry.item as Transaction).wallet_id!]?.name) : undefined}
+                          walletIcon={(entry.item as Transaction).wallet_id ? walletMap[(entry.item as Transaction).wallet_id!]?.icon : undefined}
+                          creditCardName={(entry.item as Transaction).credit_card_id ? creditCardMap[(entry.item as Transaction).credit_card_id!]?.name : undefined}
+                          t={t}
+                          isSelectionMode={isSelectionMode}
+                          isSelected={selectedIds.has(entry.item.id)}
+                          onToggleSelect={() => onToggleSelect(entry.item.id)}
+                          runningBalance={entry.balanceAfter}
+                        />
+                      ) : (
+                        <MonthTransferItem
+                          transfer={entry.item as WalletTransfer}
+                          getWalletName={getWalletName}
+                          getWalletIcon={getWalletIcon}
+                          dateLocale={dateLocale}
+                          userCurrency={userCurrency}
+                          onEdit={() => onEditTransfer(entry.item as WalletTransfer)}
+                          runningBalance={entry.balanceAfter}
+                        />
+                      )}
+                    </div>
+                  </div>
+                );
+              });
             })()}
           </div>
         </CollapsibleContent>
