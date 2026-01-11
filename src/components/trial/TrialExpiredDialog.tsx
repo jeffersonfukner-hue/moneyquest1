@@ -18,6 +18,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 const TRIAL_EXPIRED_SHOWN_KEY = 'moneyquest_trial_expired_shown';
+const TRIAL_EXPIRED_SHOWN_DATE_KEY = 'moneyquest_trial_expired_shown_date';
 const DISCOUNT_COUPON_CODE = 'TRIAL30';
 
 export const TrialExpiredDialog = () => {
@@ -74,7 +75,7 @@ export const TrialExpiredDialog = () => {
   }, [profile?.id, profile?.discount_offer_shown, refetch]);
 
   useEffect(() => {
-    // Only show dialog once when trial expires
+    // Only show dialog when trial has expired
     if (
       phase === 'expired' && 
       hasUsedTrial && 
@@ -89,13 +90,17 @@ export const TrialExpiredDialog = () => {
         }
       }
 
-      const hasBeenShown = localStorage.getItem(TRIAL_EXPIRED_SHOWN_KEY);
-      
-      // Show if never shown OR if offer is still valid
-      if (!hasBeenShown || (profile.discount_offer_shown && !isOfferExpired)) {
+      // Check if dialog was shown today (limit to once per day)
+      const lastShownDate = localStorage.getItem(TRIAL_EXPIRED_SHOWN_DATE_KEY);
+      const today = new Date().toISOString().split('T')[0];
+      const alreadyShownToday = lastShownDate === today;
+
+      // Only show if not shown today
+      if (!alreadyShownToday) {
         const timer = setTimeout(() => {
           setOpen(true);
           localStorage.setItem(TRIAL_EXPIRED_SHOWN_KEY, 'true');
+          localStorage.setItem(TRIAL_EXPIRED_SHOWN_DATE_KEY, today);
           markOfferShown();
         }, 1500);
         return () => clearTimeout(timer);

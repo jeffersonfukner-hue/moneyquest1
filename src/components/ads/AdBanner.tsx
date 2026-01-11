@@ -19,8 +19,10 @@ export const AdBanner = () => {
     canShowGoogleAdsOnPage,
     isAuthenticatedPage,
     isAdSenseConfigured,
+    isInTrial,
     setAdLoaded, 
-    setAdError 
+    setAdError,
+    dismissBannerForToday
   } = useAdBanner();
   
   const { 
@@ -56,6 +58,8 @@ export const AdBanner = () => {
 
   const handleDismissAttempt = () => {
     trackClick({ action: 'dismiss_attempt' });
+    // Mark as dismissed for today so it doesn't show again
+    dismissBannerForToday();
     setShowModal(true);
   };
 
