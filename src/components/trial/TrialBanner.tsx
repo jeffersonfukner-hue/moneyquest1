@@ -24,7 +24,14 @@ export const TrialBanner = () => {
   // - User has paid subscription
   // - User is not in trial
   // - User already used trial and it expired
+  // - Trial has more than 3 days remaining (only show in warning/critical phase)
   if (hasPaidSubscription || !isInTrial) {
+    return null;
+  }
+
+  // Only show trial banner in warning or critical phase (last 3 days)
+  // This prevents annoying users at the start of their trial
+  if (phase === 'normal') {
     return null;
   }
 
