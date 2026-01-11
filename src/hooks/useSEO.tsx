@@ -48,8 +48,8 @@ const pageConfigs: Record<string, SEOConfig> = {
     description: 'MoneyQuest é um app financeiro gamificado para controlar gastos, criar hábitos financeiros, ganhar pontos, subir de nível e economizar dinheiro jogando.',
   },
   '/controle-financeiro': {
-    title: 'Controle Financeiro Gamificado | MoneyQuest',
-    description: 'Controle suas finanças pessoais com gamificação, ganhe pontos e economize dinheiro com o MoneyQuest. App gratuito de controle financeiro.',
+    title: 'Controle Financeiro Pessoal: o Guia Completo para Organizar Seu Dinheiro | MoneyQuest',
+    description: 'Aprenda como fazer controle financeiro pessoal de forma prática e sustentável. Guia completo com métodos que funcionam para organizar gastos mensais e transformar sua vida financeira.',
   },
   '/educacao-financeira-gamificada': {
     title: 'Educação Financeira Gamificada | MoneyQuest',
