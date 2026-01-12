@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Landmark, Calendar, Percent, Check, X } from 'lucide-react';
+import { Landmark, Percent, Check, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,8 @@ import { SUPPORTED_CURRENCIES } from '@/i18n';
 import { SupportedCurrency } from '@/types/database';
 import { cn } from '@/lib/utils';
 import { format, addMonths } from 'date-fns';
+import { DatePickerInput } from '@/components/ui/date-picker-input';
+import { parseDateString } from '@/lib/dateUtils';
 
 interface AddLoanDialogProps {
   open: boolean;
@@ -44,8 +46,8 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
   const [quantidadeParcelas, setQuantidadeParcelas] = useState('');
   const [valorParcela, setValorParcela] = useState('');
   const [taxaJuros, setTaxaJuros] = useState('');
-  const [primeiroVencimento, setPrimeiroVencimento] = useState(
-    format(addMonths(new Date(), 1), 'yyyy-MM-dd')
+  const [primeiroVencimento, setPrimeiroVencimento] = useState<Date>(
+    addMonths(new Date(), 1)
   );
   const [selectedCurrency, setSelectedCurrency] = useState(currency);
   const [debitarAutomaticamente, setDebitarAutomaticamente] = useState(false);
@@ -65,7 +67,6 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
   const valorTotalRef = useRef<HTMLInputElement>(null);
   const parcelasRef = useRef<HTMLInputElement>(null);
   const valorParcelaRef = useRef<HTMLInputElement>(null);
-  const vencimentoRef = useRef<HTMLInputElement>(null);
 
   const resetForm = () => {
     setValorTotal('');
@@ -75,7 +76,7 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
     setQuantidadeParcelas('');
     setValorParcela('');
     setTaxaJuros('');
-    setPrimeiroVencimento(format(addMonths(new Date(), 1), 'yyyy-MM-dd'));
+    setPrimeiroVencimento(addMonths(new Date(), 1));
     setSelectedCurrency(currency);
     setDebitarAutomaticamente(false);
     setEnviarLembrete(true);
@@ -151,7 +152,6 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
     if (!hasPrimeiroVencimento) {
       setErrorField('vencimento');
       setFieldError('Campo obrigatório');
-      vencimentoRef.current?.focus();
       return;
     }
 
@@ -166,7 +166,7 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
         quantidade_parcelas: parcelasNum,
         valor_parcela: valorParcelaNum,
         taxa_juros: taxaJuros ? toNumber(taxaJuros) : null,
-        primeiro_vencimento: primeiroVencimento,
+        primeiro_vencimento: format(primeiroVencimento, 'yyyy-MM-dd'),
         debitar_automaticamente: debitarAutomaticamente,
         enviar_lembrete: enviarLembrete,
         considerar_orcamento: considerarOrcamento,
@@ -207,7 +207,7 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
   const hasValorTotal = Number.isFinite(valorTotalNum) && valorTotalNum > 0;
   const hasParcelas = Number.isFinite(parcelasNum) && parcelasNum > 0;
   const hasValorParcela = Number.isFinite(valorParcelaNum) && valorParcelaNum > 0;
-  const hasPrimeiroVencimento = Boolean(primeiroVencimento);
+  const hasPrimeiroVencimento = primeiroVencimento instanceof Date && !isNaN(primeiroVencimento.getTime());
 
   const isFormValid =
     hasTipo &&
@@ -378,15 +378,10 @@ export const AddLoanDialog = ({ open, onOpenChange, onAdd }: AddLoanDialogProps)
           {/* Primeiro Vencimento e Taxa */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label className="flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5" />
-                1º Vencimento
-              </Label>
-              <Input
-                ref={vencimentoRef}
-                type="date"
+              <Label>1º Vencimento</Label>
+              <DatePickerInput
                 value={primeiroVencimento}
-                onChange={(e) => { setPrimeiroVencimento(e.target.value); setFieldError(null); setErrorField(null); }}
+                onChange={(d) => { if (d) { setPrimeiroVencimento(d); setFieldError(null); setErrorField(null); } }}
                 className="min-h-[44px]"
               />
             </div>
