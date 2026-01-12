@@ -92,10 +92,12 @@ const ArticleContent = ({ content }: { content: string }) => {
       text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
       // Italic
       text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
-      // Links - internal
+      // Links - internal (relative paths)
       text = text.replace(/\[([^\]]+)\]\(\/([^)]+)\)/g, '<a href="/$2" class="text-primary hover:underline">$1</a>');
-      // Links - external
-      text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">$1</a>');
+      // Links - internal (absolute URLs for moneyquest.app.br) - same tab
+      text = text.replace(/\[([^\]]+)\]\((https?:\/\/moneyquest\.app\.br\/[^)]+)\)/g, '<a href="$2" class="text-primary hover:underline">$1</a>');
+      // Links - external (other domains) - new tab
+      text = text.replace(/\[([^\]]+)\]\((https?:\/\/(?!moneyquest\.app\.br)[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">$1</a>');
       // Emojis are preserved
       // Sanitize the final HTML to prevent XSS
       return sanitizeHtml(text);
