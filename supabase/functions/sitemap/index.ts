@@ -4,6 +4,10 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Content-Type": "application/xml; charset=utf-8",
+  // Prevent CDN/browser caching of sitemap.xml to avoid serving stale URLs
+  "Cache-Control": "no-store, max-age=0",
+  "CDN-Cache-Control": "no-store",
+  "Pragma": "no-cache",
 };
 
 const DOMAIN = "https://moneyquest.app.br";
