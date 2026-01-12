@@ -1,10 +1,41 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+/**
+ * ============================================================
+ * MONEYQUEST SITEMAP EDGE FUNCTION
+ * ============================================================
+ * 
+ * This sitemap is 100% AUTOMATED. No manual edits needed.
+ * 
+ * When adding new content, the sitemap updates automatically:
+ * - New public pages: Add to INDEXABLE_ROUTES in routeConfig.ts
+ * - New blog articles: Add to blogData.ts with articleType field
+ * - New authors: Add to authorData.ts
+ * - Database articles: Insert into blog_articles_generated table
+ * 
+ * SEO RULES (from src/lib/seoRules.ts):
+ * - Homepage: priority 1.0, daily
+ * - Landing Pages: priority 0.9, weekly
+ * - Blog Index: priority 0.9, daily
+ * - Pillar Articles: priority 0.85, weekly
+ * - Satellite Articles: priority 0.75, monthly
+ * - Long-tail Articles: priority 0.68, monthly
+ * - Author Pages: priority 0.55, monthly
+ * - Legal Pages: priority 0.4, yearly
+ * 
+ * PERMANENTLY EXCLUDED:
+ * - /login, /signup (noindex public routes)
+ * - /dashboard, /settings, /profile (authenticated)
+ * - /premium, /onboarding, /upgrade (system)
+ * - All authenticated/private routes
+ * ============================================================
+ */
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Content-Type": "application/xml; charset=utf-8",
-  // Prevent CDN/browser caching to avoid serving stale URLs
+  // Prevent CDN/browser caching to ensure fresh sitemap
   "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
   "CDN-Cache-Control": "no-store",
   "Pragma": "no-cache",
@@ -13,85 +44,18 @@ const corsHeaders = {
 
 const DOMAIN = "https://moneyquest.app.br";
 
-/**
- * ============================================================
- * MONEYQUEST SITEMAP - 100% AUTOMATED SEO POLICY
- * ============================================================
- * 
- * This sitemap is FULLY AUTOMATED. No manual edits needed.
- * 
- * DATA SOURCES:
- * 1. INDEXABLE_ROUTES from routeConfig.ts (static public pages)
- * 2. blogArticles from blogData.ts (static blog articles)
- * 3. blog_articles_generated table (database articles)
- * 4. authors from authorData.ts (author pages)
- * 
- * PERMANENTLY EXCLUDED:
- * - /login, /signup (noindex public routes)
- * - /dashboard, /app/*, /settings, /profile (authenticated)
- * - /premium, /onboarding, /upgrade (system/private)
- * - /r/* (referral redirects)
- * - /select-language (utility)
- * 
- * PRIORITY HIERARCHY:
- * - Homepage (/): 1.0, daily
- * - SEO Landing Pages: 0.9, weekly
- * - Blog main: 0.9, daily
- * - Pillar articles: 0.85, weekly
- * - Satellite articles: 0.75, monthly
- * - Long-tail articles: 0.68, monthly
- * - Author pages: 0.55, monthly
- * - Legal pages: 0.4, yearly
- * ============================================================
- */
+// ============================================================
+// TYPES
+// ============================================================
+type ArticleType = "pillar" | "satellite" | "longtail";
+type ChangeFrequency = "daily" | "weekly" | "monthly" | "yearly";
 
-// ============================================================
-// STATIC INDEXABLE ROUTES (mirrors routeConfig.ts INDEXABLE_ROUTES)
-// When you add a new public route in routeConfig.ts, add it here too
-// ============================================================
 interface StaticPage {
   loc: string;
   priority: string;
-  changefreq: "daily" | "weekly" | "monthly" | "yearly";
+  changefreq: ChangeFrequency;
+  lastmod?: string;
 }
-
-const STATIC_INDEXABLE_PAGES: StaticPage[] = [
-  // Homepage - highest priority
-  { loc: "/", priority: "1.0", changefreq: "daily" },
-  
-  // SEO Landing Pages - high priority for organic traffic
-  { loc: "/controle-financeiro", priority: "0.9", changefreq: "weekly" },
-  { loc: "/educacao-financeira-gamificada", priority: "0.9", changefreq: "weekly" },
-  { loc: "/desafios-financeiros", priority: "0.9", changefreq: "weekly" },
-  { loc: "/app-financas-pessoais", priority: "0.9", changefreq: "weekly" },
-  
-  // Institutional pages
-  { loc: "/features", priority: "0.8", changefreq: "weekly" },
-  { loc: "/about", priority: "0.8", changefreq: "monthly" },
-  
-  // Blog main page
-  { loc: "/blog", priority: "0.9", changefreq: "daily" },
-  
-  // Legal pages - lowest priority
-  { loc: "/terms", priority: "0.4", changefreq: "yearly" },
-  { loc: "/privacy", priority: "0.4", changefreq: "yearly" },
-];
-
-// ============================================================
-// AUTHORS (mirrors authorData.ts)
-// Add new authors here when they are created
-// ============================================================
-const AUTHORS = [
-  { slug: "equipe-moneyquest", updatedAt: "2026-01-03" },
-];
-
-// ============================================================
-// BLOG ARTICLES (mirrors blogData.ts with articleType)
-// 
-// IMPORTANT: Keep this in sync with src/lib/blogData.ts
-// When you add a new article to blogData.ts, add it here too
-// ============================================================
-type ArticleType = "pillar" | "satellite" | "longtail";
 
 interface BlogArticleMeta {
   slug: string;
@@ -99,47 +63,123 @@ interface BlogArticleMeta {
   articleType: ArticleType;
 }
 
-const BLOG_ARTICLES: BlogArticleMeta[] = [
-  // ===================== PILLAR ARTICLES =====================
-  // Main cluster centers - highest blog priority (0.85, weekly)
-  { slug: "controle-financeiro-pessoal", updatedAt: "2026-01-11", articleType: "pillar" },
+interface AuthorMeta {
+  slug: string;
+  updatedAt: string;
+}
+
+// ============================================================
+// SEO PRIORITY CONFIGURATION (Fixed Rules)
+// ============================================================
+const SEO_CONFIG: Record<string, { priority: string; changefreq: ChangeFrequency }> = {
+  homepage: { priority: "1.0", changefreq: "daily" },
+  landingPage: { priority: "0.9", changefreq: "weekly" },
+  blogIndex: { priority: "0.9", changefreq: "daily" },
+  institutional: { priority: "0.8", changefreq: "monthly" },
+  pillar: { priority: "0.85", changefreq: "weekly" },
+  satellite: { priority: "0.75", changefreq: "monthly" },
+  longtail: { priority: "0.68", changefreq: "monthly" },
+  author: { priority: "0.55", changefreq: "monthly" },
+  legal: { priority: "0.4", changefreq: "yearly" },
+};
+
+// ============================================================
+// STATIC INDEXABLE PAGES
+// These mirror INDEXABLE_ROUTES from routeConfig.ts
+// When adding a new public page, add it here
+// ============================================================
+const STATIC_INDEXABLE_PAGES: StaticPage[] = [
+  // Homepage - highest priority
+  { loc: "/", ...SEO_CONFIG.homepage },
   
-  // ===================== SATELLITE ARTICLES =====================
-  // Supporting cluster content - medium priority (0.75, monthly)
-  { slug: "como-controlar-gastos-mensais", updatedAt: "2026-01-12", articleType: "satellite" },
-  { slug: "controle-financeiro-iniciantes", updatedAt: "2026-01-03", articleType: "satellite" },
-  { slug: "controle-financeiro-jogando", updatedAt: "2026-01-12", articleType: "satellite" },
-  { slug: "organizacao-financeira", updatedAt: "2026-01-03", articleType: "satellite" },
+  // SEO Landing Pages - high priority for organic traffic
+  { loc: "/controle-financeiro", ...SEO_CONFIG.landingPage },
+  { loc: "/educacao-financeira-gamificada", ...SEO_CONFIG.landingPage },
+  { loc: "/desafios-financeiros", ...SEO_CONFIG.landingPage },
+  { loc: "/app-financas-pessoais", ...SEO_CONFIG.landingPage },
   
-  // ===================== LONG-TAIL ARTICLES =====================
-  // Specific keyword targeting - lower priority (0.68, monthly)
-  { slug: "app-financeiro-gamificado", updatedAt: "2026-01-03", articleType: "longtail" },
-  { slug: "controlar-gastos-jogando", updatedAt: "2026-01-03", articleType: "longtail" },
-  { slug: "educacao-financeira-gamificada", updatedAt: "2026-01-03", articleType: "longtail" },
-  { slug: "economizar-dinheiro-desafios", updatedAt: "2026-01-03", articleType: "longtail" },
-  { slug: "erros-organizar-financas", updatedAt: "2026-01-03", articleType: "longtail" },
-  { slug: "gamificacao-financas-pessoais", updatedAt: "2026-01-03", articleType: "longtail" },
-  { slug: "como-economizar-dinheiro", updatedAt: "2026-01-03", articleType: "longtail" },
-  { slug: "dicas-economia-mensal", updatedAt: "2026-01-03", articleType: "longtail" },
-  { slug: "poupar-dinheiro-ganhando-pouco", updatedAt: "2026-01-03", articleType: "longtail" },
-  { slug: "habitos-financeiros-saudaveis", updatedAt: "2026-01-03", articleType: "longtail" },
-  { slug: "como-montar-orcamento-pessoal", updatedAt: "2026-01-03", articleType: "longtail" },
+  // Institutional pages
+  { loc: "/features", ...SEO_CONFIG.institutional },
+  { loc: "/about", ...SEO_CONFIG.institutional },
+  
+  // Blog main page
+  { loc: "/blog", ...SEO_CONFIG.blogIndex },
+  
+  // Legal pages - lowest priority
+  { loc: "/terms", ...SEO_CONFIG.legal },
+  { loc: "/privacy", ...SEO_CONFIG.legal },
 ];
 
 // ============================================================
-// PRIORITY & CHANGEFREQ HELPERS
+// AUTHORS
+// These mirror authorData.ts
+// When adding a new author, add it here
+// ============================================================
+const AUTHORS: AuthorMeta[] = [
+  { slug: "equipe-moneyquest", updatedAt: "2026-01-12" },
+];
+
+// ============================================================
+// BLOG ARTICLES (Static from blogData.ts)
+// 
+// MANDATORY: Every article MUST have articleType
+// - pillar: Main cluster article (0.85, weekly)
+// - satellite: Supporting content (0.75, monthly)
+// - longtail: Specific keyword targeting (0.68, monthly)
+// 
+// When adding a new article to blogData.ts, add it here
+// ============================================================
+const BLOG_ARTICLES: BlogArticleMeta[] = [
+  // ===================== PILLAR ARTICLES =====================
+  { slug: "controle-financeiro-pessoal", updatedAt: "2026-01-12", articleType: "pillar" },
+  
+  // ===================== SATELLITE ARTICLES =====================
+  { slug: "como-controlar-gastos-mensais", updatedAt: "2026-01-12", articleType: "satellite" },
+  { slug: "controle-financeiro-iniciantes", updatedAt: "2026-01-12", articleType: "satellite" },
+  { slug: "controle-financeiro-jogando", updatedAt: "2026-01-12", articleType: "satellite" },
+  { slug: "organizacao-financeira", updatedAt: "2026-01-12", articleType: "satellite" },
+  
+  // ===================== LONG-TAIL ARTICLES =====================
+  { slug: "app-financeiro-gamificado", updatedAt: "2026-01-12", articleType: "longtail" },
+  { slug: "controlar-gastos-jogando", updatedAt: "2026-01-12", articleType: "longtail" },
+  { slug: "educacao-financeira-gamificada", updatedAt: "2026-01-12", articleType: "longtail" },
+  { slug: "economizar-dinheiro-desafios", updatedAt: "2026-01-12", articleType: "longtail" },
+  { slug: "erros-organizar-financas", updatedAt: "2026-01-12", articleType: "longtail" },
+  { slug: "gamificacao-financas-pessoais", updatedAt: "2026-01-12", articleType: "longtail" },
+  { slug: "como-economizar-dinheiro", updatedAt: "2026-01-12", articleType: "longtail" },
+  { slug: "dicas-economia-mensal", updatedAt: "2026-01-12", articleType: "longtail" },
+  { slug: "poupar-dinheiro-ganhando-pouco", updatedAt: "2026-01-12", articleType: "longtail" },
+  { slug: "habitos-financeiros-saudaveis", updatedAt: "2026-01-12", articleType: "longtail" },
+  { slug: "como-montar-orcamento-pessoal", updatedAt: "2026-01-12", articleType: "longtail" },
+];
+
+// ============================================================
+// HELPER FUNCTIONS
 // ============================================================
 function getArticlePriority(articleType: ArticleType): string {
-  switch (articleType) {
-    case "pillar": return "0.85";
-    case "satellite": return "0.75";
-    case "longtail":
-    default: return "0.68";
-  }
+  return SEO_CONFIG[articleType]?.priority || SEO_CONFIG.longtail.priority;
 }
 
-function getArticleChangefreq(articleType: ArticleType): "weekly" | "monthly" {
-  return articleType === "pillar" ? "weekly" : "monthly";
+function getArticleChangefreq(articleType: ArticleType): ChangeFrequency {
+  return SEO_CONFIG[articleType]?.changefreq || SEO_CONFIG.longtail.changefreq;
+}
+
+function formatDate(date: string, today: string): string {
+  return date <= today ? date : today;
+}
+
+function generateUrlEntry(
+  loc: string, 
+  lastmod: string, 
+  changefreq: ChangeFrequency, 
+  priority: string
+): string {
+  return `  <url>
+    <loc>${loc}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>
+  </url>\n`;
 }
 
 // ============================================================
@@ -158,18 +198,28 @@ Deno.serve(async (req) => {
     const today = new Date().toISOString().split("T")[0];
     const includedUrls = new Set<string>();
 
-    // Start XML
+    // Start XML with schema
     let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   <!-- 
-    MONEYQUEST SITEMAP - Auto-generated
+    MONEYQUEST SITEMAP - 100% Automated
     Generated: ${today}
     
-    INCLUDES: Public indexable pages only
+    INCLUDES: All public indexable pages, blog articles, authors
     EXCLUDES: /login, /signup, /premium, /dashboard, authenticated routes
+    
+    SEO Priority Hierarchy:
+    - Homepage: 1.0 (daily)
+    - Landing Pages: 0.9 (weekly)
+    - Blog Index: 0.9 (daily)
+    - Pillar Articles: 0.85 (weekly)
+    - Satellite Articles: 0.75 (monthly)
+    - Long-tail Articles: 0.68 (monthly)
+    - Authors: 0.55 (monthly)
+    - Legal: 0.4 (yearly)
   -->
 `;
 
@@ -179,32 +229,27 @@ Deno.serve(async (req) => {
       const fullUrl = `${DOMAIN}${page.loc}`;
       if (includedUrls.has(fullUrl)) continue;
       includedUrls.add(fullUrl);
-
-      xml += `  <url>
-    <loc>${fullUrl}</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>${page.changefreq}</changefreq>
-    <priority>${page.priority}</priority>
-  </url>\n`;
+      
+      const lastmod = page.lastmod || today;
+      xml += generateUrlEntry(fullUrl, formatDate(lastmod, today), page.changefreq, page.priority);
     }
 
     // ===================== AUTHOR PAGES =====================
-    xml += `\n  <!-- AUTHOR PAGES -->\n`;
+    xml += `\n  <!-- AUTHOR PAGES (E-E-A-T) -->\n`;
     for (const author of AUTHORS) {
       const fullUrl = `${DOMAIN}/autor/${author.slug}`;
       if (includedUrls.has(fullUrl)) continue;
       includedUrls.add(fullUrl);
-
-      const lastmod = author.updatedAt <= today ? author.updatedAt : today;
-      xml += `  <url>
-    <loc>${fullUrl}</loc>
-    <lastmod>${lastmod}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.55</priority>
-  </url>\n`;
+      
+      xml += generateUrlEntry(
+        fullUrl, 
+        formatDate(author.updatedAt, today), 
+        SEO_CONFIG.author.changefreq, 
+        SEO_CONFIG.author.priority
+      );
     }
 
-    // ===================== BLOG ARTICLES (from blogData.ts) =====================
+    // ===================== BLOG ARTICLES (Static) =====================
     // Sort: pillar first, then satellite, then longtail
     const sortedArticles = [...BLOG_ARTICLES].sort((a, b) => {
       const order = { pillar: 0, satellite: 1, longtail: 2 };
@@ -212,28 +257,57 @@ Deno.serve(async (req) => {
     });
 
     xml += `\n  <!-- BLOG ARTICLES (Static from blogData.ts) -->\n`;
-    for (const article of sortedArticles) {
+    
+    // Add pillar articles first
+    xml += `  <!-- Pillar Articles (0.85, weekly) -->\n`;
+    for (const article of sortedArticles.filter(a => a.articleType === "pillar")) {
       const fullUrl = `${DOMAIN}/blog/${article.slug}`;
       if (includedUrls.has(fullUrl)) continue;
       includedUrls.add(fullUrl);
-
-      const priority = getArticlePriority(article.articleType);
-      const changefreq = getArticleChangefreq(article.articleType);
-      const lastmod = article.updatedAt <= today ? article.updatedAt : today;
-
-      xml += `  <url>
-    <loc>${fullUrl}</loc>
-    <lastmod>${lastmod}</lastmod>
-    <changefreq>${changefreq}</changefreq>
-    <priority>${priority}</priority>
-  </url>\n`;
+      
+      xml += generateUrlEntry(
+        fullUrl,
+        formatDate(article.updatedAt, today),
+        getArticleChangefreq(article.articleType),
+        getArticlePriority(article.articleType)
+      );
+    }
+    
+    // Add satellite articles
+    xml += `  <!-- Satellite Articles (0.75, monthly) -->\n`;
+    for (const article of sortedArticles.filter(a => a.articleType === "satellite")) {
+      const fullUrl = `${DOMAIN}/blog/${article.slug}`;
+      if (includedUrls.has(fullUrl)) continue;
+      includedUrls.add(fullUrl);
+      
+      xml += generateUrlEntry(
+        fullUrl,
+        formatDate(article.updatedAt, today),
+        getArticleChangefreq(article.articleType),
+        getArticlePriority(article.articleType)
+      );
+    }
+    
+    // Add longtail articles
+    xml += `  <!-- Long-tail Articles (0.68, monthly) -->\n`;
+    for (const article of sortedArticles.filter(a => a.articleType === "longtail")) {
+      const fullUrl = `${DOMAIN}/blog/${article.slug}`;
+      if (includedUrls.has(fullUrl)) continue;
+      includedUrls.add(fullUrl);
+      
+      xml += generateUrlEntry(
+        fullUrl,
+        formatDate(article.updatedAt, today),
+        getArticleChangefreq(article.articleType),
+        getArticlePriority(article.articleType)
+      );
     }
 
     // ===================== DATABASE ARTICLES =====================
     // Fetch auto-generated articles from blog_articles_generated table
     const { data: dbArticles, error } = await supabase
       .from("blog_articles_generated")
-      .select("slug, published_at")
+      .select("slug, published_at, created_at")
       .eq("status", "published")
       .order("published_at", { ascending: false });
 
@@ -246,23 +320,23 @@ Deno.serve(async (req) => {
       
       for (const article of dbArticles) {
         const fullUrl = `${DOMAIN}/blog/${article.slug}`;
-        // Skip if already included (avoid duplicates)
+        // Skip if already included (avoid duplicates with static articles)
         if (includedUrls.has(fullUrl)) continue;
         includedUrls.add(fullUrl);
 
         let lastmod = today;
         if (article.published_at) {
           const pubDate = new Date(article.published_at).toISOString().split("T")[0];
-          lastmod = pubDate <= today ? pubDate : today;
+          lastmod = formatDate(pubDate, today);
         }
 
         // Database articles default to longtail priority
-        xml += `  <url>
-    <loc>${fullUrl}</loc>
-    <lastmod>${lastmod}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.68</priority>
-  </url>\n`;
+        xml += generateUrlEntry(
+          fullUrl,
+          lastmod,
+          SEO_CONFIG.longtail.changefreq,
+          SEO_CONFIG.longtail.priority
+        );
       }
     }
 
@@ -270,7 +344,13 @@ Deno.serve(async (req) => {
     xml += `</urlset>`;
 
     const totalUrls = includedUrls.size;
-    console.log(`Sitemap generated: ${totalUrls} URLs (${STATIC_INDEXABLE_PAGES.length} static, ${AUTHORS.length} authors, ${BLOG_ARTICLES.length} static articles, ${dbArticles?.length || 0} db articles)`);
+    console.log(`Sitemap generated: ${totalUrls} total URLs`);
+    console.log(`  - ${STATIC_INDEXABLE_PAGES.length} static pages`);
+    console.log(`  - ${AUTHORS.length} author pages`);
+    console.log(`  - ${BLOG_ARTICLES.filter(a => a.articleType === "pillar").length} pillar articles`);
+    console.log(`  - ${BLOG_ARTICLES.filter(a => a.articleType === "satellite").length} satellite articles`);
+    console.log(`  - ${BLOG_ARTICLES.filter(a => a.articleType === "longtail").length} longtail articles`);
+    console.log(`  - ${dbArticles?.length || 0} database articles`);
 
     return new Response(xml, { status: 200, headers: corsHeaders });
   } catch (error) {
