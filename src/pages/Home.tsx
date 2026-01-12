@@ -244,12 +244,16 @@ const Home = () => {
           {/* How it Works Section */}
           <section className="py-16 px-4">
             <div className="max-w-4xl mx-auto space-y-8">
-              <div className="text-center space-y-2">
+              <div className="text-center space-y-3">
                 <h2 className="text-2xl md:text-3xl font-bold text-foreground">
                   Como o MoneyQuest funciona
                 </h2>
                 <p className="text-muted-foreground">
                   Simples, direto e eficiente
+                </p>
+                <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
+                  Você registra suas receitas e despesas, acompanha tudo por categorias e períodos, 
+                  e evolui suas finanças em poucos passos — sem complicação.
                 </p>
               </div>
               
@@ -374,9 +378,9 @@ const Home = () => {
                   <div className="flex-shrink-0">
                     <Logo size="lg" className="justify-center" />
                   </div>
-                  <div className="space-y-4 text-center md:text-left">
+                <div className="space-y-4 text-center md:text-left">
                     <p className="text-muted-foreground">
-                      O MoneyQuest é um aplicativo brasileiro de controle financeiro pessoal, 
+                      Somos um aplicativo brasileiro de controle financeiro pessoal, 
                       desenvolvido com foco em simplicidade, transparência e acessibilidade.
                     </p>
                     <p className="text-muted-foreground">
@@ -443,7 +447,7 @@ const Home = () => {
                 onClick={() => navigate('/signup')}
                 className="text-lg px-8 h-14"
               >
-                Criar conta grátis
+                Comece a organizar suas finanças — grátis
                 <ChevronRight className="w-5 h-5 ml-1" />
               </Button>
             </div>
