@@ -3737,11 +3737,13 @@ O importante é dar o primeiro passo. Seu eu do futuro vai agradecer.
     publishedAt: '2026-01-11',
     updatedAt: '2026-01-11',
     readTime: 12,
-    relatedSlugs: ['app-financeiro-gamificado', 'gamificacao-financas-pessoais', 'como-montar-orcamento-pessoal'],
+    relatedSlugs: ['app-financeiro-gamificado', 'gamificacao-financas-pessoais', 'como-montar-orcamento-pessoal', 'como-controlar-gastos-mensais', 'controle-financeiro-iniciantes'],
     internalLinks: [
       { text: 'educação financeira gamificada', url: '/educacao-financeira-gamificada' },
       { text: 'desafios financeiros', url: '/desafios-financeiros' },
-      { text: 'app de finanças pessoais', url: '/app-financas-pessoais' }
+      { text: 'app de finanças pessoais', url: '/app-financas-pessoais' },
+      { text: 'como controlar gastos mensais', url: '/blog/como-controlar-gastos-mensais' },
+      { text: 'controle financeiro para iniciantes', url: '/blog/controle-financeiro-iniciantes' }
     ],
     content: `
 Você trabalha, recebe seu salário, paga as contas e quando olha para a conta no fim do mês, o dinheiro simplesmente evaporou. Não sobra nada. E o pior: você nem sabe exatamente para onde foi.
@@ -3750,7 +3752,7 @@ Essa sensação de descontrole é mais comum do que parece. Milhões de brasilei
 
 O problema não é falta de vontade. O problema é que a maioria dos métodos de **controle financeiro pessoal** foi criada para funcionar no papel, não na vida real. Eles exigem tempo demais, disciplina sobre-humana ou conhecimentos que ninguém ensinou na escola.
 
-Este guia foi escrito para mudar isso. Aqui você vai encontrar um caminho prático, simples e sustentável para organizar seu dinheiro de verdade. Sem fórmulas mágicas, sem promessas vazias. Apenas um método que funciona para pessoas reais, com vidas reais e imprevistos reais.
+Este guia foi escrito para mudar isso. Aqui você vai encontrar um caminho prático, simples e sustentável para organizar seu dinheiro de verdade. Se você está [começando no controle financeiro](https://moneyquest.app.br/blog/controle-financeiro-iniciantes), não se preocupe: este método funciona para pessoas reais, com vidas reais e imprevistos reais. Sem fórmulas mágicas, sem promessas vazias.
 
 ## O que é controle financeiro pessoal
 
@@ -3778,7 +3780,7 @@ A maioria das pessoas não sabe quanto gastou no último mês. Não sabe qual ca
 
 Somos seres emocionais. Compramos por impulso, gastamos para compensar um dia ruim, usamos o consumo como válvula de escape. Isso é humano.
 
-O problema é quando essas decisões emocionais acontecem no piloto automático, sem consciência. O **controle de gastos mensais** não significa eliminar a emoção das compras. Significa criar um espaço entre o impulso e a ação, para que você possa decidir com mais clareza.
+O problema é quando essas decisões emocionais acontecem no piloto automático, sem consciência. O [controle de gastos mensais](https://moneyquest.app.br/blog/como-controlar-gastos-mensais) não significa eliminar a emoção das compras. Significa criar um espaço entre o impulso e a ação, para que você possa decidir com mais clareza.
 
 ### Métodos complexos demais
 
