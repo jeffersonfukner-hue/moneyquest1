@@ -1011,7 +1011,7 @@ Comece pequeno. Um desafio de 7 dias é suficiente para começar. Conforme ganha
     publishedAt: '2026-01-03',
     updatedAt: '2026-01-03',
     readTime: 12,
-    relatedSlugs: ['erros-organizar-financas', 'controlar-gastos-jogando', 'controle-financeiro-pessoal'],
+    relatedSlugs: ['controle-financeiro-pessoal', 'controle-financeiro-iniciantes', 'organizacao-financeira'],
     internalLinks: [
       { text: 'app financeiro gamificado', url: '/blog/app-financeiro-gamificado' },
       { text: 'página de controle financeiro', url: '/controle-financeiro' },
@@ -1850,15 +1850,16 @@ Os exemplos deste artigo mostram que pessoas comuns, com situações variadas, c
     publishedAt: '2026-01-03',
     updatedAt: '2026-01-03',
     readTime: 10,
-    relatedSlugs: ['controle-financeiro-iniciantes', 'dicas-economia-mensal'],
+    relatedSlugs: ['controle-financeiro-pessoal', 'controle-financeiro-iniciantes', 'dicas-economia-mensal'],
     internalLinks: [
       { text: 'controle financeiro', url: '/controle-financeiro' },
-      { text: 'desafios financeiros', url: '/desafios-financeiros' }
+      { text: 'desafios financeiros', url: '/desafios-financeiros' },
+      { text: 'controle financeiro pessoal', url: '/blog/controle-financeiro-pessoal' }
     ],
     content: `
 # Como Economizar Dinheiro: 15 Estratégias Práticas que Funcionam
 
-Economizar dinheiro parece simples na teoria, mas na prática pode ser um grande desafio. Se você já se perguntou "por que nunca sobra dinheiro no fim do mês?", este guia foi feito para você.
+Economizar dinheiro parece simples na teoria, mas na prática pode ser um grande desafio. Se você já se perguntou "por que nunca sobra dinheiro no fim do mês?", este guia foi feito para você. Para uma visão mais ampla sobre como organizar suas finanças, confira nosso [guia completo de controle financeiro pessoal](https://moneyquest.app.br/blog/controle-financeiro-pessoal).
 
 Vamos apresentar **15 estratégias práticas e testadas** que funcionam para qualquer tipo de renda. O segredo não está em ganhar mais, mas em gerenciar melhor o que você já tem.
 
@@ -3919,7 +3920,9 @@ Não é para todo mundo. Mas para quem já tentou outros métodos e não consegu
     readTime: 7,
     relatedSlugs: ['controle-financeiro-pessoal', 'controle-financeiro-iniciantes', 'organizacao-financeira'],
     internalLinks: [
-      { text: 'controle financeiro pessoal', url: '/blog/controle-financeiro-pessoal' }
+      { text: 'controle financeiro pessoal', url: '/blog/controle-financeiro-pessoal' },
+      { text: 'controle financeiro para iniciantes', url: '/blog/controle-financeiro-iniciantes' },
+      { text: 'organização financeira', url: '/blog/organizacao-financeira' }
     ],
     content: `
 # Como Controlar Gastos Mensais de Forma Simples e Sustentável
