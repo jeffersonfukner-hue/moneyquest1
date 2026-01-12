@@ -109,6 +109,9 @@ All public pages **MUST** have:
 | Purpose | File |
 |---------|------|
 | SEO Rules (TypeScript) | `src/lib/seoRules.ts` |
+| SEO Audit System | `src/lib/seoAudit.ts` |
+| Audit Hook | `src/hooks/useSEOAudit.tsx` |
+| Audit Debug Panel | `src/components/debug/SEOAuditPanel.tsx` |
 | Route Configuration | `src/lib/routeConfig.ts` |
 | Sitemap Generation | `supabase/functions/sitemap/index.ts` |
 | Blog Articles | `src/lib/blogData.ts` |
@@ -118,7 +121,22 @@ All public pages **MUST** have:
 
 ---
 
-## 8️⃣ Continuity Rule
+## 8️⃣ SEO Audit System (NEW)
+
+### Automatic Checks:
+- **Canonical**: Absolute URL, no preview/localhost
+- **Indexation**: Public = indexable, auth = noindex
+- **Sitemap**: All public pages present, correct priority
+- **Hierarchy**: articleType exists, satellite links to pillar
+- **Linking**: Internal links same tab, external with _blank
+- **PWA**: Navigation works in same tab
+
+### Debug Page:
+Access `/debug-seo` → "Auditoria Completa" tab
+
+---
+
+## 9️⃣ Continuity Rule
 
 These rules:
 - ❌ Are NOT one-time configurations
