@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- MoneyQuest: sitemap index that points to the dynamic sitemap generator -->
-  <sitemap>
-    <loc>https://dybbailvbaaovkstgpoh.supabase.co/functions/v1/sitemap</loc>
-  </sitemap>
-</sitemapindex>
