@@ -48,5 +48,5 @@ Disallow: /admin/
 Disallow: /super-admin/
 Disallow: /debug-*
 
-# Sitemap
-Sitemap: https://moneyquest.app.br/sitemap.xml
+# Sitemap - served by Supabase Edge Function
+Sitemap: https://dybbailvbaaovkstgpoh.supabase.co/functions/v1/sitemap
