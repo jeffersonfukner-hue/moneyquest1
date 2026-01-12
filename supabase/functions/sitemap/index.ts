@@ -37,11 +37,17 @@ const staticPages = [
 
 // Static blog articles from blogData.ts
 const staticBlogArticles = [
+  // Artigo Pilar (prioridade máxima no cluster)
+  "controle-financeiro-pessoal",
+  // Artigos Satélites do cluster de controle financeiro
+  "como-controlar-gastos-mensais",
+  "controle-financeiro-iniciantes",
+  "controle-financeiro-jogando",
+  // Outros artigos
   "app-financeiro-gamificado",
   "controlar-gastos-jogando",
   "educacao-financeira-gamificada",
   "economizar-dinheiro-desafios",
-  "controle-financeiro-iniciantes",
   "erros-organizar-financas",
   "gamificacao-financas-pessoais",
   "como-economizar-dinheiro",
@@ -101,13 +107,18 @@ Deno.serve(async (req) => {
   <!-- STATIC BLOG ARTICLES -->
 `;
 
-    // Add static blog articles
+    // Add static blog articles with priority differentiation
     for (const slug of staticBlogArticles) {
+      // Artigo pilar recebe prioridade maior
+      const isPillar = slug === 'controle-financeiro-pessoal';
+      const priority = isPillar ? '0.85' : '0.7';
+      const changefreq = isPillar ? 'weekly' : 'monthly';
+      
       xml += `  <url>
     <loc>${DOMAIN}/blog/${slug}</loc>
     <lastmod>${today}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>
   </url>
 `;
     }
