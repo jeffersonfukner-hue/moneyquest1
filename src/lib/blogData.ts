@@ -1,7 +1,14 @@
 /**
  * Blog Data - Central repository for all blog articles
  * Each article is SEO-optimized with proper meta tags and structured content
+ * 
+ * SEO Article Types:
+ * - 'pillar': Main cluster article (priority 0.85-0.9, changefreq weekly)
+ * - 'satellite': Supporting cluster article (priority 0.75, changefreq monthly)
+ * - 'longtail': Long-tail keyword article (priority 0.65-0.7, changefreq monthly)
  */
+
+export type ArticleType = 'pillar' | 'satellite' | 'longtail';
 
 export interface BlogArticle {
   slug: string;
@@ -17,6 +24,8 @@ export interface BlogArticle {
   content: string;
   relatedSlugs: string[];
   internalLinks: { text: string; url: string }[];
+  /** SEO article type for sitemap priority */
+  articleType?: ArticleType;
 }
 
 export type BlogCategory = 
@@ -1011,6 +1020,7 @@ Comece pequeno. Um desafio de 7 dias é suficiente para começar. Conforme ganha
     publishedAt: '2026-01-03',
     updatedAt: '2026-01-03',
     readTime: 12,
+    articleType: 'satellite',
     relatedSlugs: ['controle-financeiro-pessoal', 'controle-financeiro-iniciantes', 'organizacao-financeira'],
     internalLinks: [
       { text: 'app financeiro gamificado', url: '/blog/app-financeiro-gamificado' },
@@ -2114,6 +2124,7 @@ O segredo é começar. Escolha 2 ou 3 estratégias deste guia e implemente hoje.
     publishedAt: '2026-01-03',
     updatedAt: '2026-01-03',
     readTime: 12,
+    articleType: 'satellite',
     relatedSlugs: ['controle-financeiro-iniciantes', 'como-economizar-dinheiro'],
     internalLinks: [
       { text: 'controle financeiro gamificado', url: '/controle-financeiro' },
@@ -3738,6 +3749,7 @@ O importante é dar o primeiro passo. Seu eu do futuro vai agradecer.
     publishedAt: '2026-01-11',
     updatedAt: '2026-01-11',
     readTime: 12,
+    articleType: 'pillar',
     relatedSlugs: ['app-financeiro-gamificado', 'gamificacao-financas-pessoais', 'como-montar-orcamento-pessoal', 'como-controlar-gastos-mensais', 'controle-financeiro-iniciantes'],
     internalLinks: [
       { text: 'educação financeira gamificada', url: '/educacao-financeira-gamificada' },
@@ -3918,6 +3930,7 @@ Não é para todo mundo. Mas para quem já tentou outros métodos e não consegu
     publishedAt: '2026-01-12',
     updatedAt: '2026-01-12',
     readTime: 7,
+    articleType: 'satellite',
     relatedSlugs: ['controle-financeiro-pessoal', 'controle-financeiro-iniciantes', 'organizacao-financeira'],
     internalLinks: [
       { text: 'controle financeiro pessoal', url: '/blog/controle-financeiro-pessoal' },
@@ -4035,6 +4048,7 @@ O MoneyQuest foi criado exatamente para isso: transformar o controle financeiro 
     publishedAt: '2026-01-12',
     updatedAt: '2026-01-12',
     readTime: 7,
+    articleType: 'satellite',
     relatedSlugs: ['controle-financeiro-pessoal', 'app-financeiro-gamificado', 'gamificacao-financas-pessoais'],
     internalLinks: [
       { text: 'controle financeiro pessoal', url: '/blog/controle-financeiro-pessoal' }
@@ -4140,6 +4154,28 @@ export const getRelatedArticles = (slug: string): BlogArticle[] => {
   return article.relatedSlugs
     .map(relatedSlug => getArticleBySlug(relatedSlug))
     .filter((a): a is BlogArticle => a !== undefined);
+};
+
+/**
+ * SEO Helpers for Sitemap Generation
+ * Returns all article metadata needed for sitemap
+ */
+export interface SitemapArticle {
+  slug: string;
+  updatedAt: string;
+  articleType: ArticleType;
+}
+
+export const getAllArticlesForSitemap = (): SitemapArticle[] => {
+  return blogArticles.map(article => ({
+    slug: article.slug,
+    updatedAt: article.updatedAt,
+    articleType: article.articleType || 'longtail' // Default to longtail if not specified
+  }));
+};
+
+export const getAllArticleSlugs = (): string[] => {
+  return blogArticles.map(article => article.slug);
 };
 
 // SEO Validation - Auto-run in development
