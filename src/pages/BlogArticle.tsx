@@ -220,6 +220,7 @@ const BlogArticle = () => {
   useSEO({
     title: article?.metaTitle || 'Artigo não encontrado | MoneyQuest',
     description: article?.metaDescription || 'Artigo não encontrado',
+    image: article?.ogImage,
     noIndex: !article
   });
 
@@ -242,6 +243,7 @@ const BlogArticle = () => {
     "@type": "Article",
     "headline": article.title,
     "description": article.metaDescription,
+    "image": article.ogImage || "https://moneyquest.app.br/og-image.png",
     "datePublished": article.publishedAt,
     "dateModified": article.updatedAt,
     "author": {

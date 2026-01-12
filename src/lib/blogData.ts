@@ -8,6 +8,7 @@ export interface BlogArticle {
   title: string;
   metaTitle: string;
   metaDescription: string;
+  ogImage?: string; // Custom OG image URL for social sharing
   category: BlogCategory;
   excerpt: string;
   publishedAt: string;
@@ -3921,3 +3922,7 @@ export const getRelatedArticles = (slug: string): BlogArticle[] => {
     .map(relatedSlug => getArticleBySlug(relatedSlug))
     .filter((a): a is BlogArticle => a !== undefined);
 };
+
+// SEO Validation - Auto-run in development
+import { logSEOValidationResults } from './seoValidation';
+logSEOValidationResults(blogArticles);

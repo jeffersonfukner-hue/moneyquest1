@@ -82,6 +82,7 @@ const LazyReferral = lazy(() => import("./pages/Referral"));
 const LazyNotifications = lazy(() => import("./pages/Notifications"));
 const LazyDebugI18n = lazy(() => import("./pages/DebugI18n"));
 const LazyDebugAuth = lazy(() => import("./pages/DebugAuth"));
+const LazyDebugSEO = lazy(() => import("./pages/DebugSEO"));
 const LazyShop = lazy(() => import("./pages/Shop"));
 const LazySuppliers = lazy(() => import("./pages/Suppliers"));
 // ===== LAZY LOADED - Admin pages =====
@@ -353,6 +354,9 @@ const App = () => (
                   } />
                   <Route path="/debug/auth" element={
                     <Suspense fallback={<PageLoader />}><LazyDebugAuth /></Suspense>
+                  } />
+                  <Route path="/debug-seo" element={
+                    <Suspense fallback={<PageLoader />}><LazyDebugSEO /></Suspense>
                   } />
                   
                   {/* ===== ADMIN ROUTES - Lazy loaded ===== */}
