@@ -1011,15 +1011,16 @@ Comece pequeno. Um desafio de 7 dias é suficiente para começar. Conforme ganha
     publishedAt: '2026-01-03',
     updatedAt: '2026-01-03',
     readTime: 12,
-    relatedSlugs: ['erros-organizar-financas', 'controlar-gastos-jogando'],
+    relatedSlugs: ['erros-organizar-financas', 'controlar-gastos-jogando', 'controle-financeiro-pessoal'],
     internalLinks: [
       { text: 'app financeiro gamificado', url: '/blog/app-financeiro-gamificado' },
-      { text: 'página de controle financeiro', url: '/controle-financeiro' }
+      { text: 'página de controle financeiro', url: '/controle-financeiro' },
+      { text: 'guia completo de controle financeiro', url: '/blog/controle-financeiro-pessoal' }
     ],
     content: `
 # Controle Financeiro Para Iniciantes: Passo a Passo Completo
 
-Se você nunca controlou suas finanças e não sabe por onde começar, este guia é para você. Vamos do zero ao controle completo, passo a passo, sem complicações.
+Se você nunca controlou suas finanças e não sabe por onde começar, este guia é para você. Este passo a passo faz parte do nosso [guia completo de controle financeiro](https://moneyquest.app.br/blog/controle-financeiro-pessoal), mas aqui você vai encontrar o caminho mais direto para quem está começando do zero.
 
 ## Por Que Você Precisa de Controle Financeiro?
 
