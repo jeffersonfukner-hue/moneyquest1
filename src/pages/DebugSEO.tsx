@@ -15,6 +15,7 @@ import {
   getStatusBadgeVariant,
   type SEOValidation 
 } from '@/lib/seoValidation';
+import { SEOAuditPanel } from '@/components/debug/SEOAuditPanel';
 import { 
   Search, 
   Globe, 
@@ -28,7 +29,8 @@ import {
   XCircle,
   Copy,
   ExternalLink,
-  RefreshCw
+  RefreshCw,
+  Shield
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -260,6 +262,10 @@ const DebugSEO = () => {
         <Tabs defaultValue="current" className="space-y-4">
           <TabsList>
             <TabsTrigger value="current">Página Atual</TabsTrigger>
+            <TabsTrigger value="audit" className="flex items-center gap-1">
+              <Shield className="h-4 w-4" />
+              Auditoria Completa
+            </TabsTrigger>
             <TabsTrigger value="articles">Artigos do Blog</TabsTrigger>
             <TabsTrigger value="all-metas">Todas Meta Tags</TabsTrigger>
           </TabsList>
@@ -417,6 +423,11 @@ const DebugSEO = () => {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          {/* Full SEO Audit */}
+          <TabsContent value="audit">
+            <SEOAuditPanel />
           </TabsContent>
 
           {/* Blog Articles Validation */}
