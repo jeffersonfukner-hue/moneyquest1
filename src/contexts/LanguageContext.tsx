@@ -1,67 +1,52 @@
-import React, { createContext, useContext, useEffect, useCallback, useMemo, useState } from 'react';
+import React, { createContext, useContext, ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useProfile } from '@/hooks/useProfile';
-import { SUPPORTED_LANGUAGES, SUPPORTED_CURRENCIES, type SupportedLanguage, type SupportedCurrency, getDateLocale, LANGUAGE_PREFERENCE_KEY } from '@/i18n';
-import type { Locale } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import type { Locale } from 'date-fns';
+import { SUPPORTED_LANGUAGES, type SupportedLanguage } from '@/i18n';
 
-// NOTE: Currency is now determined by REGION (timezone), not language
-// See src/lib/regionDetection.ts for billing currency logic
+// Idioma fixo
+const FIXED_LANGUAGE: SupportedLanguage = 'pt-BR';
 
 interface LanguageContextType {
   language: SupportedLanguage;
-  setLanguage: (language: SupportedLanguage) => Promise<void>;
+  setLanguage: (lang: SupportedLanguage) => Promise<void>;
   dateLocale: Locale;
   supportedLanguages: typeof SUPPORTED_LANGUAGES;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { i18n } = useTranslation();
-  const { profile, updateProfile } = useProfile();
   const [dateLocale, setDateLocale] = useState<Locale>(ptBR);
 
-  const language = (profile?.language as SupportedLanguage) || (i18n.language as SupportedLanguage) || 'pt-BR';
-
-  // Sync i18n with profile language
+  // Garantir que i18n está em pt-BR
   useEffect(() => {
-    if (profile?.language && profile.language !== i18n.language) {
-      i18n.changeLanguage(profile.language);
+    if (i18n.language !== FIXED_LANGUAGE) {
+      i18n.changeLanguage(FIXED_LANGUAGE);
     }
-  }, [profile?.language, i18n]);
+    localStorage.setItem('i18nextLng', FIXED_LANGUAGE);
+  }, [i18n]);
 
-  // Load date locale when language changes
+  // Carregar locale de data
   useEffect(() => {
-    const loadDateLocale = async () => {
-      const locale = await getDateLocale(language);
-      setDateLocale(locale);
-    };
-    loadDateLocale();
-  }, [language]);
-
-  const setLanguage = useCallback(async (newLanguage: SupportedLanguage) => {
-    // Marcar que usuário fez escolha explícita de idioma
-    localStorage.setItem(LANGUAGE_PREFERENCE_KEY, 'true');
-    
-    await i18n.changeLanguage(newLanguage);
-    
-    // NOTE: We do NOT change currency when language changes
-    // Currency is determined by REGION (timezone), not language
-    // See src/lib/regionDetection.ts for billing currency logic
-    await updateProfile({ 
-      language: newLanguage, 
-      locale: newLanguage,
-      // currency is NOT updated here - it's region-based, not language-based
+    import('date-fns/locale/pt-BR').then(module => {
+      setDateLocale(module.ptBR);
     });
-  }, [i18n, updateProfile]);
+  }, []);
 
-  const value = useMemo(() => ({
-    language,
+  // setLanguage é no-op - idioma fixo em pt-BR
+  const setLanguage = async (_lang: SupportedLanguage): Promise<void> => {
+    // Ignora mudanças de idioma - sempre pt-BR
+    console.log('[LanguageContext] Idioma fixo em pt-BR, mudança ignorada');
+  };
+
+  const value: LanguageContextType = {
+    language: FIXED_LANGUAGE,
     setLanguage,
     dateLocale,
     supportedLanguages: SUPPORTED_LANGUAGES,
-  }), [language, setLanguage, dateLocale]);
+  };
 
   return (
     <LanguageContext.Provider value={value}>
@@ -72,14 +57,16 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
 export const useLanguage = (): LanguageContextType => {
   const context = useContext(LanguageContext);
-  if (context === undefined) {
-    // Return default values for resilience during early render
+  
+  // Fallback resiliente se contexto não estiver disponível
+  if (!context) {
     return {
-      language: 'pt-BR',
+      language: FIXED_LANGUAGE,
       setLanguage: async () => {},
       dateLocale: ptBR,
       supportedLanguages: SUPPORTED_LANGUAGES,
     };
   }
+  
   return context;
 };

@@ -67,13 +67,8 @@ export const CashFlowChart = ({ transactions, walletFilter }: CashFlowChartProps
   const [periodType, setPeriodType] = useState<PeriodType>('month');
   const [viewMode, setViewMode] = useState<ViewMode>('history');
 
-  const dateLocale = useMemo(() => {
-    switch (language) {
-      case 'pt-BR': return ptBR;
-      case 'es-ES': return es;
-      default: return enUS;
-    }
-  }, [language]);
+  // Sempre usa locale pt-BR
+  const dateLocale = ptBR;
 
   // Filter transactions by wallet if specified
   const filteredTransactions = useMemo(() => {

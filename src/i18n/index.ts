@@ -1,133 +1,60 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-// Admin translations v11 - added traffic analytics menu and widget translations
+// Idioma fixo: pt-BR (outros idiomas mantidos como estrutura futura, adormecidos)
 import ptBR from './locales/pt-BR.json';
-import ptPT from './locales/pt-PT.json';
-import enUS from './locales/en-US.json';
-import esES from './locales/es-ES.json';
-import { detectLanguageFromTimezone, detectLanguageFromIP, clearIPDetectionCache } from '@/lib/countryDetection';
 
-// Re-export para uso em outros módulos
-export { detectLanguageFromIP, clearIPDetectionCache };
+// Idioma fixo da aplicação
+export const APP_LANGUAGE = 'pt-BR' as const;
 
+// Estrutura mantida para internacionalização futura (DESATIVADA)
 export const SUPPORTED_LANGUAGES = {
   'pt-BR': { name: 'Português (Brasil)', flag: '🇧🇷' },
-  'pt-PT': { name: 'Português (Portugal)', flag: '🇵🇹' },
-  'en-US': { name: 'English (US)', flag: '🇺🇸' },
-  'es-ES': { name: 'Español', flag: '🇪🇸' },
 } as const;
 
-export type SupportedLanguage = keyof typeof SUPPORTED_LANGUAGES;
+export type SupportedLanguage = 'pt-BR';
 
+// Moedas suportadas (funcionando normalmente)
 export const SUPPORTED_CURRENCIES = {
   BRL: { symbol: 'R$', name: 'Real Brasileiro', locale: 'pt-BR' },
-  USD: { symbol: '$', name: 'US Dollar', locale: 'en-US' },
-  EUR: { symbol: '€', name: 'Euro', locale: 'pt-PT' },
+  USD: { symbol: '$', name: 'Dólar Americano', locale: 'pt-BR' },
+  EUR: { symbol: '€', name: 'Euro', locale: 'pt-BR' },
 } as const;
 
 export type SupportedCurrency = keyof typeof SUPPORTED_CURRENCIES;
 
-// Chave para identificar se usuário fez escolha explícita de idioma
+// Chave mantida para compatibilidade (não é mais usada para detecção)
 export const LANGUAGE_PREFERENCE_KEY = 'moneyquest_language_set';
 
 const resources = {
   'pt-BR': { translation: ptBR },
-  'pt-PT': { translation: ptPT },
-  'en-US': { translation: enUS },
-  'es-ES': { translation: esES },
 };
 
-/**
- * Mapeia idioma do navegador para idioma suportado.
- * pt-PT → pt-PT, pt* → pt-BR, es* → es-ES, en* → en-US
- * IMPORTANTE: Não retorna fallback para en-US - retorna null se não reconhecer
- */
-export const mapBrowserLanguage = (browserLang: string): SupportedLanguage | null => {
-  const lang = browserLang.toLowerCase();
-  
-  // Verificar pt-PT especificamente primeiro
-  if (lang === 'pt-pt' || lang === 'pt_pt') return 'pt-PT';
-  if (lang.startsWith('pt')) return 'pt-BR';
-  if (lang.startsWith('es')) return 'es-ES';
-  if (lang.startsWith('en')) return 'en-US';
-  
-  // Não usar fallback para inglês - retornar null para forçar seleção
-  return null;
-};
+// Funções de detecção desativadas - sempre retornam pt-BR
+export const mapBrowserLanguage = (_browserLang: string): SupportedLanguage => 'pt-BR';
 
-/**
- * Determina o idioma inicial de forma segura.
- * Prioridade:
- * 1. Preferência explícita salva (localStorage)
- * 2. Detecção por timezone
- * 3. Detecção por navigator.language
- * 4. null (forçará tela de seleção)
- */
-const determineInitialLanguage = (): SupportedLanguage | null => {
-  // 1. Verificar preferência explícita
-  const hasExplicitPreference = localStorage.getItem(LANGUAGE_PREFERENCE_KEY) === 'true';
-  const savedLang = localStorage.getItem('i18nextLng') as SupportedLanguage | null;
-  
-  if (hasExplicitPreference && savedLang && SUPPORTED_LANGUAGES[savedLang]) {
-    return savedLang;
-  }
-  
-  // 2. Tentar detecção por timezone
-  const timezoneLanguage = detectLanguageFromTimezone();
-  if (timezoneLanguage) {
-    localStorage.setItem('i18nextLng', timezoneLanguage);
-    localStorage.setItem(LANGUAGE_PREFERENCE_KEY, 'true');
-    return timezoneLanguage;
-  }
-  
-  // 3. Tentar detecção por navigator.language
-  const browserLang = navigator.language || navigator.languages?.[0];
-  if (browserLang) {
-    const mappedLang = mapBrowserLanguage(browserLang);
-    if (mappedLang) {
-      localStorage.setItem('i18nextLng', mappedLang);
-      localStorage.setItem(LANGUAGE_PREFERENCE_KEY, 'true');
-      return mappedLang;
-    }
-  }
-  
-  // 4. Não conseguiu determinar - será tratado pelo LanguageGuard
-  return null;
-};
+export const detectLanguageFromIP = async (): Promise<SupportedLanguage> => 'pt-BR';
 
-// Determinar idioma inicial
-const initialLanguage = determineInitialLanguage();
+export const clearIPDetectionCache = (): void => {};
 
 i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: initialLanguage || 'pt-BR', // pt-BR como fallback temporário para i18n funcionar
-    fallbackLng: 'pt-BR', // Fallback para pt-BR, não en-US
-    supportedLngs: ['pt-BR', 'pt-PT', 'en-US', 'es-ES'],
+    lng: 'pt-BR', // Idioma fixo
+    fallbackLng: 'pt-BR',
+    supportedLngs: ['pt-BR'],
     interpolation: {
       escapeValue: false,
     },
-    detection: {
-      order: ['localStorage'],
-      caches: ['localStorage'],
-      lookupLocalStorage: 'i18nextLng',
-    },
   });
+
+// Garantir que localStorage tenha pt-BR
+localStorage.setItem('i18nextLng', 'pt-BR');
 
 export default i18n;
 
-export const getDateLocale = async (language: string) => {
-  switch (language) {
-    case 'pt-BR':
-      return (await import('date-fns/locale/pt-BR')).ptBR;
-    case 'pt-PT':
-      return (await import('date-fns/locale/pt')).pt;
-    case 'es-ES':
-      return (await import('date-fns/locale/es')).es;
-    case 'en-US':
-    default:
-      return (await import('date-fns/locale/en-US')).enUS;
-  }
+// Locale de data - sempre pt-BR
+export const getDateLocale = async (_language?: string) => {
+  return (await import('date-fns/locale/pt-BR')).ptBR;
 };

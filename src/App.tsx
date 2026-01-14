@@ -40,7 +40,7 @@ import Home from "./pages/Home"; // Eagerly loaded for LCP optimization
 
 // ===== LAZY LOADED - Public pages (non-critical) =====
 const LazyIndex = lazy(() => import("./pages/Index"));
-const LazyLanguageSelection = lazy(() => import("./pages/LanguageSelection"));
+// Rota de seleção de idioma removida - idioma fixo em pt-BR
 const LazyFeatures = lazy(() => import("./pages/Features"));
 const LazyAbout = lazy(() => import("./pages/About"));
 const LazyTerms = lazy(() => import("./pages/Terms"));
@@ -166,10 +166,8 @@ const App = () => (
               <AuthStatusIndicator />
               <BrowserRouter>
                 <Routes>
-                  {/* ===== PUBLIC ROUTES - Fast loading, minimal providers ===== */}
-                  <Route path="/select-language" element={
-                    <SEOProviderPublic><Suspense fallback={<PageLoader />}><LazyLanguageSelection /></Suspense></SEOProviderPublic>
-                  } />
+                  {/* Rota de seleção de idioma removida - redireciona para home */}
+                  <Route path="/select-language" element={<Navigate to="/" replace />} />
                   
                   {/* Home - Public landing page for SEO and AdSense - Eagerly loaded for LCP */}
                   <Route path="/" element={

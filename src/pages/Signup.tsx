@@ -27,11 +27,8 @@ type SignupStep = 'landing' | 'preferences' | 'account';
 
 const STEPS: SignupStep[] = ['landing', 'preferences', 'account'];
 
-const languageFlags: Record<I18nLanguage, { flag: string; label: string }> = {
+const languageFlags: Record<string, { flag: string; label: string }> = {
   'pt-BR': { flag: '🇧🇷', label: 'Português (BR)' },
-  'pt-PT': { flag: '🇵🇹', label: 'Português (PT)' },
-  'en-US': { flag: '🇺🇸', label: 'English' },
-  'es-ES': { flag: '🇪🇸', label: 'Español' },
 };
 
 const stepLabels: Record<SignupStep, string> = {
@@ -43,8 +40,7 @@ const stepLabels: Record<SignupStep, string> = {
 const Signup = () => {
   const { t, i18n: i18nInstance } = useTranslation();
   
-  const currentLanguage = i18nInstance.language as I18nLanguage;
-  const currentFlag = languageFlags[currentLanguage] || languageFlags['en-US'];
+  const currentFlag = languageFlags['pt-BR'];
   const navigate = useNavigate();
   const { signUp, signInWithGoogle, user } = useAuth();
   const { saveSetupPreferences } = useSetupGuard();
@@ -55,10 +51,8 @@ const Signup = () => {
   const [transitionDirection, setTransitionDirection] = useState<'forward' | 'backward'>('forward');
   
   const currentStepIndex = STEPS.indexOf(step);
-  // Preferences state - pre-select detected browser language
-  const [selectedLanguage, setSelectedLanguage] = useState<SupportedLanguage | null>(() => {
-    return detectBrowserLanguage();
-  });
+  // Idioma fixo em pt-BR, apenas moeda é selecionável
+  const [selectedLanguage] = useState<SupportedLanguage>('pt-BR');
   const [selectedCurrency, setSelectedCurrency] = useState<SupportedCurrency | null>(null);
   
   // Account state
@@ -71,7 +65,7 @@ const Signup = () => {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [referralCode] = useState<string | null>(() => getReferralCode());
 
-  const isPreferencesValid = selectedLanguage !== null && selectedCurrency !== null;
+  const isPreferencesValid = selectedCurrency !== null;
 
   // Process referral after successful signup
   const processReferral = async (userId: string) => {
@@ -123,12 +117,7 @@ const Signup = () => {
     }
   }, [user, navigate]);
 
-  // Apply language when manually selected
-  useEffect(() => {
-    if (selectedLanguage && selectedLanguage !== i18n.language) {
-      i18n.changeLanguage(selectedLanguage);
-    }
-  }, [selectedLanguage]);
+  // Idioma fixo - não precisa de useEffect para mudança
 
   const navigateToStep = (newStep: SignupStep, direction: 'forward' | 'backward') => {
     setTransitionDirection(direction);
@@ -140,9 +129,8 @@ const Signup = () => {
   };
 
   const handleContinueToAccount = () => {
-    if (selectedLanguage && selectedCurrency) {
-      localStorage.setItem(LANGUAGE_PREFERENCE_KEY, 'true');
-      saveSetupPreferences(selectedLanguage, selectedCurrency);
+    if (selectedCurrency) {
+      saveSetupPreferences('pt-BR', selectedCurrency);
       navigateToStep('account', 'forward');
     }
   };
@@ -333,40 +321,8 @@ const Signup = () => {
           {t('setup.title')}
         </h2>
         <p className="text-sm text-muted-foreground mt-1">
-          {t('setup.subtitle')}
+          {t('setup.currencyHint')}
         </p>
-      </div>
-
-      {/* Language Selector */}
-      <div className="space-y-2">
-        <Label className="flex items-center gap-2">
-          <Globe className="w-4 h-4" />
-          {t('setup.languageLabel')}
-        </Label>
-        <Select 
-          value={selectedLanguage || ''} 
-          onValueChange={(value) => setSelectedLanguage(value as SupportedLanguage)}
-        >
-          <SelectTrigger className="min-h-[48px]">
-            <SelectValue placeholder={t('setup.selectLanguage')} />
-          </SelectTrigger>
-          <SelectContent>
-            {SUPPORTED_LANGUAGES.map((lang) => (
-              <SelectItem key={lang.value} value={lang.value}>
-                <span className="flex items-center gap-2">
-                  <span>{lang.flag}</span>
-                  <span>{lang.label}</span>
-                </span>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {selectedLanguage && (
-          <div className="flex items-center gap-1 text-sm text-green-600">
-            <Check className="w-3 h-3" />
-            {SUPPORTED_LANGUAGES.find(l => l.value === selectedLanguage)?.label}
-          </div>
-        )}
       </div>
 
       {/* Currency Selector */}
@@ -648,11 +604,11 @@ const Signup = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20 flex flex-col">
-      {/* Header */}
+      {/* Header - idioma fixo em pt-BR */}
       <header className="flex items-center justify-between p-4">
         <div className="flex items-center gap-1.5 text-sm text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full">
-          <span>{currentFlag.flag}</span>
-          <span className="text-xs">{currentFlag.label}</span>
+          <span>🇧🇷</span>
+          <span className="text-xs">Português (BR)</span>
         </div>
         {step === 'landing' && (
           <Button 
