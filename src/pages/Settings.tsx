@@ -47,7 +47,7 @@ const TIMEZONES = [
 const Settings = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { language, setLanguage } = useLanguage();
+  // Idioma removido - fixo em pt-BR
   const { currency, setCurrency } = useCurrency();
   const { isMuted, toggleMute } = useSound();
   const { theme, setTheme } = useTheme();
@@ -62,9 +62,7 @@ const Settings = () => {
   const pricing = PREMIUM_PRICING[currency] || PREMIUM_PRICING.USD;
   const currentTimezone = profile?.timezone || 'America/Sao_Paulo';
 
-  const handleLanguageChange = async (value: string) => {
-    await setLanguage(value as SupportedLanguage);
-  };
+  // handleLanguageChange removido - idioma fixo em pt-BR
 
   const handleCurrencyChange = async (value: string) => {
     await setCurrency(value as SupportedCurrency);
@@ -184,46 +182,7 @@ const Settings = () => {
           </CardContent>
         </Card>
 
-        {/* Language */}
-        <Card className={!canAccessMultiLanguage ? 'opacity-60' : ''}>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Globe className="w-5 h-5 text-primary" />
-              {t('settings.language')}
-              {!canAccessMultiLanguage && <PremiumBadge size="sm" />}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {canAccessMultiLanguage ? (
-              <Select value={language} onValueChange={handleLanguageChange}>
-                <SelectTrigger className="min-h-[48px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(SUPPORTED_LANGUAGES).map(([code, { name, flag }]) => (
-                    <SelectItem key={code} value={code} className="min-h-[44px]">
-                      <span className="flex items-center gap-2">
-                        <span>{flag}</span>
-                        <span>{name}</span>
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            ) : (
-              <div 
-                className="flex items-center justify-between min-h-[48px] cursor-pointer"
-                onClick={() => navigate('/premium')}
-              >
-                <span className="flex items-center gap-2 text-muted-foreground">
-                  <span>{SUPPORTED_LANGUAGES[language]?.flag}</span>
-                  <span>{SUPPORTED_LANGUAGES[language]?.name}</span>
-                </span>
-                <Crown className="w-4 h-4 text-amber-500" />
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        {/* Idioma - Removido: App fixo em pt-BR */}
 
         {/* Currency */}
         <Card className={!canAccessMultiCurrency ? 'opacity-60' : ''}>

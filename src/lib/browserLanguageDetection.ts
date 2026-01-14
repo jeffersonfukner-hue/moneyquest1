@@ -1,33 +1,17 @@
 import type { SupportedLanguage } from '@/i18n';
 
 /**
- * Detecta o idioma do navegador e mapeia para um idioma suportado.
- * Regras:
- * - pt* → pt-BR (Português)
- * - es* → es-ES (Espanhol)
- * - en* → en-US (Inglês)
- * - outros → en-US (fallback)
+ * Detecção de idioma do navegador - DESATIVADA
+ * Idioma fixo em pt-BR
  */
 export const detectBrowserLanguage = (): SupportedLanguage => {
-  const browserLang = navigator.language || 
-                      (navigator as any).userLanguage || 
-                      'en';
-  
-  return mapBrowserLanguage(browserLang);
+  return 'pt-BR';
 };
 
 /**
- * Mapeia um código de idioma do navegador para um idioma suportado.
+ * Mapeia um código de idioma do navegador - DESATIVADO
+ * Sempre retorna pt-BR
  */
-export const mapBrowserLanguage = (browserLang: string): SupportedLanguage => {
-  const lang = browserLang.toLowerCase();
-  
-  // Verificar pt-PT especificamente primeiro
-  if (lang === 'pt-pt' || lang === 'pt_pt') return 'pt-PT';
-  if (lang.startsWith('pt')) return 'pt-BR';
-  if (lang.startsWith('es')) return 'es-ES';
-  if (lang.startsWith('en')) return 'en-US';
-  
-  // Fallback para inglês
-  return 'en-US';
+export const mapBrowserLanguage = (_browserLang: string): SupportedLanguage => {
+  return 'pt-BR';
 };
