@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -43,6 +44,7 @@ interface MetaTag {
 const DebugSEO = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { isSuperAdmin, loading: adminLoading } = useAdminAuth();
   const [routeInput, setRouteInput] = useState(location.pathname);
   const [currentMetas, setCurrentMetas] = useState<MetaTag[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -159,8 +161,20 @@ const DebugSEO = () => {
     }
   };
 
-  // Only render in development
-  if (!import.meta.env.DEV) {
+  // Loading state
+  if (adminLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <RefreshCw className="w-8 h-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Verificando acesso...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Only super-admins can access
+  if (!isSuperAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Card className="w-96">
@@ -168,7 +182,7 @@ const DebugSEO = () => {
             <XCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
             <h1 className="text-xl font-bold mb-2">Acesso Negado</h1>
             <p className="text-muted-foreground">
-              Esta página só está disponível em modo de desenvolvimento.
+              Esta página está disponível apenas para super-administradores.
             </p>
           </CardContent>
         </Card>
