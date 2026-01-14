@@ -81,14 +81,6 @@ export const FEATURE_UNLOCKS: FeatureUnlock[] = [
   
   // Level 10 - Unlocks
   {
-    key: 'ai_coach',
-    name: 'Coach Financeiro IA',
-    description: 'Dicas personalizadas com inteligência artificial',
-    icon: '🤖',
-    level: 10,
-    isPremiumOverride: true,
-  },
-  {
     key: 'special_quests',
     name: 'Missões Especiais',
     description: 'Eventos sazonais exclusivos',

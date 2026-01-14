@@ -198,7 +198,7 @@ const EducacaoFinanceira = () => {
           </div>
         </section>
 
-        {/* AI Coach Section */}
+        {/* Premium Features Section */}
         <section className="py-16">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
@@ -207,15 +207,15 @@ const EducacaoFinanceira = () => {
                 <span className="font-medium text-gold">Recurso Premium</span>
               </div>
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                Coach Financeiro com Inteligência Artificial
+                Relatórios Avançados e Metas por Categoria
               </h2>
               <p className="text-xl text-muted-foreground mb-8">
-                Receba orientações personalizadas de um coach virtual que analisa seus gastos 
-                e sugere melhorias específicas para seu perfil financeiro.
+                Tenha acesso a análises detalhadas do seu fluxo de caixa, 
+                defina limites de gastos por categoria e acompanhe sua evolução.
               </p>
               <Button size="lg" asChild>
                 <Link to="/premium">
-                  Conhecer o Coach IA
+                  Conhecer o Premium
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>

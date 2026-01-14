@@ -19,8 +19,6 @@ interface SubscriptionContextType {
   canAccessSpecialQuests: boolean;
   canAccessRareBadges: boolean;
   canAccessCategoryGoals: boolean;
-  canAccessAIInsights: boolean;
-  canAccessMultiLanguage: boolean;
   canAccessMultiCurrency: boolean;
   canAccessAdvancedThemes: boolean;
   canAccessDataExport: boolean;
@@ -42,8 +40,6 @@ const PREMIUM_FEATURES = [
   'special_quests',
   'rare_badges',
   'category_goals',
-  'ai_insights',
-  'multi_language',
   'multi_currency',
   'advanced_themes',
   'data_export',
@@ -89,8 +85,6 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
     canAccessSpecialQuests: isPremium,
     canAccessRareBadges: isPremium,
     canAccessCategoryGoals: isPremium,
-    canAccessAIInsights: isPremium,
-    canAccessMultiLanguage: isPremium,
     canAccessMultiCurrency: isPremium,
     canAccessAdvancedThemes: isPremium,
     canAccessDataExport: isPremium,
@@ -124,8 +118,6 @@ export const useSubscription = (): SubscriptionContextType => {
       canAccessSpecialQuests: false,
       canAccessRareBadges: false,
       canAccessCategoryGoals: false,
-      canAccessAIInsights: false,
-      canAccessMultiLanguage: false,
       canAccessMultiCurrency: false,
       canAccessAdvancedThemes: false,
       canAccessDataExport: false,
@@ -167,8 +159,6 @@ export const PREMIUM_BENEFITS = [
   { key: 'advanced_quests', icon: '🎯' },
   { key: 'rare_badges', icon: '🏆' },
   { key: 'category_goals', icon: '💰' },
-  { key: 'ai_insights', icon: '🤖' },
-  { key: 'multi_language', icon: '🌍' },
   { key: 'multi_currency', icon: '💱' },
   { key: 'advanced_themes', icon: '🎨' },
   { key: 'data_export', icon: '📥' },

@@ -66,7 +66,7 @@ const LazySettings = lazy(() => import("./pages/Settings"));
 const LazyProfile = lazy(() => import("./pages/Profile"));
 const LazyUpgrade = lazy(() => import("./pages/Upgrade"));
 const LazyPremiumSuccess = lazy(() => import("./pages/PremiumSuccess"));
-const LazyAICoach = lazy(() => import("./pages/AICoach"));
+// AI Coach desativado na versão sem IA - rota redirecionará para home
 const LazyCategoryGoals = lazy(() => import("./pages/CategoryGoals"));
 const LazyCategories = lazy(() => import("./pages/Categories"));
 const LazyLeaderboard = lazy(() => import("./pages/Leaderboard"));
@@ -267,11 +267,8 @@ const App = () => (
                     </AuthenticatedWrapper>
                   } />
                   <Route path="/upgrade" element={<Navigate to="/premium" replace />} />
-                  <Route path="/ai-coach" element={
-                    <AuthenticatedWrapper>
-                      <Suspense fallback={<PageLoader />}><LazyAICoach /></Suspense>
-                    </AuthenticatedWrapper>
-                  } />
+                  {/* AI Coach desativado - redireciona para home */}
+                  <Route path="/ai-coach" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/category-goals" element={
                     <AuthenticatedWrapper>
                       <Suspense fallback={<PageLoader />}><LazyCategoryGoals /></Suspense>

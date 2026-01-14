@@ -40,7 +40,6 @@ import { LevelUnlocksCard } from '@/components/game/LevelUnlocksCard';
 import { ShopQuickAccessCard } from '@/components/shop/ShopQuickAccessCard';
 import { BottomNavigation, type TabId } from '@/components/navigation/BottomNavigation';
 import { MobileHeader } from '@/components/navigation/MobileHeader';
-import { AICoachCard } from '@/components/ai/AICoachCard';
 import { BlogPreviewCard } from '@/components/blog/BlogPreviewCard';
 import { CategoryGoalsCard } from '@/components/goals/CategoryGoalsCard';
 import { AdBanner } from '@/components/ads/AdBanner';
@@ -239,9 +238,8 @@ const Index = () => {
             <MonthlyComparisonWidget transactions={transactions} />
             <LazySpendingByCategoryChart transactions={transactions} />
             
-            {/* Social & AI at bottom */}
+            {/* Social at bottom */}
             <LeaderboardCard />
-            <AICoachCard />
             <BlogPreviewCard />
           </div>
         );

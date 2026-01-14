@@ -57,8 +57,8 @@ const AppFinancasPessoais = () => {
     },
     {
       icon: <Zap className="w-6 h-6" />,
-      title: 'Coach IA',
-      description: 'Orientações personalizadas de inteligência artificial.',
+      title: 'Metas e Limites',
+      description: 'Defina orçamentos por categoria e acompanhe seu progresso.',
     },
   ];
 
@@ -73,7 +73,7 @@ const AppFinancasPessoais = () => {
     { feature: 'Gamificação completa', moneyquest: true, others: false },
     { feature: 'Sistema de XP e níveis', moneyquest: true, others: false },
     { feature: 'Missões diárias/semanais', moneyquest: true, others: false },
-    { feature: 'Coach IA personalizado', moneyquest: true, others: false },
+    { feature: 'Metas por categoria', moneyquest: true, others: false },
     { feature: 'Ranking e competição', moneyquest: true, others: false },
     { feature: 'Múltiplas carteiras', moneyquest: true, others: true },
     { feature: 'Gratuito para começar', moneyquest: true, others: true },
