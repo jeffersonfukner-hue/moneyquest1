@@ -157,7 +157,6 @@ const Upgrade = () => {
     'daily_quests_only',
     'basic_mood',
     'recent_history',
-    'single_language',
     'single_currency',
   ];
 
@@ -166,8 +165,6 @@ const Upgrade = () => {
     'all_quest_types',
     'rare_badges',
     'category_goals',
-    'ai_insights',
-    'multi_language',
     'multi_currency',
     'advanced_themes',
     'data_export',

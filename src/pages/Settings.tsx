@@ -54,7 +54,7 @@ const Settings = () => {
   const { signOut } = useAuth();
   const { profile, updateProfile } = useProfile();
   const { toast } = useToast();
-  const { isPremium, canAccessMultiLanguage, canAccessMultiCurrency, plan } = useSubscription();
+  const { isPremium, canAccessMultiCurrency, plan } = useSubscription();
   const { rates, lastUpdate, loading: ratesLoading, refreshRates, getRate } = useExchangeRates();
   const { isSuperAdmin } = useAdminAuth();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);

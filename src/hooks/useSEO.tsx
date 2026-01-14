@@ -65,7 +65,7 @@ const pageConfigs: Record<string, SEOConfig> = {
   },
   '/features': {
     title: 'Recursos | MoneyQuest',
-    description: 'Conheça todos os recursos do MoneyQuest: gamificação, metas financeiras, coach IA e modo premium sem anúncios.',
+    description: 'Conheça todos os recursos do MoneyQuest: gamificação, metas financeiras, relatórios e modo premium sem anúncios.',
   },
   '/about': {
     title: 'Sobre Nós | MoneyQuest',

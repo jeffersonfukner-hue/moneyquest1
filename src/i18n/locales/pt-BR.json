@@ -1548,7 +1548,6 @@
       "daily_quests_only": "Apenas missões diárias",
       "basic_mood": "Feedback emocional básico",
       "recent_history": "Histórico dos últimos 30 dias",
-      "single_language": "Um idioma",
       "single_currency": "Uma moeda"
     },
     "premiumFeatures": {
@@ -1556,8 +1555,6 @@
       "all_quest_types": "Missões semanais, mensais e especiais",
       "rare_badges": "Conquistas raras e sazonais",
       "category_goals": "Metas e limites por categoria",
-      "ai_insights": "Insights financeiros com IA",
-      "multi_language": "Suporte a múltiplos idiomas",
       "multi_currency": "Suporte a múltiplas moedas",
       "advanced_themes": "Temas emocionais avançados",
       "data_export": "Exportação e backup de dados",
@@ -1569,8 +1566,6 @@
       "special_quests": "Missões especiais",
       "rare_badges": "Conquistas raras",
       "category_goals": "Metas por categoria",
-      "ai_insights": "Insights com IA",
-      "multi_language": "Múltiplos idiomas",
       "multi_currency": "Múltiplas moedas",
       "advanced_themes": "Temas avançados",
       "data_export": "Exportar dados",
@@ -1581,8 +1576,6 @@
       "advanced_quests": "Todas Missões",
       "rare_badges": "Conquistas Raras",
       "category_goals": "Metas",
-      "ai_insights": "Coach IA",
-      "multi_language": "Idiomas",
       "multi_currency": "Moedas",
       "advanced_themes": "Temas",
       "data_export": "Exportar"
@@ -2558,9 +2551,9 @@
         "name": "Metas por Categoria",
         "description": "Defina limites de gastos por categoria"
       },
-      "ai_coach": {
-        "name": "Coach Financeiro IA",
-        "description": "Dicas personalizadas com inteligência artificial"
+      "special_quests": {
+        "name": "Missões Especiais",
+        "description": "Eventos sazonais e desafios exclusivos"
       },
       "special_quests": {
         "name": "Missões Especiais",
