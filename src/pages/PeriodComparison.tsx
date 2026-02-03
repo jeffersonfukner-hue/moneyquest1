@@ -6,7 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
-import { AppLayout } from '@/components/layout/AppLayout';
+import { AppShell } from '@/components/layout/AppShell';
 
 const PeriodComparison = () => {
   const { t } = useTranslation();
@@ -27,7 +27,7 @@ const PeriodComparison = () => {
   }
 
   return (
-    <AppLayout>
+    <AppShell>
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="flex items-center gap-3 h-14 px-4 max-w-4xl mx-auto">
@@ -54,7 +54,7 @@ const PeriodComparison = () => {
           <PeriodComparisonReport transactions={transactions} />
         )}
       </main>
-    </AppLayout>
+    </AppShell>
   );
 };
 

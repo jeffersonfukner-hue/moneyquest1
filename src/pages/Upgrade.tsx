@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Crown, Check, Sparkles, Loader2, Clock, Zap } from 'lucide-react';
-import { AppLayout } from '@/components/layout/AppLayout';
+import { AppShell } from '@/components/layout/AppShell';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -200,7 +200,7 @@ const Upgrade = () => {
   }
 
   return (
-    <AppLayout showAdBanner={false}>
+    <AppShell>
       <main className="px-4 py-6 max-w-md mx-auto space-y-6">
         {/* Discount Banner */}
         {isDiscountValid && (
@@ -429,7 +429,7 @@ const Upgrade = () => {
           </p>
         </div>
       </main>
-    </AppLayout>
+    </AppShell>
   );
 };
 

@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { format } from 'date-fns';
-import { AppLayout } from '@/components/layout/AppLayout';
+import { AppShell } from '@/components/layout/AppShell';
 
 type FilterType = 'all' | 'income' | 'expense';
 type ImpactFilter = 'all' | 'low' | 'medium' | 'high' | 'critical';
@@ -71,7 +71,7 @@ export default function AdventureJournal() {
   };
 
   return (
-    <AppLayout>
+    <AppShell>
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="flex items-center justify-between px-4 h-14">
@@ -185,6 +185,6 @@ export default function AdventureJournal() {
           </div>
         )}
       </main>
-    </AppLayout>
+    </AppShell>
   );
 }

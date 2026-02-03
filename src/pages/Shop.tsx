@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AppLayout } from '@/components/layout/AppLayout';
+import { AppShell } from '@/components/layout/AppShell';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -80,7 +80,7 @@ const Shop = () => {
   };
 
   return (
-    <AppLayout>
+    <AppShell>
       <div className="max-w-6xl mx-auto px-4 py-6 space-y-6 pb-24 overflow-x-hidden">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -300,7 +300,7 @@ const Shop = () => {
           userCoins={profile?.mq_coins || 0}
         />
       </div>
-    </AppLayout>
+    </AppShell>
   );
 };
 

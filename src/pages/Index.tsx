@@ -13,7 +13,7 @@ import { useCategories } from '@/hooks/useCategories';
 import { useDailyReward } from '@/hooks/useDailyReward';
 import { useRealtimeXP } from '@/hooks/useRealtimeXP';
 import { useReferralNotifications } from '@/hooks/useReferralNotifications';
-import { AppLayout } from '@/components/layout/AppLayout';
+import { AppShell } from '@/components/layout/AppShell';
 import { LevelProgress } from '@/components/game/LevelProgress';
 import { StatsCards } from '@/components/game/StatsCards';
 import { CreditCardsQuickView } from '@/components/game/CreditCardsQuickView';
@@ -36,7 +36,6 @@ import { XPNotification } from '@/components/game/XPNotification';
 import { SessionSummaryCard } from '@/components/game/SessionSummaryCard';
 import { PersonalRewardsCard } from '@/components/game/PersonalRewardsCard';
 import { ShopQuickAccessCard } from '@/components/shop/ShopQuickAccessCard';
-import { type TabId } from '@/components/navigation/BottomNavigation';
 import { BlogPreviewCard } from '@/components/blog/BlogPreviewCard';
 import { CategoryGoalsCard } from '@/components/goals/CategoryGoalsCard';
 import { CashFlowWidget } from '@/components/reports/CashFlowWidget';
@@ -63,11 +62,14 @@ const Index = () => {
   const { xpChange, clearXPChange } = useRealtimeXP();
   const { tierUpgrade, clearTierUpgrade } = useReferralNotifications();
   
+  // Tab state for dashboard views
+  type DashboardTab = 'home' | 'transactions';
+  
   // Get initial tab from URL search params or location state
   const searchParams = new URLSearchParams(location.search);
-  const initialTab = (searchParams.get('tab') as TabId) || (location.state as any)?.tab || 'home';
+  const initialTab = (searchParams.get('tab') as DashboardTab) || (location.state as any)?.tab || 'home';
   
-  const [activeTab, setActiveTab] = useState<TabId>(initialTab);
+  const [activeTab, setActiveTab] = useState<DashboardTab>(initialTab);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showRewardDialog, setShowRewardDialog] = useState(false);
   const [sessionSummary, setSessionSummary] = useState<SessionSummary | null>(null);
@@ -214,7 +216,7 @@ const Index = () => {
             )}
             
             {/* Recent transactions directly after status */}
-            <RecentTransactionsCard transactions={transactions} onViewMore={setActiveTab} />
+            <RecentTransactionsCard transactions={transactions} onViewMore={() => setActiveTab('transactions')} />
             
             {/* Quick templates for fast transaction entry */}
             <QuickTemplates onUseTemplate={handleUseTemplate} />
@@ -242,11 +244,7 @@ const Index = () => {
   };
 
   return (
-    <AppLayout 
-      activeTab={activeTab}
-      onTabChange={setActiveTab}
-      onAddClick={() => setShowAddDialog(true)}
-    >
+    <AppShell>
       <SeasonalDecorations />
       
       <main className="px-4 py-3 relative z-10">
@@ -311,7 +309,7 @@ const Index = () => {
 
       {/* Trial expired dialog - shown once when trial ends */}
       <TrialExpiredDialog />
-    </AppLayout>
+    </AppShell>
   );
 };
 

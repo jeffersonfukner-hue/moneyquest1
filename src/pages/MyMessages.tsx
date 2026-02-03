@@ -11,7 +11,7 @@ import { NewTicketDialog } from '@/components/support/NewTicketDialog';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR, enUS, es } from 'date-fns/locale';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { AppLayout } from '@/components/layout/AppLayout';
+import { AppShell } from '@/components/layout/AppShell';
 
 const STATUS_CONFIG = {
   sent: { 
@@ -61,7 +61,7 @@ export default function MyMessages() {
   };
 
   return (
-    <AppLayout>
+    <AppShell>
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
         <div className="container flex items-center justify-between gap-3 py-4">
@@ -156,6 +156,6 @@ export default function MyMessages() {
         open={showNewTicketDialog} 
         onOpenChange={setShowNewTicketDialog} 
       />
-    </AppLayout>
+    </AppShell>
   );
 }

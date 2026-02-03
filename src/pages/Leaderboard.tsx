@@ -16,7 +16,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { cn } from '@/lib/utils';
 import { AvatarDisplay } from '@/components/profile/AvatarDisplay';
-import { AppLayout } from '@/components/layout/AppLayout';
+import { AppShell } from '@/components/layout/AppShell';
 
 const getRankIcon = (rank: number) => {
   if (rank === 1) return <Crown className="w-5 h-5 text-yellow-500" />;
@@ -109,7 +109,7 @@ export default function Leaderboard() {
   }
 
   return (
-    <AppLayout>
+    <AppShell>
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border safe-area-top">
         <div className="flex items-center gap-3 p-4">
@@ -346,6 +346,6 @@ export default function Leaderboard() {
           </TabsContent>
         </Tabs>
       </main>
-    </AppLayout>
+    </AppShell>
   );
 }
