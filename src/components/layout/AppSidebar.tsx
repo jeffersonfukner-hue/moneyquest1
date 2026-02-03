@@ -47,6 +47,10 @@ import {
 } from '@/components/ui/alert-dialog';
 import { APP_ROUTES } from '@/routes/routes';
 
+// Helper to check if in mobile drawer mode
+// When isMobile is true (from useSidebar), we're in Sheet/drawer mode
+// In drawer mode, we should ALWAYS show labels regardless of state
+
 // Main navigation - only existing routes
 const mainNavItems = [
   { title: 'dashboard', url: APP_ROUTES.DASHBOARD, icon: Home },
@@ -78,11 +82,25 @@ export function AppSidebar() {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
-  const { state, isMobile, setOpenMobile } = useSidebar();
+  const { state, isMobile, setOpenMobile, openMobile } = useSidebar();
   const { profile } = useProfileContext();
   const { signOut } = useAuth();
-  const isCollapsed = state === 'collapsed';
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+
+  // CRITICAL FIX: In mobile/tablet drawer mode, ALWAYS show labels
+  // The drawer (Sheet) is used when isMobile is true (includes touch tablets)
+  // When drawer is open (openMobile), we should show labels regardless of 'state'
+  // 'state' (collapsed/expanded) only controls the icon-only mode on desktop
+  const isInDrawerMode = isMobile;
+  const isDrawerOpen = openMobile;
+  
+  // Show labels when:
+  // 1. We're in drawer mode AND drawer is open (mobile/tablet)
+  // 2. OR we're in sidebar mode (desktop) AND not collapsed
+  const showLabels = isInDrawerMode ? isDrawerOpen : state === 'expanded';
+  
+  // For backward compatibility with existing code that checks isCollapsed
+  const isCollapsed = !showLabels;
 
   const isActive = (path: string) => {
     // Dashboard is active only on exact match
@@ -126,7 +144,8 @@ export function AppSidebar() {
             }}
           >
             <Icon className="h-4 w-4 shrink-0" />
-            {!isCollapsed && (
+            {/* CRITICAL: Use showLabels instead of !isCollapsed */}
+            {showLabels && (
               <span className="truncate">
                 {t(`sidebar.${item.title}`, item.title)}
               </span>
@@ -147,7 +166,8 @@ export function AppSidebar() {
             isCollapsed && "justify-center"
           )}>
             <Logo size={isCollapsed ? 'sm' : 'md'} variant="icon" />
-            {!isCollapsed && (
+            {/* CRITICAL: Use showLabels for consistent behavior */}
+            {showLabels && (
               <span className="font-fredoka font-bold text-lg text-sidebar-foreground">
                 MoneyQuest
               </span>
@@ -158,7 +178,8 @@ export function AppSidebar() {
         <SidebarContent>
           {/* Main Navigation */}
           <SidebarGroup>
-            {!isCollapsed && (
+            {/* CRITICAL: Use showLabels for group labels too */}
+            {showLabels && (
               <SidebarGroupLabel className="text-sidebar-foreground/70">
                 {t('sidebar.main', 'Principal')}
               </SidebarGroupLabel>
@@ -174,7 +195,7 @@ export function AppSidebar() {
 
           {/* Features */}
           <SidebarGroup>
-            {!isCollapsed && (
+            {showLabels && (
               <SidebarGroupLabel className="text-sidebar-foreground/70">
                 {t('sidebar.features', 'Funcionalidades')}
               </SidebarGroupLabel>
@@ -190,7 +211,7 @@ export function AppSidebar() {
 
           {/* Gamification */}
           <SidebarGroup>
-            {!isCollapsed && (
+            {showLabels && (
               <SidebarGroupLabel className="text-sidebar-foreground/70">
                 {t('sidebar.gamification', 'Gamificação')}
               </SidebarGroupLabel>
@@ -226,7 +247,8 @@ export function AppSidebar() {
                 avatarIcon={profile?.avatar_icon || '🧙‍♂️'} 
                 size="sm" 
               />
-              {!isCollapsed && (
+              {/* CRITICAL: Use showLabels for profile info */}
+              {showLabels && (
                 <div className="flex flex-col min-w-0">
                   <span className="text-sm font-medium truncate text-sidebar-foreground">
                     {profile?.display_name || t('sidebar.profile', 'Perfil')}
@@ -239,8 +261,8 @@ export function AppSidebar() {
             </div>
           </SidebarMenuButton>
 
-          {/* Logout button - visible when not collapsed */}
-          {!isCollapsed && (
+          {/* Logout button - visible when showing labels */}
+          {showLabels && (
             <SidebarMenuButton
               onClick={() => setShowLogoutDialog(true)}
               tooltip={isCollapsed ? t('auth.logout', 'Sair') : undefined}
