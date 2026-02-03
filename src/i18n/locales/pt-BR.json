@@ -928,6 +928,23 @@
       "depositTitle": "Depósito (Dinheiro → Banco)",
       "withdrawalDescription": "Saque em dinheiro",
       "depositDescription": "Depósito em conta"
+    },
+    "cashAdjustment": {
+      "title": "Ajuste de Caixa",
+      "description": "Corrija diferenças entre o saldo registrado e o saldo real contado.",
+      "adjustBalance": "Ajustar saldo",
+      "currentBalance": "Saldo atual no app",
+      "countedBalance": "Saldo contado agora",
+      "difference": "Diferença",
+      "noDifference": "Sem diferença a ajustar.",
+      "surplus": "Sobra",
+      "shortage": "Falta",
+      "apply": "Aplicar Ajuste",
+      "reason": "Motivo",
+      "reasonPlaceholder": "Ex: trocos, perda, gasto não registrado...",
+      "transactionDescription": "Ajuste de Caixa",
+      "willCreateIncome": "Será criada uma ENTRADA de ajuste no valor de {{amount}}.",
+      "willCreateExpense": "Será criada uma SAÍDA de ajuste no valor de {{amount}}."
     }
   },
   "creditCards": {

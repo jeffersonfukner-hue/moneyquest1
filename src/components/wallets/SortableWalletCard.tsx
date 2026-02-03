@@ -9,6 +9,7 @@ interface SortableWalletCardProps {
   onEdit: (wallet: Wallet) => void;
   onToggleActive: (wallet: Wallet) => void;
   onTransfer?: (wallet: Wallet) => void;
+  onAdjust?: (wallet: Wallet) => void;
   isDragging?: boolean;
 }
 
@@ -17,6 +18,7 @@ export const SortableWalletCard = ({
   onEdit, 
   onToggleActive, 
   onTransfer,
+  onAdjust,
 }: SortableWalletCardProps) => {
   const {
     attributes,
@@ -49,6 +51,7 @@ export const SortableWalletCard = ({
           onEdit={onEdit}
           onToggleActive={onToggleActive}
           onTransfer={onTransfer}
+          onAdjust={onAdjust}
         />
       </div>
     </div>

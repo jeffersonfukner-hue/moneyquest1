@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MoreHorizontal, Pencil, Power, PowerOff, ArrowLeftRight } from 'lucide-react';
+import { MoreHorizontal, Pencil, Power, PowerOff, ArrowLeftRight, Scale } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Badge } from '@/components/ui/badge';
 import { Wallet } from '@/types/wallet';
 import { SupportedCurrency } from '@/types/database';
 import { cn } from '@/lib/utils';
@@ -19,9 +20,10 @@ interface WalletCardProps {
   onEdit: (wallet: Wallet) => void;
   onToggleActive: (wallet: Wallet) => void;
   onTransfer?: (wallet: Wallet) => void;
+  onAdjust?: (wallet: Wallet) => void;
 }
 
-export const WalletCard = ({ wallet, onEdit, onToggleActive, onTransfer }: WalletCardProps) => {
+export const WalletCard = ({ wallet, onEdit, onToggleActive, onTransfer, onAdjust }: WalletCardProps) => {
   const { t } = useTranslation();
 
   const formatBalance = useCallback((amount: number, currency: SupportedCurrency) => {
@@ -35,6 +37,8 @@ export const WalletCard = ({ wallet, onEdit, onToggleActive, onTransfer }: Walle
   const balanceColor = wallet.current_balance >= 0 
     ? 'text-green-600 dark:text-green-400' 
     : 'text-red-600 dark:text-red-400';
+
+  const isCashWallet = wallet.type === 'cash';
 
   return (
     <Card className={cn(
@@ -50,12 +54,19 @@ export const WalletCard = ({ wallet, onEdit, onToggleActive, onTransfer }: Walle
             {wallet.icon}
           </div>
           <div>
-            <h3 className="font-semibold text-foreground">{wallet.name}</h3>
+            <div className="flex items-center gap-2">
+              <h3 className="font-semibold text-foreground">{wallet.name}</h3>
+              {isCashWallet && (
+                <Badge variant="outline" className="text-xs border-amber-500/30 text-amber-600 dark:text-amber-400">
+                  💵 {t('wallets.types.cash')}
+                </Badge>
+              )}
+            </div>
             {wallet.institution && (
               <p className="text-sm text-muted-foreground">{wallet.institution}</p>
             )}
             <p className="text-xs text-muted-foreground">
-              {t(`wallets.types.${wallet.type}`)} • {wallet.currency}
+              {!isCashWallet && <>{t(`wallets.types.${wallet.type}`)} • </>}{wallet.currency}
             </p>
           </div>
         </div>
@@ -75,6 +86,12 @@ export const WalletCard = ({ wallet, onEdit, onToggleActive, onTransfer }: Walle
               <DropdownMenuItem onClick={() => onTransfer(wallet)}>
                 <ArrowLeftRight className="mr-2 h-4 w-4" />
                 {t('wallets.transfer')}
+              </DropdownMenuItem>
+            )}
+            {wallet.is_active && isCashWallet && onAdjust && (
+              <DropdownMenuItem onClick={() => onAdjust(wallet)}>
+                <Scale className="mr-2 h-4 w-4" />
+                {t('wallets.cashAdjustment.adjustBalance', 'Ajustar saldo')}
               </DropdownMenuItem>
             )}
             <DropdownMenuSeparator />

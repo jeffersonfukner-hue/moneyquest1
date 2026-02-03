@@ -33,6 +33,7 @@ import { ScheduledTransferDialog } from '@/components/wallets/ScheduledTransferD
 import { TransferHistoryCard } from '@/components/wallets/TransferHistoryCard';
 import { ScheduledTransfersCard } from '@/components/wallets/ScheduledTransfersCard';
 import { CashWalletSuggestionBanner } from '@/components/wallets/CashWalletSuggestionBanner';
+import { CashAdjustmentDialog } from '@/components/wallets/CashAdjustmentDialog';
 import { CreditCardCard } from '@/components/creditCards/CreditCardCard';
 import { AddCreditCardDialog } from '@/components/creditCards/AddCreditCardDialog';
 import { EditCreditCardDialog } from '@/components/creditCards/EditCreditCardDialog';
@@ -71,7 +72,7 @@ const WalletsPage = ({ defaultTab = 'accounts' }: WalletsPageProps) => {
   const [viewingInvoicesCard, setViewingInvoicesCard] = useState<CreditCardType | null>(null);
   const [viewingInstallmentsLoan, setViewingInstallmentsLoan] = useState<Loan | null>(null);
   const [viewingDetailsLoan, setViewingDetailsLoan] = useState<Loan | null>(null);
-
+  const [adjustingWallet, setAdjustingWallet] = useState<Wallet | null>(null);
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -211,6 +212,7 @@ const WalletsPage = ({ defaultTab = 'accounts' }: WalletsPageProps) => {
                             onEdit={setEditingWallet}
                             onToggleActive={handleToggleActive}
                             onTransfer={handleOpenTransfer}
+                            onAdjust={wallet.type === 'cash' ? setAdjustingWallet : undefined}
                           />
                         ))}
                       </SortableContext>
@@ -529,6 +531,15 @@ const WalletsPage = ({ defaultTab = 'accounts' }: WalletsPageProps) => {
             />
           </div>
         </div>
+      )}
+
+      {/* Cash Adjustment Dialog */}
+      {adjustingWallet && (
+        <CashAdjustmentDialog
+          open={!!adjustingWallet}
+          onOpenChange={(open) => !open && setAdjustingWallet(null)}
+          wallet={adjustingWallet}
+        />
       )}
     </AppShell>
   );
