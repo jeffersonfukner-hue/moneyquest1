@@ -42,25 +42,15 @@ const CashFlow = () => {
     : transactions;
 
   return (
-    <AppShell>
-      {/* Simple Header */}
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
-        <div className="flex items-center gap-3 h-14 px-4 max-w-4xl mx-auto">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(-1)}
-            className="min-h-[44px] min-w-[44px]"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="font-display font-bold text-lg text-foreground">
-            {t('cashFlow.title')}
-          </h1>
-        </div>
-      </header>
+    <AppShell fullWidth>
+      {/* Page Title */}
+      <div className="mb-4">
+        <h1 className="font-display font-bold text-xl text-foreground">
+          {t('cashFlow.title')}
+        </h1>
+      </div>
 
-      <main className="container max-w-4xl mx-auto px-4 py-4 space-y-4">
+      <div className="space-y-4">
         {isPremium ? (
           /* Premium users get full report */
           <PremiumCashFlowReport transactions={transactions} />
@@ -98,7 +88,7 @@ const CashFlow = () => {
             <PremiumCashFlowTeaser />
           </>
         )}
-      </main>
+      </div>
     </AppShell>
   );
 };

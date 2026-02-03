@@ -114,21 +114,11 @@ const WalletsPage = () => {
   }
 
   return (
-    <AppShell>
-      {/* Simple Header */}
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border safe-area-top">
-        <div className="flex items-center h-14 px-4 max-w-md mx-auto">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(-1)}
-            className="mr-2"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="font-display font-bold text-lg text-foreground">{t('wallets.title')}</h1>
-        </div>
-      </header>
+    <AppShell fullWidth>
+      {/* Page Title */}
+      <div className="mb-4">
+        <h1 className="font-display font-bold text-xl text-foreground">{t('wallets.title')}</h1>
+      </div>
 
       <div className="p-4 space-y-4">
         {/* Balances Overview */}

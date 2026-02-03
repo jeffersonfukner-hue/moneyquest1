@@ -201,7 +201,7 @@ const Upgrade = () => {
 
   return (
     <AppShell>
-      <main className="px-4 py-6 max-w-md mx-auto space-y-6">
+      <div className="space-y-6">
         {/* Discount Banner */}
         {isDiscountValid && (
           <div className="bg-gradient-to-r from-accent to-accent/80 rounded-2xl p-4 text-accent-foreground relative overflow-hidden">
@@ -428,7 +428,7 @@ const Upgrade = () => {
             {t('subscription.cancelAnytime')}
           </p>
         </div>
-      </main>
+      </div>
     </AppShell>
   );
 };

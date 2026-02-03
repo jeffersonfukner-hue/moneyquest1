@@ -486,13 +486,13 @@
   
   /* Mobile-first content container - expands on tablet and desktop */
   .content-container {
-    @apply px-4 py-3 mx-auto;
-    max-width: 28rem; /* max-w-md - mobile */
+    @apply px-4 py-3 mx-auto w-full;
+    max-width: 32rem; /* ~512px mobile (was 28rem/md) */
   }
 
   @media (min-width: 768px) {
     .content-container {
-      max-width: 56rem; /* max-w-3xl - tablet */
+      max-width: 56rem; /* ~896px tablet (max-w-4xl) */
       @apply px-5;
     }
   }
