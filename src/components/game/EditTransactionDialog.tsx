@@ -18,7 +18,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Pencil, Plus, CreditCard } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Pencil, Plus, CreditCard, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DatePickerInput } from '@/components/ui/date-picker-input';
 import { Transaction, SupportedCurrency, TransactionType } from '@/types/database';
@@ -33,6 +34,7 @@ import { WalletSelector } from '@/components/wallets/WalletSelector';
 import { useWallets } from '@/hooks/useWallets';
 import { SupplierAutocomplete } from '@/components/suppliers/SupplierAutocomplete';
 import { useCreditCards } from '@/hooks/useCreditCards';
+import { useClosedMonthProtection } from '@/hooks/useClosedMonthProtection';
 
 interface EditTransactionDialogProps {
   transaction: Transaction;
@@ -59,6 +61,8 @@ export const EditTransactionDialog = ({
   const { activeWallets, refetch: refetchWallets } = useWallets();
   const { creditCards } = useCreditCards();
   const { upsertSupplier } = useSuppliers();
+  const { isDateInClosedMonth } = useClosedMonthProtection();
+  
   const [type, setType] = useState<TransactionType>(transaction.type);
   const [supplier, setSupplier] = useState((transaction as any).supplier || '');
   const [description, setDescription] = useState(transaction.description);
@@ -78,6 +82,9 @@ export const EditTransactionDialog = ({
   const linkedCard = isCardTransaction 
     ? creditCards.find(c => c.id === transaction.credit_card_id) 
     : null;
+  
+  // Check if transaction is in a closed month
+  const isInClosedMonth = isDateInClosedMonth(transaction.date);
 
   // Reset form when transaction changes
   useEffect(() => {
@@ -161,6 +168,16 @@ export const EditTransactionDialog = ({
           </DialogHeader>
 
           <div className="space-y-4 py-4">
+            {/* Closed Month Warning */}
+            {isInClosedMonth && (
+              <Alert variant="destructive">
+                <Lock className="h-4 w-4" />
+                <AlertDescription>
+                  {t('closing.editBlockedMessage', 'Transações de meses fechados não podem ser editadas.')}
+                </AlertDescription>
+              </Alert>
+            )}
+
             {/* Credit Card indicator */}
             {isCardTransaction && linkedCard && (
               <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
@@ -357,10 +374,14 @@ export const EditTransactionDialog = ({
             {/* Submit Button */}
             <Button
               onClick={handleSubmit}
-              disabled={isSubmitting}
+              disabled={isSubmitting || isInClosedMonth}
               className="w-full"
             >
-              {isSubmitting ? t('common.saving') : t('transactions.saveChanges')}
+              {isInClosedMonth ? (
+                <><Lock className="w-4 h-4 mr-2" />{t('closing.editBlocked', 'Edição bloqueada')}</>
+              ) : (
+                isSubmitting ? t('common.saving') : t('transactions.saveChanges')
+              )}
             </Button>
           </div>
         </DialogContent>

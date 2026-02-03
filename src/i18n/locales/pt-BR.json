@@ -1056,6 +1056,76 @@
       "goToReconciliation": "Ir para Conciliação"
     }
   },
+  "closing": {
+    "title": "Fechamento Mensal",
+    "subtitle": "Congele os dados do mês para garantir integridade",
+    "selectPeriod": "Selecionar Período",
+    "month": "Mês",
+    "selectMonth": "Selecione um mês...",
+    "selectPeriodHint": "Selecione um período",
+    "selectPeriodDescription": "Escolha um mês para visualizar o status e fechar",
+    "income": "Entradas",
+    "expenses": "Saídas",
+    "netResult": "Resultado",
+    "transactionCount": "Transações",
+    "walletBalances": "Saldos das Carteiras",
+    "closeMonth": "Fechar Mês",
+    "reopenMonth": "Reabrir Mês",
+    "status": {
+      "open": "Aberto",
+      "closed": "Fechado",
+      "reopened": "Reaberto"
+    },
+    "checklist": {
+      "title": "Checklist de Fechamento",
+      "reconciliation": "Todas as contas bancárias conciliadas",
+      "pendingReconciliation": "{{count}} lançamento(s) pendente(s)",
+      "categorized": "Todas as transações categorizadas",
+      "uncategorized": "{{count}} transação(ões) sem categoria",
+      "cashVerified": "Saldo de dinheiro (CASH) conferido",
+      "cashBalance": "Saldo atual: {{balance}}",
+      "noCashWallet": "Nenhuma carteira de dinheiro",
+      "goalsReviewed": "Metas de categoria revisadas",
+      "goalsCount": "{{count}} meta(s) definida(s)",
+      "noGoals": "Nenhuma meta definida",
+      "invoicesClosed": "Faturas de cartão do período fechadas",
+      "openInvoices": "{{count}} fatura(s) aberta(s)",
+      "fix": "Corrigir"
+    },
+    "snapshot": {
+      "title": "Snapshot do Fechamento",
+      "preview": "Prévia do Snapshot",
+      "closedAt": "Fechado em {{date}}",
+      "liveData": "Dados em tempo real"
+    },
+    "reopenHistory": "Histórico de Reabertura",
+    "reopenedOn": "Reaberto em {{date}}: {{reason}}",
+    "closeDialog": {
+      "title": "Fechar Mês",
+      "description": "Ao fechar o mês, os dados serão congelados. Você poderá reabrir se necessário.",
+      "notes": "Observações (opcional)",
+      "notesPlaceholder": "Adicione notas sobre este fechamento...",
+      "confirm": "Confirmar Fechamento"
+    },
+    "reopenDialog": {
+      "title": "Reabrir Mês",
+      "description": "Ao reabrir, você poderá editar transações novamente. O motivo será registrado.",
+      "warning": "Esta ação será auditada. O snapshot anterior será preservado.",
+      "reason": "Motivo da reabertura",
+      "reasonPlaceholder": "Explique o motivo da reabertura...",
+      "confirm": "Confirmar Reabertura"
+    },
+    "fetchError": "Erro ao carregar fechamentos",
+    "closeSuccess": "Mês fechado com sucesso",
+    "closeError": "Erro ao fechar o mês",
+    "reopenSuccess": "Mês reaberto com sucesso",
+    "reopenError": "Erro ao reabrir o mês",
+    "notClosed": "Este mês não está fechado",
+    "monthClosed": "Mês fechado",
+    "monthClosedMessage": "Este mês está fechado. Para alterar dados, reabra o mês.",
+    "editBlocked": "Edição bloqueada",
+    "editBlockedMessage": "Transações de meses fechados não podem ser editadas."
+  },
   "creditCards": {
     "title": "Cartões",
     "addTitle": "Adicionar Cartão de Crédito",

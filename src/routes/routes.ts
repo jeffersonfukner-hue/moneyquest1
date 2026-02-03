@@ -45,6 +45,7 @@ export const APP_ROUTES = {
   SUPPLIERS: '/suppliers',
   GOALS: '/goals',
   REPORTS: '/reports',
+  REPORTS_CLOSING: '/reports/closing',
   CATEGORIES: '/categories',
   SETTINGS: '/settings',
   SUPPORT: '/support',

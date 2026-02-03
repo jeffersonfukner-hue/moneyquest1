@@ -1015,6 +1015,121 @@ export type Database = {
         }
         Relationships: []
       }
+      monthly_closure_audit: {
+        Row: {
+          action: string
+          closure_id: string
+          created_at: string
+          id: string
+          reason: string | null
+          snapshot_data: Json | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          closure_id: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+          snapshot_data?: Json | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          closure_id?: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+          snapshot_data?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "monthly_closure_audit_closure_id_fkey"
+            columns: ["closure_id"]
+            isOneToOne: false
+            referencedRelation: "monthly_closures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      monthly_closures: {
+        Row: {
+          cash_adjustment_count: number
+          closed_at: string | null
+          closed_by: string | null
+          closing_notes: string | null
+          created_at: string
+          id: string
+          net_result: number
+          period_month: number
+          period_year: number
+          previous_closure_snapshot: Json | null
+          reopen_reason: string | null
+          reopened_at: string | null
+          reopened_by: string | null
+          status: string
+          total_expenses: number
+          total_income: number
+          transaction_count: number
+          updated_at: string
+          user_id: string
+          wallet_balances: Json
+        }
+        Insert: {
+          cash_adjustment_count?: number
+          closed_at?: string | null
+          closed_by?: string | null
+          closing_notes?: string | null
+          created_at?: string
+          id?: string
+          net_result?: number
+          period_month: number
+          period_year: number
+          previous_closure_snapshot?: Json | null
+          reopen_reason?: string | null
+          reopened_at?: string | null
+          reopened_by?: string | null
+          status?: string
+          total_expenses?: number
+          total_income?: number
+          transaction_count?: number
+          updated_at?: string
+          user_id: string
+          wallet_balances?: Json
+        }
+        Update: {
+          cash_adjustment_count?: number
+          closed_at?: string | null
+          closed_by?: string | null
+          closing_notes?: string | null
+          created_at?: string
+          id?: string
+          net_result?: number
+          period_month?: number
+          period_year?: number
+          previous_closure_snapshot?: Json | null
+          reopen_reason?: string | null
+          reopened_at?: string | null
+          reopened_by?: string | null
+          status?: string
+          total_expenses?: number
+          total_income?: number
+          transaction_count?: number
+          updated_at?: string
+          user_id?: string
+          wallet_balances?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "monthly_closures_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       personal_rewards: {
         Row: {
           claimed_at: string | null
