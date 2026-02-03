@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Gift, Users, Clock, CheckCircle, Sparkles, Crown, Copy, Share2, Trophy, History, Clipboard } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 import { toast } from 'sonner';
-import { AppLayout } from '@/components/layout/AppLayout';
+import { AppShell } from '@/components/layout/AppShell';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -151,7 +151,7 @@ const Referral = () => {
   };
 
   return (
-    <AppLayout activeTab="home" showNavigation showAdBanner>
+    <AppShell>
       <div className="min-h-screen bg-background pb-4">
         {/* Header */}
         <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border">
@@ -453,7 +453,7 @@ const Referral = () => {
           </Tabs>
         </div>
       </div>
-    </AppLayout>
+    </AppShell>
   );
 };
 

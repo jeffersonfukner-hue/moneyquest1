@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AppLayout } from '@/components/layout/AppLayout';
+import { AppShell } from '@/components/layout/AppShell';
 import { useSuppliers, Supplier } from '@/hooks/useSuppliers';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { Card } from '@/components/ui/card';
@@ -102,7 +102,7 @@ const Suppliers = () => {
   const totalTransactions = suppliers.reduce((sum, s) => sum + s.usage_count, 0);
 
   return (
-    <AppLayout>
+    <AppShell>
       <div className="space-y-4 pb-20">
         {/* Header */}
         <div className="flex items-center gap-3">
@@ -264,7 +264,7 @@ const Suppliers = () => {
           </AlertDialogContent>
         </AlertDialog>
       </div>
-    </AppLayout>
+    </AppShell>
   );
 };
 

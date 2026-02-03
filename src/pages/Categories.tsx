@@ -12,7 +12,7 @@ import { AddCategoryDialog } from '@/components/categories/AddCategoryDialog';
 import { EditCategoryDialog } from '@/components/categories/EditCategoryDialog';
 import { DeleteCategoryDialog } from '@/components/categories/DeleteCategoryDialog';
 import { getCategoryTranslationKey } from '@/lib/gameLogic';
-import { AppLayout } from '@/components/layout/AppLayout';
+import { AppShell } from '@/components/layout/AppShell';
 
 const Categories = () => {
   const navigate = useNavigate();
@@ -108,7 +108,7 @@ const Categories = () => {
   };
 
   return (
-    <AppLayout>
+    <AppShell>
       <div className="p-4 pb-24">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
@@ -188,7 +188,7 @@ const Categories = () => {
           onConfirm={handleDelete}
         />
       </div>
-    </AppLayout>
+    </AppShell>
   );
 };
 

@@ -6,7 +6,7 @@ import { ptBR, enUS, es, pt } from 'date-fns/locale';
 import { ArrowLeft, Bell, Search, Filter, MessageSquare, Gift, Star, CheckCheck, X } from 'lucide-react';
 import { useNotifications, Notification } from '@/hooks/useNotifications';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { AppLayout } from '@/components/layout/AppLayout';
+import { AppShell } from '@/components/layout/AppShell';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -89,7 +89,7 @@ const Notifications = () => {
   const dateLocale = getDateLocale(language);
 
   return (
-    <AppLayout>
+    <AppShell>
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border safe-area-top">
         <div className="flex items-center h-14 px-4 max-w-md mx-auto">
           <Button 
@@ -244,7 +244,7 @@ const Notifications = () => {
           </div>
         )}
       </main>
-    </AppLayout>
+    </AppShell>
   );
 };
 

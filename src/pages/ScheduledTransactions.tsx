@@ -24,7 +24,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { AppLayout } from '@/components/layout/AppLayout';
+import { AppShell } from '@/components/layout/AppShell';
 import { ScheduledTransferDialog } from '@/components/wallets/ScheduledTransferDialog';
 import { ScheduledTransactionDialog } from '@/components/wallets/ScheduledTransactionDialog';
 import { useWalletTransfers, ScheduledTransfer } from '@/hooks/useWalletTransfers';
@@ -281,7 +281,7 @@ const ScheduledTransactions = () => {
 
   if (loading) {
     return (
-      <AppLayout>
+      <AppShell>
         <div className="min-h-screen bg-background p-4">
           <div className="animate-pulse space-y-4">
             <div className="h-8 bg-muted rounded w-1/3" />
@@ -289,12 +289,12 @@ const ScheduledTransactions = () => {
             <div className="h-32 bg-muted rounded" />
           </div>
         </div>
-      </AppLayout>
+      </AppShell>
     );
   }
 
   return (
-    <AppLayout>
+    <AppShell>
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border safe-area-top">
         <div className="flex items-center justify-between h-14 px-4 max-w-md mx-auto">
           <div className="flex items-center gap-2">
@@ -733,7 +733,7 @@ const ScheduledTransactions = () => {
         createScheduledTransaction={createScheduledTransaction}
         updateScheduledTransaction={updateScheduledTransaction}
       />
-    </AppLayout>
+    </AppShell>
   );
 };
 

@@ -42,7 +42,7 @@ import { LoanInstallmentsPanel } from '@/components/loans/LoanInstallmentsPanel'
 import { LoanDetailsPanel } from '@/components/loans/LoanDetailsPanel';
 import { LoanBudgetAlert } from '@/components/loans/LoanBudgetAlert';
 import { Wallet } from '@/types/wallet';
-import { AppLayout } from '@/components/layout/AppLayout';
+import { AppShell } from '@/components/layout/AppShell';
 
 const WalletsPage = () => {
   const { t } = useTranslation();
@@ -114,7 +114,7 @@ const WalletsPage = () => {
   }
 
   return (
-    <AppLayout>
+    <AppShell>
       {/* Simple Header */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border safe-area-top">
         <div className="flex items-center h-14 px-4 max-w-md mx-auto">
@@ -489,7 +489,7 @@ const WalletsPage = () => {
           </div>
         </div>
       )}
-    </AppLayout>
+    </AppShell>
   );
 };
 

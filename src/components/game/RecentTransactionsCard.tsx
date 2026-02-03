@@ -6,13 +6,12 @@ import { ArrowUpCircle, ArrowDownCircle, Receipt, ChevronRight } from 'lucide-re
 import { Transaction, SupportedCurrency } from '@/types/database';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { type TabId } from '@/components/navigation/BottomNavigation';
 import { formatMoney } from '@/lib/formatters';
 import { parseDateString } from '@/lib/dateUtils';
 
 interface RecentTransactionsCardProps {
   transactions: Transaction[];
-  onViewMore: (tab: TabId) => void;
+  onViewMore: () => void;
 }
 
 export const RecentTransactionsCard = ({ transactions, onViewMore }: RecentTransactionsCardProps) => {
@@ -88,7 +87,7 @@ export const RecentTransactionsCard = ({ transactions, onViewMore }: RecentTrans
           variant="ghost"
           size="sm"
           className="w-full mt-2 text-muted-foreground hover:text-foreground"
-          onClick={() => onViewMore('transactions')}
+          onClick={() => onViewMore()}
         >
           {t('transactions.viewMore')}
           <ChevronRight className="w-4 h-4 ml-1" />

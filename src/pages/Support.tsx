@@ -9,7 +9,7 @@ import { useSupportTickets } from '@/hooks/useSupportTickets';
 import { NewTicketDialog } from '@/components/support/NewTicketDialog';
 import { FAQSection } from '@/components/support/FAQSection';
 import { useAuth } from '@/hooks/useAuth';
-import { AppLayout } from '@/components/layout/AppLayout';
+import { AppShell } from '@/components/layout/AppShell';
 import { WHATSAPP_SUPPORT_NUMBER, SUPPORT_CONFIG } from '@/lib/supportConfig';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -56,7 +56,7 @@ export default function Support() {
   };
 
   return (
-    <AppLayout showWhatsAppButton={false}>
+    <AppShell>
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
         <div className="container flex items-center gap-3 py-4">
@@ -169,6 +169,6 @@ export default function Support() {
         open={showNewTicketDialog} 
         onOpenChange={setShowNewTicketDialog} 
       />
-    </AppLayout>
+    </AppShell>
   );
 }

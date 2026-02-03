@@ -14,7 +14,7 @@ import { useSubscription } from '@/contexts/SubscriptionContext';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
-import { AppLayout } from '@/components/layout/AppLayout';
+import { AppShell } from '@/components/layout/AppShell';
 
 const CashFlow = () => {
   const { t } = useTranslation();
@@ -42,7 +42,7 @@ const CashFlow = () => {
     : transactions;
 
   return (
-    <AppLayout>
+    <AppShell>
       {/* Simple Header */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="flex items-center gap-3 h-14 px-4 max-w-4xl mx-auto">
@@ -99,7 +99,7 @@ const CashFlow = () => {
           </>
         )}
       </main>
-    </AppLayout>
+    </AppShell>
   );
 };
 

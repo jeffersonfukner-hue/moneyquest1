@@ -14,7 +14,7 @@ import { toast } from '@/hooks/use-toast';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
 import { XPHistoryCard } from '@/components/game/XPHistoryCard';
 import { ReferralSummaryWidget } from '@/components/referral/ReferralSummaryWidget';
-import { AppLayout } from '@/components/layout/AppLayout';
+import { AppShell } from '@/components/layout/AppShell';
 
 const AVATAR_OPTIONS = [
   '🎮', '🚀', '💎', '🔥', '⭐', '🏆', '💰', '🎯', 
@@ -129,7 +129,7 @@ const Profile = () => {
   ];
 
   return (
-    <AppLayout>
+    <AppShell>
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border safe-area-top">
         <div className="flex items-center h-14 px-4 max-w-md mx-auto">
           <Button 
@@ -256,7 +256,7 @@ const Profile = () => {
           {saving ? t('common.saving') : t('profile.saveChanges')}
         </Button>
       </main>
-    </AppLayout>
+    </AppShell>
   );
 };
 
