@@ -6,10 +6,7 @@ import {
   Target,
   BarChart3,
   Settings,
-  Trophy,
   Calendar,
-  BookOpen,
-  ShoppingBag,
   Users,
   HelpCircle,
   LogOut,
@@ -63,13 +60,6 @@ const mainNavItems = [
 const featuresNavItems = [
   { title: 'scheduled', url: APP_ROUTES.SCHEDULED, icon: Calendar },
   { title: 'suppliers', url: APP_ROUTES.SUPPLIERS, icon: Users },
-];
-
-// Gamification
-const gamificationNavItems = [
-  { title: 'leaderboard', url: APP_ROUTES.LEADERBOARD, icon: Trophy },
-  { title: 'journal', url: APP_ROUTES.JOURNAL, icon: BookOpen },
-  { title: 'shop', url: APP_ROUTES.SHOP, icon: ShoppingBag },
 ];
 
 // Bottom nav
@@ -203,22 +193,6 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {featuresNavItems.map(renderNavItem)}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-
-          <SidebarSeparator />
-
-          {/* Gamification */}
-          <SidebarGroup>
-            {showLabels && (
-              <SidebarGroupLabel className="text-sidebar-foreground/70">
-                {t('sidebar.gamification', 'Gamificação')}
-              </SidebarGroupLabel>
-            )}
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {gamificationNavItems.map(renderNavItem)}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
