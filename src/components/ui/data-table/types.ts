@@ -29,12 +29,21 @@ export interface ColumnDef<T> {
   };
 }
 
+// Date range filter type
+export interface DateRangeFilter {
+  from?: Date | string;
+  to?: Date | string;
+}
+
+// Filter value can be single, array (multi-select), or date range
+export type FilterValue = unknown | unknown[] | DateRangeFilter;
+
 // Query for Server Mode
 export interface DataTableQuery {
   page: number;
   pageSize: number;
   sort: SortState[];
-  filters: Record<string, unknown>;
+  filters: Record<string, FilterValue>;
   search: string;
 }
 

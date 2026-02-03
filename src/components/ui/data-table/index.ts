@@ -9,4 +9,6 @@ export type {
   ReconciliationFields,
   UseDataTableOptions,
   UseDataTableReturn,
+  DateRangeFilter,
+  FilterValue,
 } from './types';

@@ -19,7 +19,15 @@ function isTouchDevice(): boolean {
 }
 
 export function useBreakpoint(): Breakpoint {
-  const [breakpoint, setBreakpoint] = React.useState<Breakpoint>('mobile');
+  // Synchronous initial value to avoid flicker
+  const getInitialBreakpoint = (): Breakpoint => {
+    if (typeof window === 'undefined') return 'mobile';
+    if (window.innerWidth >= BREAKPOINTS.TABLET) return 'desktop';
+    if (window.innerWidth >= BREAKPOINTS.MOBILE) return 'tablet';
+    return 'mobile';
+  };
+
+  const [breakpoint, setBreakpoint] = React.useState<Breakpoint>(getInitialBreakpoint);
 
   React.useEffect(() => {
     const check = () => {
@@ -32,21 +40,14 @@ export function useBreakpoint(): Breakpoint {
       }
     };
 
-    // Initial check
+    // Single resize listener with guaranteed cleanup
+    window.addEventListener('resize', check);
+    
+    // Initial check after mount (in case of SSR mismatch)
     check();
 
-    // Listen for resize
-    const mql = window.matchMedia(`(min-width: ${BREAKPOINTS.TABLET}px)`);
-    const mqlTablet = window.matchMedia(`(min-width: ${BREAKPOINTS.MOBILE}px)`);
-
-    const handleChange = () => check();
-    
-    mql.addEventListener("change", handleChange);
-    mqlTablet.addEventListener("change", handleChange);
-
     return () => {
-      mql.removeEventListener("change", handleChange);
-      mqlTablet.removeEventListener("change", handleChange);
+      window.removeEventListener('resize', check);
     };
   }, []);
 

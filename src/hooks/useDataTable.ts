@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import { useDebounce } from './useDebounce';
 import type { 
@@ -6,8 +6,65 @@ import type {
   SortState, 
   UseDataTableOptions, 
   UseDataTableReturn,
-  DataTableQuery 
+  DataTableQuery,
+  DateRangeFilter,
 } from '@/components/ui/data-table/types';
+
+// Helper to detect date range filter
+function isDateRange(value: unknown): value is DateRangeFilter {
+  return typeof value === 'object' && value !== null && ('from' in value || 'to' in value);
+}
+
+// Helper to normalize values for sorting
+function normalizeForSort(value: unknown, colMeta?: ColumnDef<unknown>['meta']): number | string | null {
+  if (value == null) return null;
+  
+  // Explicit type from column metadata
+  if (colMeta?.type === 'date') {
+    const date = value instanceof Date ? value : new Date(String(value));
+    return isNaN(date.getTime()) ? null : date.getTime();
+  }
+  
+  if (colMeta?.type === 'currency') {
+    if (typeof value === 'number') return value;
+    // Remove currency formatting: R$ 1.234,56 -> 1234.56
+    const cleaned = String(value).replace(/[^\d,.-]/g, '').replace(',', '.');
+    const num = parseFloat(cleaned);
+    return isNaN(num) ? null : num;
+  }
+  
+  // Auto-detection
+  if (typeof value === 'number') return value;
+  if (value instanceof Date) return value.getTime();
+  
+  // Try to parse as number
+  if (typeof value === 'string') {
+    const num = parseFloat(value);
+    if (!isNaN(num) && value.trim() === String(num)) return num;
+  }
+  
+  // Fallback to lowercase string
+  return String(value).toLowerCase();
+}
+
+// Robust comparison function
+function compareValues(a: unknown, b: unknown, colMeta?: ColumnDef<unknown>['meta']): number {
+  const normA = normalizeForSort(a, colMeta);
+  const normB = normalizeForSort(b, colMeta);
+  
+  // Nulls always last
+  if (normA === null && normB === null) return 0;
+  if (normA === null) return 1;
+  if (normB === null) return -1;
+  
+  // Numeric comparison
+  if (typeof normA === 'number' && typeof normB === 'number') {
+    return normA - normB;
+  }
+  
+  // String comparison with locale support
+  return String(normA).localeCompare(String(normB), 'pt-BR', { sensitivity: 'base' });
+}
 
 export function useDataTable<T>({
   tableId,
@@ -38,6 +95,9 @@ export function useDataTable<T>({
 
   // Mode: Client or Server
   const isServerMode = Boolean(onQueryChange);
+
+  // Ref to track previous query for deduplication
+  const prevQueryRef = useRef<string>('');
 
   // Toggle sort handler
   const toggleSort = useCallback((colId: string, multi: boolean) => {
@@ -101,7 +161,7 @@ export function useDataTable<T>({
       );
     }
 
-    // 2. Filters
+    // 2. Filters (supports array multi-select and date range)
     Object.entries(filters).forEach(([colId, filterValue]) => {
       if (filterValue === undefined || filterValue === null) return;
       const col = columns.find(c => c.id === colId);
@@ -109,11 +169,33 @@ export function useDataTable<T>({
       
       result = result.filter(row => {
         const value = col.accessorFn?.(row) ?? (col.accessorKey ? row[col.accessorKey] : undefined);
+        
+        // Multi-select (array)
+        if (Array.isArray(filterValue)) {
+          if (filterValue.length === 0) return true;
+          return filterValue.some(fv => fv === value);
+        }
+        
+        // Date range
+        if (isDateRange(filterValue)) {
+          const dateValue = value instanceof Date ? value : new Date(String(value));
+          if (isNaN(dateValue.getTime())) return false;
+          
+          const { from, to } = filterValue;
+          const fromDate = from ? (from instanceof Date ? from : new Date(from)) : null;
+          const toDate = to ? (to instanceof Date ? to : new Date(to)) : null;
+          
+          if (fromDate && dateValue < fromDate) return false;
+          if (toDate && dateValue > toDate) return false;
+          return true;
+        }
+        
+        // Simple equality
         return value === filterValue;
       });
     });
 
-    // 3. Sorting
+    // 3. Sorting (robust with type handling)
     if (sortState.length > 0) {
       result.sort((a, b) => {
         for (const sort of sortState) {
@@ -123,13 +205,7 @@ export function useDataTable<T>({
           const aVal = col.accessorFn?.(a) ?? (col.accessorKey ? a[col.accessorKey] : undefined);
           const bVal = col.accessorFn?.(b) ?? (col.accessorKey ? b[col.accessorKey] : undefined);
           
-          // Handle nulls
-          if (aVal == null && bVal == null) continue;
-          if (aVal == null) return sort.desc ? -1 : 1;
-          if (bVal == null) return sort.desc ? 1 : -1;
-          
-          // Compare
-          const cmp = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+          const cmp = compareValues(aVal, bVal, col.meta);
           if (cmp !== 0) return sort.desc ? -cmp : cmp;
         }
         return 0;
@@ -159,7 +235,7 @@ export function useDataTable<T>({
     }
   }, [debouncedSearch, filters, isServerMode]);
 
-  // Notify changes (server mode)
+  // Notify changes (server mode) - with deduplication
   useEffect(() => {
     if (!isServerMode) return;
     
@@ -171,6 +247,13 @@ export function useDataTable<T>({
       search: debouncedSearch,
     };
     
+    // Serialize and compare with previous query
+    const queryString = JSON.stringify(query);
+    if (queryString === prevQueryRef.current) {
+      return; // Identical query, skip callback
+    }
+    
+    prevQueryRef.current = queryString;
     onQueryChange?.(query);
   }, [pagination, sortState, filters, debouncedSearch, isServerMode, onQueryChange]);
 
