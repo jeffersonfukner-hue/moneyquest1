@@ -64,7 +64,8 @@ export const TopCategoriesCard = () => {
   }, [transactions, categories]);
 
   const handleCategoryClick = (categoryName: string) => {
-    navigate(`/dashboard?tab=transactions&category=${encodeURIComponent(categoryName)}`);
+    // Navigate to reports with category filter (future enhancement)
+    navigate('/reports');
   };
 
   if (topCategories.length === 0) {

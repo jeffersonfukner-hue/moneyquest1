@@ -44,7 +44,11 @@ import { LoanBudgetAlert } from '@/components/loans/LoanBudgetAlert';
 import { Wallet } from '@/types/wallet';
 import { AppShell } from '@/components/layout/AppShell';
 
-const WalletsPage = () => {
+interface WalletsPageProps {
+  defaultTab?: 'accounts' | 'cards' | 'loans' | 'transfers';
+}
+
+const WalletsPage = ({ defaultTab = 'accounts' }: WalletsPageProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { activeWallets, inactiveWallets, wallets, deleteWallet, reactivateWallet, reorderWallets, loading, refetch: refetchWallets } = useWallets();
@@ -125,7 +129,7 @@ const WalletsPage = () => {
         <WalletBalancesWidget wallets={activeWallets} />
 
         {/* Main Tabs: Accounts vs Credit Cards vs Loans */}
-        <Tabs defaultValue="accounts" className="w-full">
+        <Tabs defaultValue={defaultTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="accounts" className="flex items-center gap-1 text-xs px-2">
               <WalletIcon className="w-3.5 h-3.5" />
