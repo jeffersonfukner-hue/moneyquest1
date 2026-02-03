@@ -1,225 +1,291 @@
 
-# Plano: Fix Desktop Width e Paginas Mobile-Like
+# Plano: Dashboard Financeiro Profissional (Sem Gamificacao)
 
 ## Visao Geral
 
-O problema principal e que varias paginas tem containers com `max-w-md` ou `max-w-4xl` hardcoded, fazendo o desktop parecer mobile. O `AppShell` ja suporta `fullWidth` mas nao esta sendo usado, e muitas paginas tem headers/mains com largura limitada internamente.
+Redesenhar completamente o Dashboard do MoneyQuest para um layout profissional, financeiro-first, removendo **todos** os elementos de gamificacao. O foco sera clareza, tomada de decisao e leitura financeira confiavel.
 
 ---
 
-## Analise do Problema
+## Elementos a Remover
 
-### 1. AppShell - Logica de Largura
+### 1. Componentes de Gamificacao
 
-O `AppShell.tsx` ja tem uma funcao `getContentMaxWidth`:
+| Componente | Localizacao | Acao |
+|------------|-------------|------|
+| `GamificationSidebar` | `src/components/dashboard/GamificationSidebar.tsx` | Deletar arquivo |
+| `DailyRewardBanner` | `src/components/game/DailyRewardBanner.tsx` | Remover do Dashboard |
+| `DailyRewardDialog` | `src/components/game/DailyRewardDialog.tsx` | Remover do Dashboard |
+| `QuestCelebration` | `src/components/game/QuestCelebration.tsx` | Remover do Dashboard |
+| `SeasonalDecorations` | `src/components/game/SeasonalDecorations.tsx` | Remover do Dashboard |
+| `XPNotification` | `src/components/game/XPNotification.tsx` | Remover do Dashboard |
+| `TransactionFeedback` | `src/components/game/TransactionFeedback.tsx` | Simplificar para feedback neutro |
+| `SessionSummaryCard` | `src/components/game/SessionSummaryCard.tsx` | Remover XP, manter resumo financeiro |
+| `TierUpgradeCelebration` | `src/components/referral/TierUpgradeCelebration.tsx` | Remover do Dashboard |
+| `QuickTemplates` | `src/components/game/QuickTemplates.tsx` | Manter mas remover elementos visuais de jogo |
 
-```typescript
-function getContentMaxWidth(breakpoint: Breakpoint): string {
-  switch (breakpoint) {
-    case 'desktop': return 'max-w-7xl';  // OK para desktop
-    case 'tablet': return 'max-w-3xl';   // OK para tablet
-    default: return 'max-w-md';          // OK para mobile
-  }
-}
-```
+### 2. Hooks de Gamificacao no Dashboard
 
-Problema: O desktop usa `max-w-7xl` (1280px) mas varias paginas tem `max-w-md` (448px) internamente, sobrepondo o AppShell.
+Remover do `Index.tsx`:
+- `useQuests` - nao necessario no dashboard
+- `useBadges` - nao necessario no dashboard
+- `useDailyReward` - nao necessario no dashboard
+- `useRealtimeXP` - nao necessario no dashboard
+- `useReferralNotifications` - nao necessario no dashboard
 
-### 2. Paginas com Largura Limitada Interna
+### 3. Navegacao - Sidebar
 
-| Pagina | Problema | Linhas |
-|--------|----------|--------|
-| `Wallets.tsx` | Header com `max-w-md mx-auto` | 120 |
-| `Settings.tsx` | Header e main com `max-w-md mx-auto` | 105, 120 |
-| `Notifications.tsx` | Header e main com `max-w-md mx-auto` | 94, 120 |
-| `Upgrade.tsx` | Main com `max-w-md mx-auto` | 204 |
-| `CashFlow.tsx` | Header e main com `max-w-4xl mx-auto` | 48, 63 |
-| `PeriodComparison.tsx` | Header e main com `max-w-4xl mx-auto` | 32, 51 |
-| `Index.tsx` | Main com `px-4 py-3` (sem max-width) | 250 |
+Atualizar `AppSidebar.tsx`:
+- Remover secao "Gamificacao" (Leaderboard, Journal, Shop)
+- Manter apenas navegacao financeira essencial
+- Remover exibicao de "Nivel" no perfil do usuario
 
-### 3. Paginas que Deveriam Usar `fullWidth`
+### 4. Topbar
 
-Para DataTables e relatorios, o desktop deve ocupar toda a largura disponivel:
-- `/dashboard` → Tab de Transacoes
-- `/wallets` → Tabs de Contas, Cartoes, Emprestimos
-- `/cash-flow` → Graficos e relatorios
-- `/period-comparison` → Relatorios comparativos
-- `/scheduled` → Lista de transacoes agendadas
+Atualizar `UnifiedTopbar.tsx`:
+- Remover `SoundToggle`
+- Remover `SeasonalThemeIndicator`
 
 ---
 
-## Solucao Proposta
+## Nova Estrutura do Dashboard
 
-### 1. Atualizar AppShell para Logica Melhorada
+### Layout Desktop (1280px+)
 
-Ajustar a logica de largura para ser mais responsiva:
+```text
++-----------------------------------------------+
+|  Topbar (limpo, sem elementos de jogo)        |
++-----------------------------------------------+
+|           KPIs Essenciais (4 cards)           |
++-----------------------------------------------+
+|     Indice de Organizacao Financeira (1 linha)|
++-----------------------------------------------+
+|  Resultado do Periodo  |   Analise de Gastos  |
+|  (Entradas/Saidas/Net) |   (Top 5 Categorias) |
++------------------------+----------------------+
+|         Evolucao de Saldo (Grafico)           |
++-----------------------------------------------+
+|         Alertas Financeiros (se houver)       |
++-----------------------------------------------+
+|         Ultimas Transacoes (8-10 itens)       |
++-----------------------------------------------+
+|         Templates Rapidos (simplificado)      |
++-----------------------------------------------+
+```
+
+### Mobile/Tablet
+
+Mesmo conteudo empilhado verticalmente, financeiro sempre primeiro.
+
+---
+
+## Novos Componentes
+
+### 1. Indice de Organizacao Financeira
+
+Criar `src/components/dashboard/OrganizationIndexWidget.tsx`:
 
 ```typescript
-function getContentMaxWidth(breakpoint: Breakpoint): string {
-  switch (breakpoint) {
-    case 'desktop': return 'max-w-7xl';  // 1280px
-    case 'tablet': return 'max-w-4xl';   // 896px (era 3xl/768px)
-    default: return 'max-w-lg';          // 512px (era md/448px)
-  }
+// Widget discreto mostrando pontuacao funcional
+// Linha unica abaixo dos KPIs
+// Criterios: registros em dia, metas definidas, conciliacao
+
+interface OrganizationIndex {
+  score: number;       // 0-100
+  level: string;       // "Excelente" | "Bom" | "Regular" | "Atencao"
+  tooltip: string;     // Explicacao dos criterios
 }
 ```
 
-E aumentar padding no desktop:
+Criterios de calculo:
+- Registros nos ultimos 7 dias: +30 pontos
+- Pelo menos 1 meta de categoria definida: +20 pontos
+- Todas as carteiras com saldo atualizado: +20 pontos
+- Nenhum alerta financeiro ativo: +15 pontos
+- Pelo menos 3 categorias usadas no mes: +15 pontos
+
+### 2. Grafico de Evolucao de Saldo
+
+Criar `src/components/dashboard/BalanceEvolutionChart.tsx`:
 
 ```typescript
-<main className={cn(
-  "flex-1 py-4",
-  breakpoint === 'mobile' ? 'px-4' : 'px-6',
-  fullWidth ? 'max-w-none' : getContentMaxWidth(breakpoint),
-  "mx-auto w-full",
-  className
-)}>
+// Grafico de linha simples mostrando evolucao do saldo ao longo do periodo
+// Sem animacoes exageradas
+// Cores neutras: linha principal, area preenchida suave
 ```
 
-### 2. Remover max-width Hardcoded das Paginas
+### 3. Feedback de Transacao Simplificado
 
-Substituir containers internos por classes responsivas ou remover completamente, deixando o AppShell controlar a largura.
+Criar `src/components/dashboard/TransactionConfirmation.tsx`:
 
-**Wallets.tsx:**
-```diff
-- <div className="flex items-center h-14 px-4 max-w-md mx-auto">
-+ <div className="flex items-center h-14 px-4">
+```typescript
+// Substituir TransactionFeedback
+// Mostra apenas: confirmacao de registro, valor, categoria
+// Sem narrativas, sem XP, sem animacoes elaboradas
+// Auto-dismiss em 3 segundos
 ```
 
-**Settings.tsx:**
-```diff
-- <div className="flex items-center h-14 px-4 max-w-md mx-auto">
-+ <div className="flex items-center h-14 px-4">
+### 4. Resumo de Sessao Simplificado
 
-- <main className="px-4 py-6 max-w-md mx-auto space-y-4">
-+ <main className="px-4 py-6 space-y-4">
-```
+Atualizar `SessionSummaryCard.tsx`:
 
-**Notifications.tsx:**
-```diff
-- <div className="flex items-center h-14 px-4 max-w-md mx-auto">
-+ <div className="flex items-center h-14 px-4">
-
-- <main className="px-4 py-4 max-w-md mx-auto space-y-4">
-+ <main className="px-4 py-4 space-y-4">
-```
-
-**CashFlow.tsx:**
-```diff
-- <div className="flex items-center gap-3 h-14 px-4 max-w-4xl mx-auto">
-+ <div className="flex items-center gap-3 h-14 px-4">
-
-- <main className="container max-w-4xl mx-auto px-4 py-4 space-y-4">
-+ <main className="px-4 py-4 space-y-4">
-```
-
-### 3. Ativar fullWidth para Paginas Data-Heavy
-
-Paginas com tabelas e relatorios devem passar `fullWidth={true}`:
-
-**CashFlow.tsx:**
-```diff
-- <AppShell>
-+ <AppShell fullWidth>
-```
-
-**Wallets.tsx:**
-```diff
-- <AppShell>
-+ <AppShell fullWidth>
-```
-
-**Index.tsx (Dashboard):**
-Ja usa AppShell sem fullWidth, o que e correto para o dashboard que tem cards. Porem, a tab de Transacoes poderia ter layout diferente.
-
-### 4. Remover Headers Duplicados
-
-Varias paginas tem headers internos que duplicam a funcionalidade do UnifiedTopbar. Esses podem ser simplificados ou removidos.
-
-Paginas com headers redundantes:
-- Wallets.tsx (header linha 118-131)
-- Settings.tsx (header linha 103-118)
-- CashFlow.tsx (header linha 46-61)
-- Notifications.tsx (header linha 92-117)
-
-Opcoes:
-1. **Remover completamente** - deixar UnifiedTopbar como unico header
-2. **Manter como page title** - remover navegacao, manter apenas titulo
-
-Recomendacao: Manter como **page title banner** sem botao de voltar (o voltar fica no UnifiedTopbar ou sidebar).
-
-### 5. Atualizar CSS content-container
-
-O `.content-container` no `index.css` pode ser simplificado:
-
-```css
-.content-container {
-  @apply px-4 py-3 mx-auto w-full;
-  max-width: 32rem; /* ~512px mobile */
-}
-
-@media (min-width: 768px) {
-  .content-container {
-    max-width: 56rem; /* ~896px tablet */
-    @apply px-5;
-  }
-}
-
-@media (min-width: 1024px) {
-  .content-container {
-    max-width: 80rem; /* ~1280px desktop */
-    @apply px-6;
-  }
-}
+```typescript
+// Remover: XP, trofeu, "Mission Complete", termos de jogo
+// Manter: total de transacoes, entradas, saidas, saldo liquido
+// Renomear para "Resumo de Lancamentos"
 ```
 
 ---
 
 ## Arquivos a Modificar
 
+### Alteracoes Principais
+
 | Arquivo | Mudanca |
 |---------|---------|
-| `src/components/layout/AppShell.tsx` | Ajustar getContentMaxWidth, aumentar tablet width |
-| `src/pages/Wallets.tsx` | Remover max-w-md, adicionar fullWidth |
-| `src/pages/Settings.tsx` | Remover max-w-md de header e main |
-| `src/pages/Notifications.tsx` | Remover max-w-md de header e main |
-| `src/pages/CashFlow.tsx` | Remover max-w-4xl, adicionar fullWidth |
-| `src/pages/PeriodComparison.tsx` | Remover max-w-4xl, adicionar fullWidth |
-| `src/pages/Upgrade.tsx` | Remover max-w-md |
-| `src/pages/Shop.tsx` | Remover max-w-6xl (ja bom) |
-| `src/pages/Categories.tsx` | Verificar e ajustar |
-| `src/pages/CategoryGoals.tsx` | Verificar e ajustar |
-| `src/pages/Suppliers.tsx` | Verificar e ajustar |
-| `src/pages/Support.tsx` | Verificar e ajustar |
-| `src/index.css` | Atualizar .content-container |
+| `src/pages/Index.tsx` | Remover todos hooks/componentes de gamificacao, simplificar layout |
+| `src/components/dashboard/index.ts` | Remover export de GamificationSidebar, adicionar novos |
+| `src/components/layout/AppSidebar.tsx` | Remover secao gamificacao, remover nivel do perfil |
+| `src/components/layout/UnifiedTopbar.tsx` | Remover SoundToggle, SeasonalThemeIndicator |
+| `src/components/game/SessionSummaryCard.tsx` | Remover XP e termos de jogo |
+| `src/components/game/QuickTemplates.tsx` | Remover visual de jogo, manter funcionalidade |
+
+### Novos Arquivos
+
+| Arquivo | Descricao |
+|---------|-----------|
+| `src/components/dashboard/OrganizationIndexWidget.tsx` | Pontuacao funcional discreta |
+| `src/components/dashboard/BalanceEvolutionChart.tsx` | Grafico de evolucao de saldo |
+| `src/components/dashboard/TransactionConfirmation.tsx` | Feedback simplificado |
+
+### Arquivos a Deletar (do Dashboard)
+
+O `GamificationSidebar.tsx` sera deletado. Os demais componentes de gamificacao permanecem para uso em outras areas do app, mas serao removidos do Dashboard.
+
+---
+
+## Regras de Calculo Financeiro
+
+### Transferencias
+
+- Transferencias entre carteiras NAO contam como entrada/saida
+- Filtrar por `transaction_subtype !== 'transfer'` ou similar
+
+### Pagamento de Cartao
+
+- Pagamento de fatura NAO gera nova despesa
+- Ja foi registrado como despesa na transacao original
+
+### Emprestimos
+
+- Entrada inicial do emprestimo: conta como entrada
+- Parcelas: sao pagamento de divida, nao despesa recorrente
+
+### Lancamentos Futuros
+
+- Entram apenas na projecao de caixa (30 dias)
+- Nao afetam saldo atual ou resultado do periodo
+
+---
+
+## Visual e UX
+
+### Paleta de Cores
+
+```text
+Neutros:
+- Background: hsl(var(--background))
+- Card: hsl(var(--card))
+- Border: hsl(var(--border))
+
+Dados Financeiros:
+- Positivo/Receita: hsl(var(--success)) - verde discreto
+- Negativo/Despesa: hsl(var(--destructive)) - vermelho discreto
+- Neutro: hsl(var(--muted-foreground))
+```
+
+### Tipografia
+
+- Titulos de cards: `text-sm font-medium text-muted-foreground`
+- Valores principais: `text-lg lg:text-xl font-bold tabular-nums`
+- Legendas: `text-xs text-muted-foreground`
+
+### Icones
+
+- Usar icones Lucide neutros (sem emojis de jogo)
+- `Wallet`, `TrendingUp`, `TrendingDown`, `CreditCard`, `AlertTriangle`
 
 ---
 
 ## Ordem de Implementacao
 
-1. **Atualizar `AppShell.tsx`** - melhorar logica de largura e fullWidth
-2. **Atualizar `index.css`** - ajustar .content-container
-3. **Paginas fullWidth** - Wallets, CashFlow, PeriodComparison
-4. **Remover max-w hardcoded** - Settings, Notifications, Upgrade
-5. **Verificar demais paginas** - Categories, CategoryGoals, etc.
+1. **Limpar Index.tsx**
+   - Remover imports de gamificacao
+   - Remover hooks nao necessarios
+   - Remover componentes de jogo do render
+
+2. **Atualizar Sidebar**
+   - Remover secao gamificacao
+   - Remover nivel do perfil
+
+3. **Atualizar Topbar**
+   - Remover SoundToggle
+   - Remover SeasonalThemeIndicator
+
+4. **Criar OrganizationIndexWidget**
+   - Calcular pontuacao
+   - Exibir de forma discreta
+
+5. **Criar BalanceEvolutionChart**
+   - Grafico de linha com Recharts
+   - Dados do periodo atual
+
+6. **Simplificar SessionSummaryCard**
+   - Remover XP e termos de jogo
+   - Manter resumo financeiro
+
+7. **Criar TransactionConfirmation**
+   - Substituir TransactionFeedback no dashboard
+   - Feedback neutro e rapido
+
+8. **Deletar GamificationSidebar**
+   - Remover do barrel export
+   - Deletar arquivo
+
+9. **Atualizar traducoes**
+   - Adicionar novas keys
+   - Remover referencias a gamificacao no dashboard
 
 ---
 
 ## Resultado Esperado
 
-| Breakpoint | Antes | Depois |
-|------------|-------|--------|
-| Desktop (>=1024px) | ~448px (max-w-md) | ~1280px (max-w-7xl) ou 100% para fullWidth |
-| Tablet (768-1023px) | ~768px (max-w-3xl) | ~896px (max-w-4xl) |
-| Mobile (<768px) | ~448px (max-w-md) | ~512px (max-w-lg) |
+### Antes (Gamificado)
+
+- Avatar, nivel, XP, streak, multiplicador
+- Daily Reward banners e dialogs
+- Quest celebrations
+- Decoracoes sazonais
+- Feedback narrativo com animacoes
+- Sidebar com Leaderboard, Journal, Shop
+
+### Depois (Profissional)
+
+- KPIs financeiros claros e clicaveis
+- Indice de Organizacao discreto
+- Graficos uteis e simples
+- Alertas financeiros explicativos
+- Feedback de transacao neutro
+- Sidebar apenas com funcionalidades financeiras
+- Visual limpo e profissional
 
 ---
 
 ## Testes Recomendados
 
-1. **Desktop**: Verificar que paginas ocupam largura adequada
-2. **Wallets**: Tabs de contas/cartoes/emprestimos em fullWidth
-3. **CashFlow**: Graficos ocupando toda a largura
-4. **Settings**: Cards centralizados mas nao espremidos
-5. **Mobile**: Verificar que nao quebrou layout mobile
-6. **Tablet**: Verificar transicao suave entre breakpoints
+1. **Desktop**: Dashboard com layout limpo e profissional
+2. **Mobile**: Widgets empilhados corretamente
+3. **KPIs**: Cliques levando para drill-down correto
+4. **Alertas**: Aparecendo/desaparecendo conforme situacao
+5. **Graficos**: Exibindo dados corretamente
+6. **Indice**: Calculando pontuacao baseada nos criterios
