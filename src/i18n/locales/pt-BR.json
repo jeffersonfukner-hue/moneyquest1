@@ -2776,5 +2776,22 @@
     "deleteDescription": "Tem certeza que deseja excluir \"{{name}}\"? Esta ação não pode ser desfeita.",
     "deleteSuccess": "Fornecedor excluído!",
     "deleteError": "Erro ao excluir fornecedor"
+  },
+  "backup": {
+    "title": "Backup de Dados",
+    "subtitle": "Exporte ou importe seus dados financeiros",
+    "export": "Exportar Backup",
+    "import": "Importar Backup",
+    "exporting": "Exportando...",
+    "importing": "Importando...",
+    "exportSuccess": "Backup exportado com sucesso!",
+    "exportError": "Erro ao exportar backup",
+    "importSuccess": "Backup importado com sucesso!",
+    "importError": "Erro ao importar backup",
+    "invalidFile": "Arquivo de backup inválido",
+    "fileTooLarge": "Arquivo muito grande (máximo 10MB)",
+    "confirmImport": "Confirmar Importação",
+    "confirmImportDesc": "Isso irá adicionar os dados do backup à sua conta. Deseja continuar?",
+    "lastBackup": "Último backup"
   }
 }

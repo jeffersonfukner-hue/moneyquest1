@@ -19,6 +19,7 @@ import { useSubscription, PREMIUM_PRICING } from '@/contexts/SubscriptionContext
 import { SUPPORTED_LANGUAGES, SUPPORTED_CURRENCIES, type SupportedLanguage, type SupportedCurrency } from '@/i18n';
 import { PremiumBadge } from '@/components/subscription/PremiumBadge';
 import { NotificationPreferencesCard } from '@/components/notifications/NotificationPreferencesCard';
+import { BackupCard } from '@/components/settings/BackupCard';
 import { useExchangeRates } from '@/hooks/useExchangeRates';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { format } from 'date-fns';
@@ -449,6 +450,9 @@ const Settings = () => {
 
         {/* Notification Preferences */}
         <NotificationPreferencesCard />
+
+        {/* Backup */}
+        <BackupCard />
 
         {/* Sound */}
         <Card>
