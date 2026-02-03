@@ -7,17 +7,6 @@ const BREAKPOINTS = {
 
 export type Breakpoint = 'mobile' | 'tablet' | 'desktop';
 
-// Detect if device is touch-capable (iOS, Android, etc.)
-function isTouchDevice(): boolean {
-  if (typeof window === 'undefined') return false;
-  return (
-    'ontouchstart' in window ||
-    navigator.maxTouchPoints > 0 ||
-    // @ts-ignore - for older browsers
-    navigator.msMaxTouchPoints > 0
-  );
-}
-
 export function useBreakpoint(): Breakpoint {
   // Synchronous initial value to avoid flicker
   const getInitialBreakpoint = (): Breakpoint => {
@@ -59,10 +48,9 @@ export function useIsMobile() {
 
   React.useEffect(() => {
     const checkMobile = () => {
-      const isSmallScreen = window.innerWidth < BREAKPOINTS.MOBILE;
-      const isTouch = isTouchDevice();
-      // Consider mobile if: small screen OR touch device (for iOS/Android in any viewport)
-      setIsMobile(isSmallScreen || isTouch);
+      // IMPORTANT: Mobile is determined strictly by viewport width.
+      // Tablets (768–1023) must behave like non-mobile for sidebar/layout.
+      setIsMobile(window.innerWidth < BREAKPOINTS.MOBILE);
     };
 
     const mql = window.matchMedia(`(max-width: ${BREAKPOINTS.MOBILE - 1}px)`);
