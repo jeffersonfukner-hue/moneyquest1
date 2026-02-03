@@ -19,7 +19,13 @@
     "source": "Origem",
     "bankAccount": "Conta Bancária",
     "creditCard": "Cartão de Crédito",
-    "category": "Categoria"
+    "category": "Categoria",
+    "cash": "Dinheiro (Espécie)",
+    "cashDesc": "Gastos e recebimentos em dinheiro",
+    "cashTransaction": "Dinheiro (Espécie)",
+    "bankAccountDesc": "Receitas e despesas da conta",
+    "creditCardDesc": "Compras no cartão de crédito",
+    "selectSource": "Escolha onde registrar esta transação:"
   },
   "creditCards": {
     "viewInvoices": "Ver Faturas",
@@ -915,6 +921,11 @@
     "reorderError": "Erro ao reordenar carteiras",
     "accounts": "Contas",
     "cashWalletName": "Dinheiro",
+    "cashWallet": "Carteira de Dinheiro",
+    "noCashWallet": "Nenhuma carteira de dinheiro cadastrada",
+    "createCashWalletHint": "Crie uma carteira de dinheiro para registrar transações em espécie.",
+    "createCashWallet": "Criar Carteira Dinheiro",
+    "currentBalance": "Saldo",
     "cashSuggestion": {
       "title": "Ativar carteira Dinheiro?",
       "description": "Registre gastos e recebimentos em espécie com saldo próprio.",
