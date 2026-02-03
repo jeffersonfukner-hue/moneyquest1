@@ -143,7 +143,22 @@ const Index = () => {
       {/* 1. KPIs Essenciais */}
       <FinancialKPICards />
       
-      {/* 2. Índice de Organização Financeira */}
+      {/* 2. Resultado do Período + Mini Comparativo */}
+      <PeriodResultWidget />
+      
+      {/* 3. Gráfico de Evolução de Saldo */}
+      <BalanceEvolutionChart />
+      
+      {/* 4. Top Categorias */}
+      <TopCategoriesCard />
+      
+      {/* 5. Alertas Financeiros */}
+      <FinancialAlertsWidget />
+      
+      {/* 6. Últimas Transações */}
+      <RecentTransactionsWidget transactions={transactions} limit={8} />
+      
+      {/* Índice de Organização - Discreto no final */}
       <OrganizationIndexWidget />
       
       {/* Transaction confirmation - simple, neutral */}
@@ -167,27 +182,6 @@ const Index = () => {
           onDismiss={() => setSessionSummary(null)}
         />
       )}
-      
-      {/* 3. Layout em Grid para Desktop */}
-      <div className={cn(
-        "grid gap-4",
-        isDesktop ? "grid-cols-2" : "grid-cols-1"
-      )}>
-        {/* Resultado do Período */}
-        <PeriodResultWidget />
-        
-        {/* Análise de Gastos */}
-        <TopCategoriesCard />
-      </div>
-      
-      {/* 4. Gráfico de Evolução */}
-      <BalanceEvolutionChart />
-      
-      {/* 5. Alertas Financeiros */}
-      <FinancialAlertsWidget />
-      
-      {/* 6. Últimas Transações */}
-      <RecentTransactionsWidget transactions={transactions} limit={8} />
       
       {/* Quick templates for fast transaction entry */}
       <QuickTemplates onUseTemplate={handleUseTemplate} />

@@ -69,8 +69,6 @@ const LazyPremiumSuccess = lazy(() => import("./pages/PremiumSuccess"));
 // AI Coach desativado na versão sem IA - rota redirecionará para home
 const LazyCategoryGoals = lazy(() => import("./pages/CategoryGoals"));
 const LazyCategories = lazy(() => import("./pages/Categories"));
-const LazyLeaderboard = lazy(() => import("./pages/Leaderboard"));
-const LazyAdventureJournal = lazy(() => import("./pages/AdventureJournal"));
 const LazyWallets = lazy(() => import("./pages/Wallets"));
 const LazyScheduledTransactions = lazy(() => import("./pages/ScheduledTransactions"));
 const LazyCashFlow = lazy(() => import("./pages/CashFlow"));
@@ -83,7 +81,6 @@ const LazyNotifications = lazy(() => import("./pages/Notifications"));
 const LazyDebugI18n = lazy(() => import("./pages/DebugI18n"));
 const LazyDebugAuth = lazy(() => import("./pages/DebugAuth"));
 const LazyDebugSEO = lazy(() => import("./pages/DebugSEO"));
-const LazyShop = lazy(() => import("./pages/Shop"));
 const LazySuppliers = lazy(() => import("./pages/Suppliers"));
 // ===== LAZY LOADED - Admin pages =====
 const LazySuperAdminDashboard = lazy(() => import("./pages/admin/SuperAdminDashboard"));
@@ -279,16 +276,10 @@ const App = () => (
                       <Suspense fallback={<PageLoader />}><LazyCategories /></Suspense>
                     </AuthenticatedWrapper>
                   } />
-                  <Route path="/leaderboard" element={
-                    <AuthenticatedWrapper>
-                      <Suspense fallback={<PageLoader />}><LazyLeaderboard /></Suspense>
-                    </AuthenticatedWrapper>
-                  } />
-                  <Route path="/journal" element={
-                    <AuthenticatedWrapper>
-                      <Suspense fallback={<PageLoader />}><LazyAdventureJournal /></Suspense>
-                    </AuthenticatedWrapper>
-                  } />
+                  {/* Gamification routes removed - redirect to dashboard */}
+                  <Route path="/leaderboard" element={<Navigate to="/dashboard" replace />} />
+                  <Route path="/journal" element={<Navigate to="/dashboard" replace />} />
+                  <Route path="/shop" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/wallets" element={
                     <AuthenticatedWrapper>
                       <Suspense fallback={<PageLoader />}><LazyWallets /></Suspense>
@@ -332,11 +323,6 @@ const App = () => (
                   <Route path="/notifications" element={
                     <AuthenticatedWrapper>
                       <Suspense fallback={<PageLoader />}><LazyNotifications /></Suspense>
-                    </AuthenticatedWrapper>
-                  } />
-                  <Route path="/shop" element={
-                    <AuthenticatedWrapper>
-                      <Suspense fallback={<PageLoader />}><LazyShop /></Suspense>
                     </AuthenticatedWrapper>
                   } />
                   <Route path="/suppliers" element={

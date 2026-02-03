@@ -2875,7 +2875,7 @@
     "noResults": "Nenhum resultado encontrado"
   },
   "organizationIndex": {
-    "title": "Índice de Organização Financeira",
+    "title": "Índice de Organização",
     "levels": {
       "excellent": "Excelente",
       "good": "Bom",
@@ -2883,13 +2883,13 @@
       "attention": "Atenção"
     },
     "tooltip": {
-      "title": "Critérios de avaliação:",
-      "recentRecords": "Registros recentes (7 dias)",
-      "hasGoals": "Meta de categoria definida",
-      "walletsActive": "Carteiras ativas",
-      "noAlerts": "Sem alertas financeiros",
-      "categoriesUsed": "Categorias diversificadas"
-    }
+      "title": "Como é calculado:",
+      "categorized": "Transações categorizadas",
+      "consistency": "Consistência de registros",
+      "scheduled": "Agendados revisados",
+      "budgets": "Orçamentos definidos"
+    },
+    "tipsTitle": "Como melhorar:"
   },
   "transactionConfirmation": {
     "recorded": "Lançamento registrado"

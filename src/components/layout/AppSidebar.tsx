@@ -227,9 +227,6 @@ export function AppSidebar() {
                   <span className="text-sm font-medium truncate text-sidebar-foreground">
                     {profile?.display_name || t('sidebar.profile', 'Perfil')}
                   </span>
-                  <span className="text-xs text-sidebar-foreground/60 truncate">
-                    {t('level.title', 'Nível')} {profile?.level || 1}
-                  </span>
                 </div>
               )}
             </div>
