@@ -3,16 +3,17 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { APP_ROUTES } from '@/routes/routes';
 import WalletsPage from './Wallets';
 
-type WalletTab = 'accounts' | 'cards' | 'loans';
+type WalletTab = 'accounts' | 'cards' | 'loans' | 'transfers';
 
-const VALID_TABS: WalletTab[] = ['accounts', 'cards', 'loans'];
+const VALID_TABS: WalletTab[] = ['accounts', 'cards', 'loans', 'transfers'];
 
-// Map URL tabs to actual component tabs
+// Map URL tabs to actual component tabs (checks not yet implemented, redirect to accounts)
 const TAB_MAP: Record<string, WalletTab> = {
   'accounts': 'accounts',
   'cards': 'cards',
+  'checks': 'accounts', // Cheques redirect to accounts (future feature)
   'loans': 'loans',
-  'transfers': 'accounts', // Transfers are in the accounts tab
+  'transfers': 'transfers',
 };
 
 /**

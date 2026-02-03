@@ -131,7 +131,7 @@ export const FinancialKPICards = () => {
         icon={<TrendingUp className="w-5 h-5" />}
         tooltip={t('dashboard.cashProjectionTooltip', 'Saldo atual menos pagamentos programados para os próximos 30 dias')}
         variant={projectionVariant}
-        onClick={() => navigate('/reports')}
+        onClick={() => navigate('/scheduled')}
       />
       
       <KPICard

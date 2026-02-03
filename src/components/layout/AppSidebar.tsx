@@ -16,6 +16,8 @@ import {
   CreditCard,
   Landmark,
   Banknote,
+  FileCheck,
+  ArrowLeftRight,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
@@ -70,7 +72,9 @@ const mainNavItems = [
 const walletsSubItems = [
   { title: 'accounts', url: APP_ROUTES.WALLETS_ACCOUNTS, icon: Banknote },
   { title: 'cards', url: APP_ROUTES.WALLETS_CARDS, icon: CreditCard },
+  { title: 'checks', url: APP_ROUTES.WALLETS_CHECKS, icon: FileCheck },
   { title: 'loans', url: APP_ROUTES.WALLETS_LOANS, icon: Landmark },
+  { title: 'transfers', url: APP_ROUTES.WALLETS_TRANSFERS, icon: ArrowLeftRight },
 ];
 
 // Features
