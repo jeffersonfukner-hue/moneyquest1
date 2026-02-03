@@ -128,60 +128,37 @@ const WalletsPage = ({ defaultTab = 'accounts' }: WalletsPageProps) => {
         {/* Balances Overview */}
         <WalletBalancesWidget wallets={activeWallets} />
 
-        {/* Main Tabs: Accounts vs Credit Cards vs Loans */}
+        {/* Main Tabs: Accounts, Cards, Loans, Transfers */}
         <Tabs defaultValue={defaultTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="accounts" className="flex items-center gap-1 text-xs px-2">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="accounts" className="flex items-center gap-1 text-xs px-1">
               <WalletIcon className="w-3.5 h-3.5" />
-              Contas
+              <span className="hidden sm:inline">Contas</span>
             </TabsTrigger>
-            <TabsTrigger value="cards" className="flex items-center gap-1 text-xs px-2">
+            <TabsTrigger value="cards" className="flex items-center gap-1 text-xs px-1">
               <CreditCard className="w-3.5 h-3.5" />
-              Cartões
+              <span className="hidden sm:inline">Cartões</span>
             </TabsTrigger>
-            <TabsTrigger value="loans" className="flex items-center gap-1 text-xs px-2">
+            <TabsTrigger value="loans" className="flex items-center gap-1 text-xs px-1">
               <Landmark className="w-3.5 h-3.5" />
-              Empréstimos
+              <span className="hidden sm:inline">Empréstimos</span>
+            </TabsTrigger>
+            <TabsTrigger value="transfers" className="flex items-center gap-1 text-xs px-1">
+              <ArrowLeftRight className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Transferências</span>
             </TabsTrigger>
           </TabsList>
 
           {/* Accounts Tab */}
           <TabsContent value="accounts" className="space-y-4 mt-4">
-            {/* Action Buttons */}
-            <div className="grid grid-cols-2 gap-2">
-              <Button 
-                onClick={() => setShowAddDialog(true)} 
-                className="w-full"
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                {t('wallets.addWallet')}
-              </Button>
-              <Button 
-                onClick={() => handleOpenTransfer()} 
-                variant="outline"
-                className="w-full"
-                disabled={activeWallets.length < 2}
-              >
-                <ArrowLeftRight className="mr-2 h-4 w-4" />
-                {t('wallets.transfer')}
-              </Button>
-            </div>
-
+            {/* Action Button */}
             <Button 
-              onClick={() => setShowScheduledDialog(true)} 
-              variant="secondary"
+              onClick={() => setShowAddDialog(true)} 
               className="w-full"
-              disabled={activeWallets.length < 2}
             >
-              <Clock className="mr-2 h-4 w-4" />
-              {t('wallets.scheduleTransfer')}
+              <Plus className="mr-2 h-4 w-4" />
+              {t('wallets.addWallet')}
             </Button>
-
-            {/* Scheduled Transfers */}
-            <ScheduledTransfersCard />
-
-            {/* Transfer History */}
-            <TransferHistoryCard expanded />
 
             {/* Wallets Active/Inactive Tabs */}
             <Tabs defaultValue="active" className="w-full">
@@ -410,6 +387,42 @@ const WalletsPage = ({ defaultTab = 'accounts' }: WalletsPageProps) => {
                 </Tabs>
               </>
             )}
+          </TabsContent>
+
+          {/* Transfers Tab */}
+          <TabsContent value="transfers" className="space-y-4 mt-4">
+            {/* Action Buttons */}
+            <div className="grid grid-cols-2 gap-2">
+              <Button 
+                onClick={() => handleOpenTransfer()} 
+                className="w-full"
+                disabled={activeWallets.length < 2}
+              >
+                <ArrowLeftRight className="mr-2 h-4 w-4" />
+                {t('wallets.transfer')}
+              </Button>
+              <Button 
+                onClick={() => setShowScheduledDialog(true)} 
+                variant="outline"
+                className="w-full"
+                disabled={activeWallets.length < 2}
+              >
+                <Clock className="mr-2 h-4 w-4" />
+                {t('wallets.scheduleTransfer')}
+              </Button>
+            </div>
+
+            {activeWallets.length < 2 && (
+              <div className="text-center py-4 text-sm text-muted-foreground">
+                {t('wallets.needTwoWallets', 'Você precisa de pelo menos 2 contas para fazer transferências.')}
+              </div>
+            )}
+
+            {/* Scheduled Transfers */}
+            <ScheduledTransfersCard />
+
+            {/* Transfer History */}
+            <TransferHistoryCard expanded />
           </TabsContent>
         </Tabs>
       </div>

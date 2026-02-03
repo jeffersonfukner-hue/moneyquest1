@@ -36,6 +36,7 @@ export const APP_ROUTES = {
   WALLETS: '/wallets',
   WALLETS_ACCOUNTS: '/wallets/accounts',
   WALLETS_CARDS: '/wallets/cards',
+  WALLETS_CHECKS: '/wallets/checks',
   WALLETS_LOANS: '/wallets/loans',
   WALLETS_TRANSFERS: '/wallets/transfers',
   // Other sections
