@@ -2873,5 +2873,37 @@
     "of": "de",
     "showing": "Mostrando",
     "noResults": "Nenhum resultado encontrado"
+  },
+  "organizationIndex": {
+    "title": "Índice de Organização Financeira",
+    "levels": {
+      "excellent": "Excelente",
+      "good": "Bom",
+      "regular": "Regular",
+      "attention": "Atenção"
+    },
+    "tooltip": {
+      "title": "Critérios de avaliação:",
+      "recentRecords": "Registros recentes (7 dias)",
+      "hasGoals": "Meta de categoria definida",
+      "walletsActive": "Carteiras ativas",
+      "noAlerts": "Sem alertas financeiros",
+      "categoriesUsed": "Categorias diversificadas"
+    }
+  },
+  "transactionConfirmation": {
+    "recorded": "Lançamento registrado"
+  },
+  "sessionSummary": {
+    "title": "Resumo de Lançamentos",
+    "transaction": "Lançamento",
+    "transactions": "Lançamentos",
+    "income": "Entradas",
+    "expenses": "Saídas",
+    "netResult": "Resultado líquido",
+    "close": "Fechar"
+  },
+  "dashboard": {
+    "balanceEvolution": "Evolução do Saldo (30 dias)"
   }
 }

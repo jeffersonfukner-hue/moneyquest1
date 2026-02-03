@@ -6,8 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
-import { SoundToggle } from '@/components/game/SoundToggle';
-import { SeasonalThemeIndicator } from '@/components/game/SeasonalThemeIndicator';
 import { Logo } from '@/components/ui/logo';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
@@ -146,9 +144,6 @@ export function UnifiedTopbar({ breakpoint, className }: UnifiedTopbarProps) {
             {!isMobile && <span>{t('transactions.add', 'Novo')}</span>}
           </Button>
 
-          {/* Sound Toggle - tablet and desktop only */}
-          {!isMobile && <SoundToggle />}
-
           {/* Notifications */}
           <NotificationBell />
 
@@ -195,9 +190,6 @@ export function UnifiedTopbar({ breakpoint, className }: UnifiedTopbarProps) {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-
-          {/* Seasonal Theme - tablet and desktop only */}
-          {!isMobile && <SeasonalThemeIndicator />}
 
           {/* Logout - mobile only (desktop has sidebar footer) */}
           {isMobile && (
