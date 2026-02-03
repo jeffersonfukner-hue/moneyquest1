@@ -294,45 +294,9 @@ const ScheduledTransactions = () => {
   }
 
   return (
-    <AppShell>
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border safe-area-top">
-        <div className="flex items-center justify-between h-14 px-4 max-w-md mx-auto">
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate(-1)}
-              className="h-9 w-9"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <h1 className="font-display font-bold text-lg text-foreground">
-              {t('scheduled.title')}
-            </h1>
-          </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="sm" className="h-9 gap-1.5">
-                <Plus className="h-4 w-4" />
-                <span className="hidden xs:inline">{t('scheduled.add')}</span>
-                <ChevronDown className="h-3 w-3" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={() => setShowTransactionDialog(true)} className="gap-2">
-                <TrendingDown className="h-4 w-4" />
-                {t('scheduled.addTransaction')}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setShowTransferDialog(true)} className="gap-2">
-                <ArrowLeftRight className="h-4 w-4" />
-                {t('scheduled.addTransfer')}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </header>
-
-      <main className="p-3 space-y-3 max-w-md mx-auto pb-24">
+    <AppShell fullWidth>
+      {/* Summary Row - Responsive Grid */}
+      <div className="space-y-4">
         {/* Summary Row - More Compact */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1">
           <div className="flex-shrink-0 bg-primary/10 rounded-full px-3 py-1.5 flex items-center gap-2">
@@ -719,7 +683,7 @@ const ScheduledTransactions = () => {
             )}
           </TabsContent>
         </Tabs>
-      </main>
+      </div>
 
       <ScheduledTransferDialog
         open={showTransferDialog}

@@ -72,27 +72,8 @@ export default function AdventureJournal() {
 
   return (
     <AppShell>
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
-        <div className="flex items-center justify-between px-4 h-14">
-          <div className="flex items-center gap-3">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={() => navigate('/')}
-              className="shrink-0"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-            <div className="flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-primary" />
-              <h1 className="text-lg font-bold">{t('journal.title')}</h1>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="px-4 py-4 max-w-2xl mx-auto space-y-4 pb-24">
+      {/* Content - AppShell controls width */}
+      <div className="space-y-4 pb-24">
         {/* Stats Card */}
         <JournalStats stats={stats} />
 
@@ -184,7 +165,7 @@ export default function AdventureJournal() {
             )}
           </div>
         )}
-      </main>
+      </div>
     </AppShell>
   );
 }
