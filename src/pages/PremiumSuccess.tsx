@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { useProfile } from "@/hooks/useProfile";
 import confetti from "canvas-confetti";
+import { APP_ROUTES } from "@/routes/routes";
 
 const PremiumSuccess = () => {
   const { t } = useTranslation();
@@ -72,7 +73,7 @@ const PremiumSuccess = () => {
       setCountdown(prev => {
         if (prev <= 1) {
           clearInterval(timer);
-          navigate("/");
+          navigate(APP_ROUTES.DASHBOARD);
           return 0;
         }
         return prev - 1;
@@ -83,7 +84,7 @@ const PremiumSuccess = () => {
   }, [isVerifying, navigate]);
 
   const handleGoToApp = () => {
-    navigate("/");
+    navigate(APP_ROUTES.DASHBOARD);
   };
 
   if (isVerifying) {

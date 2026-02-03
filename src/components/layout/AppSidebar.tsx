@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import {
   Home,
   Wallet,
-  CreditCard,
   Target,
   BarChart3,
   Settings,
@@ -11,10 +10,8 @@ import {
   Calendar,
   BookOpen,
   ShoppingBag,
-  Sparkles,
   Users,
   HelpCircle,
-  Building2,
   LogOut,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
@@ -48,31 +45,33 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { APP_ROUTES } from '@/routes/routes';
 
+// Main navigation - only existing routes
 const mainNavItems = [
-  { title: 'dashboard', url: '/', icon: Home },
-  { title: 'wallets', url: '/wallets', icon: Wallet },
-  { title: 'creditCards', url: '/credit-cards', icon: CreditCard },
-  { title: 'goals', url: '/goals', icon: Target },
-  { title: 'reports', url: '/cashflow', icon: BarChart3 },
+  { title: 'dashboard', url: APP_ROUTES.DASHBOARD, icon: Home },
+  { title: 'wallets', url: APP_ROUTES.WALLETS, icon: Wallet },
+  { title: 'goals', url: APP_ROUTES.CATEGORY_GOALS, icon: Target },
+  { title: 'reports', url: APP_ROUTES.CASH_FLOW, icon: BarChart3 },
 ];
 
+// Features
 const featuresNavItems = [
-  { title: 'scheduled', url: '/scheduled', icon: Calendar },
-  { title: 'loans', url: '/loans', icon: Building2 },
-  { title: 'suppliers', url: '/suppliers', icon: Users },
+  { title: 'scheduled', url: APP_ROUTES.SCHEDULED, icon: Calendar },
+  { title: 'suppliers', url: APP_ROUTES.SUPPLIERS, icon: Users },
 ];
 
+// Gamification
 const gamificationNavItems = [
-  { title: 'leaderboard', url: '/leaderboard', icon: Trophy },
-  { title: 'journal', url: '/journal', icon: BookOpen },
-  { title: 'shop', url: '/shop', icon: ShoppingBag },
-  { title: 'aiCoach', url: '/ai-coach', icon: Sparkles },
+  { title: 'leaderboard', url: APP_ROUTES.LEADERBOARD, icon: Trophy },
+  { title: 'journal', url: APP_ROUTES.JOURNAL, icon: BookOpen },
+  { title: 'shop', url: APP_ROUTES.SHOP, icon: ShoppingBag },
 ];
 
+// Bottom nav
 const bottomNavItems = [
-  { title: 'settings', url: '/settings', icon: Settings },
-  { title: 'support', url: '/support', icon: HelpCircle },
+  { title: 'settings', url: APP_ROUTES.SETTINGS, icon: Settings },
+  { title: 'support', url: APP_ROUTES.SUPPORT, icon: HelpCircle },
 ];
 
 export function AppSidebar() {
@@ -86,8 +85,11 @@ export function AppSidebar() {
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   const isActive = (path: string) => {
-    if (path === '/') return location.pathname === '/';
-    return location.pathname.startsWith(path);
+    // Dashboard is active only on exact match
+    if (path === APP_ROUTES.DASHBOARD) {
+      return location.pathname === APP_ROUTES.DASHBOARD;
+    }
+    return location.pathname === path || location.pathname.startsWith(`${path}/`);
   };
 
   // Close mobile drawer when navigating
@@ -211,8 +213,8 @@ export function AppSidebar() {
 
           {/* User Profile */}
           <SidebarMenuButton
-            onClick={() => handleNavClick('/profile')}
-            isActive={isActive('/profile')}
+            onClick={() => handleNavClick(APP_ROUTES.PROFILE)}
+            isActive={isActive(APP_ROUTES.PROFILE)}
             tooltip={isCollapsed ? t('sidebar.profile', 'Perfil') : undefined}
             className="w-full"
           >
