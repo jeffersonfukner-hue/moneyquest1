@@ -1,523 +1,595 @@
 
-# Desktop-Friendly UI Transformation for MoneyQuest
+# Plano de Implementacao: Desktop Layout + DataTable (Prompt 01.1)
 
-## Overview
+## Visao Geral
 
-This plan transforms MoneyQuest from a mobile-only app into a professional desktop-friendly financial application while maintaining full mobile responsiveness. The changes will create a serious financial product feel while keeping gamification elements subtle.
-
----
-
-## Architecture Changes
-
-### Current State
-- Mobile-first layout with max-width constraints (`max-w-md`)
-- Bottom navigation for mobile
-- MobileHeader with settings/profile access
-- Card-based mobile UI
-- No sidebar or desktop-optimized navigation
-
-### Target State
-- Responsive layout that adapts to desktop (sidebar) and mobile (bottom nav)
-- Professional data tables with full functionality
-- Clickable KPIs with drill-down capability
-- Desktop topbar with global search and period selector
-- Gamification elements reduced to subtle badges
+Este plano implementa as correcoes e regras para o layout desktop e o componente DataTable, garantindo padronizacao de breakpoints, performance escalavel e preparacao para funcionalidades futuras (conciliacao, drill-down).
 
 ---
 
-## File Changes Summary
+## 1. Padronizacao de Breakpoints
 
-| Category | Action | Files |
-|----------|--------|-------|
-| **Layout** | Create | `src/components/layout/DesktopLayout.tsx`, `src/components/layout/AppSidebar.tsx`, `src/components/layout/DesktopTopbar.tsx` |
-| **Layout** | Modify | `src/components/layout/AppLayout.tsx` |
-| **Tables** | Create | `src/components/ui/data-table.tsx`, `src/components/ui/column-toggle.tsx`, `src/hooks/useDataTable.ts` |
-| **Navigation** | Modify | `src/pages/Index.tsx`, `src/pages/Wallets.tsx`, `src/pages/CashFlow.tsx`, `src/pages/Settings.tsx` |
-| **KPIs** | Modify | `src/components/game/StatsCards.tsx` |
-| **Styling** | Modify | `src/index.css`, `tailwind.config.ts` |
-| **i18n** | Modify | `src/i18n/locales/pt-BR.json` |
-| **Mobile Detection** | Modify | `src/hooks/use-mobile.tsx` |
+### 1.1 Atualizar Hook de Deteccao
 
----
+**Arquivo:** `src/hooks/use-mobile.tsx`
 
-## Detailed Implementation
-
-### 1. Desktop Layout Structure
-
-**New: `src/components/layout/DesktopLayout.tsx`**
-
-A wrapper component that conditionally renders:
-- Desktop: Sidebar + Topbar + Main content
-- Mobile: Existing MobileHeader + Bottom navigation
-
-```text
-┌──────────────────────────────────────────────────────────────┐
-│ DESKTOP (width >= 1024px)                                    │
-├──────────┬───────────────────────────────────────────────────┤
-│          │  Topbar (Search, Period Selector, Add Button)     │
-│ Sidebar  ├───────────────────────────────────────────────────┤
-│ (fixed)  │  Main Content Area                                │
-│          │  ┌─────────────────────────────────────────────┐  │
-│ - Home   │  │  KPI Cards (clickable)                      │  │
-│ - Trans  │  ├─────────────────────────────────────────────┤  │
-│ - Banks  │  │  Data Table / Charts                        │  │
-│ - Cards  │  └─────────────────────────────────────────────┘  │
-│ - Loans  │                                                   │
-│ - Future │                                                   │
-│ - Report │                                                   │
-│ - Config │                                                   │
-├──────────┴───────────────────────────────────────────────────┤
-│ MOBILE (width < 768px)                                       │
-├──────────────────────────────────────────────────────────────┤
-│  MobileHeader                                                │
-├──────────────────────────────────────────────────────────────┤
-│  Content (cards, existing mobile layout)                     │
-├──────────────────────────────────────────────────────────────┤
-│  BottomNavigation                                            │
-└──────────────────────────────────────────────────────────────┘
-```
-
-**New: `src/components/layout/AppSidebar.tsx`**
-
-Using the existing shadcn/ui `Sidebar` component with:
-
-- Sections:
-  - **Principal**: Dashboard, Transações
-  - **Contas**: Bancos, Cartões, Empréstimos
-  - **Planejamento**: Futuros (Agendados), Metas por Categoria
-  - **Relatórios**: Fluxo de Caixa, Comparativo de Períodos
-  - **Sistema**: Configurações, Suporte
-
-- Features:
-  - Collapsible with keyboard shortcut (Ctrl+B)
-  - Active route highlighting
-  - Mini-collapse mode (shows icons only when collapsed)
-  - Logo at top, user avatar at bottom
-
-**New: `src/components/layout/DesktopTopbar.tsx`**
-
-- Global search input with "/" shortcut
-- Period selector dropdown (Mês Atual, Últimos 30 dias, Personalizado)
-- "Novo Lançamento" button (opens AddTransactionDialog)
-- XP/Level indicator (subtle badge, not prominent)
-
----
-
-### 2. Professional Data Table Component
-
-**New: `src/components/ui/data-table.tsx`**
-
-A reusable table component with:
+Modificar para retornar breakpoints precisos:
 
 ```typescript
-interface DataTableProps<T> {
-  data: T[];
-  columns: ColumnDef<T>[];
-  // Features
-  density?: 'compact' | 'normal';
-  searchable?: boolean;
-  searchPlaceholder?: string;
-  sortable?: boolean;
-  filterable?: boolean;
-  pagination?: boolean;
-  pageSize?: number;
-  columnToggle?: boolean;
-  // Keyboard navigation
-  onRowSelect?: (row: T) => void;
-  onRowAction?: (row: T) => void;
-}
-```
+const BREAKPOINTS = {
+  MOBILE: 768,
+  TABLET: 1024,
+} as const;
 
-**Features:**
+type Breakpoint = 'mobile' | 'tablet' | 'desktop';
 
-1. **Density Control**
-   - Compact: 32px row height, smaller text
-   - Normal: 48px row height, standard text
+export function useBreakpoint(): Breakpoint {
+  const [breakpoint, setBreakpoint] = useState<Breakpoint>('mobile');
 
-2. **Column Configuration**
-   - Show/hide columns via popover menu
-   - Persisted to localStorage per table
-
-3. **Sorting**
-   - Click header to sort
-   - Multi-column sort with Shift+click
-
-4. **Quick Filters**
-   - Type filter (Income/Expense)
-   - Category filter (multi-select)
-   - Date range filter
-
-5. **Text Search**
-   - Debounced search across all visible columns
-
-6. **Pagination**
-   - Page size options: 10, 25, 50, 100
-   - First/Prev/Next/Last navigation
-
-7. **Keyboard Shortcuts**
-   - Arrow Up/Down: Navigate rows
-   - Enter: Open details/edit dialog
-   - Escape: Close dialog/deselect
-   - Delete: Delete selected (with confirmation)
-
-**New: `src/hooks/useDataTable.ts`**
-
-Custom hook managing table state:
-- Sort state
-- Filter state
-- Pagination state
-- Column visibility
-- Selected rows
-- Keyboard navigation
-
----
-
-### 3. Drill-Down KPIs
-
-**Modify: `src/components/game/StatsCards.tsx`**
-
-Add onClick handlers to each stat:
-
-```typescript
-interface StatsCardsProps {
-  profile: Profile;
-  onDrillDown?: (metric: 'income' | 'expense' | 'balance' | 'initial') => void;
-}
-```
-
-Clicking a KPI:
-- On desktop: Opens a side panel or modal with filtered data table
-- On mobile: Navigates to transactions tab with filter applied
-
-**New: `src/components/reports/DrillDownPanel.tsx`**
-
-A slide-over panel for desktop that shows:
-- Title indicating the metric
-- Filtered data table
-- Summary statistics
-- Close button
-
----
-
-### 4. Visual Consistency Updates
-
-**Typography Changes:**
-
-Modify `tailwind.config.ts`:
-- Headers: Keep Fredoka but reduce playfulness
-- Body: Use Inter (already set)
-- Numbers: Use tabular-nums for financial data alignment
-
-**Gamification Reduction:**
-
-Update `src/index.css`:
-- Reduce glow effects intensity
-- Smaller badge sizes
-- Muted colors for XP/streak indicators
-- Move gamification to subtle chips in corner
-
-**Color adjustments:**
-- Keep brand colors but reduce saturation for data-heavy views
-- Increase contrast for better readability
-
----
-
-### 5. Page Updates
-
-**`src/pages/Index.tsx` (Dashboard)**
-
-Desktop view changes:
-- Two-column grid for KPIs
-- Full-width data table below charts
-- Gamification panel as sidebar widget
-
-Mobile view:
-- Keeps existing card-based layout
-- No changes to mobile experience
-
-**`src/pages/Wallets.tsx`**
-
-Desktop view:
-- Three-column grid for wallet cards
-- Tab content uses data tables instead of card lists
-- Transfer history as sortable table
-
-**`src/pages/CashFlow.tsx`**
-
-Desktop view:
-- Chart takes 60% width, table takes 40%
-- Full data table with all features enabled
-
----
-
-### 6. Mobile Breakpoint Logic
-
-**Modify: `src/hooks/use-mobile.tsx`**
-
-Add additional breakpoints:
-```typescript
-export function useBreakpoint() {
-  // Returns: 'mobile' | 'tablet' | 'desktop'
-  const [breakpoint, setBreakpoint] = useState<'mobile' | 'tablet' | 'desktop'>('mobile');
-  
   useEffect(() => {
-    const checkBreakpoint = () => {
-      if (window.innerWidth >= 1024) setBreakpoint('desktop');
-      else if (window.innerWidth >= 768) setBreakpoint('tablet');
-      else setBreakpoint('mobile');
+    const check = () => {
+      if (window.innerWidth >= BREAKPOINTS.TABLET) {
+        setBreakpoint('desktop');
+      } else if (window.innerWidth >= BREAKPOINTS.MOBILE) {
+        setBreakpoint('tablet');
+      } else {
+        setBreakpoint('mobile');
+      }
     };
-    // ...
+    // MediaQuery listeners...
   }, []);
-  
+
   return breakpoint;
 }
-```
 
----
+export function useIsMobile() {
+  return useBreakpoint() === 'mobile';
+}
 
-### 7. Global Search Implementation
-
-**New: `src/components/layout/GlobalSearch.tsx`**
-
-- Command palette style (Cmd+K or "/" to open)
-- Search across:
-  - Transactions (description, supplier)
-  - Wallets (name)
-  - Categories (name)
-  - Pages (navigation)
-- Recent searches stored in localStorage
-
----
-
-### 8. Period Selector
-
-**New: `src/components/layout/PeriodSelector.tsx`**
-
-Global period filter that affects all data:
-- Options:
-  - Mês Atual
-  - Últimos 30 dias
-  - Últimos 90 dias
-  - Este Ano
-  - Personalizado (date range picker)
-- State stored in React Context for app-wide access
-
-**New: `src/contexts/PeriodFilterContext.tsx`**
-
-Context providing:
-- `startDate`, `endDate`
-- `periodLabel`
-- `setPeriod(preset | custom)`
-
----
-
-## Implementation Order
-
-1. **Phase 1: Layout Foundation**
-   - Create DesktopLayout wrapper
-   - Create AppSidebar component
-   - Create DesktopTopbar component
-   - Modify AppLayout to use responsive detection
-
-2. **Phase 2: Data Table**
-   - Create data-table.tsx component
-   - Create useDataTable hook
-   - Add column-toggle.tsx
-
-3. **Phase 3: Page Integration**
-   - Update Index.tsx for desktop
-   - Update Wallets.tsx with data tables
-   - Update CashFlow.tsx layout
-
-4. **Phase 4: Drill-Down & Search**
-   - Add drill-down to StatsCards
-   - Create DrillDownPanel
-   - Implement GlobalSearch
-   - Add PeriodSelector
-
-5. **Phase 5: Polish**
-   - Typography refinements
-   - Gamification subtlety
-   - Keyboard navigation testing
-   - Responsive testing
-
----
-
-## Technical Details
-
-### Sidebar Navigation Items
-
-```typescript
-const navSections = [
-  {
-    title: 'Principal',
-    items: [
-      { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-      { path: '/dashboard?tab=transactions', icon: ArrowLeftRight, label: 'Transações' },
-    ]
-  },
-  {
-    title: 'Contas',
-    items: [
-      { path: '/wallets', icon: Building2, label: 'Bancos' },
-      { path: '/wallets?tab=cards', icon: CreditCard, label: 'Cartões' },
-      { path: '/wallets?tab=loans', icon: Landmark, label: 'Empréstimos' },
-    ]
-  },
-  {
-    title: 'Planejamento',
-    items: [
-      { path: '/scheduled', icon: CalendarClock, label: 'Futuros' },
-      { path: '/category-goals', icon: Target, label: 'Metas' },
-    ]
-  },
-  {
-    title: 'Relatórios',
-    items: [
-      { path: '/cash-flow', icon: TrendingUp, label: 'Fluxo de Caixa' },
-      { path: '/period-comparison', icon: BarChart3, label: 'Comparativo' },
-    ]
-  },
-  {
-    title: 'Sistema',
-    items: [
-      { path: '/settings', icon: Settings, label: 'Configurações' },
-      { path: '/support', icon: HelpCircle, label: 'Suporte' },
-    ]
-  }
-];
-```
-
-### Data Table Column Definition Example
-
-```typescript
-const transactionColumns: ColumnDef<Transaction>[] = [
-  {
-    id: 'date',
-    header: 'Data',
-    accessorKey: 'date',
-    sortable: true,
-    cell: ({ row }) => format(parseDateString(row.date), 'dd/MM/yy'),
-  },
-  {
-    id: 'description',
-    header: 'Descrição',
-    accessorKey: 'description',
-    searchable: true,
-  },
-  {
-    id: 'category',
-    header: 'Categoria',
-    accessorKey: 'category',
-    filterable: true,
-    filterOptions: categories.map(c => ({ value: c.name, label: c.name })),
-  },
-  {
-    id: 'amount',
-    header: 'Valor',
-    accessorKey: 'amount',
-    sortable: true,
-    align: 'right',
-    cell: ({ row }) => (
-      <span className={row.type === 'INCOME' ? 'text-income' : 'text-expense'}>
-        {formatCurrency(row.amount)}
-      </span>
-    ),
-  },
-];
-```
-
----
-
-## New i18n Keys
-
-```json
-{
-  "desktop": {
-    "sidebar": {
-      "principal": "Principal",
-      "accounts": "Contas",
-      "planning": "Planejamento",
-      "reports": "Relatórios",
-      "system": "Sistema",
-      "collapse": "Recolher menu",
-      "expand": "Expandir menu"
-    },
-    "topbar": {
-      "search": "Buscar...",
-      "searchShortcut": "Pressione / para buscar",
-      "newTransaction": "Novo Lançamento",
-      "period": {
-        "currentMonth": "Mês Atual",
-        "last30Days": "Últimos 30 dias",
-        "last90Days": "Últimos 90 dias",
-        "thisYear": "Este Ano",
-        "custom": "Personalizado"
-      }
-    },
-    "table": {
-      "density": "Densidade",
-      "compact": "Compacto",
-      "normal": "Normal",
-      "columns": "Colunas",
-      "showColumns": "Mostrar colunas",
-      "search": "Buscar na tabela...",
-      "noResults": "Nenhum resultado encontrado",
-      "rowsPerPage": "Linhas por página",
-      "of": "de",
-      "selected": "selecionado(s)"
-    },
-    "drillDown": {
-      "title": "Detalhamento",
-      "income": "Receitas do Período",
-      "expense": "Despesas do Período",
-      "balance": "Movimentações",
-      "close": "Fechar"
-    }
-  }
+export function useIsDesktop() {
+  return useBreakpoint() === 'desktop';
 }
 ```
 
----
+### 1.2 Remover max-w-md no Desktop
 
-## CSS Changes Summary
+**Arquivos afetados:**
+- `src/pages/Index.tsx` (linha 262)
+- `src/pages/Settings.tsx` (linhas 105, 120)
+- `src/pages/Profile.tsx` (linhas 134, 150)
+- `src/components/navigation/MobileHeader.tsx` (linha 59)
+- Outras 35+ ocorrencias
+
+**Estrategia:**
+Criar classe CSS condicional:
 
 ```css
-/* New utility classes for desktop */
+/* src/index.css */
 @layer utilities {
-  /* Tabular numbers for financial data */
-  .tabular-nums {
-    font-variant-numeric: tabular-nums;
+  .content-container {
+    @apply px-4 py-3 mx-auto;
+    /* Mobile: restrito */
+    max-width: 28rem; /* max-w-md */
   }
-  
-  /* Reduced gamification glow */
-  .glow-subtle {
-    box-shadow: 0 0 8px rgba(244, 180, 0, 0.2);
+
+  @media (min-width: 1024px) {
+    .content-container {
+      max-width: 80rem; /* max-w-7xl */
+      @apply px-6;
+    }
   }
-  
-  /* Desktop content max-width */
+
   .desktop-content {
-    @apply max-w-7xl mx-auto;
+    @apply max-w-7xl mx-auto px-6;
   }
 }
 ```
 
 ---
 
-## Responsive Breakpoints
+## 2. Sistema de Layout Responsivo
 
-| Breakpoint | Width | Layout |
-|------------|-------|--------|
-| Mobile | < 768px | Bottom nav, full-width cards |
-| Tablet | 768px - 1023px | Bottom nav, 2-column grid |
-| Desktop | >= 1024px | Sidebar, topbar, tables |
+### 2.1 Criar DesktopLayout Wrapper
+
+**Novo arquivo:** `src/components/layout/DesktopLayout.tsx`
+
+```typescript
+interface DesktopLayoutProps {
+  children: ReactNode;
+  sidebar?: ReactNode;
+  topbar?: ReactNode;
+  fullWidth?: boolean; // Para tabelas em largura total
+}
+
+export function DesktopLayout({ children, sidebar, topbar, fullWidth }: DesktopLayoutProps) {
+  const isDesktop = useIsDesktop();
+
+  if (!isDesktop) {
+    return <>{children}</>;
+  }
+
+  return (
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        {sidebar || <AppSidebar />}
+        <SidebarInset>
+          {topbar || <DesktopTopbar />}
+          <main className={cn(
+            "flex-1",
+            fullWidth ? "px-6" : "desktop-content"
+          )}>
+            {children}
+          </main>
+        </SidebarInset>
+      </div>
+    </SidebarProvider>
+  );
+}
+```
+
+### 2.2 Atualizar AppLayout
+
+**Arquivo:** `src/components/layout/AppLayout.tsx`
+
+Integrar DesktopLayout condicionalmente:
+
+```typescript
+export const AppLayout = ({ children, ... }: AppLayoutProps) => {
+  const isDesktop = useIsDesktop();
+  const isMobile = useIsMobile();
+
+  // Desktop: usa sidebar + topbar
+  if (isDesktop) {
+    return (
+      <DesktopLayout fullWidth={fullWidth}>
+        {children}
+      </DesktopLayout>
+    );
+  }
+
+  // Mobile/Tablet: mantém layout atual
+  return (
+    <div className={cn("min-h-screen bg-background", getBottomPadding())}>
+      {showHeader && <MobileHeader ... />}
+      <div className="content-container">
+        {children}
+      </div>
+      {showNavigation && <BottomNavigation ... />}
+    </div>
+  );
+};
+```
 
 ---
 
-## Dependencies
+## 3. DataTable com Client/Server Mode
 
-No new dependencies required. Uses existing:
-- shadcn/ui components (Sidebar, Table, Dialog, Popover)
-- Lucide React icons
-- TanStack Query for data management
-- React Router for navigation
+### 3.1 Tipos e Interfaces
+
+**Novo arquivo:** `src/components/ui/data-table/types.ts`
+
+```typescript
+// Definicao de coluna
+export interface ColumnDef<T> {
+  id: string;
+  header: string | ReactNode;
+  accessorKey?: keyof T;
+  accessorFn?: (row: T) => unknown;
+  cell?: (info: { row: T; value: unknown }) => ReactNode;
+  // Recursos
+  sortable?: boolean;
+  searchable?: boolean;
+  filterable?: boolean;
+  hideable?: boolean;
+  // Visual
+  align?: 'left' | 'center' | 'right';
+  width?: number | string;
+  minWidth?: number;
+  // Status columns (para badges)
+  meta?: {
+    type?: 'badge' | 'currency' | 'date' | 'actions';
+    badgeVariants?: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'>;
+  };
+}
+
+// Query para Server Mode
+export interface DataTableQuery {
+  page: number;
+  pageSize: number;
+  sort: { id: string; desc: boolean }[];
+  filters: Record<string, unknown>;
+  search: string;
+}
+
+// Props do DataTable
+export interface DataTableProps<T> {
+  // Dados
+  data?: T[]; // Client mode
+  totalRows?: number; // Server mode
+  onQueryChange?: (query: DataTableQuery) => void; // Server mode
+
+  // Colunas
+  columns: ColumnDef<T>[];
+
+  // Configuracao
+  tableId: string; // Para persistencia (ex: "mq.table.transactions")
+  density?: 'compact' | 'normal';
+
+  // Features
+  searchable?: boolean;
+  searchPlaceholder?: string;
+  columnToggle?: boolean;
+  pagination?: boolean;
+  pageSizeOptions?: number[];
+
+  // Acoes
+  onRowClick?: (row: T) => void;
+  onRowDoubleClick?: (row: T) => void;
+  rowActions?: (row: T) => ReactNode;
+
+  // Estado
+  loading?: boolean;
+  emptyState?: ReactNode;
+}
+```
+
+### 3.2 Hook useDataTable
+
+**Novo arquivo:** `src/hooks/useDataTable.ts`
+
+```typescript
+export function useDataTable<T>({
+  tableId,
+  data,
+  columns,
+  onQueryChange,
+  totalRows,
+}: UseDataTableOptions<T>) {
+  // Estado de ordenacao
+  const [sortState, setSortState] = useState<SortState[]>([]);
+
+  // Estado de paginacao
+  const [pagination, setPagination] = useState({ page: 0, pageSize: 25 });
+
+  // Estado de busca (debounced)
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearch = useDebounce(searchTerm, 300);
+
+  // Colunas visiveis (persistidas)
+  const [visibleColumns, setVisibleColumns] = useLocalStorage<string[]>(
+    `${tableId}.columns`,
+    columns.filter(c => c.hideable !== false).map(c => c.id)
+  );
+
+  // Filtros ativos
+  const [filters, setFilters] = useState<Record<string, unknown>>({});
+
+  // Modo: Client ou Server
+  const isServerMode = Boolean(onQueryChange);
+
+  // Dados processados (apenas client mode)
+  const processedData = useMemo(() => {
+    if (isServerMode || !data) return data || [];
+
+    let result = [...data];
+
+    // 1. Busca (apenas em colunas searchable)
+    if (debouncedSearch) {
+      const searchableCols = columns.filter(c => c.searchable);
+      result = result.filter(row =>
+        searchableCols.some(col => {
+          const value = col.accessorFn?.(row) ?? row[col.accessorKey!];
+          return String(value).toLowerCase().includes(debouncedSearch.toLowerCase());
+        })
+      );
+    }
+
+    // 2. Filtros
+    Object.entries(filters).forEach(([colId, filterValue]) => {
+      if (filterValue === undefined) return;
+      const col = columns.find(c => c.id === colId);
+      if (!col) return;
+      result = result.filter(row => {
+        const value = col.accessorFn?.(row) ?? row[col.accessorKey!];
+        return value === filterValue;
+      });
+    });
+
+    // 3. Ordenacao
+    if (sortState.length > 0) {
+      result.sort((a, b) => {
+        for (const sort of sortState) {
+          const col = columns.find(c => c.id === sort.id);
+          if (!col) continue;
+          const aVal = col.accessorFn?.(a) ?? a[col.accessorKey!];
+          const bVal = col.accessorFn?.(b) ?? b[col.accessorKey!];
+          const cmp = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+          if (cmp !== 0) return sort.desc ? -cmp : cmp;
+        }
+        return 0;
+      });
+    }
+
+    return result;
+  }, [data, debouncedSearch, filters, sortState, columns, isServerMode]);
+
+  // Dados paginados (client mode)
+  const paginatedData = useMemo(() => {
+    if (isServerMode) return processedData;
+    const start = pagination.page * pagination.pageSize;
+    return processedData.slice(start, start + pagination.pageSize);
+  }, [processedData, pagination, isServerMode]);
+
+  // Total de linhas
+  const totalRowCount = isServerMode ? (totalRows ?? 0) : processedData.length;
+
+  // Notificar mudancas (server mode)
+  useEffect(() => {
+    if (!isServerMode) return;
+    onQueryChange?.({
+      page: pagination.page,
+      pageSize: pagination.pageSize,
+      sort: sortState,
+      filters,
+      search: debouncedSearch,
+    });
+  }, [pagination, sortState, filters, debouncedSearch, isServerMode]);
+
+  return {
+    data: paginatedData,
+    totalRows: totalRowCount,
+    // Ordenacao
+    sortState,
+    setSortState,
+    toggleSort: (colId: string, multi: boolean) => { ... },
+    // Paginacao
+    pagination,
+    setPagination,
+    pageCount: Math.ceil(totalRowCount / pagination.pageSize),
+    // Busca
+    searchTerm,
+    setSearchTerm,
+    // Colunas
+    visibleColumns,
+    setVisibleColumns,
+    // Filtros
+    filters,
+    setFilter: (colId: string, value: unknown) => { ... },
+    clearFilters: () => setFilters({}),
+  };
+}
+```
+
+### 3.3 Componente DataTable
+
+**Novo arquivo:** `src/components/ui/data-table/DataTable.tsx`
+
+Recursos implementados:
+- Renderizacao de tabela com Table do shadcn
+- Toolbar com busca, densidade, toggle de colunas
+- Cabecalhos clicaveis para ordenacao
+- Celulas com badges, valores monetarios (tabular-nums), acoes
+- Paginacao completa
+- Estado vazio customizavel
+- Acessibilidade (ARIA labels)
+
+### 3.4 Colunas de Status e Acoes
+
+Suporte nativo para:
+
+```typescript
+// Coluna de badge (status)
+{
+  id: 'reconciliationStatus',
+  header: 'Conciliacao',
+  accessorKey: 'reconciliation_status',
+  meta: {
+    type: 'badge',
+    badgeVariants: {
+      pending: 'outline',
+      reconciled: 'default',
+      ignored: 'secondary',
+    },
+  },
+}
+
+// Coluna monetaria (tabular-nums automatico)
+{
+  id: 'amount',
+  header: 'Valor',
+  accessorKey: 'amount',
+  align: 'right',
+  meta: { type: 'currency' },
+}
+
+// Coluna de acoes
+{
+  id: 'actions',
+  header: '',
+  meta: { type: 'actions' },
+  cell: ({ row }) => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon">
+          <MoreVertical className="w-4 h-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem onClick={() => onEdit(row)}>
+          Editar
+        </DropdownMenuItem>
+        ...
+      </DropdownMenuContent>
+    </DropdownMenu>
+  ),
+}
+```
+
+---
+
+## 4. Hotkeys Seguras
+
+### 4.1 Hook useGlobalHotkeys
+
+**Novo arquivo:** `src/hooks/useGlobalHotkeys.ts`
+
+```typescript
+export function useGlobalHotkeys() {
+  const isDesktop = useIsDesktop();
+
+  useEffect(() => {
+    if (!isDesktop) return; // Hotkeys apenas no desktop
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignorar se foco em input/textarea/contenteditable
+      const target = e.target as HTMLElement;
+      if (
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+
+      // "/" ou Cmd+K -> Busca global
+      if (e.key === '/' || (e.metaKey && e.key === 'k')) {
+        e.preventDefault();
+        // Abrir busca global
+        document.dispatchEvent(new CustomEvent('open-global-search'));
+      }
+
+      // Ctrl+B -> Toggle sidebar (ja implementado no sidebar.tsx)
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isDesktop]);
+}
+```
+
+### 4.2 Atualizar Sidebar para Verificar Desktop
+
+**Arquivo:** `src/components/ui/sidebar.tsx` (linhas 79-89)
+
+```typescript
+React.useEffect(() => {
+  const handleKeyDown = (event: KeyboardEvent) => {
+    // Ignorar se nao for desktop
+    if (window.innerWidth < 1024) return;
+
+    // Ignorar se foco em input
+    const target = event.target as HTMLElement;
+    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
+
+    if (event.key === SIDEBAR_KEYBOARD_SHORTCUT && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault();
+      toggleSidebar();
+    }
+  };
+  // ...
+}, [toggleSidebar]);
+```
+
+---
+
+## 5. Seguranca de Acoes Destrutivas
+
+### 5.1 Remover Delete por Teclado na V1
+
+O DataTable NAO implementara:
+- Tecla Delete para exclusao
+- Selecao de linha por teclado sem confirmacao
+
+### 5.2 Acoes Destrutivas Requerem
+
+1. Selecao explicita (checkbox ou clique)
+2. Confirmacao modal clara
+3. Toast com feedback
+
+Exemplo no TransactionsList atual ja segue esse padrao (linhas 85-90, 292-303).
+
+---
+
+## 6. Preparacao para Conciliacao
+
+### 6.1 Campos Futuros na Interface
+
+O DataTable suportara colunas para:
+
+```typescript
+// Campos de conciliacao (futuro)
+interface ReconciliationFields {
+  bank_reference_code?: string;
+  bank_transaction_id?: string;
+  reconciliation_status: 'pending' | 'reconciled' | 'ignored';
+  reconciled_at?: string;
+  reconciled_by?: string;
+}
+```
+
+Essas colunas podem ser adicionadas ao Transaction type futuramente.
+
+### 6.2 Persistencia por Tabela
+
+Chaves localStorage padronizadas:
+- `mq.table.transactions.columns`
+- `mq.table.transfers.columns`
+- `mq.table.invoices.columns`
+- `mq.table.loans.columns`
+
+---
+
+## 7. Arquivos a Criar
+
+| Arquivo | Descricao |
+|---------|-----------|
+| `src/hooks/useGlobalHotkeys.ts` | Gerenciador de atalhos globais |
+| `src/hooks/useDataTable.ts` | Estado e logica do DataTable |
+| `src/components/ui/data-table/types.ts` | Tipos TypeScript |
+| `src/components/ui/data-table/DataTable.tsx` | Componente principal |
+| `src/components/ui/data-table/DataTableToolbar.tsx` | Busca, densidade, colunas |
+| `src/components/ui/data-table/DataTablePagination.tsx` | Paginacao |
+| `src/components/ui/data-table/index.ts` | Exports |
+| `src/components/layout/DesktopLayout.tsx` | Wrapper desktop |
+| `src/components/layout/AppSidebar.tsx` | Sidebar com navegacao |
+| `src/components/layout/DesktopTopbar.tsx` | Topbar com busca/periodo |
+
+---
+
+## 8. Arquivos a Modificar
+
+| Arquivo | Mudanca |
+|---------|---------|
+| `src/hooks/use-mobile.tsx` | Adicionar useBreakpoint, useIsDesktop |
+| `src/components/layout/AppLayout.tsx` | Integrar DesktopLayout |
+| `src/components/ui/sidebar.tsx` | Verificar desktop em hotkey |
+| `src/index.css` | Adicionar .content-container, .desktop-content |
+| `src/i18n/locales/pt-BR.json` | Adicionar chaves desktop.* |
+
+---
+
+## 9. Ordem de Implementacao
+
+1. **Breakpoints** - Atualizar use-mobile.tsx
+2. **CSS Utilities** - Adicionar classes em index.css
+3. **DataTable Types** - Criar interfaces
+4. **useDataTable Hook** - Implementar logica
+5. **DataTable Component** - Criar componente completo
+6. **Hotkeys Hook** - Criar useGlobalHotkeys
+7. **DesktopLayout** - Criar wrapper
+8. **AppSidebar** - Criar sidebar
+9. **DesktopTopbar** - Criar topbar
+10. **AppLayout Update** - Integrar desktop layout
+11. **i18n** - Adicionar traducoes
+
+---
+
+## 10. Testes Recomendados
+
+Apos implementacao:
+- Testar em mobile (< 768px): deve manter layout atual
+- Testar em tablet (768-1023px): deve usar bottom nav
+- Testar em desktop (>= 1024px): deve mostrar sidebar
+- Testar DataTable com 100+ linhas: verificar performance
+- Testar hotkeys: "/" nao deve ativar em inputs
+- Testar persistencia de colunas no localStorage
