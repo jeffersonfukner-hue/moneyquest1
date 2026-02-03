@@ -56,7 +56,7 @@ export const RecentTransactionsWidget = ({
           variant="ghost"
           size="sm"
           className="h-7 text-xs gap-1"
-          onClick={() => navigate('/dashboard?tab=transactions')}
+          onClick={() => navigate('/reports')}
         >
           {t('common.viewAll', 'Ver todas')}
           <ArrowRight className="w-3 h-3" />
@@ -68,7 +68,7 @@ export const RecentTransactionsWidget = ({
             <div
               key={transaction.id}
               className="flex items-center justify-between py-2 border-b border-border/50 last:border-0 hover:bg-muted/30 -mx-2 px-2 rounded cursor-pointer transition-colors"
-              onClick={() => navigate('/dashboard?tab=transactions')}
+              onClick={() => navigate('/reports')}
             >
               <div className="flex items-center gap-3 min-w-0 flex-1">
                 <div className={cn(

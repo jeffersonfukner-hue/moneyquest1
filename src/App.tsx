@@ -69,10 +69,9 @@ const LazyPremiumSuccess = lazy(() => import("./pages/PremiumSuccess"));
 // AI Coach desativado na versão sem IA - rota redirecionará para home
 const LazyCategoryGoals = lazy(() => import("./pages/CategoryGoals"));
 const LazyCategories = lazy(() => import("./pages/Categories"));
-const LazyWallets = lazy(() => import("./pages/Wallets"));
+const LazyWalletsRouter = lazy(() => import("./pages/WalletsRouter"));
 const LazyScheduledTransactions = lazy(() => import("./pages/ScheduledTransactions"));
-const LazyCashFlow = lazy(() => import("./pages/CashFlow"));
-const LazyPeriodComparison = lazy(() => import("./pages/PeriodComparison"));
+const LazyReportsRouter = lazy(() => import("./pages/ReportsRouter"));
 const LazySupport = lazy(() => import("./pages/Support"));
 const LazyMyMessages = lazy(() => import("./pages/MyMessages"));
 const LazySupportTicket = lazy(() => import("./pages/SupportTicket"));
@@ -280,26 +279,41 @@ const App = () => (
                   <Route path="/leaderboard" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/journal" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/shop" element={<Navigate to="/dashboard" replace />} />
+                  
+                  {/* Wallets routes - clean URLs with sub-routes */}
                   <Route path="/wallets" element={
                     <AuthenticatedWrapper>
-                      <Suspense fallback={<PageLoader />}><LazyWallets /></Suspense>
+                      <Suspense fallback={<PageLoader />}><LazyWalletsRouter /></Suspense>
                     </AuthenticatedWrapper>
                   } />
+                  <Route path="/wallets/:tab" element={
+                    <AuthenticatedWrapper>
+                      <Suspense fallback={<PageLoader />}><LazyWalletsRouter /></Suspense>
+                    </AuthenticatedWrapper>
+                  } />
+                  
                   <Route path="/scheduled" element={
                     <AuthenticatedWrapper>
                       <Suspense fallback={<PageLoader />}><LazyScheduledTransactions /></Suspense>
                     </AuthenticatedWrapper>
                   } />
-                  <Route path="/cash-flow" element={
+                  
+                  {/* Reports - unified route, legacy redirects */}
+                  <Route path="/reports" element={
                     <AuthenticatedWrapper>
-                      <Suspense fallback={<PageLoader />}><LazyCashFlow /></Suspense>
+                      <Suspense fallback={<PageLoader />}><LazyReportsRouter /></Suspense>
                     </AuthenticatedWrapper>
                   } />
-                  <Route path="/period-comparison" element={
+                  <Route path="/cash-flow" element={<Navigate to="/reports" replace />} />
+                  <Route path="/period-comparison" element={<Navigate to="/reports?view=comparison" replace />} />
+                  
+                  {/* Goals - clean route (was category-goals) */}
+                  <Route path="/goals" element={
                     <AuthenticatedWrapper>
-                      <Suspense fallback={<PageLoader />}><LazyPeriodComparison /></Suspense>
+                      <Suspense fallback={<PageLoader />}><LazyCategoryGoals /></Suspense>
                     </AuthenticatedWrapper>
                   } />
+                  <Route path="/category-goals" element={<Navigate to="/goals" replace />} />
                   <Route path="/support" element={
                     <AuthenticatedWrapper>
                       <Suspense fallback={<PageLoader />}><LazySupport /></Suspense>

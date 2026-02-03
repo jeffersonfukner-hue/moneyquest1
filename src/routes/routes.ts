@@ -29,16 +29,21 @@ export const PUBLIC_ROUTES = {
   REFERRAL_REDIRECT: '/r',
 } as const;
 
-// Authenticated pages (app) - Gamification removed
+// Authenticated pages (app) - Clean routes
 export const APP_ROUTES = {
   DASHBOARD: '/dashboard',
+  // Wallets section with sub-routes
   WALLETS: '/wallets',
-  CATEGORY_GOALS: '/category-goals',
-  CATEGORIES: '/categories',
-  CASH_FLOW: '/cash-flow',
-  PERIOD_COMPARISON: '/period-comparison',
+  WALLETS_ACCOUNTS: '/wallets/accounts',
+  WALLETS_CARDS: '/wallets/cards',
+  WALLETS_LOANS: '/wallets/loans',
+  WALLETS_TRANSFERS: '/wallets/transfers',
+  // Other sections
   SCHEDULED: '/scheduled',
   SUPPLIERS: '/suppliers',
+  GOALS: '/goals',
+  REPORTS: '/reports',
+  CATEGORIES: '/categories',
   SETTINGS: '/settings',
   SUPPORT: '/support',
   SUPPORT_TICKET: '/support/ticket',
@@ -64,6 +69,16 @@ export const ADMIN_ROUTES = {
   ENGAGEMENT: '/super-admin/engagement',
   LOGS: '/super-admin/logs',
   SCORING_AUDIT: '/super-admin/scoring-audit',
+} as const;
+
+// Legacy route mappings (for redirects)
+export const LEGACY_ROUTES: Record<string, string> = {
+  '/wallets?tab=accounts': APP_ROUTES.WALLETS_ACCOUNTS,
+  '/wallets?tab=cards': APP_ROUTES.WALLETS_CARDS,
+  '/wallets?tab=loans': APP_ROUTES.WALLETS_LOANS,
+  '/category-goals': APP_ROUTES.GOALS,
+  '/cash-flow': APP_ROUTES.REPORTS,
+  '/period-comparison': APP_ROUTES.REPORTS,
 } as const;
 
 // Type helpers
@@ -94,4 +109,11 @@ export const isPublicRoute = (path: string): boolean => {
  */
 export const isAdminRoute = (path: string): boolean => {
   return path.startsWith('/super-admin');
+};
+
+/**
+ * Check if a path is a wallets sub-route
+ */
+export const isWalletsRoute = (path: string): boolean => {
+  return path.startsWith('/wallets');
 };

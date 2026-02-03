@@ -122,7 +122,7 @@ export const FinancialKPICards = () => {
         icon={<Wallet className="w-5 h-5" />}
         tooltip={t('dashboard.totalBalanceTooltip', 'Soma de todos os saldos das suas contas ativas')}
         variant={balanceVariant}
-        onClick={() => navigate('/wallets')}
+        onClick={() => navigate('/wallets/accounts')}
       />
       
       <KPICard
@@ -131,7 +131,7 @@ export const FinancialKPICards = () => {
         icon={<TrendingUp className="w-5 h-5" />}
         tooltip={t('dashboard.cashProjectionTooltip', 'Saldo atual menos pagamentos programados para os próximos 30 dias')}
         variant={projectionVariant}
-        onClick={() => navigate('/cash-flow')}
+        onClick={() => navigate('/reports')}
       />
       
       <KPICard
@@ -140,7 +140,7 @@ export const FinancialKPICards = () => {
         icon={<AlertTriangle className="w-5 h-5" />}
         tooltip={t('dashboard.totalDebtTooltip', 'Soma de empréstimos ativos e crédito utilizado nos cartões')}
         variant={debtVariant}
-        onClick={() => navigate('/wallets?tab=loans')}
+        onClick={() => navigate('/wallets/loans')}
       />
       
       <KPICard
@@ -149,7 +149,7 @@ export const FinancialKPICards = () => {
         icon={<CreditCard className="w-5 h-5" />}
         tooltip={t('dashboard.availableCreditTooltip', 'Limite disponível em todos os seus cartões de crédito')}
         variant={creditVariant}
-        onClick={() => navigate('/wallets?tab=cards')}
+        onClick={() => navigate('/wallets/cards')}
       />
     </div>
   );

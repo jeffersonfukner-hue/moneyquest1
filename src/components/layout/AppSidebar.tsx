@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
 import {
   Home,
   Wallet,
@@ -10,6 +11,11 @@ import {
   Users,
   HelpCircle,
   LogOut,
+  ChevronDown,
+  ChevronRight,
+  CreditCard,
+  Landmark,
+  Banknote,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
@@ -23,6 +29,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
   SidebarSeparator,
   useSidebar,
 } from '@/components/ui/sidebar';
@@ -31,7 +40,6 @@ import { AvatarDisplay } from '@/components/profile/AvatarDisplay';
 import { useProfileContext } from '@/contexts/ProfileContext';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -42,6 +50,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import { APP_ROUTES } from '@/routes/routes';
 
 // Helper to check if in mobile drawer mode
@@ -51,15 +64,21 @@ import { APP_ROUTES } from '@/routes/routes';
 // Main navigation - only existing routes
 const mainNavItems = [
   { title: 'dashboard', url: APP_ROUTES.DASHBOARD, icon: Home },
-  { title: 'wallets', url: APP_ROUTES.WALLETS, icon: Wallet },
-  { title: 'goals', url: APP_ROUTES.CATEGORY_GOALS, icon: Target },
-  { title: 'reports', url: APP_ROUTES.CASH_FLOW, icon: BarChart3 },
+];
+
+// Wallets sub-items (actual tabs in the Wallets page)
+const walletsSubItems = [
+  { title: 'accounts', url: APP_ROUTES.WALLETS_ACCOUNTS, icon: Banknote },
+  { title: 'cards', url: APP_ROUTES.WALLETS_CARDS, icon: CreditCard },
+  { title: 'loans', url: APP_ROUTES.WALLETS_LOANS, icon: Landmark },
 ];
 
 // Features
 const featuresNavItems = [
   { title: 'scheduled', url: APP_ROUTES.SCHEDULED, icon: Calendar },
   { title: 'suppliers', url: APP_ROUTES.SUPPLIERS, icon: Users },
+  { title: 'goals', url: APP_ROUTES.GOALS, icon: Target },
+  { title: 'reports', url: APP_ROUTES.REPORTS, icon: BarChart3 },
 ];
 
 // Bottom nav
@@ -76,6 +95,9 @@ export function AppSidebar() {
   const { profile } = useProfileContext();
   const { signOut } = useAuth();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [walletsOpen, setWalletsOpen] = useState(
+    location.pathname.startsWith('/wallets')
+  );
 
   // CRITICAL FIX: In mobile/tablet drawer mode, ALWAYS show labels
   // The drawer (Sheet) is used when isMobile is true (includes touch tablets)
@@ -99,6 +121,9 @@ export function AppSidebar() {
     }
     return location.pathname === path || location.pathname.startsWith(`${path}/`);
   };
+
+  // Check if any wallet sub-route is active
+  const isWalletsActive = location.pathname.startsWith('/wallets');
 
   // Close mobile drawer when navigating
   const handleNavClick = (url: string) => {
@@ -146,6 +171,64 @@ export function AppSidebar() {
     );
   };
 
+  const renderWalletsCollapsible = () => (
+    <Collapsible open={walletsOpen} onOpenChange={setWalletsOpen}>
+      <SidebarMenuItem>
+        <CollapsibleTrigger asChild>
+          <SidebarMenuButton
+            isActive={isWalletsActive}
+            tooltip={isCollapsed ? t('sidebar.wallets', 'Carteiras') : undefined}
+            className="w-full"
+          >
+            <Wallet className="h-4 w-4 shrink-0" />
+            {showLabels && (
+              <>
+                <span className="truncate flex-1 text-left">
+                  {t('sidebar.wallets', 'Carteiras')}
+                </span>
+                {walletsOpen ? (
+                  <ChevronDown className="h-4 w-4 shrink-0" />
+                ) : (
+                  <ChevronRight className="h-4 w-4 shrink-0" />
+                )}
+              </>
+            )}
+          </SidebarMenuButton>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <SidebarMenuSub>
+            {walletsSubItems.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item.url);
+              return (
+                <SidebarMenuSubItem key={item.title}>
+                  <SidebarMenuSubButton
+                    asChild
+                    isActive={active}
+                  >
+                    <NavLink
+                      to={item.url}
+                      className="flex items-center gap-2"
+                      activeClassName="bg-sidebar-accent text-sidebar-accent-foreground"
+                      onClick={() => {
+                        if (isMobile) setOpenMobile(false);
+                      }}
+                    >
+                      <Icon className="h-3.5 w-3.5 shrink-0" />
+                      <span className="truncate">
+                        {t(`sidebar.${item.title}`, item.title)}
+                      </span>
+                    </NavLink>
+                  </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+              );
+            })}
+          </SidebarMenuSub>
+        </CollapsibleContent>
+      </SidebarMenuItem>
+    </Collapsible>
+  );
+
   return (
     <>
       <Sidebar collapsible="icon">
@@ -177,6 +260,8 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {mainNavItems.map(renderNavItem)}
+                {/* Wallets with collapsible sub-menu */}
+                {renderWalletsCollapsible()}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
