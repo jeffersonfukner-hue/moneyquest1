@@ -15,6 +15,13 @@ function isDateRange(value: unknown): value is DateRangeFilter {
   return typeof value === 'object' && value !== null && ('from' in value || 'to' in value);
 }
 
+// Helper to get end of day for inclusive date range
+function endOfDay(date: Date): Date {
+  const end = new Date(date);
+  end.setHours(23, 59, 59, 999);
+  return end;
+}
+
 // Helper to normalize values for sorting
 function normalizeForSort(value: unknown, colMeta?: ColumnDef<unknown>['meta']): number | string | null {
   if (value == null) return null;
@@ -27,21 +34,26 @@ function normalizeForSort(value: unknown, colMeta?: ColumnDef<unknown>['meta']):
   
   if (colMeta?.type === 'currency') {
     if (typeof value === 'number') return value;
-    // Remove currency formatting: R$ 1.234,56 -> 1234.56
-    const cleaned = String(value).replace(/[^\d,.-]/g, '').replace(',', '.');
+    
+    // Remove currency symbols and spaces: "R$ 1.234,56" → "1.234,56"
+    let cleaned = String(value).replace(/[R$€£\s]/g, '');
+    
+    // Brazilian/European format: dots are thousand separators, comma is decimal
+    if (cleaned.includes(',')) {
+      // Remove thousand separator dots first, then replace comma with dot
+      cleaned = cleaned.replace(/\./g, '').replace(',', '.');
+    } else {
+      // US format: commas are thousand separators, dot is decimal
+      cleaned = cleaned.replace(/,/g, '');
+    }
+    
     const num = parseFloat(cleaned);
     return isNaN(num) ? null : num;
   }
   
-  // Auto-detection
+  // Native types only (no auto-parse of number strings)
   if (typeof value === 'number') return value;
   if (value instanceof Date) return value.getTime();
-  
-  // Try to parse as number
-  if (typeof value === 'string') {
-    const num = parseFloat(value);
-    if (!isNaN(num) && value.trim() === String(num)) return num;
-  }
   
   // Fallback to lowercase string
   return String(value).toLowerCase();
@@ -185,8 +197,11 @@ export function useDataTable<T>({
           const fromDate = from ? (from instanceof Date ? from : new Date(from)) : null;
           const toDate = to ? (to instanceof Date ? to : new Date(to)) : null;
           
+          // Normalize toDate to end of day for inclusive comparison
+          const toDateEnd = toDate ? endOfDay(toDate) : null;
+          
           if (fromDate && dateValue < fromDate) return false;
-          if (toDate && dateValue > toDate) return false;
+          if (toDateEnd && dateValue > toDateEnd) return false;
           return true;
         }
         
