@@ -1,6 +1,11 @@
 import * as React from "react";
 
-const MOBILE_BREAKPOINT = 768;
+const BREAKPOINTS = {
+  MOBILE: 768,
+  TABLET: 1024,
+} as const;
+
+export type Breakpoint = 'mobile' | 'tablet' | 'desktop';
 
 // Detect if device is touch-capable (iOS, Android, etc.)
 function isTouchDevice(): boolean {
@@ -13,18 +18,53 @@ function isTouchDevice(): boolean {
   );
 }
 
+export function useBreakpoint(): Breakpoint {
+  const [breakpoint, setBreakpoint] = React.useState<Breakpoint>('mobile');
+
+  React.useEffect(() => {
+    const check = () => {
+      if (window.innerWidth >= BREAKPOINTS.TABLET) {
+        setBreakpoint('desktop');
+      } else if (window.innerWidth >= BREAKPOINTS.MOBILE) {
+        setBreakpoint('tablet');
+      } else {
+        setBreakpoint('mobile');
+      }
+    };
+
+    // Initial check
+    check();
+
+    // Listen for resize
+    const mql = window.matchMedia(`(min-width: ${BREAKPOINTS.TABLET}px)`);
+    const mqlTablet = window.matchMedia(`(min-width: ${BREAKPOINTS.MOBILE}px)`);
+
+    const handleChange = () => check();
+    
+    mql.addEventListener("change", handleChange);
+    mqlTablet.addEventListener("change", handleChange);
+
+    return () => {
+      mql.removeEventListener("change", handleChange);
+      mqlTablet.removeEventListener("change", handleChange);
+    };
+  }, []);
+
+  return breakpoint;
+}
+
 export function useIsMobile() {
   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined);
 
   React.useEffect(() => {
     const checkMobile = () => {
-      const isSmallScreen = window.innerWidth < MOBILE_BREAKPOINT;
+      const isSmallScreen = window.innerWidth < BREAKPOINTS.MOBILE;
       const isTouch = isTouchDevice();
       // Consider mobile if: small screen OR touch device (for iOS/Android in any viewport)
       setIsMobile(isSmallScreen || isTouch);
     };
 
-    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
+    const mql = window.matchMedia(`(max-width: ${BREAKPOINTS.MOBILE - 1}px)`);
     mql.addEventListener("change", checkMobile);
     checkMobile();
     
@@ -32,4 +72,43 @@ export function useIsMobile() {
   }, []);
 
   return !!isMobile;
+}
+
+export function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    const check = () => {
+      setIsDesktop(window.innerWidth >= BREAKPOINTS.TABLET);
+    };
+
+    check();
+
+    const mql = window.matchMedia(`(min-width: ${BREAKPOINTS.TABLET}px)`);
+    mql.addEventListener("change", check);
+
+    return () => mql.removeEventListener("change", check);
+  }, []);
+
+  return isDesktop;
+}
+
+export function useIsTablet() {
+  const [isTablet, setIsTablet] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    const check = () => {
+      const width = window.innerWidth;
+      setIsTablet(width >= BREAKPOINTS.MOBILE && width < BREAKPOINTS.TABLET);
+    };
+
+    check();
+
+    const mql = window.matchMedia(`(min-width: ${BREAKPOINTS.MOBILE}px) and (max-width: ${BREAKPOINTS.TABLET - 1}px)`);
+    mql.addEventListener("change", check);
+
+    return () => mql.removeEventListener("change", check);
+  }, []);
+
+  return isTablet;
 }

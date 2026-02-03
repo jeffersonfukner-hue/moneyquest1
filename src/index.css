@@ -479,6 +479,33 @@
   .safe-area-bottom {
     padding-bottom: env(safe-area-inset-bottom);
   }
+
+  /* ======================== */
+  /* RESPONSIVE CONTAINERS    */
+  /* ======================== */
+  
+  /* Mobile-first content container - expands on desktop */
+  .content-container {
+    @apply px-4 py-3 mx-auto;
+    max-width: 28rem; /* max-w-md */
+  }
+
+  @media (min-width: 1024px) {
+    .content-container {
+      max-width: 80rem; /* max-w-7xl */
+      @apply px-6;
+    }
+  }
+
+  /* Desktop-only wide content */
+  .desktop-content {
+    @apply max-w-7xl mx-auto px-6;
+  }
+
+  /* Full width container for tables */
+  .full-width-content {
+    @apply w-full px-6;
+  }
 }
 
 /* ========================================
