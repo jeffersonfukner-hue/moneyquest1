@@ -101,23 +101,14 @@ const Settings = () => {
 
   return (
     <AppShell>
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border safe-area-top">
-        <div className="flex items-center h-14 px-4 max-w-md mx-auto">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={() => navigate('/')}
-            className="min-h-[44px] min-w-[44px] -ml-2"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="font-display font-bold text-lg text-foreground ml-2">
-            {t('settings.title')}
-          </h1>
-        </div>
-      </header>
+      {/* Page Title */}
+      <div className="mb-4">
+        <h1 className="font-display font-bold text-xl text-foreground">
+          {t('settings.title')}
+        </h1>
+      </div>
 
-      <main className="px-4 py-6 max-w-md mx-auto space-y-4">
+      <div className="space-y-4">
         {/* Subscription Status */}
         <Card
           className={`cursor-pointer transition-all ${isPremium ? 'border-amber-400/50 bg-gradient-to-br from-amber-400/10 to-amber-500/5' : 'hover:border-amber-400/30'}`}
@@ -485,7 +476,7 @@ const Settings = () => {
           <LogOut className="w-4 h-4 mr-2" />
           {t('auth.logout')}
         </Button>
-      </main>
+      </div>
 
       {/* Logout Confirmation Dialog */}
       <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>

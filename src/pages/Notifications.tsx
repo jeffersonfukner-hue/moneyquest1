@@ -90,34 +90,25 @@ const Notifications = () => {
 
   return (
     <AppShell>
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border safe-area-top">
-        <div className="flex items-center h-14 px-4 max-w-md mx-auto">
+      {/* Page Title */}
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="font-display font-bold text-xl text-foreground">
+          {t('notificationsPage.title')}
+        </h1>
+        {unreadCount > 0 && (
           <Button 
             variant="ghost" 
-            size="icon" 
-            onClick={() => navigate(-1)}
-            className="min-h-[44px] min-w-[44px]"
+            size="sm"
+            onClick={markAllAsRead}
+            className="text-xs"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <CheckCheck className="w-4 h-4 mr-1" />
+            {t('notifications.markAllRead')}
           </Button>
-          <h1 className="font-display font-bold text-lg text-foreground ml-2 flex-1">
-            {t('notificationsPage.title')}
-          </h1>
-          {unreadCount > 0 && (
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={markAllAsRead}
-              className="text-xs"
-            >
-              <CheckCheck className="w-4 h-4 mr-1" />
-              {t('notifications.markAllRead')}
-            </Button>
-          )}
-        </div>
-      </header>
+        )}
+      </div>
 
-      <main className="px-4 py-4 max-w-md mx-auto space-y-4">
+      <div className="space-y-4">
         {/* Search and Filters */}
         <div className="space-y-3">
           <div className="relative">
@@ -243,7 +234,7 @@ const Notifications = () => {
             })}
           </div>
         )}
-      </main>
+      </div>
     </AppShell>
   );
 };

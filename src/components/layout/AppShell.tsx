@@ -18,9 +18,9 @@ interface AppShellProps {
 
 function getContentMaxWidth(breakpoint: Breakpoint): string {
   switch (breakpoint) {
-    case 'desktop': return 'max-w-7xl';
-    case 'tablet': return 'max-w-3xl';
-    default: return 'max-w-md';
+    case 'desktop': return 'max-w-7xl';  // 1280px
+    case 'tablet': return 'max-w-4xl';   // 896px (was 3xl/768px)
+    default: return 'max-w-lg';          // 512px (was md/448px)
   }
 }
 
@@ -84,8 +84,9 @@ export function AppShell({
           <UnifiedTopbar breakpoint={breakpoint} />
           
           <main className={cn(
-            "flex-1 px-4 py-3",
-            fullWidth ? "" : getContentMaxWidth(breakpoint),
+            "flex-1 py-4",
+            breakpoint === 'mobile' ? 'px-4' : 'px-6',
+            fullWidth ? 'max-w-none' : getContentMaxWidth(breakpoint),
             "mx-auto w-full",
             className
           )}>
