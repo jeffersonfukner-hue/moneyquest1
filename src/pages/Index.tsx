@@ -12,6 +12,8 @@ import { useCategoryGoals } from '@/hooks/useCategoryGoals';
 import { useCategories } from '@/hooks/useCategories';
 import { useDailyReward } from '@/hooks/useDailyReward';
 import { useRealtimeXP } from '@/hooks/useRealtimeXP';
+import { useReferralNotifications } from '@/hooks/useReferralNotifications';
+import { AppLayout } from '@/components/layout/AppLayout';
 import { LevelProgress } from '@/components/game/LevelProgress';
 import { StatsCards } from '@/components/game/StatsCards';
 import { CreditCardsQuickView } from '@/components/game/CreditCardsQuickView';
@@ -19,8 +21,6 @@ import { ResourceBars } from '@/components/game/ResourceBars';
 import { LeaderboardCard } from '@/components/game/LeaderboardCard';
 import { DailyRewardBanner } from '@/components/game/DailyRewardBanner';
 import { DailyRewardDialog } from '@/components/game/DailyRewardDialog';
-import { QuestsPanel } from '@/components/game/QuestsPanel';
-import { BadgesGrid } from '@/components/game/BadgesGrid';
 import { TransactionsList } from '@/components/game/TransactionsList';
 import { RecentTransactionsCard } from '@/components/game/RecentTransactionsCard';
 import { LazySpendingByCategoryChart } from '@/components/game/LazySpendingByCategoryChart';
@@ -30,31 +30,23 @@ import { AddTransactionDialog, SessionSummary, PrefillData } from '@/components/
 import { PWAInstallCard } from '@/components/pwa/PWAInstallCard';
 import { QuestCelebration } from '@/components/game/QuestCelebration';
 import { SeasonalDecorations } from '@/components/game/SeasonalDecorations';
-import { NarrativeEvent } from '@/components/game/NarrativeEvent';
 import { TransactionFeedback } from '@/components/game/TransactionFeedback';
 import { QuickTemplates } from '@/components/game/QuickTemplates';
 import { XPNotification } from '@/components/game/XPNotification';
 import { SessionSummaryCard } from '@/components/game/SessionSummaryCard';
 import { PersonalRewardsCard } from '@/components/game/PersonalRewardsCard';
-import { LevelUnlocksCard } from '@/components/game/LevelUnlocksCard';
 import { ShopQuickAccessCard } from '@/components/shop/ShopQuickAccessCard';
-import { BottomNavigation, type TabId } from '@/components/navigation/BottomNavigation';
-import { MobileHeader } from '@/components/navigation/MobileHeader';
+import { type TabId } from '@/components/navigation/BottomNavigation';
 import { BlogPreviewCard } from '@/components/blog/BlogPreviewCard';
 import { CategoryGoalsCard } from '@/components/goals/CategoryGoalsCard';
-import { AdBanner } from '@/components/ads/AdBanner';
 import { CashFlowWidget } from '@/components/reports/CashFlowWidget';
 import { PeriodComparisonWidget } from '@/components/reports/PeriodComparisonWidget';
 import { TierUpgradeCelebration } from '@/components/referral/TierUpgradeCelebration';
 import { TrialBanner } from '@/components/trial/TrialBanner';
 import { TrialExpiredDialog } from '@/components/trial/TrialExpiredDialog';
-import { useAdBanner } from '@/hooks/useAdBanner';
-import { useReferralNotifications } from '@/hooks/useReferralNotifications';
-import { FloatingWhatsAppButton } from '@/components/support/FloatingWhatsAppButton';
 import { getFeedbackMessage } from '@/lib/feedbackMessages';
 import { TransactionTemplate } from '@/hooks/useTransactionTemplates';
 import { Gamepad2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 const Index = () => {
   const { t } = useTranslation();
@@ -68,7 +60,6 @@ const Index = () => {
   const { goals } = useCategoryGoals();
   const { categories } = useCategories();
   const { status: rewardStatus } = useDailyReward();
-  const { shouldShowBanner } = useAdBanner();
   const { xpChange, clearXPChange } = useRealtimeXP();
   const { tierUpgrade, clearTierUpgrade } = useReferralNotifications();
   
@@ -251,27 +242,16 @@ const Index = () => {
   };
 
   return (
-    <div className={cn(
-      "min-h-screen bg-background relative",
-      shouldShowBanner ? "pb-[130px]" : "pb-20"
-    )}>
+    <AppLayout 
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+      onAddClick={() => setShowAddDialog(true)}
+    >
       <SeasonalDecorations />
       
-      <MobileHeader onSettingsClick={() => navigate('/settings')} onProfileClick={() => navigate('/profile')} />
-
-      <main className="px-4 py-3 max-w-md mx-auto relative z-10">
+      <main className="px-4 py-3 relative z-10">
         {renderTabContent()}
       </main>
-
-      <FloatingWhatsAppButton />
-
-      <AdBanner />
-
-      <BottomNavigation 
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        onAddClick={() => setShowAddDialog(true)}
-      />
 
       <AddTransactionDialog 
         onAdd={addTransaction}
@@ -300,8 +280,6 @@ const Index = () => {
           refetchProfile();
         }}
       />
-
-      {/* NarrativeEvent removed - narratives now shown inline via TransactionFeedback */}
 
       <DailyRewardDialog 
         open={showRewardDialog} 
@@ -333,7 +311,7 @@ const Index = () => {
 
       {/* Trial expired dialog - shown once when trial ends */}
       <TrialExpiredDialog />
-    </div>
+    </AppLayout>
   );
 };
 

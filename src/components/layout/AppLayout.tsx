@@ -15,6 +15,10 @@ import { cn } from '@/lib/utils';
 interface AppLayoutProps {
   children: ReactNode;
   activeTab?: TabId;
+  /** Callback when tab changes (for Index.tsx navigation) */
+  onTabChange?: (tab: TabId) => void;
+  /** Callback when add button is clicked */
+  onAddClick?: () => void;
   /** Additional className for the container */
   className?: string;
   /** Whether to show the header (default: true) */
@@ -32,6 +36,8 @@ interface AppLayoutProps {
 export const AppLayout = ({ 
   children, 
   activeTab = 'home',
+  onTabChange,
+  onAddClick,
   className,
   showHeader = true,
   showNavigation = true,
@@ -49,8 +55,20 @@ export const AppLayout = ({
   useReferralNotifications();
 
   const handleTabChange = (tab: TabId) => {
-    if (tab === 'home') navigate('/');
-    if (tab === 'transactions') navigate('/');
+    if (onTabChange) {
+      onTabChange(tab);
+    } else {
+      if (tab === 'home') navigate('/');
+      if (tab === 'transactions') navigate('/');
+    }
+  };
+
+  const handleAddClick = () => {
+    if (onAddClick) {
+      onAddClick();
+    } else {
+      setShowAddTransaction(true);
+    }
   };
 
   // Calculate bottom padding based on what's visible (mobile only)
@@ -101,7 +119,7 @@ export const AppLayout = ({
         <BottomNavigation 
           activeTab={activeTab} 
           onTabChange={handleTabChange}
-          onAddClick={() => setShowAddTransaction(true)}
+          onAddClick={handleAddClick}
         />
       )}
 
