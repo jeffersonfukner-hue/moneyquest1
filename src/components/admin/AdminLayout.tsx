@@ -4,7 +4,6 @@ import {
   LayoutDashboard, 
   Users, 
   AlertTriangle, 
-  BarChart3, 
   ScrollText,
   ChevronLeft,
   Shield,
@@ -20,6 +19,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { ADMIN_ROUTES, APP_ROUTES } from '@/routes/routes';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -27,17 +27,17 @@ interface AdminLayoutProps {
 
 // Labels fixos em pt-BR para o SuperAdmin (independente do idioma do usuário)
 const navItems = [
-  { path: '/super-admin', icon: LayoutDashboard, label: 'Painel Geral' },
-  { path: '/super-admin/users', icon: Users, label: 'Usuários' },
-  { path: '/super-admin/traffic', icon: Activity, label: 'Tráfego' },
-  { path: '/super-admin/campaigns', icon: Megaphone, label: 'Campanhas' },
-  { path: '/super-admin/support', icon: MessageSquare, label: 'Suporte' },
-  { path: '/super-admin/comments', icon: MessageSquareText, label: 'Comentários' },
-  { path: '/super-admin/referrals', icon: Gift, label: 'Indicações' },
-  { path: '/super-admin/trial-abuse', icon: Fingerprint, label: 'Abuso de Trial' },
-  { path: '/super-admin/engagement', icon: AlertTriangle, label: 'Engajamento' },
-  { path: '/super-admin/scoring-audit', icon: Calculator, label: 'Auditoria XP' },
-  { path: '/super-admin/logs', icon: ScrollText, label: 'Logs' },
+  { path: ADMIN_ROUTES.DASHBOARD, icon: LayoutDashboard, label: 'Painel Geral' },
+  { path: ADMIN_ROUTES.USERS, icon: Users, label: 'Usuários' },
+  { path: ADMIN_ROUTES.TRAFFIC, icon: Activity, label: 'Tráfego' },
+  { path: ADMIN_ROUTES.CAMPAIGNS, icon: Megaphone, label: 'Campanhas' },
+  { path: ADMIN_ROUTES.SUPPORT, icon: MessageSquare, label: 'Suporte' },
+  { path: ADMIN_ROUTES.COMMENTS, icon: MessageSquareText, label: 'Comentários' },
+  { path: ADMIN_ROUTES.REFERRALS, icon: Gift, label: 'Indicações' },
+  { path: ADMIN_ROUTES.TRIAL_ABUSE, icon: Fingerprint, label: 'Abuso de Trial' },
+  { path: ADMIN_ROUTES.ENGAGEMENT, icon: AlertTriangle, label: 'Engajamento' },
+  { path: ADMIN_ROUTES.SCORING_AUDIT, icon: Calculator, label: 'Auditoria XP' },
+  { path: ADMIN_ROUTES.LOGS, icon: ScrollText, label: 'Logs' },
 ];
 
 export const AdminLayout = ({ children }: AdminLayoutProps) => {
@@ -82,7 +82,7 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
         <Button 
           variant="ghost" 
           className="w-full justify-start gap-2"
-          onClick={() => navigate('/')}
+          onClick={() => navigate(APP_ROUTES.DASHBOARD)}
         >
           <ChevronLeft className="w-4 h-4" />
           Voltar ao App

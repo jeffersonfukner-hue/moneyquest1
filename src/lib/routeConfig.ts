@@ -1,33 +1,38 @@
 /**
  * Centralized Route Configuration
  * Single source of truth for SEO indexing, ad display rules, and route context
+ * 
+ * NOTE: For route constants, import from '@/routes/routes' instead.
+ * This file is specifically for SEO and ad display configuration.
  */
+
+import { APP_ROUTES, PUBLIC_ROUTES } from '@/routes/routes';
 
 // Public pages that SHOULD be indexed by Google
 // These are the ONLY pages where Google AdSense can be displayed
 // NOTE: /login and /signup are intentionally NOT indexable (noindex via meta robots)
 export const INDEXABLE_ROUTES = [
-  '/',
-  '/about',
-  '/features',
-  '/terms',
-  '/privacy',
-  '/blog',
-  '/autor',
-  '/controle-financeiro',
-  '/educacao-financeira-gamificada',
-  '/desafios-financeiros',
-  '/app-financas-pessoais',
+  PUBLIC_ROUTES.HOME,
+  PUBLIC_ROUTES.ABOUT,
+  PUBLIC_ROUTES.FEATURES,
+  PUBLIC_ROUTES.TERMS,
+  PUBLIC_ROUTES.PRIVACY,
+  PUBLIC_ROUTES.BLOG,
+  PUBLIC_ROUTES.AUTHOR,
+  PUBLIC_ROUTES.CONTROLE_FINANCEIRO,
+  PUBLIC_ROUTES.EDUCACAO_FINANCEIRA,
+  PUBLIC_ROUTES.DESAFIOS_FINANCEIROS,
+  PUBLIC_ROUTES.APP_FINANCAS,
 ] as const;
 
 // Routes that are public but should NOT be indexed (noindex, follow)
 // These pages are accessible but excluded from search results
 export const NOINDEX_PUBLIC_ROUTES = [
-  '/login',
-  '/signup',
-  '/premium',
-  '/r', // referral redirect
-  '/select-language',
+  PUBLIC_ROUTES.LOGIN,
+  PUBLIC_ROUTES.SIGNUP,
+  APP_ROUTES.UPGRADE,
+  PUBLIC_ROUTES.REFERRAL_REDIRECT,
+  PUBLIC_ROUTES.SELECT_LANGUAGE,
 ] as const;
 
 export type IndexableRoute = typeof INDEXABLE_ROUTES[number];
@@ -35,27 +40,26 @@ export type IndexableRoute = typeof INDEXABLE_ROUTES[number];
 // Authenticated pages (restricted - no Google AdSense)
 // Only internal banners (Premium/Referral) are allowed here
 export const AUTHENTICATED_ROUTES = [
-  '/dashboard',
-  '/transactions',
-  '/wallets',
-  '/categories',
-  '/goals',
-  '/settings',
-  '/profile',
-  '/ai-coach',
-  '/leaderboard',
-  '/journal',
-  '/quests',
-  '/cash-flow',
-  '/period-comparison',
-  '/referral',
-  '/notifications',
-  '/support',
-  '/onboarding',
-  '/upgrade',
-  '/premium',
-  '/premium-success',
-  '/my-messages',
+  APP_ROUTES.DASHBOARD,
+  APP_ROUTES.WALLETS,
+  APP_ROUTES.CATEGORIES,
+  APP_ROUTES.CATEGORY_GOALS,
+  APP_ROUTES.SETTINGS,
+  APP_ROUTES.PROFILE,
+  APP_ROUTES.LEADERBOARD,
+  APP_ROUTES.JOURNAL,
+  APP_ROUTES.CASH_FLOW,
+  APP_ROUTES.PERIOD_COMPARISON,
+  APP_ROUTES.REFERRAL,
+  APP_ROUTES.NOTIFICATIONS,
+  APP_ROUTES.SUPPORT,
+  APP_ROUTES.ONBOARDING,
+  APP_ROUTES.UPGRADE,
+  APP_ROUTES.PREMIUM_SUCCESS,
+  APP_ROUTES.MY_MESSAGES,
+  APP_ROUTES.SCHEDULED,
+  APP_ROUTES.SUPPLIERS,
+  APP_ROUTES.SHOP,
 ] as const;
 
 export type AuthenticatedRoute = typeof AUTHENTICATED_ROUTES[number];

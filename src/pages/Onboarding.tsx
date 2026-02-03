@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useProfile } from '@/hooks/useProfile';
+import { APP_ROUTES } from '@/routes/routes';
 interface OnboardingStep {
   icon: React.ReactNode;
   titleKey: string;
@@ -60,7 +61,7 @@ const Onboarding = () => {
 
   const completeOnboarding = async () => {
     await updateProfile({ onboarding_completed: true });
-    navigate('/');
+    navigate(APP_ROUTES.DASHBOARD);
   };
 
   const handleNext = () => {
