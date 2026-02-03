@@ -8,24 +8,26 @@ import { useProfile } from '@/hooks/useProfile';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useQuests } from '@/hooks/useQuests';
 import { useBadges } from '@/hooks/useBadges';
-import { useCategoryGoals } from '@/hooks/useCategoryGoals';
-import { useCategories } from '@/hooks/useCategories';
 import { useDailyReward } from '@/hooks/useDailyReward';
 import { useRealtimeXP } from '@/hooks/useRealtimeXP';
 import { useReferralNotifications } from '@/hooks/useReferralNotifications';
+import { useBreakpoint } from '@/hooks/use-mobile';
 import { AppShell } from '@/components/layout/AppShell';
-import { LevelProgress } from '@/components/game/LevelProgress';
-import { StatsCards } from '@/components/game/StatsCards';
-import { CreditCardsQuickView } from '@/components/game/CreditCardsQuickView';
-import { ResourceBars } from '@/components/game/ResourceBars';
-import { LeaderboardCard } from '@/components/game/LeaderboardCard';
+
+// Dashboard components - Financial First
+import { 
+  FinancialKPICards, 
+  PeriodResultWidget, 
+  TopCategoriesCard, 
+  FinancialAlertsWidget,
+  GamificationSidebar,
+  RecentTransactionsWidget,
+} from '@/components/dashboard';
+
+// Existing components
 import { DailyRewardBanner } from '@/components/game/DailyRewardBanner';
 import { DailyRewardDialog } from '@/components/game/DailyRewardDialog';
 import { TransactionsList } from '@/components/game/TransactionsList';
-import { RecentTransactionsCard } from '@/components/game/RecentTransactionsCard';
-import { LazySpendingByCategoryChart } from '@/components/game/LazySpendingByCategoryChart';
-import { MonthlySavingsWidget } from '@/components/game/MonthlySavingsWidget';
-import { MonthlyComparisonWidget } from '@/components/game/MonthlyComparisonWidget';
 import { AddTransactionDialog, SessionSummary, PrefillData } from '@/components/game/AddTransactionDialog';
 import { PWAInstallCard } from '@/components/pwa/PWAInstallCard';
 import { QuestCelebration } from '@/components/game/QuestCelebration';
@@ -34,30 +36,24 @@ import { TransactionFeedback } from '@/components/game/TransactionFeedback';
 import { QuickTemplates } from '@/components/game/QuickTemplates';
 import { XPNotification } from '@/components/game/XPNotification';
 import { SessionSummaryCard } from '@/components/game/SessionSummaryCard';
-import { PersonalRewardsCard } from '@/components/game/PersonalRewardsCard';
-import { ShopQuickAccessCard } from '@/components/shop/ShopQuickAccessCard';
-import { BlogPreviewCard } from '@/components/blog/BlogPreviewCard';
-import { CategoryGoalsCard } from '@/components/goals/CategoryGoalsCard';
-import { CashFlowWidget } from '@/components/reports/CashFlowWidget';
-import { PeriodComparisonWidget } from '@/components/reports/PeriodComparisonWidget';
 import { TierUpgradeCelebration } from '@/components/referral/TierUpgradeCelebration';
 import { TrialBanner } from '@/components/trial/TrialBanner';
 import { TrialExpiredDialog } from '@/components/trial/TrialExpiredDialog';
 import { getFeedbackMessage } from '@/lib/feedbackMessages';
 import { TransactionTemplate } from '@/hooks/useTransactionTemplates';
 import { Gamepad2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const Index = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const breakpoint = useBreakpoint();
   const { user, loading: authLoading } = useAuth();
   const { profile, loading: profileLoading, refetch: refetchProfile } = useProfile();
   const { transactions, addTransaction, updateTransaction, deleteTransaction, batchUpdateWallet, batchDeleteTransactions, celebrationData, clearCelebration, narrativeData, clearNarrative } = useTransactions();
   const { quests, refetch: refetchQuests } = useQuests();
   const { badges, refetch: refetchBadges } = useBadges();
-  const { goals } = useCategoryGoals();
-  const { categories } = useCategories();
   const { status: rewardStatus } = useDailyReward();
   const { xpChange, clearXPChange } = useRealtimeXP();
   const { tierUpgrade, clearTierUpgrade } = useReferralNotifications();
@@ -95,7 +91,6 @@ const Index = () => {
   // Auto-show reward dialog on first load if reward is available
   useEffect(() => {
     if (rewardStatus?.can_claim && !showRewardDialog) {
-      // Small delay to let the page load first
       const timer = setTimeout(() => setShowRewardDialog(true), 1000);
       return () => clearTimeout(timer);
     }
@@ -104,14 +99,11 @@ const Index = () => {
   // Show inline feedback when narrative data changes
   useEffect(() => {
     if (narrativeData) {
-      // Create unique ID for this feedback to prevent duplicates
       const feedbackId = `${narrativeData.category}-${narrativeData.amount}-${Date.now()}`;
       
-      // Only show if it's a new feedback
       if (lastFeedbackRef.current !== feedbackId) {
         lastFeedbackRef.current = feedbackId;
         
-        // Use the generated narrative or create a contextual message
         const message = narrativeData.narrative || getFeedbackMessage(
           narrativeData.eventType as 'INCOME' | 'EXPENSE',
           narrativeData.category || '',
@@ -174,70 +166,95 @@ const Index = () => {
     setShowAddDialog(true);
   };
 
+  const isDesktop = breakpoint === 'desktop';
+
+  const renderHomeContent = () => (
+    <div className={cn(
+      "grid gap-4",
+      isDesktop ? "grid-cols-[1fr_320px]" : "grid-cols-1"
+    )}>
+      {/* Main Financial Column */}
+      <div className="space-y-4">
+        {/* PWA Install Card */}
+        <PWAInstallCard />
+        
+        {/* Trial Premium Banner */}
+        <TrialBanner />
+        
+        {/* Daily Reward Banner - Compact */}
+        <DailyRewardBanner onClaimClick={() => setShowRewardDialog(true)} />
+        
+        {/* 1. KPIs Essenciais */}
+        <FinancialKPICards />
+        
+        {/* 2. Resultado do Período */}
+        <PeriodResultWidget />
+        
+        {/* 3. Alertas Financeiros */}
+        <FinancialAlertsWidget />
+        
+        {/* Session summary - appears after finishing transaction session */}
+        {sessionSummary && (
+          <SessionSummaryCard
+            {...sessionSummary}
+            onDismiss={() => setSessionSummary(null)}
+          />
+        )}
+        
+        {/* Inline feedback with narrative */}
+        {inlineFeedback && (
+          <TransactionFeedback
+            message={inlineFeedback.message}
+            type={inlineFeedback.type}
+            category={inlineFeedback.category}
+            amount={inlineFeedback.amount}
+            currency={inlineFeedback.currency}
+            narrative={inlineFeedback.narrative}
+            onDismiss={() => {
+              setInlineFeedback(null);
+              clearNarrative();
+            }}
+          />
+        )}
+        
+        {/* 4. Análise de Gastos */}
+        <TopCategoriesCard />
+        
+        {/* 5. Últimas Transações */}
+        <RecentTransactionsWidget transactions={transactions} limit={8} />
+        
+        {/* Quick templates for fast transaction entry */}
+        <QuickTemplates onUseTemplate={handleUseTemplate} />
+      </div>
+
+      {/* Sidebar Column - Gamification (Desktop only inline, mobile/tablet below) */}
+      {isDesktop ? (
+        <div className="space-y-4">
+          <GamificationSidebar profile={profile} />
+        </div>
+      ) : (
+        <div className="space-y-4 mt-4">
+          <GamificationSidebar profile={profile} />
+        </div>
+      )}
+    </div>
+  );
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'home':
-        return (
-          <div className="space-y-2 pb-2">
-            {/* PWA Install Card at top */}
-            <PWAInstallCard />
-            
-            {/* Trial Premium Banner */}
-            <TrialBanner />
-            
-            <DailyRewardBanner onClaimClick={() => setShowRewardDialog(true)} />
-            <LevelProgress profile={profile} />
-            <ShopQuickAccessCard />
-            <StatsCards profile={profile} />
-            <CreditCardsQuickView />
-            
-            {/* Session summary - appears after finishing transaction session */}
-            {sessionSummary && (
-              <SessionSummaryCard
-                {...sessionSummary}
-                onDismiss={() => setSessionSummary(null)}
-              />
-            )}
-            
-            {/* Inline feedback with narrative */}
-            {inlineFeedback && (
-              <TransactionFeedback
-                message={inlineFeedback.message}
-                type={inlineFeedback.type}
-                category={inlineFeedback.category}
-                amount={inlineFeedback.amount}
-                currency={inlineFeedback.currency}
-                narrative={inlineFeedback.narrative}
-                onDismiss={() => {
-                  setInlineFeedback(null);
-                  clearNarrative();
-                }}
-              />
-            )}
-            
-            {/* Recent transactions directly after status */}
-            <RecentTransactionsCard transactions={transactions} onViewMore={() => setActiveTab('transactions')} />
-            
-            {/* Quick templates for fast transaction entry */}
-            <QuickTemplates onUseTemplate={handleUseTemplate} />
-            
-            <ResourceBars transactions={transactions} categoryGoals={goals} categories={categories} />
-            <CategoryGoalsCard />
-            
-            {/* Analytics widgets */}
-            <CashFlowWidget />
-            <PeriodComparisonWidget />
-            <MonthlySavingsWidget transactions={transactions} />
-            <MonthlyComparisonWidget transactions={transactions} />
-            <LazySpendingByCategoryChart transactions={transactions} />
-            
-            {/* Social at bottom */}
-            <LeaderboardCard />
-            <BlogPreviewCard />
-          </div>
-        );
+        return renderHomeContent();
       case 'transactions':
-        return <TransactionsList transactions={transactions} onDelete={deleteTransaction} onUpdate={updateTransaction} onBatchUpdateWallet={batchUpdateWallet} onBatchDelete={batchDeleteTransactions} onDuplicate={handleDuplicateTransaction} />;
+        return (
+          <TransactionsList 
+            transactions={transactions} 
+            onDelete={deleteTransaction} 
+            onUpdate={updateTransaction} 
+            onBatchUpdateWallet={batchUpdateWallet} 
+            onBatchDelete={batchDeleteTransactions} 
+            onDuplicate={handleDuplicateTransaction} 
+          />
+        );
       default:
         return null;
     }
@@ -247,9 +264,9 @@ const Index = () => {
     <AppShell>
       <SeasonalDecorations />
       
-      <main className="px-4 py-3 relative z-10">
+      <div className="relative z-10 pb-4">
         {renderTabContent()}
-      </main>
+      </div>
 
       <AddTransactionDialog 
         onAdd={addTransaction}

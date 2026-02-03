@@ -1243,7 +1243,24 @@
     "availableBudget": "Saldo Disponível",
     "monthlyIncome": "Receitas do mês",
     "monthlyExpenses": "Despesas do mês",
-    "monthBalance": "Saldo do mês"
+    "monthBalance": "Saldo do mês",
+    "totalBalance": "Saldo Total",
+    "totalBalanceTooltip": "Soma de todos os saldos das suas contas ativas",
+    "cashProjection": "Projeção 30 dias",
+    "cashProjectionTooltip": "Saldo atual menos pagamentos programados para os próximos 30 dias",
+    "totalDebt": "Dívida Total",
+    "totalDebtTooltip": "Soma de empréstimos ativos e crédito utilizado nos cartões",
+    "availableCredit": "Crédito Disponível",
+    "availableCreditTooltip": "Limite disponível em todos os seus cartões de crédito",
+    "periodResult": "Resultado do Período",
+    "income": "Entradas",
+    "expenses": "Saídas",
+    "netResult": "Resultado",
+    "surplus": "Superávit",
+    "deficit": "Déficit",
+    "topCategories": "Top 5 Categorias de Gasto",
+    "recentTransactions": "Últimas Transações",
+    "noTransactions": "Nenhuma transação registrada."
   },
   "months": {
     "jan": "Jan", "feb": "Fev", "mar": "Mar", "apr": "Abr",
@@ -2829,6 +2846,22 @@
   },
   "level": {
     "title": "Nível"
+  },
+  "gamification": {
+    "title": "Sua Jornada",
+    "nextLevel": "Próximo nível",
+    "streak": "Dias seguidos",
+    "multiplier": "Multiplicador",
+    "ranking": "Ver Ranking",
+    "shop": "Loja"
+  },
+  "alerts": {
+    "negativeBalance": "Saldo Negativo",
+    "negativeBalanceDesc": "Seu saldo total está negativo. Revise suas finanças.",
+    "cardNearLimit": "Cartão Perto do Limite",
+    "upcomingInstallment": "Parcela Próxima",
+    "unusualSpending": "Gastos Acima da Média",
+    "unusualSpendingDesc": "Seus gastos este mês estão 50% acima da média."
   },
   "dataTable": {
     "search": "Buscar...",
