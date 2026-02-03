@@ -2903,5 +2903,83 @@
   },
   "dashboard": {
     "balanceEvolution": "Evolução do Saldo (30 dias)"
+  },
+  "reports": {
+    "title": "Relatórios",
+    "cashFlow": "Fluxo de Caixa",
+    "comparison": "Comparativo",
+    "overview": "Visão Geral",
+    "categories": "Categorias",
+    "suppliers": "Fornecedores",
+    "accounts": "Contas",
+    "compare": "Comparar",
+    "export": "Exportar",
+    "filters": "Filtros",
+    "period": {
+      "currentMonth": "Mês atual",
+      "last30Days": "Últimos 30 dias",
+      "last90Days": "Últimos 90 dias",
+      "lastYear": "Último ano",
+      "custom": "Personalizado"
+    },
+    "summary": {
+      "income": "Entradas",
+      "expenses": "Saídas",
+      "netResult": "Resultado Líquido",
+      "dailyAvg": "Média diária de gasto",
+      "projection": "Projeção fim do mês"
+    },
+    "charts": {
+      "cashFlowTimeline": "Fluxo de Caixa no Tempo",
+      "incomeVsExpenses": "Entradas vs Saídas",
+      "topCategories": "Top Categorias de Despesas",
+      "topSuppliers": "Top Fornecedores / Destinos"
+    },
+    "tables": {
+      "byCategory": "Análise por Categoria",
+      "bySupplier": "Análise por Fornecedor",
+      "byAccount": "Análise por Conta / Cartão"
+    },
+    "comparison": {
+      "title": "Comparativo de Períodos",
+      "vsLastYear": "vs Ano Passado",
+      "vsPreviousMonth": "vs Mês Anterior",
+      "customComparison": "Personalizado",
+      "income": "Receitas",
+      "expenses": "Despesas",
+      "result": "Resultado",
+      "previous": "Anterior"
+    },
+    "drilldown": {
+      "viewTransactions": "Ver transações",
+      "allIncome": "Todas as Entradas",
+      "allExpenses": "Todas as Saídas"
+    },
+    "empty": {
+      "noData": "Sem dados no período selecionado.",
+      "noCategories": "Sem dados de despesas no período selecionado.",
+      "noSuppliers": "Sem dados de fornecedores no período selecionado."
+    },
+    "filters": {
+      "advanced": "Filtros Avançados",
+      "reset": "Limpar",
+      "apply": "Aplicar Filtros",
+      "cancel": "Cancelar",
+      "transactionType": "Tipo de Transação",
+      "all": "Todos",
+      "onlyIncome": "Apenas Entradas",
+      "onlyExpenses": "Apenas Saídas",
+      "wallets": "Contas",
+      "cards": "Cartões",
+      "categoriesFilter": "Categorias",
+      "suppliersFilter": "Fornecedores",
+      "textSearch": "Busca por texto",
+      "minAmount": "Valor mínimo",
+      "maxAmount": "Valor máximo",
+      "includeFuture": "Incluir lançamentos futuros",
+      "includeFutureDesc": "Transações com data após hoje",
+      "includeTransfers": "Incluir transferências",
+      "includeTransfersDesc": "Movimentações internas entre contas"
+    }
   }
 }
