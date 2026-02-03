@@ -67,8 +67,19 @@ interface ImportBankLinesParams {
     description: string;
     counterparty?: string;
     amount: number;
+    fingerprint?: string;
   }>;
   sourceFileName?: string;
+}
+
+// Generate fingerprint for deduplication
+function generateFingerprint(date: string, amount: number, description: string): string {
+  const normalizedDesc = description
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '')
+    .slice(0, 30);
+  
+  return `${date}|${amount.toFixed(2)}|${normalizedDesc}`;
 }
 
 // Similarity calculation using Levenshtein distance
@@ -297,26 +308,61 @@ export const useReconciliation = (walletId?: string) => {
     return suggestions.sort((a, b) => b.confidence - a.confidence).slice(0, 5);
   };
 
-  // Import bank lines from parsed data
-  const importBankLines = async ({ walletId, lines, sourceFileName }: ImportBankLinesParams): Promise<boolean> => {
+  // Get existing fingerprints for deduplication
+  const getExistingFingerprints = useCallback(async (targetWalletId: string): Promise<Set<string>> => {
+    if (!user) return new Set();
+
+    try {
+      const { data, error } = await supabase
+        .from('bank_statement_lines')
+        .select('transaction_date, amount, description')
+        .eq('user_id', user.id)
+        .eq('wallet_id', targetWalletId);
+
+      if (error) throw error;
+
+      const fingerprints = new Set<string>();
+      (data || []).forEach(line => {
+        const fp = generateFingerprint(line.transaction_date, line.amount, line.description);
+        fingerprints.add(fp);
+      });
+
+      return fingerprints;
+    } catch (error) {
+      console.error('Error fetching fingerprints:', error);
+      return new Set();
+    }
+  }, [user]);
+
+  // Import bank lines from parsed data with deduplication
+  const importBankLines = async ({ walletId: targetWalletId, lines, sourceFileName }: ImportBankLinesParams): Promise<boolean> => {
     if (!user) return false;
 
     setImporting(true);
     try {
       const batchId = crypto.randomUUID();
 
-      const insertData = lines.map(line => ({
-        user_id: user.id,
-        wallet_id: walletId,
-        bank_reference: line.bank_reference || null,
-        transaction_date: line.transaction_date,
-        description: line.description,
-        counterparty: line.counterparty || null,
-        amount: line.amount,
-        import_batch_id: batchId,
-        source_file_name: sourceFileName || null,
-        reconciliation_status: 'pending' as const,
-      }));
+      const insertData = lines.map(line => {
+        // Generate fingerprint if not provided
+        const fingerprint = line.fingerprint || generateFingerprint(
+          line.transaction_date, 
+          line.amount, 
+          line.description
+        );
+        
+        return {
+          user_id: user.id,
+          wallet_id: targetWalletId,
+          bank_reference: line.bank_reference || null,
+          transaction_date: line.transaction_date,
+          description: line.description,
+          counterparty: line.counterparty || null,
+          amount: line.amount,
+          import_batch_id: batchId,
+          source_file_name: sourceFileName || null,
+          reconciliation_status: 'pending' as const,
+        };
+      });
 
       const { error } = await supabase
         .from('bank_statement_lines')
@@ -563,6 +609,7 @@ export const useReconciliation = (walletId?: string) => {
     importing,
     stats,
     importBankLines,
+    getExistingFingerprints,
     reconcileWithTransaction,
     createTransactionFromLine,
     ignoreBankLine,

@@ -961,6 +961,9 @@
   "reconciliation": {
     "title": "Conciliação Bancária",
     "subtitle": "Compare o extrato do banco com suas transações",
+    "selectAccount": "Selecione uma conta bancária",
+    "selectAccountHint": "Escolha uma conta para iniciar a conciliação",
+    "importStatement": "Importar Extrato",
     "date": "Data",
     "bankCode": "Código",
     "description": "Descrição",
@@ -996,7 +999,62 @@
     "undoSuccess": "Conciliação desfeita",
     "undoError": "Erro ao desfazer",
     "batchDeleted": "Importação removida",
-    "deleteError": "Erro ao remover"
+    "deleteError": "Erro ao remover",
+    "stats": {
+      "total": "Total",
+      "pending": "Pendentes",
+      "reconciled": "Conciliados",
+      "ignored": "Ignorados",
+      "progress": "Progresso"
+    }
+  },
+  "import": {
+    "wizardTitle": "Importar Extrato CSV",
+    "processing": "Processando...",
+    "dropHere": "Clique ou arraste o arquivo aqui",
+    "csvFormats": "Formatos suportados: CSV, TXT (até 5MB)",
+    "steps": {
+      "upload": "Upload",
+      "mapping": "Mapeamento",
+      "review": "Revisão",
+      "complete": "Concluído"
+    },
+    "tips": {
+      "title": "Dicas:",
+      "encoding": "Use arquivos em UTF-8 para evitar problemas de codificação",
+      "header": "A primeira linha deve conter os nomes das colunas",
+      "formats": "Datas em DD/MM/AAAA ou AAAA-MM-DD são reconhecidas automaticamente"
+    },
+    "errors": {
+      "fileTooLarge": "Arquivo muito grande. Máximo: 5MB",
+      "invalidFormat": "Formato inválido. Use arquivo CSV ou TXT.",
+      "emptyFile": "Arquivo vazio",
+      "noHeaders": "Nenhum cabeçalho encontrado",
+      "noData": "Nenhum dado encontrado no arquivo",
+      "noValidRows": "Nenhuma linha válida após o processamento",
+      "importFailed": "Falha ao importar. Tente novamente."
+    },
+    "mapping": {
+      "instruction": "Mapeie as colunas do seu arquivo para os campos correspondentes:",
+      "preview": "Prévia das primeiras linhas",
+      "confirm": "Confirmar Mapeamento",
+      "missingDate": "Selecione a coluna de Data",
+      "missingDescription": "Selecione a coluna de Descrição",
+      "missingValue": "Selecione a coluna de Valor (ou Entrada/Saída)"
+    },
+    "review": {
+      "newLines": "Novos lançamentos",
+      "duplicates": "Duplicatas ignoradas",
+      "preview": "Prévia dos lançamentos",
+      "noNew": "Nenhum lançamento novo",
+      "allDuplicates": "Todos os lançamentos já foram importados anteriormente.",
+      "import": "Importar {{count}} lançamentos"
+    },
+    "complete": {
+      "title": "Importação Concluída!",
+      "message": "{{count}} lançamentos importados para conciliação.",
+      "goToReconciliation": "Ir para Conciliação"
+    }
   },
   "creditCards": {
     "title": "Cartões",
