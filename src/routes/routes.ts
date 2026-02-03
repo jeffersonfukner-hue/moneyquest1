@@ -29,7 +29,7 @@ export const PUBLIC_ROUTES = {
   REFERRAL_REDIRECT: '/r',
 } as const;
 
-// Authenticated pages (app)
+// Authenticated pages (app) - Gamification removed
 export const APP_ROUTES = {
   DASHBOARD: '/dashboard',
   WALLETS: '/wallets',
@@ -39,9 +39,6 @@ export const APP_ROUTES = {
   PERIOD_COMPARISON: '/period-comparison',
   SCHEDULED: '/scheduled',
   SUPPLIERS: '/suppliers',
-  LEADERBOARD: '/leaderboard',
-  JOURNAL: '/journal',
-  SHOP: '/shop',
   SETTINGS: '/settings',
   SUPPORT: '/support',
   SUPPORT_TICKET: '/support/ticket',
