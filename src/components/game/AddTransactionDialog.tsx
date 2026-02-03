@@ -51,7 +51,7 @@ export interface PrefillData {
 }
 
 // Source type for transaction destination
-type SourceType = 'account' | 'card' | 'loan';
+type SourceType = 'account' | 'card' | 'loan' | 'cash';
 // Payment method for account expenses
 type PaymentMethod = 'debit' | 'pix' | 'credit';
 
@@ -143,12 +143,12 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
   }>({ description: false, amount: false, category: false, wallet: false });
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
 
-  // Validation helpers - wallet not required for card/loan transactions
+  // Validation helpers - wallet not required for card/loan transactions, but required for cash and account
   const errors = {
     description: !description.trim(),
     amount: !amount || parseFloat(amount) <= 0,
     category: !category || category === '__new__',
-    wallet: sourceType !== 'card' && sourceType !== 'loan' && !walletId,
+    wallet: (sourceType === 'account' || sourceType === 'cash') && !walletId,
   };
   const hasErrors = errors.description || errors.amount || errors.category || errors.wallet;
 
@@ -262,6 +262,11 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
     }
   };
 
+  // Get cash wallets
+  const cashWallets = useMemo(() => {
+    return activeWallets.filter(w => w.type === 'cash');
+  }, [activeWallets]);
+
   // Handle source type selection
   const handleSourceTypeSelect = (source: SourceType) => {
     setSourceType(source);
@@ -273,6 +278,11 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
       // For loan, show loan selection step
       setType('EXPENSE');
       setShowLoanSelection(true);
+    } else if (source === 'cash') {
+      // For cash, auto-select the cash wallet if only one exists
+      if (cashWallets.length === 1) {
+        setWalletId(cashWallets[0].id);
+      }
     }
     setCategory('');
   };
@@ -592,7 +602,9 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
                 ? t('transactions.cardExpense', 'Gasto no Cartão')
                 : sourceType === 'loan'
                   ? 'Pagamento de Empréstimo'
-                  : t('transactions.addTransaction')
+                  : sourceType === 'cash'
+                    ? t('transactions.cashTransaction', 'Dinheiro (Espécie)')
+                    : t('transactions.addTransaction')
             }
           </DialogTitle>
         </DialogHeader>
@@ -643,6 +655,20 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
                   <p className="font-medium">Empréstimos</p>
                   <p className="text-xs text-muted-foreground">
                     Pagamento de parcelas
+                  </p>
+                </div>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="h-auto py-4 flex flex-col items-center gap-2 hover:border-green-500 hover:bg-green-500/5"
+                onClick={() => handleSourceTypeSelect('cash')}
+              >
+                <Banknote className="w-8 h-8 text-green-600" />
+                <div className="text-center">
+                  <p className="font-medium">{t('transactions.cash', 'Dinheiro (Espécie)')}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t('transactions.cashDesc', 'Gastos e recebimentos em dinheiro')}
                   </p>
                 </div>
               </Button>
@@ -813,8 +839,8 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
               {t('common.back', 'Voltar')}
             </Button>
 
-            {/* Account flow: show income/expense toggle */}
-            {sourceType === 'account' && (
+            {/* Account or Cash flow: show income/expense toggle */}
+            {(sourceType === 'account' || sourceType === 'cash') && (
               <div className="flex gap-2">
                 <Button
                   type="button"
@@ -848,6 +874,52 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
                   {t('transactions.expense')}
                 </Button>
               </div>
+            )}
+
+            {/* Cash wallet info card when cash is selected */}
+            {sourceType === 'cash' && (
+              <>
+                {cashWallets.length === 0 ? (
+                  <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-amber-700 dark:text-amber-400">
+                          {t('wallets.noCashWallet', 'Nenhuma carteira de dinheiro cadastrada')}
+                        </p>
+                        <p className="text-xs text-amber-600/70 dark:text-amber-500/70 mt-1">
+                          {t('wallets.createCashWalletHint', 'Crie uma carteira de dinheiro para registrar transações em espécie.')}
+                        </p>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="mt-3 border-amber-500/50 text-amber-600 hover:bg-amber-500/10"
+                          onClick={() => {
+                            handleOpenChange(false);
+                            window.location.href = '/wallets/accounts';
+                          }}
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          {t('wallets.createCashWallet', 'Criar Carteira Dinheiro')}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ) : cashWallets.length === 1 ? (
+                  <div className="flex items-center gap-3 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                    <Banknote className="w-5 h-5 text-green-600 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-green-700 dark:text-green-400 truncate">
+                        {cashWallets[0].name}
+                      </p>
+                      <p className="text-xs text-green-600/70 dark:text-green-500/70">
+                        {t('wallets.currentBalance', 'Saldo')}: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: cashWallets[0].currency }).format(cashWallets[0].current_balance)}
+                      </p>
+                    </div>
+                  </div>
+                ) : null}
+              </>
             )}
 
             {/* Payment method selector for account expenses */}
@@ -1178,8 +1250,62 @@ export const AddTransactionDialog = ({ onAdd, open: controlledOpen, onOpenChange
             )}
           </div>
 
-          {/* Wallet selector - only for account transactions, not card */}
-          {sourceType !== 'card' && (
+          {/* Wallet selector - for account transactions */}
+          {sourceType === 'account' && (
+            <div className="space-y-2">
+              <Label className="flex items-center gap-1">
+                {t('wallets.wallet')}
+                <span className="text-destructive">*</span>
+              </Label>
+              <WalletSelector
+                wallets={activeWallets.filter(w => w.type !== 'cash')}
+                selectedWalletId={walletId}
+                onSelect={(id) => {
+                  setWalletId(id);
+                  setTouched(prev => ({ ...prev, wallet: true }));
+                }}
+                onWalletCreated={(wallet) => {
+                  refetchWallets();
+                  setWalletId(wallet.id);
+                }}
+                required
+              />
+              <ValidationMessage 
+                show={(touched.wallet || attemptedSubmit) && errors.wallet}
+                message={t('validation.walletRequired')}
+              />
+            </div>
+          )}
+
+          {/* Cash wallet selector - for cash transactions with multiple cash wallets */}
+          {sourceType === 'cash' && cashWallets.length > 1 && (
+            <div className="space-y-2">
+              <Label className="flex items-center gap-1">
+                {t('wallets.cashWallet', 'Carteira de Dinheiro')}
+                <span className="text-destructive">*</span>
+              </Label>
+              <WalletSelector
+                wallets={cashWallets}
+                selectedWalletId={walletId}
+                onSelect={(id) => {
+                  setWalletId(id);
+                  setTouched(prev => ({ ...prev, wallet: true }));
+                }}
+                onWalletCreated={(wallet) => {
+                  refetchWallets();
+                  setWalletId(wallet.id);
+                }}
+                required
+              />
+              <ValidationMessage 
+                show={(touched.wallet || attemptedSubmit) && errors.wallet}
+                message={t('validation.walletRequired')}
+              />
+            </div>
+          )}
+
+          {/* Wallet selector for loan payments */}
+          {sourceType === 'loan' && (
             <div className="space-y-2">
               <Label className="flex items-center gap-1">
                 {t('wallets.wallet')}
