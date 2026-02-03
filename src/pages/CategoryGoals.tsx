@@ -16,13 +16,10 @@ import { GoalCard } from '@/components/goals/GoalCard';
 import { AddGoalDialog } from '@/components/goals/AddGoalDialog';
 import { GoalsMonthlyReport } from '@/components/goals/GoalsMonthlyReport';
 import { AddTransactionDialog } from '@/components/game/AddTransactionDialog';
-import { AdBanner } from '@/components/ads/AdBanner';
-import { useAdBanner } from '@/hooks/useAdBanner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { ArrowLeft, Target, Plus, Loader2, Lock, PiggyBank, BarChart3, Lightbulb, TrendingUp, TrendingDown, Minus } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 const CategoryGoals = () => {
   const { t } = useTranslation();
@@ -40,7 +37,6 @@ const CategoryGoals = () => {
   const [editingGoal, setEditingGoal] = useState<CategoryGoal | null>(null);
   const [showReport, setShowReport] = useState(false);
   const [showAddTransactionDialog, setShowAddTransactionDialog] = useState(false);
-  const { shouldShowBanner } = useAdBanner();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -100,28 +96,21 @@ const CategoryGoals = () => {
   };
 
   return (
-    <div className={cn(
-      "min-h-screen flex flex-col bg-background",
-      shouldShowBanner ? "pb-[130px]" : "pb-20"
-    )}>
+    <AppShell>
       <SeasonalDecorations />
-      <MobileHeader 
-        onSettingsClick={() => navigate('/settings')} 
-        onProfileClick={() => navigate('/profile')} 
-      />
       
-      <main className="flex-1 container max-w-2xl mx-auto px-4 py-6">
+      <div className="space-y-6">
         <Button
           variant="ghost"
           size="sm"
           onClick={() => navigate('/')}
-          className="mb-4 -ml-2"
+          className="-ml-2"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           {t('common.back')}
         </Button>
 
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
             <Target className="h-6 w-6 text-primary" />
           </div>
@@ -135,7 +124,7 @@ const CategoryGoals = () => {
           <>
             {/* Summary Card */}
             {goals.length > 0 && (
-              <Card className="mb-6 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+              <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3 mb-3">
                     <PiggyBank className="h-5 w-5 text-primary" />
@@ -162,7 +151,7 @@ const CategoryGoals = () => {
             )}
 
             {/* Action Buttons */}
-            <div className="flex gap-2 mb-6">
+            <div className="flex gap-2">
               <Button
                 onClick={() => setShowAddDialog(true)}
                 className="flex-1 min-h-[48px]"
@@ -185,7 +174,7 @@ const CategoryGoals = () => {
 
             {/* Smart Suggestions Section */}
             {!suggestionsLoading && smartSuggestions.length > 0 && (
-              <Card className="mb-6 border-primary/30 bg-gradient-to-br from-primary/5 to-transparent">
+              <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-transparent">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-2 mb-3">
                     <Lightbulb className="h-5 w-5 text-primary" />
@@ -291,24 +280,14 @@ const CategoryGoals = () => {
             </CardContent>
           </Card>
         )}
-      </main>
-
-      <AdBanner />
-
-      <BottomNavigation 
-        activeTab="home" 
-        onTabChange={(tab) => {
-          if (tab !== 'add') navigate('/');
-        }} 
-        onAddClick={() => setShowAddTransactionDialog(true)} 
-      />
+      </div>
 
       <AddTransactionDialog 
         open={showAddTransactionDialog}
         onOpenChange={setShowAddTransactionDialog}
         onAdd={addTransaction}
       />
-    </div>
+    </AppShell>
   );
 };
 
