@@ -39,6 +39,7 @@ export const APP_ROUTES = {
   WALLETS_CHECKS: '/wallets/checks',
   WALLETS_LOANS: '/wallets/loans',
   WALLETS_TRANSFERS: '/wallets/transfers',
+  WALLETS_RECONCILIATION: '/wallets/reconciliation',
   // Other sections
   SCHEDULED: '/scheduled',
   SUPPLIERS: '/suppliers',

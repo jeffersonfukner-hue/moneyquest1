@@ -81,6 +81,7 @@ const LazyDebugI18n = lazy(() => import("./pages/DebugI18n"));
 const LazyDebugAuth = lazy(() => import("./pages/DebugAuth"));
 const LazyDebugSEO = lazy(() => import("./pages/DebugSEO"));
 const LazySuppliers = lazy(() => import("./pages/Suppliers"));
+const LazyReconciliation = lazy(() => import("./pages/ReconciliationPage"));
 // ===== LAZY LOADED - Admin pages =====
 const LazySuperAdminDashboard = lazy(() => import("./pages/admin/SuperAdminDashboard"));
 const LazyUsersManagement = lazy(() => import("./pages/admin/UsersManagement"));
@@ -289,6 +290,16 @@ const App = () => (
                   <Route path="/wallets/:tab" element={
                     <AuthenticatedWrapper>
                       <Suspense fallback={<PageLoader />}><LazyWalletsRouter /></Suspense>
+                    </AuthenticatedWrapper>
+                  } />
+                  <Route path="/wallets/reconciliation" element={
+                    <AuthenticatedWrapper>
+                      <Suspense fallback={<PageLoader />}><LazyReconciliation /></Suspense>
+                    </AuthenticatedWrapper>
+                  } />
+                  <Route path="/wallets/reconciliation/:walletId" element={
+                    <AuthenticatedWrapper>
+                      <Suspense fallback={<PageLoader />}><LazyReconciliation /></Suspense>
                     </AuthenticatedWrapper>
                   } />
                   
