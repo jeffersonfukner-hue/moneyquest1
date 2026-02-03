@@ -2806,5 +2806,39 @@
     "delete": "Excluir",
     "deleteSuccess": "Backup excluído com sucesso!",
     "deleteError": "Erro ao excluir backup"
+  },
+  "sidebar": {
+    "main": "Principal",
+    "features": "Funcionalidades",
+    "gamification": "Gamificação",
+    "dashboard": "Dashboard",
+    "wallets": "Carteiras",
+    "creditCards": "Cartões",
+    "goals": "Metas",
+    "reports": "Relatórios",
+    "scheduled": "Agendados",
+    "loans": "Empréstimos",
+    "suppliers": "Fornecedores",
+    "leaderboard": "Ranking",
+    "journal": "Diário",
+    "shop": "Loja",
+    "aiCoach": "Coach IA",
+    "settings": "Configurações",
+    "support": "Suporte",
+    "profile": "Perfil"
+  },
+  "level": {
+    "title": "Nível"
+  },
+  "dataTable": {
+    "search": "Buscar...",
+    "columns": "Colunas",
+    "visibleColumns": "Colunas visíveis",
+    "clearFilters": "Limpar filtros",
+    "rowsPerPage": "Linhas por página",
+    "page": "Página",
+    "of": "de",
+    "showing": "Mostrando",
+    "noResults": "Nenhum resultado encontrado"
   }
 }

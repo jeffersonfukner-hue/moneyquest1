@@ -8,6 +8,8 @@ import { useTransactions } from '@/hooks/useTransactions';
 import { useAdBanner } from '@/hooks/useAdBanner';
 import { useReferralNotifications } from '@/hooks/useReferralNotifications';
 import { FloatingWhatsAppButton } from '@/components/support/FloatingWhatsAppButton';
+import { DesktopLayout } from '@/components/layout/DesktopLayout';
+import { useIsDesktop } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
 interface AppLayoutProps {
@@ -23,6 +25,8 @@ interface AppLayoutProps {
   showAdBanner?: boolean;
   /** Whether to show the floating WhatsApp button (default: true) */
   showWhatsAppButton?: boolean;
+  /** Whether to use full width on desktop (default: false) */
+  fullWidth?: boolean;
 }
 
 export const AppLayout = ({ 
@@ -33,11 +37,13 @@ export const AppLayout = ({
   showNavigation = true,
   showAdBanner = true,
   showWhatsAppButton = true,
+  fullWidth = false,
 }: AppLayoutProps) => {
   const navigate = useNavigate();
   const { addTransaction } = useTransactions();
   const { shouldShowBanner } = useAdBanner();
   const [showAddTransaction, setShowAddTransaction] = useState(false);
+  const isDesktop = useIsDesktop();
   
   // Listen for referral conversion notifications
   useReferralNotifications();
@@ -47,7 +53,7 @@ export const AppLayout = ({
     if (tab === 'transactions') navigate('/');
   };
 
-  // Calculate bottom padding based on what's visible
+  // Calculate bottom padding based on what's visible (mobile only)
   const getBottomPadding = () => {
     if (showNavigation && showAdBanner && shouldShowBanner) {
       return 'pb-[130px]';
@@ -58,6 +64,24 @@ export const AppLayout = ({
     return '';
   };
 
+  // Desktop: use sidebar + topbar layout
+  if (isDesktop) {
+    return (
+      <DesktopLayout fullWidth={fullWidth} className={className}>
+        {children}
+        
+        {showWhatsAppButton && <FloatingWhatsAppButton />}
+
+        <AddTransactionDialog 
+          open={showAddTransaction} 
+          onOpenChange={setShowAddTransaction}
+          onAdd={addTransaction}
+        />
+      </DesktopLayout>
+    );
+  }
+
+  // Mobile/Tablet: keep current layout
   return (
     <div className={cn("min-h-screen bg-background", getBottomPadding(), className)}>
       {showHeader && (
