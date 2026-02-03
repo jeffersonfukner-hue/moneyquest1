@@ -2000,6 +2000,33 @@ export type Database = {
           },
         ]
       }
+      user_backups: {
+        Row: {
+          backup_data: Json
+          created_at: string
+          file_size: number
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          backup_data: Json
+          created_at?: string
+          file_size?: number
+          id?: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          backup_data?: Json
+          created_at?: string
+          file_size?: number
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_bonuses: {
         Row: {
           amount: number

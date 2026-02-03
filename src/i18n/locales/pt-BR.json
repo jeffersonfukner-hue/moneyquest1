@@ -2780,10 +2780,14 @@
   "backup": {
     "title": "Backup de Dados",
     "subtitle": "Exporte ou importe seus dados financeiros",
-    "export": "Exportar Backup",
-    "import": "Importar Backup",
+    "export": "Baixar Arquivo",
+    "import": "Importar Arquivo",
     "exporting": "Exportando...",
     "importing": "Importando...",
+    "saving": "Salvando...",
+    "saveToSystem": "Salvar Backup na Nuvem",
+    "saveSuccess": "Backup salvo com sucesso!",
+    "saveError": "Erro ao salvar backup",
     "exportSuccess": "Backup exportado com sucesso!",
     "exportError": "Erro ao exportar backup",
     "importSuccess": "Backup importado com sucesso!",
@@ -2792,6 +2796,15 @@
     "fileTooLarge": "Arquivo muito grande (máximo 10MB)",
     "confirmImport": "Confirmar Importação",
     "confirmImportDesc": "Isso irá adicionar os dados do backup à sua conta. Deseja continuar?",
-    "lastBackup": "Último backup"
+    "confirmRestore": "Confirmar Restauração",
+    "confirmRestoreDesc": "Isso irá adicionar os dados deste backup à sua conta. Deseja continuar?",
+    "confirmDelete": "Excluir Backup",
+    "confirmDeleteDesc": "Tem certeza que deseja excluir este backup? Esta ação não pode ser desfeita.",
+    "lastBackup": "Último backup",
+    "savedBackups": "Backups Salvos",
+    "restore": "Restaurar",
+    "delete": "Excluir",
+    "deleteSuccess": "Backup excluído com sucesso!",
+    "deleteError": "Erro ao excluir backup"
   }
 }
