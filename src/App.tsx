@@ -82,6 +82,7 @@ const LazyDebugAuth = lazy(() => import("./pages/DebugAuth"));
 const LazyDebugSEO = lazy(() => import("./pages/DebugSEO"));
 const LazySuppliers = lazy(() => import("./pages/Suppliers"));
 const LazyReconciliation = lazy(() => import("./pages/ReconciliationPage"));
+const LazyMonthlyClosing = lazy(() => import("./pages/MonthlyClosingPage"));
 // ===== LAZY LOADED - Admin pages =====
 const LazySuperAdminDashboard = lazy(() => import("./pages/admin/SuperAdminDashboard"));
 const LazyUsersManagement = lazy(() => import("./pages/admin/UsersManagement"));
@@ -313,6 +314,11 @@ const App = () => (
                   <Route path="/reports" element={
                     <AuthenticatedWrapper>
                       <Suspense fallback={<PageLoader />}><LazyReportsRouter /></Suspense>
+                    </AuthenticatedWrapper>
+                  } />
+                  <Route path="/reports/closing" element={
+                    <AuthenticatedWrapper>
+                      <Suspense fallback={<PageLoader />}><LazyMonthlyClosing /></Suspense>
                     </AuthenticatedWrapper>
                   } />
                   <Route path="/cash-flow" element={<Navigate to="/reports" replace />} />
