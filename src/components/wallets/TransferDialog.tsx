@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
-import { ArrowRight, AlertTriangle, RefreshCw, Plus } from 'lucide-react';
+import { ArrowRight, AlertTriangle, RefreshCw, Plus, Banknote } from 'lucide-react';
 import { format } from 'date-fns';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -18,6 +18,8 @@ import { useCurrency } from '@/contexts/CurrencyContext';
 import { Wallet } from '@/types/wallet';
 import { SupportedCurrency } from '@/types/database';
 import { AddWalletDialog } from './AddWalletDialog';
+import { TransferQuickActions, TransferPreset } from './TransferQuickActions';
+
 const transferSchema = z.object({
   from_wallet_id: z.string().min(1, 'Required'),
   to_wallet_id: z.string().min(1, 'Required'),
@@ -25,37 +27,32 @@ const transferSchema = z.object({
   description: z.string().optional(),
   date: z.date()
 });
+
 type TransferFormData = z.infer<typeof transferSchema>;
+
 interface TransferDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   preselectedWallet?: Wallet;
+  initialPreset?: TransferPreset;
 }
+
 export const TransferDialog = ({
   open,
   onOpenChange,
-  preselectedWallet
+  preselectedWallet,
+  initialPreset
 }: TransferDialogProps) => {
-  const {
-    t
-  } = useTranslation();
-  const {
-    activeWallets,
-    refetch: refetchWallets
-  } = useWallets();
-  const {
-    createTransfer
-  } = useWalletTransfers();
-  const {
-    convertCurrency,
-    getRate
-  } = useExchangeRates();
-  const {
-    formatCurrency
-  } = useCurrency();
+  const { t } = useTranslation();
+  const { activeWallets, refetch: refetchWallets } = useWallets();
+  const { createTransfer } = useWalletTransfers();
+  const { convertCurrency, getRate } = useExchangeRates();
+  const { formatCurrency } = useCurrency();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAddWalletDialog, setShowAddWalletDialog] = useState(false);
   const [amountDisplay, setAmountDisplay] = useState('');
+  const [activePreset, setActivePreset] = useState<TransferPreset | null>(initialPreset || null);
+
   const form = useForm<TransferFormData>({
     resolver: zodResolver(transferSchema),
     defaultValues: {
@@ -67,22 +64,67 @@ export const TransferDialog = ({
     }
   });
 
-  // Reset form when dialog opens with preselected wallet
+  // Find cash wallet and bank wallets
+  const cashWallet = useMemo(() => 
+    activeWallets.find(w => w.type === 'cash') || null
+  , [activeWallets]);
+
+  const bankWallets = useMemo(() => 
+    activeWallets.filter(w => w.type !== 'cash')
+  , [activeWallets]);
+
+  // Reset form when dialog opens with preselected wallet or preset
   useEffect(() => {
-    if (open && preselectedWallet) {
-      form.setValue('from_wallet_id', preselectedWallet.id);
+    if (open) {
+      if (preselectedWallet) {
+        form.setValue('from_wallet_id', preselectedWallet.id);
+      }
+      if (initialPreset) {
+        setActivePreset(initialPreset);
+      }
     }
-  }, [open, preselectedWallet, form]);
+  }, [open, preselectedWallet, initialPreset, form]);
+
+  // Apply preset when changed
+  useEffect(() => {
+    if (!cashWallet) return;
+
+    if (activePreset === 'withdrawal') {
+      // Saque: Banco -> Dinheiro
+      if (bankWallets.length > 0) {
+        form.setValue('from_wallet_id', bankWallets[0].id);
+        form.setValue('to_wallet_id', cashWallet.id);
+        form.setValue('description', t('wallets.presets.withdrawalDescription', 'Saque em dinheiro'));
+      }
+    } else if (activePreset === 'deposit') {
+      // Depósito: Dinheiro -> Banco
+      if (bankWallets.length > 0) {
+        form.setValue('from_wallet_id', cashWallet.id);
+        form.setValue('to_wallet_id', bankWallets[0].id);
+        form.setValue('description', t('wallets.presets.depositDescription', 'Depósito em conta'));
+      }
+    } else if (activePreset === 'transfer') {
+      // Reset for custom transfer
+      form.setValue('from_wallet_id', '');
+      form.setValue('to_wallet_id', '');
+      form.setValue('description', '');
+    }
+  }, [activePreset, cashWallet, bankWallets, form, t]);
+
   const watchFromWallet = form.watch('from_wallet_id');
   const watchToWallet = form.watch('to_wallet_id');
   const watchAmount = form.watch('amount');
+  
   const fromWallet = activeWallets.find(w => w.id === watchFromWallet);
   const toWallet = activeWallets.find(w => w.id === watchToWallet);
   const hasCurrencyMismatch = fromWallet && toWallet && fromWallet.currency !== toWallet.currency;
 
   // Calculate converted amount
-  const convertedAmount = hasCurrencyMismatch && watchAmount > 0 ? convertCurrency(watchAmount, fromWallet.currency, toWallet.currency) : null;
+  const convertedAmount = hasCurrencyMismatch && watchAmount > 0 
+    ? convertCurrency(watchAmount, fromWallet.currency, toWallet.currency) 
+    : null;
   const exchangeRate = hasCurrencyMismatch ? getRate(fromWallet.currency, toWallet.currency) : null;
+
   const formatWalletCurrency = (amount: number, currency: SupportedCurrency) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -90,9 +132,26 @@ export const TransferDialog = ({
       minimumFractionDigits: 2
     }).format(amount);
   };
+
+  // Get available destinations based on selected source
+  const availableDestinations = activeWallets.filter(w => w.id !== watchFromWallet);
+
+  // Get dialog title based on preset
+  const getDialogTitle = () => {
+    if (activePreset === 'withdrawal') {
+      return t('wallets.presets.withdrawalTitle', 'Saque (Banco → Dinheiro)');
+    }
+    if (activePreset === 'deposit') {
+      return t('wallets.presets.depositTitle', 'Depósito (Dinheiro → Banco)');
+    }
+    return t('wallets.transferBetweenAccounts');
+  };
+
   const onSubmit = async (data: TransferFormData) => {
     if (!fromWallet) return;
+
     setIsSubmitting(true);
+
     const transferData: CreateTransferData = {
       from_wallet_id: data.from_wallet_id,
       to_wallet_id: data.to_wallet_id,
@@ -102,44 +161,66 @@ export const TransferDialog = ({
       date: format(data.date, 'yyyy-MM-dd'),
       converted_amount: convertedAmount || undefined
     };
+
     const success = await createTransfer(transferData);
     setIsSubmitting(false);
+
     if (success) {
       form.reset();
       setAmountDisplay('');
+      setActivePreset(null);
       onOpenChange(false);
     }
   };
-  const availableDestinations = activeWallets.filter(w => w.id !== watchFromWallet);
-  return <Dialog open={open} onOpenChange={onOpenChange}>
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            {t('wallets.transferBetweenAccounts')}
+            {activePreset === 'withdrawal' || activePreset === 'deposit' ? (
+              <Banknote className="w-5 h-5 text-amber-500" />
+            ) : null}
+            {getDialogTitle()}
           </DialogTitle>
         </DialogHeader>
+
+        {/* Quick action presets */}
+        <TransferQuickActions
+          activePreset={activePreset}
+          onPresetChange={setActivePreset}
+          cashWallet={cashWallet}
+          bankWallets={bankWallets}
+        />
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {/* From Wallet */}
-            <FormField control={form.control} name="from_wallet_id" render={({
-            field
-          }) => <FormItem>
+            <FormField 
+              control={form.control} 
+              name="from_wallet_id" 
+              render={({ field }) => (
+                <FormItem>
                   <FormLabel>{t('wallets.fromWallet')}</FormLabel>
-                  <Select onValueChange={value => {
-              if (value === '__add_new__') {
-                setShowAddWalletDialog(true);
-              } else {
-                field.onChange(value);
-              }
-            }} value={field.value}>
+                  <Select 
+                    onValueChange={value => {
+                      if (value === '__add_new__') {
+                        setShowAddWalletDialog(true);
+                      } else {
+                        field.onChange(value);
+                      }
+                    }} 
+                    value={field.value}
+                    disabled={activePreset === 'withdrawal' || activePreset === 'deposit'}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder={t('wallets.selectWallet')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {activeWallets.map(wallet => <SelectItem key={wallet.id} value={wallet.id}>
+                      {activeWallets.map(wallet => (
+                        <SelectItem key={wallet.id} value={wallet.id}>
                           <div className="flex items-center gap-2">
                             <span>{wallet.icon}</span>
                             <span>{wallet.name}</span>
@@ -147,7 +228,8 @@ export const TransferDialog = ({
                               ({formatWalletCurrency(wallet.current_balance, wallet.currency)})
                             </span>
                           </div>
-                        </SelectItem>)}
+                        </SelectItem>
+                      ))}
                       <SelectItem value="__add_new__" className="text-primary">
                         <div className="flex items-center gap-2">
                           <Plus className="w-4 h-4" />
@@ -157,30 +239,36 @@ export const TransferDialog = ({
                     </SelectContent>
                   </Select>
                   <FormMessage />
-                </FormItem>} />
-
-            {/* Arrow indicator */}
-            
+                </FormItem>
+              )} 
+            />
 
             {/* To Wallet */}
-            <FormField control={form.control} name="to_wallet_id" render={({
-            field
-          }) => <FormItem>
+            <FormField 
+              control={form.control} 
+              name="to_wallet_id" 
+              render={({ field }) => (
+                <FormItem>
                   <FormLabel>{t('wallets.toWallet')}</FormLabel>
-                  <Select onValueChange={value => {
-              if (value === '__add_new__') {
-                setShowAddWalletDialog(true);
-              } else {
-                field.onChange(value);
-              }
-            }} value={field.value} disabled={!watchFromWallet}>
+                  <Select 
+                    onValueChange={value => {
+                      if (value === '__add_new__') {
+                        setShowAddWalletDialog(true);
+                      } else {
+                        field.onChange(value);
+                      }
+                    }} 
+                    value={field.value} 
+                    disabled={!watchFromWallet || activePreset === 'withdrawal' || activePreset === 'deposit'}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder={t('wallets.selectWallet')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {availableDestinations.map(wallet => <SelectItem key={wallet.id} value={wallet.id}>
+                      {availableDestinations.map(wallet => (
+                        <SelectItem key={wallet.id} value={wallet.id}>
                           <div className="flex items-center gap-2">
                             <span>{wallet.icon}</span>
                             <span>{wallet.name}</span>
@@ -188,7 +276,8 @@ export const TransferDialog = ({
                               ({formatWalletCurrency(wallet.current_balance, wallet.currency)})
                             </span>
                           </div>
-                        </SelectItem>)}
+                        </SelectItem>
+                      ))}
                       <SelectItem value="__add_new__" className="text-primary">
                         <div className="flex items-center gap-2">
                           <Plus className="w-4 h-4" />
@@ -198,63 +287,91 @@ export const TransferDialog = ({
                     </SelectContent>
                   </Select>
                   <FormMessage />
-                </FormItem>} />
+                </FormItem>
+              )} 
+            />
 
             {/* Currency conversion info */}
-            {hasCurrencyMismatch && <div className="p-3 bg-primary/5 border border-primary/20 rounded-md space-y-2">
+            {hasCurrencyMismatch && (
+              <div className="p-3 bg-primary/5 border border-primary/20 rounded-md space-y-2">
                 <div className="flex items-center gap-2 text-sm">
                   <RefreshCw className="h-4 w-4 text-primary" />
                   <span className="font-medium">{t('wallets.currencyConversion')}</span>
                 </div>
                 <div className="text-xs text-muted-foreground space-y-1">
                   <p>1 {fromWallet.currency} = {exchangeRate?.toFixed(4)} {toWallet.currency}</p>
-                  {convertedAmount !== null && watchAmount > 0 && <p className="font-medium text-foreground">
+                  {convertedAmount !== null && watchAmount > 0 && (
+                    <p className="font-medium text-foreground">
                       {formatWalletCurrency(watchAmount, fromWallet.currency)} → {formatWalletCurrency(convertedAmount, toWallet.currency)}
-                    </p>}
+                    </p>
+                  )}
                 </div>
-              </div>}
+              </div>
+            )}
 
             {/* Amount */}
-            <FormField control={form.control} name="amount" render={({
-            field
-          }) => <FormItem>
+            <FormField 
+              control={form.control} 
+              name="amount" 
+              render={({ field }) => (
+                <FormItem>
                   <FormLabel>
                     {t('wallets.transferAmount')}
                     {fromWallet && <span className="text-muted-foreground ml-1">({fromWallet.currency})</span>}
                   </FormLabel>
                   <FormControl>
-                    <Input type="text" inputMode="decimal" placeholder="0.00" value={amountDisplay} onChange={e => {
-                const val = e.target.value.replace(',', '.');
-                if (val === '' || /^\d*\.?\d{0,2}$/.test(val)) {
-                  setAmountDisplay(val);
-                  field.onChange(val === '' ? 0 : parseFloat(val) || 0);
-                }
-              }} />
+                    <Input 
+                      type="text" 
+                      inputMode="decimal" 
+                      placeholder="0.00" 
+                      value={amountDisplay} 
+                      onChange={e => {
+                        const val = e.target.value.replace(',', '.');
+                        if (val === '' || /^\d*\.?\d{0,2}$/.test(val)) {
+                          setAmountDisplay(val);
+                          field.onChange(val === '' ? 0 : parseFloat(val) || 0);
+                        }
+                      }} 
+                    />
                   </FormControl>
                   <FormMessage />
-                </FormItem>} />
+                </FormItem>
+              )} 
+            />
 
             {/* Description */}
-            <FormField control={form.control} name="description" render={({
-            field
-          }) => <FormItem>
+            <FormField 
+              control={form.control} 
+              name="description" 
+              render={({ field }) => (
+                <FormItem>
                   <FormLabel>{t('common.description')} ({t('common.optional')})</FormLabel>
                   <FormControl>
                     <Input placeholder={t('wallets.transferDescriptionPlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
-                </FormItem>} />
+                </FormItem>
+              )} 
+            />
 
             {/* Date */}
-            <FormField control={form.control} name="date" render={({
-            field
-          }) => <FormItem className="flex flex-col">
+            <FormField 
+              control={form.control} 
+              name="date" 
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
                   <FormLabel>{t('common.date')}</FormLabel>
                   <FormControl>
-                    <DatePickerInput value={field.value} onChange={field.onChange} disabled={date => date > new Date()} />
+                    <DatePickerInput 
+                      value={field.value} 
+                      onChange={field.onChange} 
+                      disabled={date => date > new Date()} 
+                    />
                   </FormControl>
                   <FormMessage />
-                </FormItem>} />
+                </FormItem>
+              )} 
+            />
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? t('common.loading') : t('wallets.transfer')}
@@ -263,10 +380,15 @@ export const TransferDialog = ({
         </Form>
 
         {/* Add Wallet Dialog */}
-        <AddWalletDialog open={showAddWalletDialog} onOpenChange={setShowAddWalletDialog} onWalletCreated={() => {
-        refetchWallets();
-        setShowAddWalletDialog(false);
-      }} />
+        <AddWalletDialog 
+          open={showAddWalletDialog} 
+          onOpenChange={setShowAddWalletDialog} 
+          onWalletCreated={() => {
+            refetchWallets();
+            setShowAddWalletDialog(false);
+          }} 
+        />
       </DialogContent>
-    </Dialog>;
+    </Dialog>
+  );
 };

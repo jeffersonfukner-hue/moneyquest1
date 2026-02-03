@@ -1,6 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, Wallet as WalletIcon, ArrowLeft, ArrowLeftRight, Clock, CreditCard, Landmark } from 'lucide-react';
+import { Plus, Wallet as WalletIcon, ArrowLeft, ArrowLeftRight, Clock, CreditCard, Landmark, ArrowDown, ArrowUp, Banknote } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import {
   DndContext,
@@ -32,6 +32,7 @@ import { TransferDialog } from '@/components/wallets/TransferDialog';
 import { ScheduledTransferDialog } from '@/components/wallets/ScheduledTransferDialog';
 import { TransferHistoryCard } from '@/components/wallets/TransferHistoryCard';
 import { ScheduledTransfersCard } from '@/components/wallets/ScheduledTransfersCard';
+import { CashWalletSuggestionBanner } from '@/components/wallets/CashWalletSuggestionBanner';
 import { CreditCardCard } from '@/components/creditCards/CreditCardCard';
 import { AddCreditCardDialog } from '@/components/creditCards/AddCreditCardDialog';
 import { EditCreditCardDialog } from '@/components/creditCards/EditCreditCardDialog';
@@ -43,6 +44,7 @@ import { LoanDetailsPanel } from '@/components/loans/LoanDetailsPanel';
 import { LoanBudgetAlert } from '@/components/loans/LoanBudgetAlert';
 import { Wallet } from '@/types/wallet';
 import { AppShell } from '@/components/layout/AppShell';
+import { TransferPreset } from '@/components/wallets/TransferQuickActions';
 
 interface WalletsPageProps {
   defaultTab?: 'accounts' | 'cards' | 'loans' | 'transfers';
@@ -62,6 +64,7 @@ const WalletsPage = ({ defaultTab = 'accounts' }: WalletsPageProps) => {
   const [showTransferDialog, setShowTransferDialog] = useState(false);
   const [showScheduledDialog, setShowScheduledDialog] = useState(false);
   const [transferFromWallet, setTransferFromWallet] = useState<Wallet | undefined>();
+  const [transferPreset, setTransferPreset] = useState<TransferPreset | undefined>();
   const [editingWallet, setEditingWallet] = useState<Wallet | null>(null);
   const [editingCard, setEditingCard] = useState<CreditCardType | null>(null);
   const [editingLoan, setEditingLoan] = useState<Loan | null>(null);
@@ -80,8 +83,13 @@ const WalletsPage = ({ defaultTab = 'accounts' }: WalletsPageProps) => {
     })
   );
 
-  const handleOpenTransfer = (wallet?: Wallet) => {
+  // Check if user has cash wallet
+  const cashWallet = useMemo(() => activeWallets.find(w => w.type === 'cash'), [activeWallets]);
+  const hasCashWallet = !!cashWallet;
+
+  const handleOpenTransfer = (wallet?: Wallet, preset?: TransferPreset) => {
     setTransferFromWallet(wallet);
+    setTransferPreset(preset);
     setShowTransferDialog(true);
   };
 
@@ -151,6 +159,9 @@ const WalletsPage = ({ defaultTab = 'accounts' }: WalletsPageProps) => {
 
           {/* Accounts Tab */}
           <TabsContent value="accounts" className="space-y-4 mt-4">
+            {/* Cash wallet suggestion banner */}
+            <CashWalletSuggestionBanner onWalletCreated={() => refetchWallets()} />
+
             {/* Action Button */}
             <Button 
               onClick={() => setShowAddDialog(true)} 
@@ -391,6 +402,28 @@ const WalletsPage = ({ defaultTab = 'accounts' }: WalletsPageProps) => {
 
           {/* Transfers Tab */}
           <TabsContent value="transfers" className="space-y-4 mt-4">
+            {/* Quick Cash Actions - Saque/Depósito */}
+            {hasCashWallet && activeWallets.length >= 2 && (
+              <div className="grid grid-cols-2 gap-2">
+                <Button 
+                  onClick={() => handleOpenTransfer(undefined, 'withdrawal')} 
+                  variant="outline"
+                  className="w-full border-amber-500/30 hover:bg-amber-500/10"
+                >
+                  <ArrowDown className="mr-2 h-4 w-4 text-amber-600" />
+                  {t('wallets.presets.withdrawal', 'Saque')}
+                </Button>
+                <Button 
+                  onClick={() => handleOpenTransfer(undefined, 'deposit')} 
+                  variant="outline"
+                  className="w-full border-green-500/30 hover:bg-green-500/10"
+                >
+                  <ArrowUp className="mr-2 h-4 w-4 text-green-600" />
+                  {t('wallets.presets.deposit', 'Depósito')}
+                </Button>
+              </div>
+            )}
+
             {/* Action Buttons */}
             <div className="grid grid-cols-2 gap-2">
               <Button 
@@ -445,6 +478,7 @@ const WalletsPage = ({ defaultTab = 'accounts' }: WalletsPageProps) => {
         open={showTransferDialog}
         onOpenChange={setShowTransferDialog}
         preselectedWallet={transferFromWallet}
+        initialPreset={transferPreset}
       />
 
       <ScheduledTransferDialog
