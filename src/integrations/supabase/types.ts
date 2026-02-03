@@ -239,6 +239,65 @@ export type Database = {
           },
         ]
       }
+      bank_statement_lines: {
+        Row: {
+          amount: number
+          bank_reference: string | null
+          counterparty: string | null
+          created_at: string
+          description: string
+          id: string
+          import_batch_id: string | null
+          imported_at: string
+          reconciliation_status: string
+          source_file_name: string | null
+          transaction_date: string
+          updated_at: string
+          user_id: string
+          wallet_id: string
+        }
+        Insert: {
+          amount: number
+          bank_reference?: string | null
+          counterparty?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          import_batch_id?: string | null
+          imported_at?: string
+          reconciliation_status?: string
+          source_file_name?: string | null
+          transaction_date: string
+          updated_at?: string
+          user_id: string
+          wallet_id: string
+        }
+        Update: {
+          amount?: number
+          bank_reference?: string | null
+          counterparty?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          import_batch_id?: string | null
+          imported_at?: string
+          reconciliation_status?: string
+          source_file_name?: string | null
+          transaction_date?: string
+          updated_at?: string
+          user_id?: string
+          wallet_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bank_statement_lines_wallet_id_fkey"
+            columns: ["wallet_id"]
+            isOneToOne: false
+            referencedRelation: "wallets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       blog_articles_generated: {
         Row: {
           category: string
@@ -1246,6 +1305,60 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reconciliations: {
+        Row: {
+          bank_line_id: string
+          confidence_score: number | null
+          created_at: string
+          id: string
+          match_type: string
+          notes: string | null
+          reconciled_at: string
+          reconciled_by: string | null
+          transaction_id: string | null
+          user_id: string
+        }
+        Insert: {
+          bank_line_id: string
+          confidence_score?: number | null
+          created_at?: string
+          id?: string
+          match_type?: string
+          notes?: string | null
+          reconciled_at?: string
+          reconciled_by?: string | null
+          transaction_id?: string | null
+          user_id: string
+        }
+        Update: {
+          bank_line_id?: string
+          confidence_score?: number | null
+          created_at?: string
+          id?: string
+          match_type?: string
+          notes?: string | null
+          reconciled_at?: string
+          reconciled_by?: string | null
+          transaction_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reconciliations_bank_line_id_fkey"
+            columns: ["bank_line_id"]
+            isOneToOne: false
+            referencedRelation: "bank_statement_lines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reconciliations_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
             referencedColumns: ["id"]
           },
         ]
