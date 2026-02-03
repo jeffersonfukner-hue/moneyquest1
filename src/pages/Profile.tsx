@@ -130,23 +130,8 @@ const Profile = () => {
 
   return (
     <AppShell>
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border safe-area-top">
-        <div className="flex items-center h-14 px-4 max-w-md mx-auto">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={() => navigate(-1)}
-            className="min-h-[44px] min-w-[44px]"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="font-display font-bold text-lg text-foreground ml-2">
-            {t('profile.title')}
-          </h1>
-        </div>
-      </header>
-
-      <main className="px-4 py-6 max-w-md mx-auto space-y-6">
+      {/* Profile content - max-w-3xl for forms on desktop, centered */}
+      <div className="space-y-6 max-w-3xl mx-auto">
         {/* Avatar Section */}
         <Card>
           <CardHeader>
@@ -255,7 +240,7 @@ const Profile = () => {
           <Check className="w-4 h-4 mr-2" />
           {saving ? t('common.saving') : t('profile.saveChanges')}
         </Button>
-      </main>
+      </div>
     </AppShell>
   );
 };
