@@ -484,15 +484,22 @@
   /* RESPONSIVE CONTAINERS    */
   /* ======================== */
   
-  /* Mobile-first content container - expands on desktop */
+  /* Mobile-first content container - expands on tablet and desktop */
   .content-container {
     @apply px-4 py-3 mx-auto;
-    max-width: 28rem; /* max-w-md */
+    max-width: 28rem; /* max-w-md - mobile */
+  }
+
+  @media (min-width: 768px) {
+    .content-container {
+      max-width: 56rem; /* max-w-3xl - tablet */
+      @apply px-5;
+    }
   }
 
   @media (min-width: 1024px) {
     .content-container {
-      max-width: 80rem; /* max-w-7xl */
+      max-width: 80rem; /* max-w-7xl - desktop */
       @apply px-6;
     }
   }
