@@ -1,6 +1,5 @@
 import { ReactNode, useState, useEffect } from 'react';
 import { useBreakpoint, Breakpoint } from '@/hooks/use-mobile';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useGlobalHotkeys } from '@/hooks/useGlobalHotkeys';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { AppSidebar } from './AppSidebar';
@@ -30,32 +29,23 @@ export function AppShell({
   fullWidth = false,
 }: AppShellProps) {
   const breakpoint = useBreakpoint();
-  
-  // Persisted collapsed state for desktop/tablet
-  const [isCollapsed, setIsCollapsed] = useLocalStorage(
-    'mq.sidebar.collapsed',
-    breakpoint === 'tablet' // Tablet starts collapsed by default
-  );
-  
+
+  // Collapsed state is SESSION-ONLY (never persisted).
+  // Default: expanded on desktop/tablet. User can collapse temporarily.
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
   // Mobile drawer state (never persisted)
   const [mobileOpen, setMobileOpen] = useState(false);
 
   // Register global hotkeys (only on desktop)
   useGlobalHotkeys();
 
-  // Sync collapsed state when breakpoint changes
+  // Reset behavior:
+  // - On every breakpoint change, sidebar returns expanded (no persistence)
+  // - Mobile drawer starts closed
   useEffect(() => {
-    if (breakpoint === 'tablet' && !isCollapsed) {
-      // When transitioning to tablet, collapse sidebar
-      setIsCollapsed(true);
-    }
-  }, [breakpoint, isCollapsed, setIsCollapsed]);
-
-  // Mobile: always start with drawer closed on breakpoint change
-  useEffect(() => {
-    if (breakpoint === 'mobile') {
-      setMobileOpen(false);
-    }
+    setIsCollapsed(false);
+    if (breakpoint === 'mobile') setMobileOpen(false);
   }, [breakpoint]);
 
   // Determine sidebar open state based on breakpoint
@@ -73,7 +63,7 @@ export function AppShell({
 
   return (
     <SidebarProvider 
-      defaultOpen={breakpoint === 'desktop'}
+      defaultOpen={breakpoint !== 'mobile'}
       open={sidebarOpen}
       onOpenChange={handleOpenChange}
     >
