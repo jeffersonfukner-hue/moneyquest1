@@ -124,6 +124,7 @@ export const ReportsFiltersPanel = ({
       maxAmount: null,
       includeFuture: false,
       includeTransfers: false,
+      includeAdjustments: true,
     };
     setLocalFilters(resetFilters);
     onFiltersChange(resetFilters);
@@ -392,6 +393,16 @@ export const ReportsFiltersPanel = ({
                 <Switch
                   checked={localFilters.includeTransfers}
                   onCheckedChange={(checked) => setLocalFilters(prev => ({ ...prev, includeTransfers: checked }))}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label className="text-sm">Incluir ajustes de caixa</Label>
+                  <p className="text-xs text-muted-foreground">Correções de saldo em dinheiro</p>
+                </div>
+                <Switch
+                  checked={localFilters.includeAdjustments}
+                  onCheckedChange={(checked) => setLocalFilters(prev => ({ ...prev, includeAdjustments: checked }))}
                 />
               </div>
             </div>

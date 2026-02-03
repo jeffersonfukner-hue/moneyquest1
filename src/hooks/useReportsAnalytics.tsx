@@ -37,6 +37,7 @@ export interface ReportFilters {
   maxAmount: number | null;
   includeFuture: boolean;
   includeTransfers: boolean;
+  includeAdjustments: boolean;
 }
 
 export interface CategoryAnalysis {
@@ -102,6 +103,7 @@ export interface ComparisonData {
 }
 
 const TRANSFER_SUBTYPES = ['transfer_out', 'transfer_in', 'card_payment'];
+const ADJUSTMENT_SUBTYPES = ['cash_adjustment'];
 
 export const useReportsAnalytics = (
   transactions: Transaction[],
@@ -130,6 +132,11 @@ export const useReportsAnalytics = (
       
       // Exclude transfers by default (internal movements)
       if (!filters.includeTransfers && tx.transaction_subtype && TRANSFER_SUBTYPES.includes(tx.transaction_subtype)) {
+        return false;
+      }
+      
+      // Exclude cash adjustments if filter is off
+      if (!filters.includeAdjustments && tx.transaction_subtype && ADJUSTMENT_SUBTYPES.includes(tx.transaction_subtype)) {
         return false;
       }
       
@@ -617,6 +624,7 @@ export const getDefaultFilters = (): ReportFilters => {
     maxAmount: null,
     includeFuture: false,
     includeTransfers: false,
+    includeAdjustments: true, // Include cash adjustments by default
   };
 };
 
