@@ -1,96 +1,61 @@
 
-# Plano: Mover Transferências para Coluna ENTRADA em Azul
 
-## ✅ Validação Concluída
+# Plano: Implementar Busca Funcional de Transações
 
-### Estrutura de Dados Confirmada no Código
+## Problema
 
-| Campo | Linha | Valor |
-|-------|-------|-------|
-| `type` | 44 | `'INCOME' \| 'EXPENSE' \| 'TRANSFER'` ✅ |
-| `isTransfer` | 51 | `boolean` ✅ |
-| Mapeamento | 135 | `type: 'TRANSFER' as const` ✅ |
+A busca global no `DesktopTopbar` é apenas visual - não filtra dados. O código está marcado como "TODO: implement full search".
 
-As transferências vindas de `wallet_transfers` são corretamente mapeadas com `type: 'TRANSFER'` e `isTransfer: true`.
+## Solução Proposta
 
-### Cálculo do Saldo (já correto - sem alteração)
+Implementar busca funcional que:
+1. Filtra transações por descrição, categoria, fornecedor
+2. Mostra resultados em tempo real no modal
+3. Permite clicar para navegar até a transação
 
-Linhas 177-182: O cálculo já ignora transferências:
-```typescript
-if (entry.type !== 'TRANSFER') {
-  balance += entry.type === 'INCOME' ? entry.amount : -entry.amount;
-}
+## Alterações Necessárias
+
+### Arquivo 1: `src/components/layout/DesktopTopbar.tsx`
+
+- Adicionar estado para termo de busca
+- Integrar com `useTransactions()` para buscar dados
+- Renderizar lista de resultados filtrados
+- Navegação ao clicar no resultado
+
+### Arquivo 2: Novo componente `src/components/search/GlobalSearchModal.tsx`
+
+Componente dedicado para a busca global com:
+- Input com debounce (300ms)
+- Filtro por descrição, categoria, fornecedor
+- Lista de resultados com destaque do termo buscado
+- Navegação via teclado (setas + Enter)
+- Limite de 10 resultados para performance
+
+## Detalhes Técnicos
+
+```text
+Lógica de Filtro:
+- Converte termo para lowercase
+- Busca em: description, category, supplier
+- Ordena por data (mais recente primeiro)
+- Limita a 10 resultados
+
+Estrutura do Resultado:
+- Descrição (destacando match)
+- Categoria + Data
+- Valor formatado
+- Ícone de tipo (receita/despesa)
 ```
 
-### Problema Visual Atual
+## Fluxo de Uso
 
-Linhas 383-394: Transferências aparecem na coluna **SAÍDA** com `text-primary`.
+1. Usuário clica na busca ou pressiona `/` ou `⌘K`
+2. Modal abre com input focado
+3. Ao digitar, resultados aparecem instantaneamente
+4. Clicar em resultado navega para `/transactions?highlight={id}`
+5. ESC ou clicar fora fecha o modal
 
----
+## Resultado Esperado
 
-## Alteração a Implementar
+Buscar "APORTE INICIAL" mostrará a transação de Janeiro/2025, permitindo navegação direta.
 
-**Arquivo:** `src/components/game/CashFlowTransactionTable.tsx`
-
-**Linhas 374-395** - Mover TRANSFER para coluna ENTRADA em azul:
-
-```typescript
-// COLUNA ENTRADA (linhas 374-382)
-<TableCell className="text-right">
-  {entry.type === 'INCOME' ? (
-    <span className="text-emerald-600 dark:text-emerald-400 font-medium text-sm tabular-nums">
-      {formatMoney(entry.amount, displayCurrency)}
-    </span>
-  ) : entry.type === 'TRANSFER' ? (
-    <span className="text-blue-500 dark:text-blue-400 font-medium text-sm tabular-nums">
-      {formatMoney(entry.amount, displayCurrency)}
-    </span>
-  ) : (
-    <span className="text-muted-foreground text-sm">-</span>
-  )}
-</TableCell>
-
-// COLUNA SAÍDA (linhas 383-395) - remover TRANSFER
-<TableCell className="text-right">
-  {entry.type === 'EXPENSE' ? (
-    <span className="text-red-600 dark:text-red-400 font-medium text-sm tabular-nums">
-      {formatMoney(entry.amount, displayCurrency)}
-    </span>
-  ) : (
-    <span className="text-muted-foreground text-sm">-</span>
-  )}
-</TableCell>
-```
-
----
-
-## Resumo das Mudanças
-
-| Aspecto | Antes | Depois |
-|---------|-------|--------|
-| Transferência na coluna ENTRADA | ❌ Não | ✅ Sim (azul) |
-| Transferência na coluna SAÍDA | ✅ Sim | ❌ Não |
-| Cor da transferência | `text-primary` | `text-blue-500` |
-| Cálculo do saldo | Ignora TRANSFER | Sem alteração |
-
----
-
-## Resultado Visual Esperado
-
-| Descrição | Entrada | Saída | Saldo |
-|-----------|---------|-------|-------|
-| Salário | R$ 5.000 (verde) | - | R$ 5.000 |
-| **Transferência** | **R$ 500 (azul)** | **-** | R$ 5.000 (sem alteração) |
-| Mercado | - | R$ 200 (vermelho) | R$ 4.800 |
-
----
-
-## Validação Pós-Implementação
-
-1. Abrir modo Tabela em `/transactions`
-2. Confirmar que transferências aparecem:
-   - Na coluna ENTRADA
-   - Com cor azul (`text-blue-500`)
-   - Com "-" na coluna SAÍDA
-3. Confirmar que o saldo NÃO muda ao passar por uma transferência
-4. Comparar Fevereiro e Março com modo Card - saldos devem ser idênticos
