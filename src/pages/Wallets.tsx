@@ -34,6 +34,7 @@ import { TransferHistoryCard } from '@/components/wallets/TransferHistoryCard';
 import { ScheduledTransfersCard } from '@/components/wallets/ScheduledTransfersCard';
 import { CashWalletSuggestionBanner } from '@/components/wallets/CashWalletSuggestionBanner';
 import { CashAdjustmentDialog } from '@/components/wallets/CashAdjustmentDialog';
+import { DeleteWalletDialog } from '@/components/wallets/DeleteWalletDialog';
 import { CreditCardCard } from '@/components/creditCards/CreditCardCard';
 import { AddCreditCardDialog } from '@/components/creditCards/AddCreditCardDialog';
 import { EditCreditCardDialog } from '@/components/creditCards/EditCreditCardDialog';
@@ -54,7 +55,7 @@ interface WalletsPageProps {
 const WalletsPage = ({ defaultTab = 'accounts' }: WalletsPageProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { activeWallets, inactiveWallets, wallets, deleteWallet, reactivateWallet, reorderWallets, loading, refetch: refetchWallets } = useWallets();
+  const { activeWallets, inactiveWallets, wallets, deleteWallet, permanentlyDeleteWallet, reactivateWallet, reorderWallets, loading, refetch: refetchWallets } = useWallets();
   const { creditCards, addCreditCard, updateCreditCard, deleteCreditCard, loading: cardsLoading } = useCreditCards();
   const { loans, activeLoans, paidLoans, addLoan, updateLoan, deleteLoan, payInstallment, prepayInstallments, payOffLoan, loading: loansLoading, totalSaldoDevedor, totalParcelasMensais } = useLoans();
   const { updateTransaction, deleteTransaction } = useTransactions();
@@ -73,6 +74,7 @@ const WalletsPage = ({ defaultTab = 'accounts' }: WalletsPageProps) => {
   const [viewingInstallmentsLoan, setViewingInstallmentsLoan] = useState<Loan | null>(null);
   const [viewingDetailsLoan, setViewingDetailsLoan] = useState<Loan | null>(null);
   const [adjustingWallet, setAdjustingWallet] = useState<Wallet | null>(null);
+  const [deletingWallet, setDeletingWallet] = useState<Wallet | null>(null);
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -100,6 +102,10 @@ const WalletsPage = ({ defaultTab = 'accounts' }: WalletsPageProps) => {
     } else {
       await reactivateWallet(wallet.id);
     }
+  };
+
+  const handlePermanentDelete = async (walletId: string) => {
+    await permanentlyDeleteWallet(walletId);
   };
 
   const handleDragEnd = useCallback(async (event: DragEndEvent) => {
@@ -213,6 +219,7 @@ const WalletsPage = ({ defaultTab = 'accounts' }: WalletsPageProps) => {
                             onToggleActive={handleToggleActive}
                             onTransfer={handleOpenTransfer}
                             onAdjust={wallet.type === 'cash' ? setAdjustingWallet : undefined}
+                            onDelete={setDeletingWallet}
                           />
                         ))}
                       </SortableContext>
@@ -236,6 +243,7 @@ const WalletsPage = ({ defaultTab = 'accounts' }: WalletsPageProps) => {
                       onEdit={setEditingWallet}
                       onToggleActive={handleToggleActive}
                       onTransfer={handleOpenTransfer}
+                      onDelete={setDeletingWallet}
                     />
                   ))
                 )}
@@ -541,6 +549,14 @@ const WalletsPage = ({ defaultTab = 'accounts' }: WalletsPageProps) => {
           wallet={adjustingWallet}
         />
       )}
+
+      {/* Delete Wallet Dialog */}
+      <DeleteWalletDialog
+        wallet={deletingWallet}
+        open={!!deletingWallet}
+        onOpenChange={(open) => !open && setDeletingWallet(null)}
+        onConfirm={handlePermanentDelete}
+      />
     </AppShell>
   );
 };
