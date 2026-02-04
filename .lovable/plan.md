@@ -1,123 +1,136 @@
 
 
-# Correção: Running Balance Inconsistente ao Mudar Ordenação
+# Correção: Saldo Corrido Deve Seguir a Ordem Visual da Tabela
 
 ## Problema Identificado
 
-No arquivo `CashFlowTransactionTable.tsx` (linhas 170-172), o cálculo do `balanceMap` ordena apenas por `date`:
+O código atual (linhas 170-205) usa uma abordagem incorreta:
 
 ```typescript
-const byDate = [...unifiedEntries].sort(
-  (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-);
-```
+// 1. Calcula balanceMap com ordenação cronológica FIXA
+const byDate = [...unifiedEntries].sort((a, b) => {...}); // sempre date ASC
+balanceMap.set(entry.id, balance);
 
-Quando existem múltiplas transações no **mesmo dia**, a ordem entre elas não é determinística. Isso causa:
-- Saldo corrido diferente ao alternar ASC/DESC
-- Valores inconsistentes com o Dashboard
-
-## Solução
-
-Adicionar **tie-breakers estáveis** na ordenação do `balanceMap` e incluir o campo `created_at` na interface `CashFlowEntry`.
-
-## Alterações
-
-### Arquivo: `src/components/game/CashFlowTransactionTable.tsx`
-
-#### 1. Atualizar interface `CashFlowEntry` (linhas 38-54)
-
-Adicionar campo `created_at`:
-
-```typescript
-interface CashFlowEntry {
-  id: string;
-  date: string;
-  created_at: string;  // ADICIONAR
-  description: string;
-  category?: string;
-  // ... resto igual
-}
-```
-
-#### 2. Atualizar conversão de transações (linhas 109-122)
-
-Incluir `created_at` do objeto original:
-
-```typescript
-const txEntries: CashFlowEntry[] = transactions.map(tx => ({
-  id: tx.id,
-  date: tx.date,
-  created_at: tx.created_at,  // ADICIONAR
-  description: tx.description,
-  // ... resto igual
+// 2. Aplica o mapa aos sortedEntries (ordenados pelo usuário)
+return sortedEntries.map(entry => ({
+  ...entry,
+  runningBalance: balanceMap.get(entry.id) || 0, // ❌ Reutiliza valor fixo por ID
 }));
 ```
 
-#### 3. Atualizar conversão de transferências (linhas 131-142)
+**Resultado:** Quando o usuário inverte a ordenação, as linhas mudam de posição mas cada uma mantém o saldo calculado na ordem cronológica. Uma entrada de +500 no final (DESC) mostra o saldo como se estivesse no início (ASC).
 
-Incluir `created_at` do objeto original:
+## Comportamento Esperado
+
+| Ordem ASC (antigo→novo) | Saldo |
+|------------------------|-------|
+| 24/01 +120 | 20.802,96 |
+| 30/01 +140 | 20.942,96 |
+| 30/01 +500 | 21.442,96 |
+
+| Ordem DESC (novo→antigo) | Saldo |
+|--------------------------|-------|
+| 30/01 +500 | 500,00 |
+| 30/01 +140 | 640,00 |
+| 24/01 +120 | 760,00 |
+
+O saldo de cada linha depende da **posição visual na tabela**, não do ID.
+
+## Solução
+
+Calcular o saldo **sempre na ordem exibida** (após aplicar filtros e ordenação do usuário):
 
 ```typescript
-return {
-  id: t.id,
-  date: t.date,
-  created_at: t.created_at,  // ADICIONAR
-  description: t.description || `${fromName} → ${toName}`,
-  // ... resto igual
-};
+const entriesWithBalance = useMemo(() => {
+  // Calcular saldo na ordem visual (sortedEntries já está na ordem do usuário)
+  let balance = 0;
+  
+  return sortedEntries.map(entry => {
+    // Transferências não afetam saldo consolidado
+    if (entry.type !== 'TRANSFER') {
+      balance += entry.type === 'INCOME' ? entry.amount : -entry.amount;
+    }
+    return {
+      ...entry,
+      runningBalance: balance,
+    };
+  });
+}, [sortedEntries]); // Recalcula quando sortedEntries muda (inclui mudança de ordenação)
 ```
 
-#### 4. Corrigir ordenação para cálculo do balanceMap (linhas 170-172)
+## Alteração
 
-Substituir a ordenação simples por uma com tie-breakers:
+### Arquivo: `src/components/game/CashFlowTransactionTable.tsx`
+
+**Substituir linhas 170-205:**
 
 ```typescript
-// ANTES:
-const byDate = [...unifiedEntries].sort(
-  (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-);
+// ANTES (ordenação fixa + mapa por ID):
+const entriesWithBalance = useMemo(() => {
+  const byDate = [...unifiedEntries].sort((a, b) => {
+    // ordenação cronológica fixa...
+  });
+  
+  let balance = 0;
+  const balanceMap = new Map<string, number>();
+  
+  byDate.forEach(entry => {
+    if (entry.type !== 'TRANSFER') {
+      balance += entry.type === 'INCOME' ? entry.amount : -entry.amount;
+    }
+    balanceMap.set(entry.id, balance);
+  });
 
-// DEPOIS:
-const byDate = [...unifiedEntries].sort((a, b) => {
-  // 1. Primeiro: ordenar por data
-  const dateCompare = new Date(a.date).getTime() - new Date(b.date).getTime();
-  if (dateCompare !== 0) return dateCompare;
+  return sortedEntries.map(entry => ({
+    ...entry,
+    runningBalance: balanceMap.get(entry.id) || 0,
+  }));
+}, [unifiedEntries, sortedEntries]);
+
+// DEPOIS (cálculo direto na ordem visual):
+const entriesWithBalance = useMemo(() => {
+  // Calcular saldo corrido seguindo a ordem visual da tabela (de cima para baixo)
+  // Recalcula automaticamente quando sortedEntries muda (inclui mudanças de ordenação/filtro)
+  let balance = 0;
   
-  // 2. Segundo: ordenar por created_at (timestamp de criação)
-  const aCreated = a.created_at ? new Date(a.created_at).getTime() : 0;
-  const bCreated = b.created_at ? new Date(b.created_at).getTime() : 0;
-  const createdCompare = aCreated - bCreated;
-  if (createdCompare !== 0) return createdCompare;
-  
-  // 3. Terceiro: ordenar por ID (estabilidade garantida)
-  return a.id.localeCompare(b.id);
-});
+  return sortedEntries.map(entry => {
+    // Transferências não afetam saldo consolidado (movimento interno)
+    if (entry.type !== 'TRANSFER') {
+      balance += entry.type === 'INCOME' ? entry.amount : -entry.amount;
+    }
+    return {
+      ...entry,
+      runningBalance: balance,
+    };
+  });
+}, [sortedEntries]);
 ```
 
-## Resumo das Mudanças
+## Regras Garantidas
 
-| Local | Alteração |
-|-------|-----------|
-| Interface `CashFlowEntry` | +1 campo: `created_at: string` |
-| Conversão de transactions | +1 linha: `created_at: tx.created_at` |
-| Conversão de transfers | +1 linha: `created_at: t.created_at` |
-| Ordenação do balanceMap | Substituir por ordenação com 3 critérios |
-
-## Resultado Esperado
-
-| Situação | Antes | Depois |
-|----------|-------|--------|
-| Ordenação ASC | Saldo X | Saldo X |
-| Ordenação DESC | Saldo Y (diferente!) | Saldo X (igual!) |
-| Múltiplas tx no mesmo dia | Ordem aleatória | Ordem por criação → id |
+| Regra | Implementação |
+|-------|---------------|
+| Saldo segue ordem visual | `sortedEntries.map()` percorre na ordem exibida |
+| Mudou ordenação? Recalcula | `useMemo([sortedEntries])` reage a mudanças de sort |
+| Mudou filtro? Recalcula | `sortedEntries` depende de `unifiedEntries` que depende de `transactions` |
+| Sem cache por ID | Não usa `balanceMap.get(entry.id)` |
 
 ## Validação
 
-1. Criar 3+ transações no mesmo dia
-2. Abrir modo Tabela (`/transactions`)
-3. Alternar entre ordenação ASC e DESC
-4. Confirmar que:
-   - O saldo de cada linha **permanece o mesmo**
-   - O saldo final bate com o Dashboard
-   - A ordem das transações no mesmo dia é consistente
+1. Criar transações no mesmo mês:
+   - 24/01 +120
+   - 30/01 +140  
+   - 30/01 +500
+
+2. Ordenar ASC (antigo→novo):
+   - 24/01: 120
+   - 30/01: 260 
+   - 30/01: 760
+
+3. Ordenar DESC (novo→antigo):
+   - 30/01 +500: 500
+   - 30/01 +140: 640
+   - 24/01 +120: 760
+
+4. Confirmar que o saldo final (última linha) é igual em ambas as ordenações
 
