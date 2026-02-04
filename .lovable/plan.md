@@ -1,208 +1,150 @@
 
-# Plano: Edição e Exclusão de Transações no Drill-down
 
-## Problema Identificado
+# Plano: Layout de Fluxo de Caixa para Desktop
 
-Atualmente, ao clicar em uma transação no painel **"Ver todas"** (`TransactionDrilldown`), nada acontece. O usuário precisa poder:
-1. **Editar** a transação (reaproveitando o `EditTransactionDialog` existente)
-2. **Excluir** a transação com confirmação
-3. Ver **confirmação antes de salvar**
-4. Ver **vínculos** da transação antes de excluir (cartão de crédito, fatura, etc.)
+## Situação Atual
 
----
+A lista de transações (`TransactionsList`) usa um layout de **cards agrupados por mês**, otimizado para mobile. No desktop, esse layout não aproveita bem o espaço horizontal disponível.
 
-## Análise dos Vínculos Possíveis
+Já existe o componente `TransactionTable.tsx` com layout estilo **fluxo de caixa contábil**:
 
-Uma transação pode ter os seguintes vínculos:
-
-| Campo | Vínculo | Descrição |
-|-------|---------|-----------|
-| `credit_card_id` | Cartão de Crédito | Transação lançada no cartão |
-| `invoice_id` | Fatura | Transação pertence a uma fatura |
-| `wallet_id` | Carteira | Conta/carteira vinculada |
-| `has_items` | Itens Detalhados | Tem breakdown de itens (premium) |
+| Data | Descrição | Categoria | Carteira | Entrada | Saída | Saldo |
+|------|-----------|-----------|----------|---------|-------|-------|
+| 15/01| Mercado   | 🛒 Alim.  | 🏦 BB    | -       |R$ 150 |R$ 850 |
 
 ---
 
 ## Solução Proposta
 
-### 1. Tornar linhas clicáveis no TransactionDrilldown
+Criar uma visualização **híbrida** que:
+- **Mobile/Tablet**: Mantém o layout atual de cards agrupados por mês
+- **Desktop**: Mostra tabela estilo fluxo de caixa com todas as colunas
 
-Adicionar `onClick` nas `TableRow` para abrir o dialog de edição.
-
-### 2. Modificar o EditTransactionDialog
-
-Adicionar:
-- **Botão de Excluir** (vermelho, com ícone de lixeira)
-- **Confirmação ao Salvar** (AlertDialog perguntando "Tem certeza?")
-- **Confirmação ao Excluir** com informações de vínculos
-
-### 3. Mostrar Vínculos antes de Excluir
-
-Se a transação tem vínculos, exibir:
+### Interface Desktop
 
 ```text
-┌───────────────────────────────────────────┐
-│ ⚠️ Excluir transação?                      │
-├───────────────────────────────────────────┤
-│ Esta transação possui vínculos:           │
-│                                           │
-│ 💳 Cartão: Nubank Platinum                │
-│ 📄 Fatura: Janeiro/2025                   │
-│ 🏦 Carteira: Conta Corrente BB            │
-│                                           │
-│ Ao excluir, os saldos serão recalculados. │
-├───────────────────────────────────────────┤
-│ [Cancelar]              [Excluir mesmo]   │
-└───────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Transações                                      [📊 Cards] [📋 Fluxo de Caixa] │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ [Contas] [Cartões] [Empréstimos] [Transferências]                          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Data     │ Descrição      │ Categoria      │ Carteira │ Entrada│ Saída│Saldo│
+│ 20/01/25 │ Salário        │ 💼 Trabalho    │ 🏦 BB    │ 3.000  │  -   │3.000│
+│ 18/01/25 │ Mercado ABC    │ 🛒 Alimentação │ 💳 Nubank│  -     │ 150  │2.850│
+│ 15/01/25 │ Energia        │ 🏠 Casa        │ 🏦 BB    │  -     │ 250  │2.600│
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
-
----
-
-## Arquivos a Modificar
-
-| Arquivo | Alteração |
-|---------|-----------|
-| `src/components/reports/TransactionDrilldown.tsx` | Adicionar estado + props para edição/exclusão |
-| `src/components/game/EditTransactionDialog.tsx` | Adicionar botão excluir + confirmações |
-| `src/i18n/locales/pt-BR.json` | Novas traduções para confirmações |
 
 ---
 
 ## Implementação Técnica
 
-### TransactionDrilldown.tsx
+### 1. Criar componente `CashFlowTransactionTable.tsx`
 
-1. **Novas props**:
-```tsx
-interface TransactionDrilldownProps {
-  // ... existentes
-  onUpdate?: (id: string, updates: Partial<Transaction>) => Promise<{ error: Error | null }>;
-  onDelete?: (id: string) => Promise<{ error: Error | null }>;
-}
-```
+Um novo componente baseado no existente `TransactionTable.tsx`, mas com:
+- Suporte a edição (clique na linha abre dialog)
+- Exclusão de transações
+- Filtro por tipo de fonte (Contas/Cartões/Empréstimos)
+- Ordenação por data de lançamento ou data da transação
 
-2. **Estado para edição**:
-```tsx
-const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
-```
+### 2. Modificar `TransactionsList.tsx`
 
-3. **Linha clicável**:
-```tsx
-<TableRow 
-  key={tx.id} 
-  className="cursor-pointer hover:bg-muted/50"
-  onClick={() => setEditingTransaction(tx)}
->
-```
+Adicionar:
+- Estado para modo de visualização: `'cards' | 'table'`
+- Toggle para alternar entre visualizações
+- Renderização condicional baseada no modo
 
-4. **Dialog de edição**:
+### 3. Detectar Desktop
+
+Usar o hook `useBreakpoint()` já existente para mostrar o toggle apenas em telas maiores.
+
+---
+
+## Arquivos a Modificar/Criar
+
+| Arquivo | Ação |
+|---------|------|
+| `src/components/game/CashFlowTransactionTable.tsx` | **Criar** - Tabela estilo fluxo de caixa com edição |
+| `src/components/game/TransactionsList.tsx` | **Modificar** - Adicionar toggle de visualização |
+| `src/i18n/locales/pt-BR.json` | Adicionar traduções para labels |
+
+---
+
+## Detalhes da Tabela Fluxo de Caixa
+
+### Colunas
+
+| Coluna | Descrição | Ordenável |
+|--------|-----------|-----------|
+| Data | Data da transação ou lançamento | ✅ |
+| Descrição | Texto da transação | ❌ |
+| Categoria | Ícone + nome | ✅ |
+| Fornecedor | Nome do fornecedor (se houver) | ❌ |
+| Carteira/Cartão | Ícone + nome | ❌ |
+| Entrada | Valor se INCOME | ✅ |
+| Saída | Valor se EXPENSE | - |
+| Saldo | Saldo acumulado | - |
+
+### Funcionalidades
+
+- **Clique na linha** → Abre dialog de edição (reusa `EditTransactionDialog`)
+- **Ordenação** → Por data (transação ou lançamento), valor, categoria
+- **Paginação** → 20 itens por página
+- **Saldo acumulado** → Calculado em tempo real
+- **Cores** → Entradas verdes, saídas vermelhas, saldo dinâmico
+
+---
+
+## Código do Toggle
+
 ```tsx
-{editingTransaction && onUpdate && onDelete && (
-  <EditTransactionDialog
-    transaction={editingTransaction}
-    open={!!editingTransaction}
-    onOpenChange={(open) => !open && setEditingTransaction(null)}
-    onUpdate={onUpdate}
-    onDelete={onDelete}
-  />
+// No header do TransactionsList
+const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+const isDesktop = useBreakpoint() === 'desktop';
+
+{isDesktop && (
+  <div className="flex gap-1 border rounded-lg p-1">
+    <Button
+      variant={viewMode === 'cards' ? 'default' : 'ghost'}
+      size="sm"
+      onClick={() => setViewMode('cards')}
+    >
+      <Grid className="w-4 h-4" />
+    </Button>
+    <Button
+      variant={viewMode === 'table' ? 'default' : 'ghost'}
+      size="sm"
+      onClick={() => setViewMode('table')}
+    >
+      <Table className="w-4 h-4" />
+    </Button>
+  </div>
 )}
 ```
 
-### EditTransactionDialog.tsx
-
-1. **Nova prop `onDelete`**:
-```tsx
-interface EditTransactionDialogProps {
-  // ... existentes
-  onDelete?: (id: string) => Promise<{ error: Error | null }>;
-}
-```
-
-2. **Novos estados**:
-```tsx
-const [showSaveConfirm, setShowSaveConfirm] = useState(false);
-const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-const [isDeleting, setIsDeleting] = useState(false);
-```
-
-3. **Botão Salvar com confirmação**:
-```tsx
-// Ao clicar em Salvar
-onClick={() => setShowSaveConfirm(true)}
-
-// AlertDialog de confirmação
-<AlertDialog open={showSaveConfirm}>
-  "Tem certeza que deseja salvar as alterações?"
-  [Cancelar] [Sim, salvar]
-</AlertDialog>
-```
-
-4. **Botão Excluir com vínculos**:
-```tsx
-<Button variant="outline" className="text-destructive" onClick={() => setShowDeleteConfirm(true)}>
-  <Trash2 /> Excluir
-</Button>
-
-// AlertDialog mostrando vínculos
-<AlertDialog open={showDeleteConfirm}>
-  {hasLinks && (
-    <div className="bg-amber-500/10 p-3 rounded-lg">
-      <p>Esta transação possui vínculos:</p>
-      {linkedCard && <p>💳 Cartão: {linkedCard.name}</p>}
-      {transaction.invoice_id && <p>📄 Fatura vinculada</p>}
-      {walletName && <p>🏦 Carteira: {walletName}</p>}
-    </div>
-  )}
-  [Cancelar] [Excluir]
-</AlertDialog>
-```
-
 ---
 
-## Fluxo de Usuário Final
-
-```text
-Dashboard → Ver todas → Clica na transação
-    │
-    ▼
-┌─────────────────────────────────────────────┐
-│ ✏️ Editar Transação                          │
-├─────────────────────────────────────────────┤
-│ 💳 Nubank (se for cartão)                   │
-│                                             │
-│ Tipo: [Despesa ▼]                           │
-│ Fornecedor: [___________]                   │
-│ Descrição: [MERCADO ABC]                    │
-│ Valor: R$ [150.00]                          │
-│ Categoria: [🛒 Alimentação ▼]               │
-│ Data: [15/01/2025]                          │
-│                                             │
-│ ┌─────────────────┐  ┌─────────────────────┐│
-│ │🗑️ Excluir       │  │       💾 Salvar     ││
-│ └─────────────────┘  └─────────────────────┘│
-└─────────────────────────────────────────────┘
-    │                      │
-    ▼                      ▼
-[Confirmar exclusão]   [Confirmar salvamento]
-```
-
----
-
-## Traduções a Adicionar
+## Traduções
 
 ```json
 {
   "transactions": {
-    "confirmSave": "Confirmar alterações",
-    "confirmSaveDesc": "Tem certeza que deseja salvar as alterações nesta transação?",
-    "confirmDelete": "Excluir transação",
-    "confirmDeleteDesc": "Esta ação não pode ser desfeita.",
-    "hasLinks": "Esta transação possui vínculos:",
-    "linkedCard": "Cartão",
-    "linkedInvoice": "Fatura vinculada",
-    "linkedWallet": "Carteira",
-    "deleteAnyway": "Excluir mesmo assim"
+    "viewMode": {
+      "cards": "Cards",
+      "table": "Fluxo de Caixa",
+      "switchToCards": "Ver como cards",
+      "switchToTable": "Ver como fluxo de caixa"
+    },
+    "table": {
+      "date": "Data",
+      "description": "Descrição",
+      "category": "Categoria",
+      "supplier": "Fornecedor",
+      "wallet": "Conta",
+      "income": "Entrada",
+      "expense": "Saída",
+      "balance": "Saldo"
+    }
   }
 }
 ```
@@ -211,8 +153,9 @@ Dashboard → Ver todas → Clica na transação
 
 ## Resultado Esperado
 
-1. Clicar em qualquer transação no drill-down abre o dialog de edição
-2. Botão **Salvar** pede confirmação antes de aplicar
-3. Botão **Excluir** mostra vínculos (se existirem) e pede confirmação
-4. Após salvar/excluir, a lista é atualizada automaticamente
-5. Transações em meses fechados continuam bloqueadas (comportamento existente)
+1. No **mobile**: Comportamento atual mantido (cards por mês)
+2. No **desktop**: Toggle para alternar entre cards e tabela fluxo de caixa
+3. A tabela permite **edição ao clicar** na transação
+4. **Saldo acumulado** mostra a progressão financeira
+5. Mantém todos os filtros existentes (Contas/Cartões/Empréstimos/Transferências)
+
