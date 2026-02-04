@@ -376,6 +376,10 @@ export const CashFlowTransactionTable = ({
                       <span className="text-emerald-600 dark:text-emerald-400 font-medium text-sm tabular-nums">
                         {formatMoney(entry.amount, displayCurrency)}
                       </span>
+                    ) : entry.type === 'TRANSFER' ? (
+                      <span className="text-blue-500 dark:text-blue-400 font-medium text-sm tabular-nums">
+                        {formatMoney(entry.amount, displayCurrency)}
+                      </span>
                     ) : (
                       <span className="text-muted-foreground text-sm">-</span>
                     )}
@@ -383,10 +387,6 @@ export const CashFlowTransactionTable = ({
                   <TableCell className="text-right">
                     {entry.type === 'EXPENSE' ? (
                       <span className="text-red-600 dark:text-red-400 font-medium text-sm tabular-nums">
-                        {formatMoney(entry.amount, displayCurrency)}
-                      </span>
-                    ) : entry.type === 'TRANSFER' ? (
-                      <span className="text-primary font-medium text-sm tabular-nums">
                         {formatMoney(entry.amount, displayCurrency)}
                       </span>
                     ) : (
