@@ -928,7 +928,17 @@
       "transactionDescription": "Ajuste de Caixa",
       "willCreateIncome": "Será criada uma ENTRADA de ajuste no valor de {{amount}}.",
       "willCreateExpense": "Será criada uma SAÍDA de ajuste no valor de {{amount}}."
-    }
+    },
+    "deletePermanently": "Excluir permanentemente",
+    "deleteTitle": "Excluir Carteira",
+    "deleteWarning": "Esta ação é irreversível. A carteira e todas as transações vinculadas serão excluídas.",
+    "deleteConfirmLabel": "Digite o nome da carteira para confirmar:",
+    "deleteNameMismatch": "O nome digitado não corresponde",
+    "deleteSuccess": "Carteira excluída permanentemente",
+    "deleteError": "Erro ao excluir carteira",
+    "deleteImpact": "Dados que serão excluídos:",
+    "linkedTransactions": "{{count}} transações serão excluídas",
+    "linkedTransfers": "{{count}} transferências serão excluídas"
   },
   "reconciliation": {
     "title": "Conciliação Bancária",

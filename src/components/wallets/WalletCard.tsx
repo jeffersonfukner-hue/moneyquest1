@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MoreHorizontal, Pencil, Power, PowerOff, ArrowLeftRight, Scale } from 'lucide-react';
+import { MoreHorizontal, Pencil, Power, PowerOff, ArrowLeftRight, Scale, Trash2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -21,9 +21,10 @@ interface WalletCardProps {
   onToggleActive: (wallet: Wallet) => void;
   onTransfer?: (wallet: Wallet) => void;
   onAdjust?: (wallet: Wallet) => void;
+  onDelete?: (wallet: Wallet) => void;
 }
 
-export const WalletCard = ({ wallet, onEdit, onToggleActive, onTransfer, onAdjust }: WalletCardProps) => {
+export const WalletCard = ({ wallet, onEdit, onToggleActive, onTransfer, onAdjust, onDelete }: WalletCardProps) => {
   const { t } = useTranslation();
 
   const formatBalance = useCallback((amount: number, currency: SupportedCurrency) => {
@@ -108,6 +109,18 @@ export const WalletCard = ({ wallet, onEdit, onToggleActive, onTransfer, onAdjus
                 </>
               )}
             </DropdownMenuItem>
+            {onDelete && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={() => onDelete(wallet)}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  {t('wallets.deletePermanently', 'Excluir permanentemente')}
+                </DropdownMenuItem>
+              </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

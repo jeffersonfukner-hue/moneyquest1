@@ -166,6 +166,66 @@ export const useWallets = () => {
     }
   };
 
+  const permanentlyDeleteWallet = async (id: string): Promise<boolean> => {
+    if (!user) return false;
+
+    try {
+      // Delete transactions linked to this wallet
+      const { error: txError } = await supabase
+        .from('transactions')
+        .delete()
+        .eq('wallet_id', id)
+        .eq('user_id', user.id);
+
+      if (txError) throw txError;
+
+      // Delete transfers where this wallet is source
+      const { error: outError } = await supabase
+        .from('wallet_transfers')
+        .delete()
+        .eq('from_wallet_id', id)
+        .eq('user_id', user.id);
+
+      if (outError) throw outError;
+
+      // Delete transfers where this wallet is destination
+      const { error: inError } = await supabase
+        .from('wallet_transfers')
+        .delete()
+        .eq('to_wallet_id', id)
+        .eq('user_id', user.id);
+
+      if (inError) throw inError;
+
+      // Delete bank statement lines linked to this wallet
+      const { error: bankLinesError } = await supabase
+        .from('bank_statement_lines')
+        .delete()
+        .eq('wallet_id', id)
+        .eq('user_id', user.id);
+
+      if (bankLinesError) throw bankLinesError;
+
+      // Finally delete the wallet itself
+      const { error: walletError } = await supabase
+        .from('wallets')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', user.id);
+
+      if (walletError) throw walletError;
+
+      setWallets(prev => prev.filter(w => w.id !== id));
+      emitWalletsChanged();
+      toast.success(t('wallets.deleteSuccess', 'Carteira excluída permanentemente'));
+      return true;
+    } catch (error) {
+      console.error('Error permanently deleting wallet:', error);
+      toast.error(t('wallets.deleteError', 'Erro ao excluir carteira'));
+      return false;
+    }
+  };
+
   const reactivateWallet = async (id: string): Promise<boolean> => {
     if (!user) return false;
 
@@ -337,6 +397,7 @@ export const useWallets = () => {
     addWallet,
     updateWallet,
     deleteWallet,
+    permanentlyDeleteWallet,
     reactivateWallet,
     recalculateBalance,
     updateWalletBalance,
