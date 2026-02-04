@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,6 +9,7 @@ import { Transaction } from '@/types/database';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import { TransactionDrilldown } from '@/components/reports/TransactionDrilldown';
 
 interface RecentTransactionsWidgetProps {
   transactions: Transaction[];
@@ -22,6 +23,7 @@ export const RecentTransactionsWidget = ({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { formatCurrency } = useCurrency();
+  const [drilldownOpen, setDrilldownOpen] = useState(false);
 
   const recentTransactions = useMemo(() => {
     return [...transactions]
@@ -56,7 +58,7 @@ export const RecentTransactionsWidget = ({
           variant="ghost"
           size="sm"
           className="h-7 text-xs gap-1"
-          onClick={() => navigate('/reports')}
+          onClick={() => setDrilldownOpen(true)}
         >
           {t('common.viewAll', 'Ver todas')}
           <ArrowRight className="w-3 h-3" />
@@ -102,6 +104,13 @@ export const RecentTransactionsWidget = ({
           ))}
         </div>
       </CardContent>
+
+      <TransactionDrilldown
+        isOpen={drilldownOpen}
+        onClose={() => setDrilldownOpen(false)}
+        transactions={transactions}
+        title={t('dashboard.allTransactions', 'Todas as Transações')}
+      />
     </Card>
   );
 };
