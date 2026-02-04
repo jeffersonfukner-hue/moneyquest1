@@ -1,79 +1,66 @@
 
 
-# Correção: Mesclar Blocos Duplicados de `transactions`
+# Correção: Exibir Valores das Transferências na Tabela
 
-## Problema Confirmado
+## Problema
 
-O arquivo `pt-BR.json` contém **duas chaves `"transactions"` duplicadas**:
+As transferências mostram "-" nas colunas Entrada e Saída porque o tipo é `'TRANSFER'`, que não corresponde a `'INCOME'` nem `'EXPENSE'`.
 
-| Bloco | Linhas | Conteúdo |
-|-------|--------|----------|
-| 1º | 2-67 | `viewMode`, `table`, `selectCard`, etc. |
-| 2º | 1416-1479 | `title`, `batchActions`, `categories`, etc. |
+```typescript
+// Linha 357-363: só mostra valor se for INCOME
+{entry.type === 'INCOME' ? formatMoney(...) : '-'}
 
-**Em JSON, a última chave sobrescreve a anterior** → as traduções `viewMode` e `table` são perdidas no runtime.
+// Linha 366-372: só mostra valor se for EXPENSE
+{entry.type === 'EXPENSE' ? formatMoney(...) : '-'}
+```
 
 ## Solução
 
-Mover as chaves `viewMode` e `table` do **primeiro bloco** para o **segundo bloco** (que contém `title`, `batchActions`, etc.), e depois **remover o primeiro bloco duplicado**.
+Exibir o valor da transferência na coluna **Saída** (já que representa dinheiro saindo de uma conta), com cor diferenciada (azul/roxo) para diferenciar visualmente de despesas.
 
-## Implementação
+## Arquivo a Modificar
 
-### 1. Adicionar ao segundo bloco (linha ~1478, antes do `}` final)
+`src/components/game/CashFlowTransactionTable.tsx`
 
-```json
-    "viewMode": {
-      "cards": "Cards",
-      "table": "Fluxo de Caixa",
-      "switchToCards": "Ver como cards",
-      "switchToTable": "Ver como fluxo de caixa"
-    },
-    "table": {
-      "date": "Data",
-      "description": "Descrição",
-      "category": "Categoria",
-      "supplier": "Fornecedor",
-      "wallet": "Conta",
-      "income": "Entrada",
-      "expense": "Saída",
-      "balance": "Saldo"
-    }
+## Alteração (Linhas 365-372)
+
+**De:**
+```tsx
+<TableCell className="text-right">
+  {entry.type === 'EXPENSE' ? (
+    <span className="text-red-600 ...">
+      {formatMoney(entry.amount, displayCurrency)}
+    </span>
+  ) : (
+    <span className="text-muted-foreground text-sm">-</span>
+  )}
+</TableCell>
 ```
 
-### 2. Remover o primeiro bloco duplicado (linhas 2-67)
-
-O primeiro bloco `"transactions": { ... }` será removido inteiramente, mantendo apenas o segundo bloco consolidado.
-
-### 3. Mesclar chaves únicas
-
-Algumas chaves do primeiro bloco não existem no segundo e precisam ser movidas:
-- `selectCard`, `noCards`, `addFirstCard`, `changeCard`
-- `supplierPlaceholder`, `incomeSource`, `incomeSourcePlaceholder`
-- `transferDetected`, `transferSuggestion`, `goToTransfers`
-- `paymentMethod`, `debit`, `credit`
-- `dateFormat`, `today`, `source`, `cash`, `cashDesc`, `cashTransaction`
-- `drilldown.*`
-- `confirmSave`, `confirmSaveDesc`, `confirmDelete`, `confirmDeleteDesc`
-- `hasLinks`, `linkedCard`, `linkedInvoice`, `linkedWallet`
-- `deleteAnyway`, `deleteWarning`, `delete`
-
-## Arquivos Afetados
-
-| Arquivo | Ação |
-|---------|------|
-| `src/i18n/locales/pt-BR.json` | Consolidar blocos duplicados |
+**Para:**
+```tsx
+<TableCell className="text-right">
+  {entry.type === 'EXPENSE' ? (
+    <span className="text-red-600 ...">
+      {formatMoney(entry.amount, displayCurrency)}
+    </span>
+  ) : entry.type === 'TRANSFER' ? (
+    <span className="text-primary font-medium text-sm tabular-nums">
+      {formatMoney(entry.amount, displayCurrency)}
+    </span>
+  ) : (
+    <span className="text-muted-foreground text-sm">-</span>
+  )}
+</TableCell>
+```
 
 ## Resultado Esperado
 
-Após a correção, os cabeçalhos da tabela mostrarão:
+| Descrição | Entrada | Saída | Saldo |
+|-----------|---------|-------|-------|
+| PIX para Nubank | - | **R$ 500,00** (azul) | R$ 3.000 |
+| Salário | R$ 5.000 | - | R$ 5.000 |
+| Mercado | - | R$ 200 (vermelho) | R$ 2.800 |
 
-```
-Data │ Descrição │ Categoria │ Fornecedor │ Conta │ Entrada │ Saída │ Saldo
-```
-
-Em vez de:
-
-```
-transactions.table.date │ transactions.table.description │ ...
-```
+A transferência agora mostra o valor R$ 500,00 em azul na coluna Saída, diferenciando-a de despesas (vermelho).
 
