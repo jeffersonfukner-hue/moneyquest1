@@ -22,6 +22,7 @@ import { useNarrativeEngine } from './useNarrativeEngine';
 import { useBudgetAlerts } from './useBudgetAlerts';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useWallets } from './useWallets';
+import { emitTransactionsChanged, onTransactionsChanged } from '@/lib/appEvents';
 
 import { Quest, Badge } from '@/types/database';
 
@@ -78,6 +79,13 @@ export const useTransactions = () => {
 
   useEffect(() => {
     fetchTransactions();
+  }, [user]);
+
+  // Keep multiple instances of this hook in sync across the app
+  useEffect(() => {
+    return onTransactionsChanged(() => {
+      fetchTransactions();
+    });
   }, [user]);
 
   const addTransaction = async (
@@ -260,6 +268,7 @@ export const useTransactions = () => {
 
     await fetchTransactions();
     await refetchProfile();
+    emitTransactionsChanged();
 
     // Check budget alerts for expense transactions (non-blocking)
     if (transaction.type === 'EXPENSE') {
@@ -417,6 +426,7 @@ export const useTransactions = () => {
 
     await fetchTransactions();
     await refetchProfile();
+    emitTransactionsChanged();
 
     return { error: null };
   };
@@ -438,6 +448,7 @@ export const useTransactions = () => {
         await recalculateBalance(txToDelete.wallet_id);
       }
       await fetchTransactions();
+      emitTransactionsChanged();
     }
 
     return { error };
@@ -487,6 +498,7 @@ export const useTransactions = () => {
         await recalculateBalance(walletId);
       }
 
+      emitTransactionsChanged();
       return { error: null, deletedCount: transactionIds.length };
     } catch (error) {
       console.error('Error batch deleting transactions:', error);
