@@ -7,6 +7,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,7 +29,7 @@ import {
 } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Pencil, Plus, CreditCard, Lock } from 'lucide-react';
+import { Pencil, Plus, CreditCard, Lock, Trash2, Wallet } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DatePickerInput } from '@/components/ui/date-picker-input';
 import { Transaction, SupportedCurrency, TransactionType } from '@/types/database';
@@ -41,6 +51,7 @@ interface EditTransactionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onUpdate: (id: string, updates: Partial<Omit<Transaction, 'id' | 'user_id' | 'xp_earned' | 'created_at'>>) => Promise<{ error: Error | null }>;
+  onDelete?: (id: string) => Promise<{ error: Error | null }>;
 }
 
 const ValidationMessage = ({ message }: { message: string }) => (
@@ -54,7 +65,8 @@ export const EditTransactionDialog = ({
   transaction,
   open,
   onOpenChange,
-  onUpdate
+  onUpdate,
+  onDelete
 }: EditTransactionDialogProps) => {
   const { t } = useTranslation();
   const { currency: userCurrency } = useCurrency();
@@ -74,6 +86,9 @@ export const EditTransactionDialog = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
   const [showQuickAddCategory, setShowQuickAddCategory] = useState(false);
+  const [showSaveConfirm, setShowSaveConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { categories } = useCategories();
 
@@ -85,6 +100,14 @@ export const EditTransactionDialog = ({
   
   // Check if transaction is in a closed month
   const isInClosedMonth = isDateInClosedMonth(transaction.date);
+
+  // Get wallet name for display
+  const linkedWallet = transaction.wallet_id 
+    ? activeWallets.find(w => w.id === transaction.wallet_id) 
+    : null;
+
+  // Check if transaction has any links
+  const hasLinks = isCardTransaction || transaction.invoice_id || transaction.wallet_id;
 
   // Reset form when transaction changes
   useEffect(() => {
@@ -116,13 +139,18 @@ export const EditTransactionDialog = ({
   const isCategoryValid = category.length > 0 && category !== '__new__';
   const isWalletValid = isCardTransaction || !!walletId;
 
-  const handleSubmit = async () => {
+  const handleRequestSave = () => {
     setAttemptedSubmit(true);
 
     if (!isDescriptionValid || !isAmountValid || !isCategoryValid || !isWalletValid) {
       return;
     }
 
+    setShowSaveConfirm(true);
+  };
+
+  const handleConfirmSave = async () => {
+    setShowSaveConfirm(false);
     setIsSubmitting(true);
 
     const updates: Partial<Omit<Transaction, 'id' | 'user_id' | 'xp_earned' | 'created_at'>> & { supplier?: string | null } = {
@@ -146,6 +174,21 @@ export const EditTransactionDialog = ({
     }
 
     setIsSubmitting(false);
+
+    if (!error) {
+      onOpenChange(false);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!onDelete) return;
+    
+    setShowDeleteConfirm(false);
+    setIsDeleting(true);
+
+    const { error } = await onDelete(transaction.id);
+
+    setIsDeleting(false);
 
     if (!error) {
       onOpenChange(false);
@@ -371,21 +414,105 @@ export const EditTransactionDialog = ({
               />
             </div>
 
-            {/* Submit Button */}
-            <Button
-              onClick={handleSubmit}
-              disabled={isSubmitting || isInClosedMonth}
-              className="w-full"
-            >
-              {isInClosedMonth ? (
-                <><Lock className="w-4 h-4 mr-2" />{t('closing.editBlocked', 'Edição bloqueada')}</>
-              ) : (
-                isSubmitting ? t('common.saving') : t('transactions.saveChanges')
+            {/* Action Buttons */}
+            <div className="flex gap-2">
+              {onDelete && (
+                <Button
+                  variant="outline"
+                  onClick={() => setShowDeleteConfirm(true)}
+                  disabled={isSubmitting || isDeleting || isInClosedMonth}
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  {t('transactions.delete', 'Excluir')}
+                </Button>
               )}
-            </Button>
+              <Button
+                onClick={handleRequestSave}
+                disabled={isSubmitting || isDeleting || isInClosedMonth}
+                className="flex-1"
+              >
+                {isInClosedMonth ? (
+                  <><Lock className="w-4 h-4 mr-2" />{t('closing.editBlocked', 'Edição bloqueada')}</>
+                ) : (
+                  isSubmitting ? t('common.saving') : t('transactions.saveChanges')
+                )}
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Save Confirmation Dialog */}
+      <AlertDialog open={showSaveConfirm} onOpenChange={setShowSaveConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('transactions.confirmSave', 'Confirmar alterações')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('transactions.confirmSaveDesc', 'Tem certeza que deseja salvar as alterações nesta transação?')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('common.cancel', 'Cancelar')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmSave}>
+              {t('common.yesSave', 'Sim, salvar')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('transactions.confirmDelete', 'Excluir transação')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('transactions.confirmDeleteDesc', 'Esta ação não pode ser desfeita.')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          {hasLinks && (
+            <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 space-y-2">
+              <p className="text-sm font-medium text-amber-700 dark:text-amber-400">
+                {t('transactions.hasLinks', 'Esta transação possui vínculos:')}
+              </p>
+              <div className="space-y-1 text-sm">
+                {linkedCard && (
+                  <div className="flex items-center gap-2">
+                    <CreditCard className="w-4 h-4 text-amber-600" />
+                    <span>{t('transactions.linkedCard', 'Cartão')}: {linkedCard.name}</span>
+                  </div>
+                )}
+                {transaction.invoice_id && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">📄</span>
+                    <span>{t('transactions.linkedInvoice', 'Fatura vinculada')}</span>
+                  </div>
+                )}
+                {linkedWallet && (
+                  <div className="flex items-center gap-2">
+                    <Wallet className="w-4 h-4 text-amber-600" />
+                    <span>{t('transactions.linkedWallet', 'Carteira')}: {linkedWallet.name}</span>
+                  </div>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                {t('transactions.deleteWarning', 'Ao excluir, os saldos serão recalculados.')}
+              </p>
+            </div>
+          )}
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('common.cancel', 'Cancelar')}</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleConfirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {t('transactions.deleteAnyway', 'Excluir mesmo assim')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {showQuickAddCategory && (
         <QuickAddCategoryDialog

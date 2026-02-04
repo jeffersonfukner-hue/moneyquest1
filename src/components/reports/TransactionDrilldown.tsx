@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Table, 
@@ -25,6 +24,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { EditTransactionDialog } from '@/components/game/EditTransactionDialog';
 
 interface TransactionDrilldownProps {
   isOpen: boolean;
@@ -32,6 +32,8 @@ interface TransactionDrilldownProps {
   transactions: Transaction[];
   title: string;
   subtitle?: string;
+  onUpdate?: (id: string, updates: Partial<Omit<Transaction, 'id' | 'user_id' | 'xp_earned' | 'created_at'>>) => Promise<{ error: Error | null }>;
+  onDelete?: (id: string) => Promise<{ error: Error | null }>;
 }
 
 export const TransactionDrilldown = ({
@@ -40,10 +42,13 @@ export const TransactionDrilldown = ({
   transactions,
   title,
   subtitle,
+  onUpdate,
+  onDelete,
 }: TransactionDrilldownProps) => {
   const { t } = useTranslation();
   const { formatCurrency } = useCurrency();
   const [sortBy, setSortBy] = useState<'date' | 'created_at'>('created_at');
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
 
   const totalIncome = transactions
     .filter(tx => tx.type === 'INCOME')
@@ -145,7 +150,17 @@ export const TransactionDrilldown = ({
                   : t('transactions.drilldown.createdAtLabel', 'Lançado em');
                 
                 return (
-                  <TableRow key={tx.id}>
+                  <TableRow 
+                    key={tx.id}
+                    className={cn(
+                      onUpdate && onDelete && "cursor-pointer hover:bg-muted/50 transition-colors"
+                    )}
+                    onClick={() => {
+                      if (onUpdate && onDelete) {
+                        setEditingTransaction(tx);
+                      }
+                    }}
+                  >
                     <TableCell className="text-xs text-muted-foreground tabular-nums">
                       <TooltipProvider>
                         <Tooltip>
@@ -196,6 +211,17 @@ export const TransactionDrilldown = ({
             </div>
           )}
         </ScrollArea>
+
+        {/* Edit Transaction Dialog */}
+        {editingTransaction && onUpdate && onDelete && (
+          <EditTransactionDialog
+            transaction={editingTransaction}
+            open={!!editingTransaction}
+            onOpenChange={(open) => !open && setEditingTransaction(null)}
+            onUpdate={onUpdate}
+            onDelete={onDelete}
+          />
+        )}
       </SheetContent>
     </Sheet>
   );

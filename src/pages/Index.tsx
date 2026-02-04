@@ -156,7 +156,12 @@ const Index = () => {
       <FinancialAlertsWidget />
       
       {/* 6. Últimas Transações */}
-      <RecentTransactionsWidget transactions={transactions} limit={8} />
+      <RecentTransactionsWidget 
+        transactions={transactions} 
+        limit={8} 
+        onUpdate={updateTransaction}
+        onDelete={deleteTransaction}
+      />
       
       {/* Índice de Organização - Discreto no final */}
       <OrganizationIndexWidget />
