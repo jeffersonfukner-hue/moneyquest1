@@ -1121,6 +1121,7 @@
     "saveChanges": "Guardar Cambios",
     "updated": "¡Transacción actualizada!",
     "duplicate": "Duplicar",
+    "transfer": "Transferencia",
     "selectSource": "Elige dónde registrar esta transacción:",
     "bankAccount": "Cuenta Bancaria",
     "bankAccountDesc": "Ingresos y gastos de la cuenta",

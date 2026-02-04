@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
-import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, ArrowRightLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -17,6 +17,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { formatMoney } from '@/lib/formatters';
 import { parseDateString } from '@/lib/dateUtils';
 import { Transaction } from '@/types/database';
+import { WalletTransfer } from '@/hooks/useWalletTransfers';
 import { useWallets } from '@/hooks/useWallets';
 import { useCategories } from '@/hooks/useCategories';
 import { useCreditCards } from '@/hooks/useCreditCards';
@@ -25,9 +26,31 @@ import { getCategoryTranslationKey } from '@/lib/gameLogic';
 
 interface CashFlowTransactionTableProps {
   transactions: Transaction[];
+  transfers?: WalletTransfer[];
   onUpdate: (id: string, updates: Partial<Omit<Transaction, 'id' | 'user_id' | 'xp_earned' | 'created_at'>>) => Promise<{ error: Error | null }>;
   onDelete: (id: string) => Promise<{ error: Error | null }>;
+  onEditTransfer?: (transfer: WalletTransfer) => void;
+  onDeleteTransfer?: (id: string) => Promise<boolean>;
   className?: string;
+}
+
+// Unified type for table rows
+interface CashFlowEntry {
+  id: string;
+  date: string;
+  description: string;
+  category?: string;
+  supplier?: string | null;
+  type: 'INCOME' | 'EXPENSE' | 'TRANSFER';
+  amount: number;
+  currency: string;
+  wallet_id?: string | null;
+  credit_card_id?: string | null;
+  from_wallet_id?: string;
+  to_wallet_id?: string;
+  isTransfer: boolean;
+  originalTransaction?: Transaction;
+  originalTransfer?: WalletTransfer;
 }
 
 type SortField = 'date' | 'category' | 'amount';
@@ -37,8 +60,11 @@ const ITEMS_PER_PAGE = 20;
 
 export const CashFlowTransactionTable = ({ 
   transactions, 
+  transfers = [],
   onUpdate,
   onDelete,
+  onEditTransfer,
+  onDeleteTransfer,
   className 
 }: CashFlowTransactionTableProps) => {
   const { t } = useTranslation();
@@ -77,15 +103,57 @@ export const CashFlowTransactionTable = ({
     return map;
   }, [categories]);
 
-  const sortedTransactions = useMemo(() => {
-    const sorted = [...transactions].sort((a, b) => {
+  // Unify transactions and transfers into a single list
+  const unifiedEntries = useMemo((): CashFlowEntry[] => {
+    // Convert transactions to entries
+    const txEntries: CashFlowEntry[] = transactions.map(tx => ({
+      id: tx.id,
+      date: tx.date,
+      description: tx.description,
+      category: tx.category,
+      supplier: tx.supplier,
+      type: tx.type as 'INCOME' | 'EXPENSE',
+      amount: tx.amount,
+      currency: tx.currency,
+      wallet_id: tx.wallet_id,
+      credit_card_id: tx.credit_card_id,
+      isTransfer: false,
+      originalTransaction: tx,
+    }));
+
+    // Convert transfers to entries
+    const transferEntries: CashFlowEntry[] = transfers.map(t => {
+      const fromWallet = walletMap[t.from_wallet_id];
+      const toWallet = walletMap[t.to_wallet_id];
+      const fromName = fromWallet?.name || '?';
+      const toName = toWallet?.name || '?';
+      
+      return {
+        id: t.id,
+        date: t.date,
+        description: t.description || `${fromName} → ${toName}`,
+        type: 'TRANSFER' as const,
+        amount: t.amount,
+        currency: t.currency,
+        from_wallet_id: t.from_wallet_id,
+        to_wallet_id: t.to_wallet_id,
+        isTransfer: true,
+        originalTransfer: t,
+      };
+    });
+
+    return [...txEntries, ...transferEntries];
+  }, [transactions, transfers, walletMap]);
+
+  const sortedEntries = useMemo(() => {
+    const sorted = [...unifiedEntries].sort((a, b) => {
       let comparison = 0;
       switch (sortField) {
         case 'date':
           comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
           break;
         case 'category':
-          comparison = a.category.localeCompare(b.category);
+          comparison = (a.category || 'Transferência').localeCompare(b.category || 'Transferência');
           break;
         case 'amount':
           comparison = a.amount - b.amount;
@@ -94,32 +162,35 @@ export const CashFlowTransactionTable = ({
       return sortOrder === 'asc' ? comparison : -comparison;
     });
     return sorted;
-  }, [transactions, sortField, sortOrder]);
+  }, [unifiedEntries, sortField, sortOrder]);
 
-  // Calculate running balance
-  const transactionsWithBalance = useMemo(() => {
+  // Calculate running balance (transfers don't affect total balance)
+  const entriesWithBalance = useMemo(() => {
     // Sort by date ascending for balance calculation
-    const byDate = [...transactions].sort(
+    const byDate = [...unifiedEntries].sort(
       (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
     );
     
     let balance = 0;
     const balanceMap = new Map<string, number>();
     
-    byDate.forEach(tx => {
-      balance += tx.type === 'INCOME' ? tx.amount : -tx.amount;
-      balanceMap.set(tx.id, balance);
+    byDate.forEach(entry => {
+      // Transfers don't affect total balance (internal movement)
+      if (entry.type !== 'TRANSFER') {
+        balance += entry.type === 'INCOME' ? entry.amount : -entry.amount;
+      }
+      balanceMap.set(entry.id, balance);
     });
 
-    // Apply balance to sorted transactions
-    return sortedTransactions.map(tx => ({
-      ...tx,
-      runningBalance: balanceMap.get(tx.id) || 0,
+    // Apply balance to sorted entries
+    return sortedEntries.map(entry => ({
+      ...entry,
+      runningBalance: balanceMap.get(entry.id) || 0,
     }));
-  }, [transactions, sortedTransactions]);
+  }, [unifiedEntries, sortedEntries]);
 
-  const totalPages = Math.ceil(transactionsWithBalance.length / ITEMS_PER_PAGE);
-  const paginatedTransactions = transactionsWithBalance.slice(
+  const totalPages = Math.ceil(entriesWithBalance.length / ITEMS_PER_PAGE);
+  const paginatedEntries = entriesWithBalance.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
@@ -143,19 +214,35 @@ export const CashFlowTransactionTable = ({
     );
   };
 
-  const getAccountLabel = (tx: Transaction) => {
-    if (tx.credit_card_id) {
-      const card = creditCardMap[tx.credit_card_id];
+  const getAccountLabel = (entry: CashFlowEntry) => {
+    if (entry.isTransfer) {
+      const fromWallet = entry.from_wallet_id ? walletMap[entry.from_wallet_id] : null;
+      const toWallet = entry.to_wallet_id ? walletMap[entry.to_wallet_id] : null;
+      return { 
+        icon: '↔️', 
+        name: `${fromWallet?.name || '?'} → ${toWallet?.name || '?'}` 
+      };
+    }
+    if (entry.credit_card_id) {
+      const card = creditCardMap[entry.credit_card_id];
       return card ? { icon: '💳', name: card.name } : { icon: '💳', name: 'Cartão' };
     }
-    if (tx.wallet_id) {
-      const wallet = walletMap[tx.wallet_id];
+    if (entry.wallet_id) {
+      const wallet = walletMap[entry.wallet_id];
       return wallet || { icon: '🏦', name: '-' };
     }
     return { icon: '📦', name: '-' };
   };
 
-  if (transactions.length === 0) {
+  const handleRowClick = (entry: CashFlowEntry & { runningBalance: number }) => {
+    if (entry.isTransfer && entry.originalTransfer && onEditTransfer) {
+      onEditTransfer(entry.originalTransfer);
+    } else if (!entry.isTransfer && entry.originalTransaction) {
+      setEditingTransaction(entry.originalTransaction);
+    }
+  };
+
+  if (transactions.length === 0 && transfers.length === 0) {
     return (
       <div className={cn("bg-card rounded-2xl p-8 shadow-md text-center", className)}>
         <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
@@ -216,35 +303,45 @@ export const CashFlowTransactionTable = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedTransactions.map((tx) => {
-              const category = categoryMap[tx.category];
-              const account = getAccountLabel(tx);
-              const categoryKey = getCategoryTranslationKey(tx.category, tx.type);
-              const displayCategory = categoryKey ? t(`categories.${categoryKey}`) : tx.category;
+            {paginatedEntries.map((entry) => {
+              const category = entry.category ? categoryMap[entry.category] : null;
+              const account = getAccountLabel(entry);
+              const categoryKey = entry.category ? getCategoryTranslationKey(entry.category, entry.type === 'TRANSFER' ? 'EXPENSE' : entry.type) : null;
+              const displayCategory = entry.isTransfer 
+                ? t('transactions.transfer') 
+                : (categoryKey ? t(`categories.${categoryKey}`) : entry.category);
+              
               return (
                 <TableRow 
-                  key={tx.id}
-                  className="cursor-pointer hover:bg-muted/50 transition-colors"
-                  onClick={() => setEditingTransaction(tx)}
+                  key={entry.id}
+                  className={cn(
+                    "cursor-pointer hover:bg-muted/50 transition-colors",
+                    entry.isTransfer && "bg-primary/5 hover:bg-primary/10"
+                  )}
+                  onClick={() => handleRowClick(entry)}
                 >
                   <TableCell className="text-sm font-medium">
-                    {format(parseDateString(tx.date), 'dd/MM/yy', { locale: dateLocale })}
+                    {format(parseDateString(entry.date), 'dd/MM/yy', { locale: dateLocale })}
                   </TableCell>
                   <TableCell className="text-sm">
-                    <span className="truncate block max-w-[200px]" title={tx.description}>
-                      {tx.description}
+                    <span className={cn(
+                      "truncate block max-w-[200px]",
+                      entry.isTransfer && "flex items-center gap-1.5"
+                    )} title={entry.description}>
+                      {entry.isTransfer && <ArrowRightLeft className="w-3.5 h-3.5 text-primary shrink-0" />}
+                      {entry.description}
                     </span>
                   </TableCell>
                   <TableCell>
                     <span className="flex items-center gap-1.5 text-sm">
-                      <span>{category?.icon || '📦'}</span>
+                      <span>{entry.isTransfer ? '↔️' : (category?.icon || '📦')}</span>
                       <span className="truncate max-w-[100px]">{displayCategory}</span>
                     </span>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
-                    {tx.supplier ? (
-                      <span className="truncate block max-w-[100px]" title={tx.supplier}>
-                        {tx.supplier}
+                    {entry.supplier ? (
+                      <span className="truncate block max-w-[100px]" title={entry.supplier}>
+                        {entry.supplier}
                       </span>
                     ) : (
                       '-'
@@ -257,18 +354,18 @@ export const CashFlowTransactionTable = ({
                     </span>
                   </TableCell>
                   <TableCell className="text-right">
-                    {tx.type === 'INCOME' ? (
+                    {entry.type === 'INCOME' ? (
                       <span className="text-emerald-600 dark:text-emerald-400 font-medium text-sm tabular-nums">
-                        {formatMoney(tx.amount, displayCurrency)}
+                        {formatMoney(entry.amount, displayCurrency)}
                       </span>
                     ) : (
                       <span className="text-muted-foreground text-sm">-</span>
                     )}
                   </TableCell>
                   <TableCell className="text-right">
-                    {tx.type === 'EXPENSE' ? (
+                    {entry.type === 'EXPENSE' ? (
                       <span className="text-red-600 dark:text-red-400 font-medium text-sm tabular-nums">
-                        {formatMoney(tx.amount, displayCurrency)}
+                        {formatMoney(entry.amount, displayCurrency)}
                       </span>
                     ) : (
                       <span className="text-muted-foreground text-sm">-</span>
@@ -278,12 +375,12 @@ export const CashFlowTransactionTable = ({
                     <span
                       className={cn(
                         'font-semibold text-sm tabular-nums',
-                        tx.runningBalance >= 0 
+                        entry.runningBalance >= 0 
                           ? 'text-emerald-600 dark:text-emerald-400' 
                           : 'text-red-600 dark:text-red-400'
                       )}
                     >
-                      {formatMoney(tx.runningBalance, displayCurrency)}
+                      {formatMoney(entry.runningBalance, displayCurrency)}
                     </span>
                   </TableCell>
                 </TableRow>

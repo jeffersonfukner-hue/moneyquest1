@@ -1198,6 +1198,7 @@
     "saveChanges": "Save Changes",
     "updated": "Transaction updated!",
     "duplicate": "Duplicate",
+    "transfer": "Transfer",
     "selectSource": "Choose where to record this transaction:",
     "bankAccount": "Bank Account",
     "bankAccountDesc": "Account income and expenses",
