@@ -1,131 +1,79 @@
 
 
-# Plano: Corrigir Chaves de Tradução da Tabela de Fluxo de Caixa
+# Correção: Mesclar Blocos Duplicados de `transactions`
 
-## Problema
+## Problema Confirmado
 
-As colunas da tabela estão mostrando as chaves brutas em vez do texto traduzido:
-- `transactions.table.date` → deveria ser "Data"
-- `transactions.table.description` → deveria ser "Descrição"
-- etc.
+O arquivo `pt-BR.json` contém **duas chaves `"transactions"` duplicadas**:
 
-## Causa Raiz
+| Bloco | Linhas | Conteúdo |
+|-------|--------|----------|
+| 1º | 2-67 | `viewMode`, `table`, `selectCard`, etc. |
+| 2º | 1416-1479 | `title`, `batchActions`, `categories`, etc. |
 
-O componente `CashFlowTransactionTable.tsx` usa chaves de tradução que **não existem**:
+**Em JSON, a última chave sobrescreve a anterior** → as traduções `viewMode` e `table` são perdidas no runtime.
 
-| Chave Usada | Existe? | Chave Correta |
-|-------------|---------|---------------|
-| `transactions.table.date` | ❌ | `transactions.date` (existe) |
-| `transactions.table.description` | ❌ | `transactions.description` (existe) |
-| `transactions.table.category` | ❌ | `transactions.category` (existe) |
-| `transactions.table.supplier` | ❌ | Não existe - precisa criar |
-| `transactions.table.wallet` | ❌ | Não existe - precisa criar |
-| `transactions.table.income` | ❌ | `transactions.income` (existe) |
-| `transactions.table.expense` | ❌ | `transactions.expense` (existe) |
-| `transactions.table.balance` | ❌ | Não existe - precisa criar |
+## Solução
 
-## Solução Proposta
+Mover as chaves `viewMode` e `table` do **primeiro bloco** para o **segundo bloco** (que contém `title`, `batchActions`, etc.), e depois **remover o primeiro bloco duplicado**.
 
-Adicionar a seção `table` dentro de `transactions` nos arquivos de tradução:
+## Implementação
 
-### Arquivo: `pt-BR.json`
+### 1. Adicionar ao segundo bloco (linha ~1478, antes do `}` final)
 
 ```json
-"transactions": {
-  // ... chaves existentes ...
-  "table": {
-    "date": "Data",
-    "description": "Descrição",
-    "category": "Categoria",
-    "supplier": "Fornecedor",
-    "wallet": "Conta",
-    "income": "Entrada",
-    "expense": "Saída",
-    "balance": "Saldo"
-  }
-}
+    "viewMode": {
+      "cards": "Cards",
+      "table": "Fluxo de Caixa",
+      "switchToCards": "Ver como cards",
+      "switchToTable": "Ver como fluxo de caixa"
+    },
+    "table": {
+      "date": "Data",
+      "description": "Descrição",
+      "category": "Categoria",
+      "supplier": "Fornecedor",
+      "wallet": "Conta",
+      "income": "Entrada",
+      "expense": "Saída",
+      "balance": "Saldo"
+    }
 ```
 
-### Arquivos a Modificar
+### 2. Remover o primeiro bloco duplicado (linhas 2-67)
 
-| Arquivo | Alteração |
-|---------|-----------|
-| `src/i18n/locales/pt-BR.json` | Adicionar seção `transactions.table` |
-| `src/i18n/locales/en-US.json` | Adicionar seção `transactions.table` |
-| `src/i18n/locales/es-ES.json` | Adicionar seção `transactions.table` |
-| `src/i18n/locales/pt-PT.json` | Adicionar seção `transactions.table` |
+O primeiro bloco `"transactions": { ... }` será removido inteiramente, mantendo apenas o segundo bloco consolidado.
 
----
+### 3. Mesclar chaves únicas
 
-## Traduções por Idioma
+Algumas chaves do primeiro bloco não existem no segundo e precisam ser movidas:
+- `selectCard`, `noCards`, `addFirstCard`, `changeCard`
+- `supplierPlaceholder`, `incomeSource`, `incomeSourcePlaceholder`
+- `transferDetected`, `transferSuggestion`, `goToTransfers`
+- `paymentMethod`, `debit`, `credit`
+- `dateFormat`, `today`, `source`, `cash`, `cashDesc`, `cashTransaction`
+- `drilldown.*`
+- `confirmSave`, `confirmSaveDesc`, `confirmDelete`, `confirmDeleteDesc`
+- `hasLinks`, `linkedCard`, `linkedInvoice`, `linkedWallet`
+- `deleteAnyway`, `deleteWarning`, `delete`
 
-### Português (BR)
-```json
-"table": {
-  "date": "Data",
-  "description": "Descrição",
-  "category": "Categoria",
-  "supplier": "Fornecedor",
-  "wallet": "Conta",
-  "income": "Entrada",
-  "expense": "Saída",
-  "balance": "Saldo"
-}
-```
+## Arquivos Afetados
 
-### English (US)
-```json
-"table": {
-  "date": "Date",
-  "description": "Description",
-  "category": "Category",
-  "supplier": "Supplier",
-  "wallet": "Account",
-  "income": "Income",
-  "expense": "Expense",
-  "balance": "Balance"
-}
-```
-
-### Español (ES)
-```json
-"table": {
-  "date": "Fecha",
-  "description": "Descripción",
-  "category": "Categoría",
-  "supplier": "Proveedor",
-  "wallet": "Cuenta",
-  "income": "Ingreso",
-  "expense": "Gasto",
-  "balance": "Saldo"
-}
-```
-
-### Português (PT)
-```json
-"table": {
-  "date": "Data",
-  "description": "Descrição",
-  "category": "Categoria",
-  "supplier": "Fornecedor",
-  "wallet": "Conta",
-  "income": "Entrada",
-  "expense": "Saída",
-  "balance": "Saldo"
-}
-```
-
----
+| Arquivo | Ação |
+|---------|------|
+| `src/i18n/locales/pt-BR.json` | Consolidar blocos duplicados |
 
 ## Resultado Esperado
 
-Após a correção, a tabela mostrará os cabeçalhos traduzidos:
+Após a correção, os cabeçalhos da tabela mostrarão:
 
-```text
-┌──────────┬─────────────┬────────────┬────────────┬──────────┬──────────┬──────────┬───────────┐
-│ Data     │ Descrição   │ Categoria  │ Fornecedor │ Conta    │ Entrada  │ Saída    │ Saldo     │
-├──────────┼─────────────┼────────────┼────────────┼──────────┼──────────┼──────────┼───────────┤
-│ 01/02/26 │ SALÁRIO     │ 💼 Salário │ Empresa    │ Nubank   │ R$ 5.000 │    -     │ R$ 5.000  │
-└──────────┴─────────────┴────────────┴────────────┴──────────┴──────────┴──────────┴───────────┘
+```
+Data │ Descrição │ Categoria │ Fornecedor │ Conta │ Entrada │ Saída │ Saldo
+```
+
+Em vez de:
+
+```
+transactions.table.date │ transactions.table.description │ ...
 ```
 
