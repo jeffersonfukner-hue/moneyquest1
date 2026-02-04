@@ -306,10 +306,28 @@ export const CashFlowTransactionTable = ({
             {paginatedEntries.map((entry) => {
               const category = entry.category ? categoryMap[entry.category] : null;
               const account = getAccountLabel(entry);
-              const categoryKey = entry.category ? getCategoryTranslationKey(entry.category, entry.type === 'TRANSFER' ? 'EXPENSE' : entry.type) : null;
-              const displayCategory = entry.isTransfer 
-                ? t('transactions.transfer') 
-                : (categoryKey ? t(`categories.${categoryKey}`) : entry.category);
+              
+              // Resolve translated category name with proper fallback
+              const getTranslatedCategory = () => {
+                if (entry.isTransfer) {
+                  return t('transactions.transfer');
+                }
+                if (!entry.category) return '-';
+                
+                // Try translation key first
+                const categoryKey = getCategoryTranslationKey(entry.category, entry.type === 'TRANSFER' ? 'EXPENSE' : entry.type);
+                if (categoryKey) {
+                  const translated = t(`categories.${categoryKey}`);
+                  // Check if translation was successful (not returning the key itself)
+                  if (!translated.startsWith('categories.')) {
+                    return translated;
+                  }
+                }
+                // Fallback to original category name
+                return entry.category;
+              };
+              
+              const displayCategory = getTranslatedCategory();
               
               return (
                 <TableRow 
@@ -333,9 +351,9 @@ export const CashFlowTransactionTable = ({
                     </span>
                   </TableCell>
                   <TableCell>
-                    <span className="flex items-center gap-1.5 text-sm">
+                    <span className="flex items-center gap-1.5 text-sm" title={displayCategory}>
                       <span>{entry.isTransfer ? '↔️' : (category?.icon || '📦')}</span>
-                      <span className="truncate max-w-[100px]">{displayCategory}</span>
+                      <span className="truncate max-w-[120px]">{displayCategory}</span>
                     </span>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
