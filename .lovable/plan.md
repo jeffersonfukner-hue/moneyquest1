@@ -1,77 +1,98 @@
 
-# Plano: Corrigir "Ver todas as transações"
+# Plano: Adicionar Filtro por Últimos Lançamentos
 
 ## Problema Identificado
 
-O botão **"Ver todas"** no widget `RecentTransactionsWidget` navega para `/reports`, que mostra **gráficos e análises** em vez de uma **lista de transações**.
+No painel **"Todas as Transações"**, a ordenação atual usa `tx.date` (data da transação no banco/fatura), mas o usuário quer ver por **`tx.created_at`** (quando foi lançado no sistema MoneyQuest).
 
-### Localização do Problema
+### Diferença
 
-```text
-src/components/dashboard/RecentTransactionsWidget.tsx (linha 59)
-├── onClick={() => navigate('/reports')}  ← Navega para relatórios
-└── Deveria mostrar lista de transações
-```
+| Campo | Significado | Exemplo |
+|-------|-------------|---------|
+| `date` | Data da transação no banco | 15/01/2025 (quando gastou) |
+| `created_at` | Data do lançamento no sistema | 20/01/2025 (quando registrou) |
 
 ---
 
 ## Solução Proposta
 
-Adicionar um **painel lateral (Sheet)** que mostra todas as transações, reutilizando o componente `TransactionDrilldown` já existente no sistema.
+Adicionar um **seletor de ordenação** no painel TransactionDrilldown que permite escolher entre:
 
-### Mudanças no RecentTransactionsWidget
+1. **Por data da transação** (comportamento atual)
+2. **Por últimos lançamentos** (ordenar por `created_at`)
 
-1. Adicionar estado para controlar abertura do drilldown
-2. Importar e usar o componente `TransactionDrilldown`
-3. Alterar o botão "Ver todas" para abrir o painel em vez de navegar
-4. Manter a navegação ao clicar em uma transação individual (para /reports)
-
-### Fluxo Atualizado
+### Interface
 
 ```text
-Dashboard
-└── Widget "Últimas Transações"
-    ├── [Ver todas] → Abre painel lateral com TODAS as transações
-    └── [Clique na transação] → Navega para relatórios (comportamento atual)
+┌─────────────────────────────────────────┐
+│ Todas as Transações                     │
+├─────────────────────────────────────────┤
+│ [Entradas] [Saídas] [Total]             │
+├─────────────────────────────────────────┤
+│ Ordenar por: [Data ▼] [Últimos lançam.] │  ← NOVO
+├─────────────────────────────────────────┤
+│ Data    │ Descrição        │ Valor      │
+│ 20/01   │ Mercado          │ -R$ 150    │
+│ 18/01   │ Salário          │ +R$ 3.000  │
+└─────────────────────────────────────────┘
 ```
-
----
-
-## Arquivos a Modificar
-
-| Arquivo | Ação |
-|---------|------|
-| `src/components/dashboard/RecentTransactionsWidget.tsx` | Adicionar estado + componente TransactionDrilldown |
 
 ---
 
 ## Implementação Técnica
 
-```tsx
-// Novo estado
-const [drilldownOpen, setDrilldownOpen] = useState(false);
+### Arquivo: `src/components/reports/TransactionDrilldown.tsx`
 
-// Botão atualizado
-<Button onClick={() => setDrilldownOpen(true)}>
-  Ver todas
-</Button>
+1. **Adicionar estado para tipo de ordenação**
+   ```tsx
+   const [sortBy, setSortBy] = useState<'date' | 'created_at'>('created_at');
+   ```
 
-// Componente adicionado
-<TransactionDrilldown
-  isOpen={drilldownOpen}
-  onClose={() => setDrilldownOpen(false)}
-  transactions={transactions}
-  title="Todas as Transações"
-/>
+2. **Atualizar lógica de ordenação**
+   ```tsx
+   const sortedTransactions = [...transactions].sort((a, b) => {
+     if (sortBy === 'created_at') {
+       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+     }
+     return parseDateString(b.date).getTime() - parseDateString(a.date).getTime();
+   });
+   ```
+
+3. **Adicionar toggle de ordenação na UI**
+   - Usar botões com `variant="ghost"` ou `variant="outline"`
+   - Ícones: `Clock` para lançamentos, `Calendar` para data
+
+4. **Exibir indicação na tabela**
+   - Quando ordenar por `created_at`, mostrar "Lançado em" no tooltip ou subtexto
+
+---
+
+## Arquivos a Modificar
+
+| Arquivo | Alteração |
+|---------|-----------|
+| `src/components/reports/TransactionDrilldown.tsx` | Adicionar estado + toggle + lógica de ordenação |
+| `src/i18n/locales/pt-BR.json` | Adicionar traduções para labels |
+
+---
+
+## Traduções a Adicionar
+
+```json
+{
+  "transactions": {
+    "sortByDate": "Data da transação",
+    "sortByCreated": "Últimos lançamentos",
+    "createdAt": "Lançado em"
+  }
+}
 ```
 
 ---
 
 ## Resultado Esperado
 
-Ao clicar em **"Ver todas"**, o usuário verá um painel lateral com:
-- Resumo (entradas, saídas, total de transações)
-- Lista ordenada por data das transações
-- Todas as transações, não apenas as recentes
+- **Default**: Ordenar por `created_at` (últimos lançamentos primeiro)
+- Toggle visível para alternar entre os dois modos
+- Usuário consegue ver rapidamente o que foi registrado recentemente, independente da data da transação
 
-O comportamento é consistente com o drill-down já usado em outros lugares do sistema (gráficos de categorias, fornecedores, etc).
