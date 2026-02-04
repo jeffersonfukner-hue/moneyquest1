@@ -19,7 +19,23 @@
     "source": "Origem",
     "bankAccount": "Conta Bancária",
     "creditCard": "Cartão de Crédito",
-    "category": "Categoria"
+    "category": "Categoria",
+    "viewMode": {
+      "cards": "Cards",
+      "table": "Fluxo de Caixa",
+      "switchToCards": "Ver como cards",
+      "switchToTable": "Ver como fluxo de caixa"
+    },
+    "table": {
+      "date": "Data",
+      "description": "Descrição",
+      "category": "Categoria",
+      "supplier": "Fornecedor",
+      "wallet": "Conta",
+      "income": "Entrada",
+      "expense": "Saída",
+      "balance": "Saldo"
+    }
   },
   "creditCards": {
     "viewInvoices": "Ver Faturas",
