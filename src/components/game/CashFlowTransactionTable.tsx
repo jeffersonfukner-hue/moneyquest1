@@ -167,42 +167,22 @@ export const CashFlowTransactionTable = ({
     return sorted;
   }, [unifiedEntries, sortField, sortOrder]);
 
-  // Calculate running balance (transfers don't affect total balance)
+  // Calculate running balance following visual table order (top to bottom)
+  // Recalculates when sortedEntries changes (includes sort/filter changes)
   const entriesWithBalance = useMemo(() => {
-    // Sort with stable deterministic order for balance calculation
-    // This ensures running balance is consistent regardless of UI sort order
-    const byDate = [...unifiedEntries].sort((a, b) => {
-      // 1. Primary: sort by date
-      const dateCompare = new Date(a.date).getTime() - new Date(b.date).getTime();
-      if (dateCompare !== 0) return dateCompare;
-      
-      // 2. Secondary: sort by created_at (tie-breaker for same-day entries)
-      const aCreated = a.created_at ? new Date(a.created_at).getTime() : 0;
-      const bCreated = b.created_at ? new Date(b.created_at).getTime() : 0;
-      const createdCompare = aCreated - bCreated;
-      if (createdCompare !== 0) return createdCompare;
-      
-      // 3. Final: sort by ID (guaranteed stable)
-      return a.id.localeCompare(b.id);
-    });
-    
     let balance = 0;
-    const balanceMap = new Map<string, number>();
     
-    byDate.forEach(entry => {
-      // Transfers don't affect total balance (internal movement)
+    return sortedEntries.map(entry => {
+      // Transfers don't affect consolidated balance (internal movement)
       if (entry.type !== 'TRANSFER') {
         balance += entry.type === 'INCOME' ? entry.amount : -entry.amount;
       }
-      balanceMap.set(entry.id, balance);
+      return {
+        ...entry,
+        runningBalance: balance,
+      };
     });
-
-    // Apply balance to sorted entries
-    return sortedEntries.map(entry => ({
-      ...entry,
-      runningBalance: balanceMap.get(entry.id) || 0,
-    }));
-  }, [unifiedEntries, sortedEntries]);
+  }, [sortedEntries]);
 
   const totalPages = Math.ceil(entriesWithBalance.length / ITEMS_PER_PAGE);
   const paginatedEntries = entriesWithBalance.slice(
