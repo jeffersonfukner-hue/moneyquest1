@@ -32,6 +32,7 @@ export const PUBLIC_ROUTES = {
 // Authenticated pages (app) - Clean routes
 export const APP_ROUTES = {
   DASHBOARD: '/dashboard',
+  TRANSACTIONS: '/transactions',
   // Wallets section with sub-routes
   WALLETS: '/wallets',
   WALLETS_ACCOUNTS: '/wallets/accounts',

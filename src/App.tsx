@@ -72,6 +72,7 @@ const LazyCategories = lazy(() => import("./pages/Categories"));
 const LazyWalletsRouter = lazy(() => import("./pages/WalletsRouter"));
 const LazyScheduledTransactions = lazy(() => import("./pages/ScheduledTransactions"));
 const LazyReportsRouter = lazy(() => import("./pages/ReportsRouter"));
+const LazyTransactions = lazy(() => import("./pages/Transactions"));
 const LazySupport = lazy(() => import("./pages/Support"));
 const LazyMyMessages = lazy(() => import("./pages/MyMessages"));
 const LazySupportTicket = lazy(() => import("./pages/SupportTicket"));
@@ -281,6 +282,13 @@ const App = () => (
                   <Route path="/leaderboard" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/journal" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/shop" element={<Navigate to="/dashboard" replace />} />
+                  
+                  {/* Transactions - dedicated page */}
+                  <Route path="/transactions" element={
+                    <AuthenticatedWrapper>
+                      <Suspense fallback={<PageLoader />}><LazyTransactions /></Suspense>
+                    </AuthenticatedWrapper>
+                  } />
                   
                   {/* Wallets routes - clean URLs with sub-routes */}
                   <Route path="/wallets" element={
