@@ -1,69 +1,61 @@
 
-# Plano: Adicionar Filtro por Últimos Lançamentos
+# Plano: Edição e Exclusão de Transações no Drill-down
 
 ## Problema Identificado
 
-No painel **"Todas as Transações"**, a ordenação atual usa `tx.date` (data da transação no banco/fatura), mas o usuário quer ver por **`tx.created_at`** (quando foi lançado no sistema MoneyQuest).
+Atualmente, ao clicar em uma transação no painel **"Ver todas"** (`TransactionDrilldown`), nada acontece. O usuário precisa poder:
+1. **Editar** a transação (reaproveitando o `EditTransactionDialog` existente)
+2. **Excluir** a transação com confirmação
+3. Ver **confirmação antes de salvar**
+4. Ver **vínculos** da transação antes de excluir (cartão de crédito, fatura, etc.)
 
-### Diferença
+---
 
-| Campo | Significado | Exemplo |
-|-------|-------------|---------|
-| `date` | Data da transação no banco | 15/01/2025 (quando gastou) |
-| `created_at` | Data do lançamento no sistema | 20/01/2025 (quando registrou) |
+## Análise dos Vínculos Possíveis
+
+Uma transação pode ter os seguintes vínculos:
+
+| Campo | Vínculo | Descrição |
+|-------|---------|-----------|
+| `credit_card_id` | Cartão de Crédito | Transação lançada no cartão |
+| `invoice_id` | Fatura | Transação pertence a uma fatura |
+| `wallet_id` | Carteira | Conta/carteira vinculada |
+| `has_items` | Itens Detalhados | Tem breakdown de itens (premium) |
 
 ---
 
 ## Solução Proposta
 
-Adicionar um **seletor de ordenação** no painel TransactionDrilldown que permite escolher entre:
+### 1. Tornar linhas clicáveis no TransactionDrilldown
 
-1. **Por data da transação** (comportamento atual)
-2. **Por últimos lançamentos** (ordenar por `created_at`)
+Adicionar `onClick` nas `TableRow` para abrir o dialog de edição.
 
-### Interface
+### 2. Modificar o EditTransactionDialog
+
+Adicionar:
+- **Botão de Excluir** (vermelho, com ícone de lixeira)
+- **Confirmação ao Salvar** (AlertDialog perguntando "Tem certeza?")
+- **Confirmação ao Excluir** com informações de vínculos
+
+### 3. Mostrar Vínculos antes de Excluir
+
+Se a transação tem vínculos, exibir:
 
 ```text
-┌─────────────────────────────────────────┐
-│ Todas as Transações                     │
-├─────────────────────────────────────────┤
-│ [Entradas] [Saídas] [Total]             │
-├─────────────────────────────────────────┤
-│ Ordenar por: [Data ▼] [Últimos lançam.] │  ← NOVO
-├─────────────────────────────────────────┤
-│ Data    │ Descrição        │ Valor      │
-│ 20/01   │ Mercado          │ -R$ 150    │
-│ 18/01   │ Salário          │ +R$ 3.000  │
-└─────────────────────────────────────────┘
+┌───────────────────────────────────────────┐
+│ ⚠️ Excluir transação?                      │
+├───────────────────────────────────────────┤
+│ Esta transação possui vínculos:           │
+│                                           │
+│ 💳 Cartão: Nubank Platinum                │
+│ 📄 Fatura: Janeiro/2025                   │
+│ 🏦 Carteira: Conta Corrente BB            │
+│                                           │
+│ Ao excluir, os saldos serão recalculados. │
+├───────────────────────────────────────────┤
+│ [Cancelar]              [Excluir mesmo]   │
+└───────────────────────────────────────────┘
 ```
-
----
-
-## Implementação Técnica
-
-### Arquivo: `src/components/reports/TransactionDrilldown.tsx`
-
-1. **Adicionar estado para tipo de ordenação**
-   ```tsx
-   const [sortBy, setSortBy] = useState<'date' | 'created_at'>('created_at');
-   ```
-
-2. **Atualizar lógica de ordenação**
-   ```tsx
-   const sortedTransactions = [...transactions].sort((a, b) => {
-     if (sortBy === 'created_at') {
-       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-     }
-     return parseDateString(b.date).getTime() - parseDateString(a.date).getTime();
-   });
-   ```
-
-3. **Adicionar toggle de ordenação na UI**
-   - Usar botões com `variant="ghost"` ou `variant="outline"`
-   - Ícones: `Clock` para lançamentos, `Calendar` para data
-
-4. **Exibir indicação na tabela**
-   - Quando ordenar por `created_at`, mostrar "Lançado em" no tooltip ou subtexto
 
 ---
 
@@ -71,8 +63,129 @@ Adicionar um **seletor de ordenação** no painel TransactionDrilldown que permi
 
 | Arquivo | Alteração |
 |---------|-----------|
-| `src/components/reports/TransactionDrilldown.tsx` | Adicionar estado + toggle + lógica de ordenação |
-| `src/i18n/locales/pt-BR.json` | Adicionar traduções para labels |
+| `src/components/reports/TransactionDrilldown.tsx` | Adicionar estado + props para edição/exclusão |
+| `src/components/game/EditTransactionDialog.tsx` | Adicionar botão excluir + confirmações |
+| `src/i18n/locales/pt-BR.json` | Novas traduções para confirmações |
+
+---
+
+## Implementação Técnica
+
+### TransactionDrilldown.tsx
+
+1. **Novas props**:
+```tsx
+interface TransactionDrilldownProps {
+  // ... existentes
+  onUpdate?: (id: string, updates: Partial<Transaction>) => Promise<{ error: Error | null }>;
+  onDelete?: (id: string) => Promise<{ error: Error | null }>;
+}
+```
+
+2. **Estado para edição**:
+```tsx
+const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+```
+
+3. **Linha clicável**:
+```tsx
+<TableRow 
+  key={tx.id} 
+  className="cursor-pointer hover:bg-muted/50"
+  onClick={() => setEditingTransaction(tx)}
+>
+```
+
+4. **Dialog de edição**:
+```tsx
+{editingTransaction && onUpdate && onDelete && (
+  <EditTransactionDialog
+    transaction={editingTransaction}
+    open={!!editingTransaction}
+    onOpenChange={(open) => !open && setEditingTransaction(null)}
+    onUpdate={onUpdate}
+    onDelete={onDelete}
+  />
+)}
+```
+
+### EditTransactionDialog.tsx
+
+1. **Nova prop `onDelete`**:
+```tsx
+interface EditTransactionDialogProps {
+  // ... existentes
+  onDelete?: (id: string) => Promise<{ error: Error | null }>;
+}
+```
+
+2. **Novos estados**:
+```tsx
+const [showSaveConfirm, setShowSaveConfirm] = useState(false);
+const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+const [isDeleting, setIsDeleting] = useState(false);
+```
+
+3. **Botão Salvar com confirmação**:
+```tsx
+// Ao clicar em Salvar
+onClick={() => setShowSaveConfirm(true)}
+
+// AlertDialog de confirmação
+<AlertDialog open={showSaveConfirm}>
+  "Tem certeza que deseja salvar as alterações?"
+  [Cancelar] [Sim, salvar]
+</AlertDialog>
+```
+
+4. **Botão Excluir com vínculos**:
+```tsx
+<Button variant="outline" className="text-destructive" onClick={() => setShowDeleteConfirm(true)}>
+  <Trash2 /> Excluir
+</Button>
+
+// AlertDialog mostrando vínculos
+<AlertDialog open={showDeleteConfirm}>
+  {hasLinks && (
+    <div className="bg-amber-500/10 p-3 rounded-lg">
+      <p>Esta transação possui vínculos:</p>
+      {linkedCard && <p>💳 Cartão: {linkedCard.name}</p>}
+      {transaction.invoice_id && <p>📄 Fatura vinculada</p>}
+      {walletName && <p>🏦 Carteira: {walletName}</p>}
+    </div>
+  )}
+  [Cancelar] [Excluir]
+</AlertDialog>
+```
+
+---
+
+## Fluxo de Usuário Final
+
+```text
+Dashboard → Ver todas → Clica na transação
+    │
+    ▼
+┌─────────────────────────────────────────────┐
+│ ✏️ Editar Transação                          │
+├─────────────────────────────────────────────┤
+│ 💳 Nubank (se for cartão)                   │
+│                                             │
+│ Tipo: [Despesa ▼]                           │
+│ Fornecedor: [___________]                   │
+│ Descrição: [MERCADO ABC]                    │
+│ Valor: R$ [150.00]                          │
+│ Categoria: [🛒 Alimentação ▼]               │
+│ Data: [15/01/2025]                          │
+│                                             │
+│ ┌─────────────────┐  ┌─────────────────────┐│
+│ │🗑️ Excluir       │  │       💾 Salvar     ││
+│ └─────────────────┘  └─────────────────────┘│
+└─────────────────────────────────────────────┘
+    │                      │
+    ▼                      ▼
+[Confirmar exclusão]   [Confirmar salvamento]
+```
 
 ---
 
@@ -81,9 +194,15 @@ Adicionar um **seletor de ordenação** no painel TransactionDrilldown que permi
 ```json
 {
   "transactions": {
-    "sortByDate": "Data da transação",
-    "sortByCreated": "Últimos lançamentos",
-    "createdAt": "Lançado em"
+    "confirmSave": "Confirmar alterações",
+    "confirmSaveDesc": "Tem certeza que deseja salvar as alterações nesta transação?",
+    "confirmDelete": "Excluir transação",
+    "confirmDeleteDesc": "Esta ação não pode ser desfeita.",
+    "hasLinks": "Esta transação possui vínculos:",
+    "linkedCard": "Cartão",
+    "linkedInvoice": "Fatura vinculada",
+    "linkedWallet": "Carteira",
+    "deleteAnyway": "Excluir mesmo assim"
   }
 }
 ```
@@ -92,7 +211,8 @@ Adicionar um **seletor de ordenação** no painel TransactionDrilldown que permi
 
 ## Resultado Esperado
 
-- **Default**: Ordenar por `created_at` (últimos lançamentos primeiro)
-- Toggle visível para alternar entre os dois modos
-- Usuário consegue ver rapidamente o que foi registrado recentemente, independente da data da transação
-
+1. Clicar em qualquer transação no drill-down abre o dialog de edição
+2. Botão **Salvar** pede confirmação antes de aplicar
+3. Botão **Excluir** mostra vínculos (se existirem) e pede confirmação
+4. Após salvar/excluir, a lista é atualizada automaticamente
+5. Transações em meses fechados continuam bloqueadas (comportamento existente)
