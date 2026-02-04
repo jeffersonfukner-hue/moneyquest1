@@ -1,106 +1,39 @@
 
-# Plano: Adicionar "Transações" na Sidebar
 
-## Situação Atual
+# Diagnóstico: Problemas na Screenshot
 
-- O acesso às transações é feito pelo Dashboard (`/dashboard`) através de um estado interno `activeTab`
-- A URL pode receber `?tab=transactions` mas isso não está documentado na sidebar
-- A navegação atual exige que o usuário abra o Dashboard e depois encontre o widget de transações
+## Status Atual
 
-## Solução Proposta
+Analisei a screenshot e comparei com o código atual. **Todas as alterações foram implementadas corretamente!**
 
-Adicionar um item **"Transações"** diretamente na sidebar, na seção "Principal", logo após o Dashboard.
+## O que o código já tem
 
-### Opções de Implementação
+| Arquivo | Status | Linha |
+|---------|--------|-------|
+| `routes.ts` | ✅ `TRANSACTIONS: '/transactions'` | 35 |
+| `App.tsx` | ✅ `LazyTransactions` + Rota | 75, 287-291 |
+| `AppSidebar.tsx` | ✅ Item "transactions" com ícone Receipt | 71 |
+| `pt-BR.json` | ✅ `sidebar.transactions` | 3080 |
+| `pt-BR.json` | ✅ `transactions.table.*` | 57-66 |
 
-**Opção A - Rota Dedicada (Recomendada)**
-- Criar rota `/transactions` que renderiza a página de transações diretamente
-- Mais limpo e seguindo o padrão de rotas do app
+## Por que a screenshot mostra problemas?
 
-**Opção B - Navegação com Query Param**
-- Navegar para `/dashboard?tab=transactions`
-- Menos trabalho mas menos elegante
+1. **"Transações" não aparece na sidebar** → A screenshot foi capturada **antes** do deploy das alterações
 
----
+2. **Chaves de tradução aparecendo como texto bruto** (`transactions.table.date`) → Mesmo motivo - o preview ainda não tinha as alterações
 
-## Implementação Escolhida: Opção A
+## Solução
 
-### Arquivos a Modificar
+As alterações já estão no código. Basta **recarregar a página** (F5) ou aguardar o preview atualizar para ver:
 
-| Arquivo | Alteração |
-|---------|-----------|
-| `src/routes/routes.ts` | Adicionar `TRANSACTIONS: '/transactions'` |
-| `src/App.tsx` | Adicionar rota `/transactions` |
-| `src/components/layout/AppSidebar.tsx` | Adicionar item "Transações" com ícone |
-| `src/i18n/locales/pt-BR.json` | Adicionar tradução `sidebar.transactions` |
+- ✅ Item "Transações" na sidebar (após Dashboard)
+- ✅ Traduções corretas na tabela ("Data", "Descrição", "Categoria", etc.)
 
----
+## Verificação Recomendada
 
-## Detalhes Técnicos
+Se após recarregar os problemas persistirem:
 
-### 1. routes.ts
-```typescript
-export const APP_ROUTES = {
-  DASHBOARD: '/dashboard',
-  TRANSACTIONS: '/transactions', // NOVO
-  // ...resto
-}
-```
+1. Verificar se há erros no console do navegador
+2. Limpar cache do navegador (Ctrl+Shift+R)
+3. Me avisar para investigar mais a fundo
 
-### 2. App.tsx
-```tsx
-<Route path="/transactions" element={
-  <AuthenticatedWrapper>
-    <Suspense fallback={<PageLoader />}>
-      <LazyTransactions />
-    </Suspense>
-  </AuthenticatedWrapper>
-} />
-```
-
-### 3. AppSidebar.tsx
-```tsx
-import { Receipt } from 'lucide-react';
-
-const mainNavItems = [
-  { title: 'dashboard', url: APP_ROUTES.DASHBOARD, icon: Home },
-  { title: 'transactions', url: APP_ROUTES.TRANSACTIONS, icon: Receipt }, // NOVO
-];
-```
-
-### 4. Nova Página `Transactions.tsx`
-Criar uma página dedicada que renderiza o `TransactionsList` diretamente, sem o contexto do Dashboard.
-
----
-
-## Interface da Sidebar
-
-```text
-┌─────────────────────────────────────┐
-│ 🎮 MoneyQuest                       │
-├─────────────────────────────────────┤
-│ PRINCIPAL                           │
-│   🏠 Dashboard                      │
-│   🧾 Transações        ← NOVO       │
-│   💼 Carteiras ▼                    │
-│      └── Contas                     │
-│      └── Cartões                    │
-│      └── ...                        │
-├─────────────────────────────────────┤
-│ FUNCIONALIDADES                     │
-│   📅 Agendados                      │
-│   👥 Fornecedores                   │
-│   🎯 Metas                          │
-│   📊 Relatórios                     │
-└─────────────────────────────────────┘
-```
-
----
-
-## Resultado Esperado
-
-1. **Sidebar** mostra "Transações" como segundo item após Dashboard
-2. **Clique** navega para `/transactions`
-3. **Página** exibe a lista completa de transações com todos os filtros
-4. **Ícone**: `Receipt` (🧾) do lucide-react
-5. **Mobile**: Fecha o drawer ao clicar, como os outros itens
