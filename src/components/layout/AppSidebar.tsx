@@ -18,6 +18,7 @@ import {
   Banknote,
   FileCheck,
   ArrowLeftRight,
+  Scale,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
@@ -75,6 +76,7 @@ const walletsSubItems = [
   { title: 'checks', url: APP_ROUTES.WALLETS_CHECKS, icon: FileCheck },
   { title: 'loans', url: APP_ROUTES.WALLETS_LOANS, icon: Landmark },
   { title: 'transfers', url: APP_ROUTES.WALLETS_TRANSFERS, icon: ArrowLeftRight },
+  { title: 'reconciliation', url: APP_ROUTES.WALLETS_RECONCILIATION, icon: Scale },
 ];
 
 // Features
