@@ -1436,6 +1436,7 @@
     "saveChanges": "Salvar",
     "updated": "Transação atualizada com sucesso!",
     "duplicate": "Duplicar",
+    "transfer": "Transferência",
     "selectSource": "Escolha onde registrar esta transação:",
     "bankAccount": "Conta Bancária",
     "bankAccountDesc": "Receitas e despesas da conta",

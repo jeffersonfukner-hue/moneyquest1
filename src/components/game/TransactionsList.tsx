@@ -397,8 +397,11 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
       {isDesktop && viewMode === 'table' && activeSourceTab !== 'transfer' && (
         <CashFlowTransactionTable
           transactions={filteredBySource}
+          transfers={transfers}
           onUpdate={onUpdate}
           onDelete={async (id) => { onDelete(id); return { error: null }; }}
+          onEditTransfer={setEditingTransfer}
+          onDeleteTransfer={deleteTransfer}
         />
       )}
       {/* Cards view - hide when in table mode on desktop */}
