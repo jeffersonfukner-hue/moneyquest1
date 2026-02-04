@@ -38,6 +38,7 @@ interface CashFlowTransactionTableProps {
 interface CashFlowEntry {
   id: string;
   date: string;
+  created_at: string; // For stable sorting when multiple entries have same date
   description: string;
   category?: string;
   supplier?: string | null;
@@ -109,6 +110,7 @@ export const CashFlowTransactionTable = ({
     const txEntries: CashFlowEntry[] = transactions.map(tx => ({
       id: tx.id,
       date: tx.date,
+      created_at: tx.created_at,
       description: tx.description,
       category: tx.category,
       supplier: tx.supplier,
@@ -131,6 +133,7 @@ export const CashFlowTransactionTable = ({
       return {
         id: t.id,
         date: t.date,
+        created_at: t.created_at,
         description: t.description || `${fromName} → ${toName}`,
         type: 'TRANSFER' as const,
         amount: t.amount,
@@ -166,10 +169,22 @@ export const CashFlowTransactionTable = ({
 
   // Calculate running balance (transfers don't affect total balance)
   const entriesWithBalance = useMemo(() => {
-    // Sort by date ascending for balance calculation
-    const byDate = [...unifiedEntries].sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
+    // Sort with stable deterministic order for balance calculation
+    // This ensures running balance is consistent regardless of UI sort order
+    const byDate = [...unifiedEntries].sort((a, b) => {
+      // 1. Primary: sort by date
+      const dateCompare = new Date(a.date).getTime() - new Date(b.date).getTime();
+      if (dateCompare !== 0) return dateCompare;
+      
+      // 2. Secondary: sort by created_at (tie-breaker for same-day entries)
+      const aCreated = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const bCreated = b.created_at ? new Date(b.created_at).getTime() : 0;
+      const createdCompare = aCreated - bCreated;
+      if (createdCompare !== 0) return createdCompare;
+      
+      // 3. Final: sort by ID (guaranteed stable)
+      return a.id.localeCompare(b.id);
+    });
     
     let balance = 0;
     const balanceMap = new Map<string, number>();
