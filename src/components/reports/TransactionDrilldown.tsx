@@ -12,13 +12,19 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table';
-import { X, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, Calendar, Clock } from 'lucide-react';
 import { Transaction } from '@/types/database';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { parseDateString } from '@/lib/dateUtils';
 import { cn } from '@/lib/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface TransactionDrilldownProps {
   isOpen: boolean;
@@ -37,6 +43,7 @@ export const TransactionDrilldown = ({
 }: TransactionDrilldownProps) => {
   const { t } = useTranslation();
   const { formatCurrency } = useCurrency();
+  const [sortBy, setSortBy] = useState<'date' | 'created_at'>('created_at');
 
   const totalIncome = transactions
     .filter(tx => tx.type === 'INCOME')
@@ -47,6 +54,9 @@ export const TransactionDrilldown = ({
     .reduce((sum, tx) => sum + tx.amount, 0);
 
   const sortedTransactions = [...transactions].sort((a, b) => {
+    if (sortBy === 'created_at') {
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    }
     const dateA = parseDateString(a.date);
     const dateB = parseDateString(b.date);
     return dateB.getTime() - dateA.getTime();
@@ -86,22 +96,67 @@ export const TransactionDrilldown = ({
           </div>
         </div>
 
-        <ScrollArea className="h-[calc(100vh-250px)]">
+        {/* Sort Toggle */}
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-xs text-muted-foreground">{t('transactions.drilldown.sortBy', 'Ordenar por:')}</span>
+          <div className="flex gap-1">
+            <Button
+              variant={sortBy === 'created_at' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setSortBy('created_at')}
+              className="h-7 text-xs gap-1"
+            >
+              <Clock className="w-3 h-3" />
+              {t('transactions.drilldown.sortByCreated', 'Últimos lançamentos')}
+            </Button>
+            <Button
+              variant={sortBy === 'date' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setSortBy('date')}
+              className="h-7 text-xs gap-1"
+            >
+              <Calendar className="w-3 h-3" />
+              {t('transactions.drilldown.sortByDate', 'Data da transação')}
+            </Button>
+          </div>
+        </div>
+
+        <ScrollArea className="h-[calc(100vh-300px)]">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[80px]">Data</TableHead>
-                <TableHead>Descrição</TableHead>
-                <TableHead className="text-right">Valor</TableHead>
+                <TableHead className="w-[80px]">
+                  {sortBy === 'created_at' 
+                    ? t('transactions.drilldown.createdAt', 'Lançado') 
+                    : t('transactions.drilldown.dateColumn', 'Data')}
+                </TableHead>
+                <TableHead>{t('transactions.drilldown.description', 'Descrição')}</TableHead>
+                <TableHead className="text-right">{t('transactions.drilldown.amount', 'Valor')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {sortedTransactions.map((tx) => {
                 const txDate = parseDateString(tx.date);
+                const createdDate = new Date(tx.created_at);
+                const displayDate = sortBy === 'created_at' ? createdDate : txDate;
+                const altDate = sortBy === 'created_at' ? txDate : createdDate;
+                const altLabel = sortBy === 'created_at' 
+                  ? t('transactions.drilldown.transactionDate', 'Data da transação')
+                  : t('transactions.drilldown.createdAtLabel', 'Lançado em');
+                
                 return (
                   <TableRow key={tx.id}>
                     <TableCell className="text-xs text-muted-foreground tabular-nums">
-                      {format(txDate, 'dd/MM', { locale: ptBR })}
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            {format(displayDate, 'dd/MM', { locale: ptBR })}
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{altLabel}: {format(altDate, 'dd/MM/yyyy', { locale: ptBR })}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col">

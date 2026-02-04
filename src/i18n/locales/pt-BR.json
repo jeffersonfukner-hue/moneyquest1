@@ -25,7 +25,18 @@
     "cashTransaction": "Dinheiro (Espécie)",
     "bankAccountDesc": "Receitas e despesas da conta",
     "creditCardDesc": "Compras no cartão de crédito",
-    "selectSource": "Escolha onde registrar esta transação:"
+    "selectSource": "Escolha onde registrar esta transação:",
+    "drilldown": {
+      "sortBy": "Ordenar por:",
+      "sortByDate": "Data da transação",
+      "sortByCreated": "Últimos lançamentos",
+      "createdAt": "Lançado",
+      "createdAtLabel": "Lançado em",
+      "transactionDate": "Data da transação",
+      "dateColumn": "Data",
+      "description": "Descrição",
+      "amount": "Valor"
+    }
   },
   "creditCards": {
     "viewInvoices": "Ver Faturas",
