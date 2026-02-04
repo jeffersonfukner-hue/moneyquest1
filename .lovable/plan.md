@@ -1,91 +1,77 @@
 
-# Plano: Adicionar Conciliação e Dinheiro ao Menu
+# Plano: Corrigir "Ver todas as transações"
 
 ## Problema Identificado
 
-O menu lateral (`AppSidebar.tsx`) não contém os itens **Conciliação Bancária** e **Dinheiro (CASH)**, apesar das rotas e funcionalidades já existirem no sistema.
+O botão **"Ver todas"** no widget `RecentTransactionsWidget` navega para `/reports`, que mostra **gráficos e análises** em vez de uma **lista de transações**.
 
-### Análise Técnica
+### Localização do Problema
 
-| Item | Rota | Status |
-|------|------|--------|
-| Conciliação | `/wallets/reconciliation` | ✅ Existe, mas não está no menu |
-| Dinheiro | `/wallets/accounts` | ✅ Aparece dentro de "Contas" como tipo de carteira |
+```text
+src/components/dashboard/RecentTransactionsWidget.tsx (linha 59)
+├── onClick={() => navigate('/reports')}  ← Navega para relatórios
+└── Deveria mostrar lista de transações
+```
 
 ---
 
 ## Solução Proposta
 
-### 1. Adicionar "Conciliação" ao submenu de Carteiras
+Adicionar um **painel lateral (Sheet)** que mostra todas as transações, reutilizando o componente `TransactionDrilldown` já existente no sistema.
 
-Incluir o item **Conciliação** no array `walletsSubItems` do `AppSidebar.tsx`:
+### Mudanças no RecentTransactionsWidget
+
+1. Adicionar estado para controlar abertura do drilldown
+2. Importar e usar o componente `TransactionDrilldown`
+3. Alterar o botão "Ver todas" para abrir o painel em vez de navegar
+4. Manter a navegação ao clicar em uma transação individual (para /reports)
+
+### Fluxo Atualizado
 
 ```text
-Carteiras
-├── Contas
-├── Cartões
-├── Cheques
-├── Empréstimos
-├── Transferências
-└── Conciliação ← NOVO
+Dashboard
+└── Widget "Últimas Transações"
+    ├── [Ver todas] → Abre painel lateral com TODAS as transações
+    └── [Clique na transação] → Navega para relatórios (comportamento atual)
 ```
-
-**Ícone sugerido:** `Scale` (balança - já usado na página de conciliação)
-
-### 2. Adicionar tradução
-
-Incluir a chave `sidebar.reconciliation` no arquivo `pt-BR.json`:
-
-```json
-"sidebar": {
-  ...
-  "reconciliation": "Conciliação"
-}
-```
-
----
-
-## Sobre o Dinheiro (CASH)
-
-O **Dinheiro em espécie** já aparece na seção **Contas** junto com as outras carteiras do tipo `cash`. 
-
-**Duas opções para melhor visibilidade:**
-
-| Opção | Descrição |
-|-------|-----------|
-| A) Manter como está | Dinheiro continua aparecendo dentro de "Contas" |
-| B) Adicionar item separado | Criar sub-item "Dinheiro" que filtra apenas carteiras tipo `cash` |
-
-**Recomendação:** Opção A (manter), pois "Dinheiro" é apenas um tipo de carteira e já está corretamente integrado no fluxo de Contas.
 
 ---
 
 ## Arquivos a Modificar
 
-1. **`src/components/layout/AppSidebar.tsx`**
-   - Importar ícone `Scale` de `lucide-react`
-   - Adicionar item `{ title: 'reconciliation', url: APP_ROUTES.WALLETS_RECONCILIATION, icon: Scale }` ao array `walletsSubItems`
+| Arquivo | Ação |
+|---------|------|
+| `src/components/dashboard/RecentTransactionsWidget.tsx` | Adicionar estado + componente TransactionDrilldown |
 
-2. **`src/i18n/locales/pt-BR.json`**
-   - Adicionar `"reconciliation": "Conciliação"` na seção `sidebar`
+---
+
+## Implementação Técnica
+
+```tsx
+// Novo estado
+const [drilldownOpen, setDrilldownOpen] = useState(false);
+
+// Botão atualizado
+<Button onClick={() => setDrilldownOpen(true)}>
+  Ver todas
+</Button>
+
+// Componente adicionado
+<TransactionDrilldown
+  isOpen={drilldownOpen}
+  onClose={() => setDrilldownOpen(false)}
+  transactions={transactions}
+  title="Todas as Transações"
+/>
+```
 
 ---
 
 ## Resultado Esperado
 
-Após a implementação, o menu ficará:
+Ao clicar em **"Ver todas"**, o usuário verá um painel lateral com:
+- Resumo (entradas, saídas, total de transações)
+- Lista ordenada por data das transações
+- Todas as transações, não apenas as recentes
 
-```text
-📊 Dashboard
-📁 Carteiras
-   ├── 💵 Contas
-   ├── 💳 Cartões
-   ├── 📄 Cheques
-   ├── 🏛️ Empréstimos
-   ├── ↔️ Transferências
-   └── ⚖️ Conciliação  ← NOVO
-📅 Agendados
-👥 Fornecedores
-🎯 Metas
-📈 Relatórios
-```
+O comportamento é consistente com o drill-down já usado em outros lugares do sistema (gráficos de categorias, fornecedores, etc).
