@@ -1,79 +1,117 @@
 
-# Plano: Botão Flutuante de Nova Transação
+# Plano: Opção de Excluir Conta Bancária (Wallet)
 
 ## Situação Atual
 
-| Local | Visível | Problema |
-|-------|---------|----------|
-| UnifiedTopbar (linha 133-145) | Só na topbar | Desaparece ao rolar a página |
-| FloatingWhatsAppButton | Sempre visível | Apenas para WhatsApp |
+| Opção | Existe? | Comportamento |
+|-------|---------|---------------|
+| Desativar | ✅ Sim | Soft delete - carteira fica oculta mas dados permanecem |
+| Excluir | ❌ Não | Não existe opção de remoção permanente |
 
-O botão "Novo" existe na topbar, mas **não é visível ao rolar a página** ou quando o usuário está focado em outra área.
+Atualmente, o menu de opções da carteira (`WalletCard.tsx`, linhas 97-110) só oferece "Desativar/Reativar". Não há opção para excluir permanentemente.
 
 ## Solução
 
-Criar um **botão flutuante fixo** (FAB - Floating Action Button) que:
-- Fica **sempre visível** em qualquer tela
-- Posicionado no canto inferior direito (acima do botão WhatsApp)
-- Abre o mesmo `AddTransactionDialog` existente
-- Design chamativo com ícone `+`
+Adicionar opção **"Excluir"** no menu dropdown da carteira, com dialog de confirmação, que remove a carteira e suas transações associadas do banco de dados.
 
-## Alterações
+## Alterações Necessárias
 
-### Arquivo 1: Novo `src/components/game/FloatingAddButton.tsx`
+### Arquivo 1: `src/hooks/useWallets.tsx`
 
-Componente flutuante independente:
+Adicionar nova função `permanentlyDeleteWallet`:
 
 ```text
-Estrutura:
-- Botão fixo com position: fixed
-- z-index: 50 (acima do conteúdo, abaixo de modais)
-- Posição: bottom-40 right-4 (acima do WhatsApp que está em bottom-24)
-- Usa AddTransactionDialog existente
-- Usa useTransactions() para função addTransaction
+Nova função:
+- Verifica se carteira tem transações vinculadas
+- Exclui transações associadas (wallet_id = id)
+- Exclui transferências associadas (from_wallet_id ou to_wallet_id = id)
+- Exclui a carteira do banco
+- Emite evento de sincronização
 ```
 
-### Arquivo 2: `src/components/layout/AppShell.tsx`
+### Arquivo 2: `src/components/wallets/WalletCard.tsx`
 
-Adicionar o componente flutuante junto aos outros elementos globais:
-
-```typescript
-// Linha 7: importar
-import { FloatingAddButton } from '@/components/game/FloatingAddButton';
-
-// Linha 89: adicionar após FloatingWhatsAppButton
-<FloatingAddButton />
-<FloatingWhatsAppButton />
-```
-
-## Posicionamento Visual
+Adicionar item "Excluir" no dropdown menu (após Desativar):
 
 ```text
-┌─────────────────────────┐
-│                         │
-│      Conteúdo da        │
-│         Página          │
-│                         │
-│                   [+]  ←── Novo botão (bottom-40)
-│                   [W]  ←── WhatsApp (bottom-24)
-│                         │
-└─────────────────────────┘
+Novo item de menu:
+- Ícone: Trash2 (vermelho)
+- Texto: "Excluir permanentemente"
+- Cor: text-destructive
+- Separador visual antes do item
 ```
 
-## Design do Botão
+### Arquivo 3: Novo `src/components/wallets/DeleteWalletDialog.tsx`
 
-| Propriedade | Valor |
-|-------------|-------|
-| Tamanho | 56x56px (w-14 h-14) |
-| Cor | bg-primary (verde/accent do tema) |
-| Ícone | Plus (lucide-react) |
-| Sombra | shadow-lg com hover:shadow-xl |
-| Animação | scale-95 ao clicar, pulse sutil |
-| Z-index | 50 |
+Dialog de confirmação com aviso sobre consequências:
+
+```text
+Conteúdo do Dialog:
+- Título: "Excluir Carteira"
+- Aviso: "Esta ação é irreversível"
+- Info: quantidade de transações que serão excluídas
+- Input: digitar nome da carteira para confirmar
+- Botões: Cancelar / Excluir (desabilitado até confirmar)
+```
+
+### Arquivo 4: `src/pages/Wallets.tsx`
+
+- Adicionar estado para controlar dialog de exclusão
+- Adicionar handler `handlePermanentDelete`
+- Passar props para WalletCard
+
+### Arquivo 5: `src/i18n/locales/pt-BR.json`
+
+Adicionar traduções:
+
+```json
+"wallets": {
+  "deletePermanently": "Excluir permanentemente",
+  "deleteTitle": "Excluir Carteira",
+  "deleteWarning": "Esta ação é irreversível. A carteira e todas as transações vinculadas serão excluídas.",
+  "deleteConfirmLabel": "Digite o nome da carteira para confirmar:",
+  "deleteNameMismatch": "O nome digitado não corresponde",
+  "deleteSuccess": "Carteira excluída permanentemente",
+  "deleteError": "Erro ao excluir carteira",
+  "linkedTransactions": "{{count}} transações serão excluídas",
+  "linkedTransfers": "{{count}} transferências serão excluídas"
+}
+```
+
+## Fluxo do Usuário
+
+```text
+Menu da carteira (...)
+    ↓
+Clica "Excluir permanentemente"
+    ↓
+Dialog abre mostrando:
+  - Nome da carteira
+  - Quantidade de transações vinculadas
+  - Quantidade de transferências vinculadas
+    ↓
+Digita nome da carteira para confirmar
+    ↓
+Clica "Excluir"
+    ↓
+Carteira + dados vinculados removidos
+    ↓
+Toast: "Carteira excluída permanentemente"
+```
+
+## Segurança
+
+| Proteção | Implementação |
+|----------|---------------|
+| Confirmação por nome | Usuário deve digitar nome exato da carteira |
+| Aviso visual | Ícone vermelho + texto de aviso |
+| Preview do impacto | Mostra quantas transações serão afetadas |
+| Separador no menu | Item de exclusão visualmente separado |
 
 ## Resultado Esperado
 
-- Não importa onde você esteja no app, o botão `+` está sempre visível
-- Clicar abre o dialog de nova transação
-- Funciona em mobile, tablet e desktop
-- Não interfere com o botão do WhatsApp (posicionado acima)
+- Nova opção "Excluir permanentemente" no menu de cada carteira
+- Dialog de confirmação seguro
+- Remoção completa da carteira e dados vinculados
+- Sincronização automática em todas as telas
+
