@@ -1,119 +1,79 @@
 
-# Plano: Transações em Tempo Real (Sincronização Instantânea)
+# Plano: Botão Flutuante de Nova Transação
 
-## Problema Identificado
+## Situação Atual
 
-Quando você adiciona uma transação na página Index, ela NÃO aparece automaticamente na página `/transactions`. Isso acontece porque:
+| Local | Visível | Problema |
+|-------|---------|----------|
+| UnifiedTopbar (linha 133-145) | Só na topbar | Desaparece ao rolar a página |
+| FloatingWhatsAppButton | Sempre visível | Apenas para WhatsApp |
 
-1. Cada página (Index e Transactions) usa sua própria instância do `useTransactions()`
-2. Cada instância tem seu próprio estado local (`useState`)
-3. Quando Index adiciona uma transação e chama `fetchTransactions()`, apenas o estado do Index é atualizado
-4. A página Transactions não sabe que algo mudou até você navegar para fora e voltar
+O botão "Novo" existe na topbar, mas **não é visível ao rolar a página** ou quando o usuário está focado em outra área.
 
-## Solução Proposta
+## Solução
 
-Usar o mesmo padrão já implementado para `useWallets` - eventos de sincronização entre instâncias do hook.
+Criar um **botão flutuante fixo** (FAB - Floating Action Button) que:
+- Fica **sempre visível** em qualquer tela
+- Posicionado no canto inferior direito (acima do botão WhatsApp)
+- Abre o mesmo `AddTransactionDialog` existente
+- Design chamativo com ícone `+`
 
-## Alterações Necessárias
+## Alterações
 
-### Arquivo 1: `src/lib/appEvents.ts`
+### Arquivo 1: Novo `src/components/game/FloatingAddButton.tsx`
 
-Adicionar evento para transações:
-
-```typescript
-// Novo evento
-export const APP_EVENT_TRANSACTIONS_CHANGED = 'mq:transactions-changed';
-
-// Nova função para emitir
-export function emitTransactionsChanged() {
-  safeWindow()?.dispatchEvent(new CustomEvent(APP_EVENT_TRANSACTIONS_CHANGED));
-}
-
-// Nova função para escutar
-export function onTransactionsChanged(handler: AnyFn) {
-  const w = safeWindow();
-  if (!w) return () => {};
-  const listener = () => handler();
-  w.addEventListener(APP_EVENT_TRANSACTIONS_CHANGED, listener);
-  return () => w.removeEventListener(APP_EVENT_TRANSACTIONS_CHANGED, listener);
-}
-```
-
-### Arquivo 2: `src/hooks/useTransactions.tsx`
-
-Mudança 1 - Importar funções de evento:
-```typescript
-import { emitTransactionsChanged, onTransactionsChanged } from '@/lib/appEvents';
-```
-
-Mudança 2 - Adicionar listener para sincronização (após o useEffect do fetchTransactions):
-```typescript
-// Keep multiple instances of this hook in sync across the app
-useEffect(() => {
-  return onTransactionsChanged(() => {
-    fetchTransactions();
-  });
-}, [user]); // fetchTransactions depends on user
-```
-
-Mudança 3 - Emitir evento após addTransaction (linha ~261):
-```typescript
-await fetchTransactions();
-await refetchProfile();
-emitTransactionsChanged(); // <-- ADICIONAR
-```
-
-Mudança 4 - Emitir evento após updateTransaction (linha ~418):
-```typescript
-await fetchTransactions();
-await refetchProfile();
-emitTransactionsChanged(); // <-- ADICIONAR
-```
-
-Mudança 5 - Emitir evento após deleteTransaction (linha ~440):
-```typescript
-await fetchTransactions();
-emitTransactionsChanged(); // <-- ADICIONAR
-```
-
-Mudança 6 - Emitir evento após batchDeleteTransactions (linha ~490):
-```typescript
-// Após setTransactions e recalculateBalance
-emitTransactionsChanged(); // <-- ADICIONAR
-```
-
-## Fluxo Resultante
+Componente flutuante independente:
 
 ```text
-Usuário adiciona transação no Index
-    ↓
-addTransaction() é executado
-    ↓
-fetchTransactions() atualiza estado do Index
-    ↓
-emitTransactionsChanged() dispara evento global
-    ↓
-Todas as outras instâncias de useTransactions escutam o evento
-    ↓
-Página Transactions executa fetchTransactions() automaticamente
-    ↓
-Transação aparece INSTANTANEAMENTE em todas as páginas
+Estrutura:
+- Botão fixo com position: fixed
+- z-index: 50 (acima do conteúdo, abaixo de modais)
+- Posição: bottom-40 right-4 (acima do WhatsApp que está em bottom-24)
+- Usa AddTransactionDialog existente
+- Usa useTransactions() para função addTransaction
 ```
 
-## Por Que Esta Solução?
+### Arquivo 2: `src/components/layout/AppShell.tsx`
 
-| Alternativa | Prós | Contras |
-|-------------|------|---------|
-| Eventos CustomEvent (escolhida) | Já usada no projeto (useWallets), leve, sem dependências | Não é "verdadeiro" realtime |
-| React Query | Cache compartilhado, invalidação automática | Requer refatorar todo o hook |
-| Supabase Realtime | Verdadeiro realtime do banco | Latência de rede, overhead |
-| Context global | Estado único | Complexo, re-renders excessivos |
+Adicionar o componente flutuante junto aos outros elementos globais:
 
-A solução de eventos já está provada no projeto e mantém consistência com o padrão existente.
+```typescript
+// Linha 7: importar
+import { FloatingAddButton } from '@/components/game/FloatingAddButton';
+
+// Linha 89: adicionar após FloatingWhatsAppButton
+<FloatingAddButton />
+<FloatingWhatsAppButton />
+```
+
+## Posicionamento Visual
+
+```text
+┌─────────────────────────┐
+│                         │
+│      Conteúdo da        │
+│         Página          │
+│                         │
+│                   [+]  ←── Novo botão (bottom-40)
+│                   [W]  ←── WhatsApp (bottom-24)
+│                         │
+└─────────────────────────┘
+```
+
+## Design do Botão
+
+| Propriedade | Valor |
+|-------------|-------|
+| Tamanho | 56x56px (w-14 h-14) |
+| Cor | bg-primary (verde/accent do tema) |
+| Ícone | Plus (lucide-react) |
+| Sombra | shadow-lg com hover:shadow-xl |
+| Animação | scale-95 ao clicar, pulse sutil |
+| Z-index | 50 |
 
 ## Resultado Esperado
 
-- Lançou transação → aparece IMEDIATAMENTE em `/transactions`
-- Editou transação → atualiza IMEDIATAMENTE em todas as páginas
-- Excluiu transação → some IMEDIATAMENTE de todas as páginas
-- Zero delay perceptível ao usuário
+- Não importa onde você esteja no app, o botão `+` está sempre visível
+- Clicar abre o dialog de nova transação
+- Funciona em mobile, tablet e desktop
+- Não interfere com o botão do WhatsApp (posicionado acima)
