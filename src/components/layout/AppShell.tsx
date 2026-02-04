@@ -5,6 +5,7 @@ import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { AppSidebar } from './AppSidebar';
 import { UnifiedTopbar } from './UnifiedTopbar';
 import { FloatingWhatsAppButton } from '@/components/support/FloatingWhatsAppButton';
+import { FloatingAddButton } from '@/components/game/FloatingAddButton';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { cn } from '@/lib/utils';
 
@@ -86,6 +87,7 @@ export function AppShell({
       </div>
       
       {/* Global floating elements */}
+      <FloatingAddButton />
       <FloatingWhatsAppButton />
       
       {/* Ad banner only on mobile */}
