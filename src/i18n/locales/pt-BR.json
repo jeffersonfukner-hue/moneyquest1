@@ -47,7 +47,23 @@
     "linkedWallet": "Carteira",
     "deleteAnyway": "Excluir mesmo assim",
     "deleteWarning": "Ao excluir, os saldos serão recalculados.",
-    "delete": "Excluir"
+    "delete": "Excluir",
+    "viewMode": {
+      "cards": "Cards",
+      "table": "Fluxo de Caixa",
+      "switchToCards": "Ver como cards",
+      "switchToTable": "Ver como fluxo de caixa"
+    },
+    "table": {
+      "date": "Data",
+      "description": "Descrição",
+      "category": "Categoria",
+      "supplier": "Fornecedor",
+      "wallet": "Conta",
+      "income": "Entrada",
+      "expense": "Saída",
+      "balance": "Saldo"
+    }
   },
   "creditCards": {
     "viewInvoices": "Ver Faturas",
