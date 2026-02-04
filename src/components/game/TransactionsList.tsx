@@ -401,6 +401,8 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
           onDelete={async (id) => { onDelete(id); return { error: null }; }}
         />
       )}
+      {/* Cards view - hide when in table mode on desktop */}
+      {!(isDesktop && viewMode === 'table') && (
       <Tabs value={activeSourceTab} onValueChange={(v) => setActiveSourceTab(v as SourceTab)} className="w-full">
         <TabsList className="grid w-full grid-cols-4 h-auto p-1">
           <TooltipProvider delayDuration={300}>
@@ -477,6 +479,7 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
           </TooltipProvider>
         </TabsList>
       </Tabs>
+      )}
 
       {/* Selection mode action bar */}
       {isSelectionMode && (
