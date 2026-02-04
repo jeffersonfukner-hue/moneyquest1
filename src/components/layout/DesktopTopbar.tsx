@@ -1,11 +1,12 @@
 import { useNavigate } from 'react-router-dom';
-import { Bell, Search, Moon, Sun } from 'lucide-react';
+import { Search, Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { SoundToggle } from '@/components/game/SoundToggle';
 import { SeasonalThemeIndicator } from '@/components/game/SeasonalThemeIndicator';
+import { GlobalSearchModal } from '@/components/search/GlobalSearchModal';
 import { useTheme } from '@/contexts/ThemeContext';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
@@ -47,8 +48,11 @@ export function DesktopTopbar({ className }: DesktopTopbarProps) {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Buscar... (pressione / ou ⌘K)"
-            className="pl-9 h-9 bg-muted/50"
-            onFocus={() => setSearchOpen(true)}
+            className="pl-9 h-9 bg-muted/50 cursor-pointer"
+            onFocus={(e) => {
+              e.target.blur();
+              setSearchOpen(true);
+            }}
             readOnly
             onClick={() => setSearchOpen(true)}
           />
@@ -81,30 +85,11 @@ export function DesktopTopbar({ className }: DesktopTopbarProps) {
         <SeasonalThemeIndicator />
       </div>
 
-      {/* Global Search Modal - TODO: implement full search */}
-      {searchOpen && (
-        <div 
-          className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm"
-          onClick={() => setSearchOpen(false)}
-        >
-          <div 
-            className="fixed left-1/2 top-1/4 -translate-x-1/2 w-full max-w-lg bg-card border rounded-lg shadow-lg p-4"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar transações, categorias, carteiras..."
-                className="pl-9"
-                autoFocus
-              />
-            </div>
-            <p className="text-xs text-muted-foreground mt-2 text-center">
-              Pressione ESC para fechar
-            </p>
-          </div>
-        </div>
-      )}
+      {/* Global Search Modal */}
+      <GlobalSearchModal 
+        isOpen={searchOpen} 
+        onClose={() => setSearchOpen(false)} 
+      />
     </header>
   );
 }
