@@ -61,7 +61,7 @@ const ProfessionalReportsPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
-  const { transactions, loading: txLoading } = useTransactions();
+  const { transactions, loading: txLoading, updateTransaction, deleteTransaction } = useTransactions();
   const { wallets } = useWallets();
   const { creditCards } = useCreditCards();
   const { categories } = useCategories();
@@ -335,6 +335,8 @@ const ProfessionalReportsPage = () => {
         transactions={drilldownTransactions}
         title={drilldown.title}
         subtitle={drilldown.subtitle}
+        onUpdate={updateTransaction}
+        onDelete={deleteTransaction}
       />
     </AppShell>
   );

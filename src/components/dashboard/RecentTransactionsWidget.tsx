@@ -14,11 +14,15 @@ import { TransactionDrilldown } from '@/components/reports/TransactionDrilldown'
 interface RecentTransactionsWidgetProps {
   transactions: Transaction[];
   limit?: number;
+  onUpdate?: (id: string, updates: Partial<Omit<Transaction, 'id' | 'user_id' | 'xp_earned' | 'created_at'>>) => Promise<{ error: Error | null }>;
+  onDelete?: (id: string) => Promise<{ error: Error | null }>;
 }
 
 export const RecentTransactionsWidget = ({ 
   transactions, 
-  limit = 8 
+  limit = 8,
+  onUpdate,
+  onDelete 
 }: RecentTransactionsWidgetProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -110,6 +114,8 @@ export const RecentTransactionsWidget = ({
         onClose={() => setDrilldownOpen(false)}
         transactions={transactions}
         title={t('dashboard.allTransactions', 'Todas as Transações')}
+        onUpdate={onUpdate}
+        onDelete={onDelete}
       />
     </Card>
   );

@@ -36,7 +36,18 @@
       "dateColumn": "Data",
       "description": "Descrição",
       "amount": "Valor"
-    }
+    },
+    "confirmSave": "Confirmar alterações",
+    "confirmSaveDesc": "Tem certeza que deseja salvar as alterações nesta transação?",
+    "confirmDelete": "Excluir transação",
+    "confirmDeleteDesc": "Esta ação não pode ser desfeita.",
+    "hasLinks": "Esta transação possui vínculos:",
+    "linkedCard": "Cartão",
+    "linkedInvoice": "Fatura vinculada",
+    "linkedWallet": "Carteira",
+    "deleteAnyway": "Excluir mesmo assim",
+    "deleteWarning": "Ao excluir, os saldos serão recalculados.",
+    "delete": "Excluir"
   },
   "creditCards": {
     "viewInvoices": "Ver Faturas",
