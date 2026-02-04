@@ -1,161 +1,106 @@
 
-
-# Plano: Layout de Fluxo de Caixa para Desktop
+# Plano: Adicionar "Transações" na Sidebar
 
 ## Situação Atual
 
-A lista de transações (`TransactionsList`) usa um layout de **cards agrupados por mês**, otimizado para mobile. No desktop, esse layout não aproveita bem o espaço horizontal disponível.
-
-Já existe o componente `TransactionTable.tsx` com layout estilo **fluxo de caixa contábil**:
-
-| Data | Descrição | Categoria | Carteira | Entrada | Saída | Saldo |
-|------|-----------|-----------|----------|---------|-------|-------|
-| 15/01| Mercado   | 🛒 Alim.  | 🏦 BB    | -       |R$ 150 |R$ 850 |
-
----
+- O acesso às transações é feito pelo Dashboard (`/dashboard`) através de um estado interno `activeTab`
+- A URL pode receber `?tab=transactions` mas isso não está documentado na sidebar
+- A navegação atual exige que o usuário abra o Dashboard e depois encontre o widget de transações
 
 ## Solução Proposta
 
-Criar uma visualização **híbrida** que:
-- **Mobile/Tablet**: Mantém o layout atual de cards agrupados por mês
-- **Desktop**: Mostra tabela estilo fluxo de caixa com todas as colunas
+Adicionar um item **"Transações"** diretamente na sidebar, na seção "Principal", logo após o Dashboard.
 
-### Interface Desktop
+### Opções de Implementação
+
+**Opção A - Rota Dedicada (Recomendada)**
+- Criar rota `/transactions` que renderiza a página de transações diretamente
+- Mais limpo e seguindo o padrão de rotas do app
+
+**Opção B - Navegação com Query Param**
+- Navegar para `/dashboard?tab=transactions`
+- Menos trabalho mas menos elegante
+
+---
+
+## Implementação Escolhida: Opção A
+
+### Arquivos a Modificar
+
+| Arquivo | Alteração |
+|---------|-----------|
+| `src/routes/routes.ts` | Adicionar `TRANSACTIONS: '/transactions'` |
+| `src/App.tsx` | Adicionar rota `/transactions` |
+| `src/components/layout/AppSidebar.tsx` | Adicionar item "Transações" com ícone |
+| `src/i18n/locales/pt-BR.json` | Adicionar tradução `sidebar.transactions` |
+
+---
+
+## Detalhes Técnicos
+
+### 1. routes.ts
+```typescript
+export const APP_ROUTES = {
+  DASHBOARD: '/dashboard',
+  TRANSACTIONS: '/transactions', // NOVO
+  // ...resto
+}
+```
+
+### 2. App.tsx
+```tsx
+<Route path="/transactions" element={
+  <AuthenticatedWrapper>
+    <Suspense fallback={<PageLoader />}>
+      <LazyTransactions />
+    </Suspense>
+  </AuthenticatedWrapper>
+} />
+```
+
+### 3. AppSidebar.tsx
+```tsx
+import { Receipt } from 'lucide-react';
+
+const mainNavItems = [
+  { title: 'dashboard', url: APP_ROUTES.DASHBOARD, icon: Home },
+  { title: 'transactions', url: APP_ROUTES.TRANSACTIONS, icon: Receipt }, // NOVO
+];
+```
+
+### 4. Nova Página `Transactions.tsx`
+Criar uma página dedicada que renderiza o `TransactionsList` diretamente, sem o contexto do Dashboard.
+
+---
+
+## Interface da Sidebar
 
 ```text
-┌─────────────────────────────────────────────────────────────────────────────┐
-│ Transações                                      [📊 Cards] [📋 Fluxo de Caixa] │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ [Contas] [Cartões] [Empréstimos] [Transferências]                          │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ Data     │ Descrição      │ Categoria      │ Carteira │ Entrada│ Saída│Saldo│
-│ 20/01/25 │ Salário        │ 💼 Trabalho    │ 🏦 BB    │ 3.000  │  -   │3.000│
-│ 18/01/25 │ Mercado ABC    │ 🛒 Alimentação │ 💳 Nubank│  -     │ 150  │2.850│
-│ 15/01/25 │ Energia        │ 🏠 Casa        │ 🏦 BB    │  -     │ 250  │2.600│
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## Implementação Técnica
-
-### 1. Criar componente `CashFlowTransactionTable.tsx`
-
-Um novo componente baseado no existente `TransactionTable.tsx`, mas com:
-- Suporte a edição (clique na linha abre dialog)
-- Exclusão de transações
-- Filtro por tipo de fonte (Contas/Cartões/Empréstimos)
-- Ordenação por data de lançamento ou data da transação
-
-### 2. Modificar `TransactionsList.tsx`
-
-Adicionar:
-- Estado para modo de visualização: `'cards' | 'table'`
-- Toggle para alternar entre visualizações
-- Renderização condicional baseada no modo
-
-### 3. Detectar Desktop
-
-Usar o hook `useBreakpoint()` já existente para mostrar o toggle apenas em telas maiores.
-
----
-
-## Arquivos a Modificar/Criar
-
-| Arquivo | Ação |
-|---------|------|
-| `src/components/game/CashFlowTransactionTable.tsx` | **Criar** - Tabela estilo fluxo de caixa com edição |
-| `src/components/game/TransactionsList.tsx` | **Modificar** - Adicionar toggle de visualização |
-| `src/i18n/locales/pt-BR.json` | Adicionar traduções para labels |
-
----
-
-## Detalhes da Tabela Fluxo de Caixa
-
-### Colunas
-
-| Coluna | Descrição | Ordenável |
-|--------|-----------|-----------|
-| Data | Data da transação ou lançamento | ✅ |
-| Descrição | Texto da transação | ❌ |
-| Categoria | Ícone + nome | ✅ |
-| Fornecedor | Nome do fornecedor (se houver) | ❌ |
-| Carteira/Cartão | Ícone + nome | ❌ |
-| Entrada | Valor se INCOME | ✅ |
-| Saída | Valor se EXPENSE | - |
-| Saldo | Saldo acumulado | - |
-
-### Funcionalidades
-
-- **Clique na linha** → Abre dialog de edição (reusa `EditTransactionDialog`)
-- **Ordenação** → Por data (transação ou lançamento), valor, categoria
-- **Paginação** → 20 itens por página
-- **Saldo acumulado** → Calculado em tempo real
-- **Cores** → Entradas verdes, saídas vermelhas, saldo dinâmico
-
----
-
-## Código do Toggle
-
-```tsx
-// No header do TransactionsList
-const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
-const isDesktop = useBreakpoint() === 'desktop';
-
-{isDesktop && (
-  <div className="flex gap-1 border rounded-lg p-1">
-    <Button
-      variant={viewMode === 'cards' ? 'default' : 'ghost'}
-      size="sm"
-      onClick={() => setViewMode('cards')}
-    >
-      <Grid className="w-4 h-4" />
-    </Button>
-    <Button
-      variant={viewMode === 'table' ? 'default' : 'ghost'}
-      size="sm"
-      onClick={() => setViewMode('table')}
-    >
-      <Table className="w-4 h-4" />
-    </Button>
-  </div>
-)}
-```
-
----
-
-## Traduções
-
-```json
-{
-  "transactions": {
-    "viewMode": {
-      "cards": "Cards",
-      "table": "Fluxo de Caixa",
-      "switchToCards": "Ver como cards",
-      "switchToTable": "Ver como fluxo de caixa"
-    },
-    "table": {
-      "date": "Data",
-      "description": "Descrição",
-      "category": "Categoria",
-      "supplier": "Fornecedor",
-      "wallet": "Conta",
-      "income": "Entrada",
-      "expense": "Saída",
-      "balance": "Saldo"
-    }
-  }
-}
+┌─────────────────────────────────────┐
+│ 🎮 MoneyQuest                       │
+├─────────────────────────────────────┤
+│ PRINCIPAL                           │
+│   🏠 Dashboard                      │
+│   🧾 Transações        ← NOVO       │
+│   💼 Carteiras ▼                    │
+│      └── Contas                     │
+│      └── Cartões                    │
+│      └── ...                        │
+├─────────────────────────────────────┤
+│ FUNCIONALIDADES                     │
+│   📅 Agendados                      │
+│   👥 Fornecedores                   │
+│   🎯 Metas                          │
+│   📊 Relatórios                     │
+└─────────────────────────────────────┘
 ```
 
 ---
 
 ## Resultado Esperado
 
-1. No **mobile**: Comportamento atual mantido (cards por mês)
-2. No **desktop**: Toggle para alternar entre cards e tabela fluxo de caixa
-3. A tabela permite **edição ao clicar** na transação
-4. **Saldo acumulado** mostra a progressão financeira
-5. Mantém todos os filtros existentes (Contas/Cartões/Empréstimos/Transferências)
-
+1. **Sidebar** mostra "Transações" como segundo item após Dashboard
+2. **Clique** navega para `/transactions`
+3. **Página** exibe a lista completa de transações com todos os filtros
+4. **Ícone**: `Receipt` (🧾) do lucide-react
+5. **Mobile**: Fecha o drawer ao clicar, como os outros itens
