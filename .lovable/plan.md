@@ -1,61 +1,119 @@
 
+# Plano: Transações em Tempo Real (Sincronização Instantânea)
 
-# Plano: Implementar Busca Funcional de Transações
+## Problema Identificado
 
-## Problema
+Quando você adiciona uma transação na página Index, ela NÃO aparece automaticamente na página `/transactions`. Isso acontece porque:
 
-A busca global no `DesktopTopbar` é apenas visual - não filtra dados. O código está marcado como "TODO: implement full search".
+1. Cada página (Index e Transactions) usa sua própria instância do `useTransactions()`
+2. Cada instância tem seu próprio estado local (`useState`)
+3. Quando Index adiciona uma transação e chama `fetchTransactions()`, apenas o estado do Index é atualizado
+4. A página Transactions não sabe que algo mudou até você navegar para fora e voltar
 
 ## Solução Proposta
 
-Implementar busca funcional que:
-1. Filtra transações por descrição, categoria, fornecedor
-2. Mostra resultados em tempo real no modal
-3. Permite clicar para navegar até a transação
+Usar o mesmo padrão já implementado para `useWallets` - eventos de sincronização entre instâncias do hook.
 
 ## Alterações Necessárias
 
-### Arquivo 1: `src/components/layout/DesktopTopbar.tsx`
+### Arquivo 1: `src/lib/appEvents.ts`
 
-- Adicionar estado para termo de busca
-- Integrar com `useTransactions()` para buscar dados
-- Renderizar lista de resultados filtrados
-- Navegação ao clicar no resultado
+Adicionar evento para transações:
 
-### Arquivo 2: Novo componente `src/components/search/GlobalSearchModal.tsx`
+```typescript
+// Novo evento
+export const APP_EVENT_TRANSACTIONS_CHANGED = 'mq:transactions-changed';
 
-Componente dedicado para a busca global com:
-- Input com debounce (300ms)
-- Filtro por descrição, categoria, fornecedor
-- Lista de resultados com destaque do termo buscado
-- Navegação via teclado (setas + Enter)
-- Limite de 10 resultados para performance
+// Nova função para emitir
+export function emitTransactionsChanged() {
+  safeWindow()?.dispatchEvent(new CustomEvent(APP_EVENT_TRANSACTIONS_CHANGED));
+}
 
-## Detalhes Técnicos
-
-```text
-Lógica de Filtro:
-- Converte termo para lowercase
-- Busca em: description, category, supplier
-- Ordena por data (mais recente primeiro)
-- Limita a 10 resultados
-
-Estrutura do Resultado:
-- Descrição (destacando match)
-- Categoria + Data
-- Valor formatado
-- Ícone de tipo (receita/despesa)
+// Nova função para escutar
+export function onTransactionsChanged(handler: AnyFn) {
+  const w = safeWindow();
+  if (!w) return () => {};
+  const listener = () => handler();
+  w.addEventListener(APP_EVENT_TRANSACTIONS_CHANGED, listener);
+  return () => w.removeEventListener(APP_EVENT_TRANSACTIONS_CHANGED, listener);
+}
 ```
 
-## Fluxo de Uso
+### Arquivo 2: `src/hooks/useTransactions.tsx`
 
-1. Usuário clica na busca ou pressiona `/` ou `⌘K`
-2. Modal abre com input focado
-3. Ao digitar, resultados aparecem instantaneamente
-4. Clicar em resultado navega para `/transactions?highlight={id}`
-5. ESC ou clicar fora fecha o modal
+Mudança 1 - Importar funções de evento:
+```typescript
+import { emitTransactionsChanged, onTransactionsChanged } from '@/lib/appEvents';
+```
+
+Mudança 2 - Adicionar listener para sincronização (após o useEffect do fetchTransactions):
+```typescript
+// Keep multiple instances of this hook in sync across the app
+useEffect(() => {
+  return onTransactionsChanged(() => {
+    fetchTransactions();
+  });
+}, [user]); // fetchTransactions depends on user
+```
+
+Mudança 3 - Emitir evento após addTransaction (linha ~261):
+```typescript
+await fetchTransactions();
+await refetchProfile();
+emitTransactionsChanged(); // <-- ADICIONAR
+```
+
+Mudança 4 - Emitir evento após updateTransaction (linha ~418):
+```typescript
+await fetchTransactions();
+await refetchProfile();
+emitTransactionsChanged(); // <-- ADICIONAR
+```
+
+Mudança 5 - Emitir evento após deleteTransaction (linha ~440):
+```typescript
+await fetchTransactions();
+emitTransactionsChanged(); // <-- ADICIONAR
+```
+
+Mudança 6 - Emitir evento após batchDeleteTransactions (linha ~490):
+```typescript
+// Após setTransactions e recalculateBalance
+emitTransactionsChanged(); // <-- ADICIONAR
+```
+
+## Fluxo Resultante
+
+```text
+Usuário adiciona transação no Index
+    ↓
+addTransaction() é executado
+    ↓
+fetchTransactions() atualiza estado do Index
+    ↓
+emitTransactionsChanged() dispara evento global
+    ↓
+Todas as outras instâncias de useTransactions escutam o evento
+    ↓
+Página Transactions executa fetchTransactions() automaticamente
+    ↓
+Transação aparece INSTANTANEAMENTE em todas as páginas
+```
+
+## Por Que Esta Solução?
+
+| Alternativa | Prós | Contras |
+|-------------|------|---------|
+| Eventos CustomEvent (escolhida) | Já usada no projeto (useWallets), leve, sem dependências | Não é "verdadeiro" realtime |
+| React Query | Cache compartilhado, invalidação automática | Requer refatorar todo o hook |
+| Supabase Realtime | Verdadeiro realtime do banco | Latência de rede, overhead |
+| Context global | Estado único | Complexo, re-renders excessivos |
+
+A solução de eventos já está provada no projeto e mantém consistência com o padrão existente.
 
 ## Resultado Esperado
 
-Buscar "APORTE INICIAL" mostrará a transação de Janeiro/2025, permitindo navegação direta.
-
+- Lançou transação → aparece IMEDIATAMENTE em `/transactions`
+- Editou transação → atualiza IMEDIATAMENTE em todas as páginas
+- Excluiu transação → some IMEDIATAMENTE de todas as páginas
+- Zero delay perceptível ao usuário
