@@ -1,117 +1,123 @@
 
-# Plano: Opção de Excluir Conta Bancária (Wallet)
 
-## Situação Atual
+# Correção: Running Balance Inconsistente ao Mudar Ordenação
 
-| Opção | Existe? | Comportamento |
-|-------|---------|---------------|
-| Desativar | ✅ Sim | Soft delete - carteira fica oculta mas dados permanecem |
-| Excluir | ❌ Não | Não existe opção de remoção permanente |
+## Problema Identificado
 
-Atualmente, o menu de opções da carteira (`WalletCard.tsx`, linhas 97-110) só oferece "Desativar/Reativar". Não há opção para excluir permanentemente.
+No arquivo `CashFlowTransactionTable.tsx` (linhas 170-172), o cálculo do `balanceMap` ordena apenas por `date`:
+
+```typescript
+const byDate = [...unifiedEntries].sort(
+  (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+);
+```
+
+Quando existem múltiplas transações no **mesmo dia**, a ordem entre elas não é determinística. Isso causa:
+- Saldo corrido diferente ao alternar ASC/DESC
+- Valores inconsistentes com o Dashboard
 
 ## Solução
 
-Adicionar opção **"Excluir"** no menu dropdown da carteira, com dialog de confirmação, que remove a carteira e suas transações associadas do banco de dados.
+Adicionar **tie-breakers estáveis** na ordenação do `balanceMap` e incluir o campo `created_at` na interface `CashFlowEntry`.
 
-## Alterações Necessárias
+## Alterações
 
-### Arquivo 1: `src/hooks/useWallets.tsx`
+### Arquivo: `src/components/game/CashFlowTransactionTable.tsx`
 
-Adicionar nova função `permanentlyDeleteWallet`:
+#### 1. Atualizar interface `CashFlowEntry` (linhas 38-54)
 
-```text
-Nova função:
-- Verifica se carteira tem transações vinculadas
-- Exclui transações associadas (wallet_id = id)
-- Exclui transferências associadas (from_wallet_id ou to_wallet_id = id)
-- Exclui a carteira do banco
-- Emite evento de sincronização
-```
+Adicionar campo `created_at`:
 
-### Arquivo 2: `src/components/wallets/WalletCard.tsx`
-
-Adicionar item "Excluir" no dropdown menu (após Desativar):
-
-```text
-Novo item de menu:
-- Ícone: Trash2 (vermelho)
-- Texto: "Excluir permanentemente"
-- Cor: text-destructive
-- Separador visual antes do item
-```
-
-### Arquivo 3: Novo `src/components/wallets/DeleteWalletDialog.tsx`
-
-Dialog de confirmação com aviso sobre consequências:
-
-```text
-Conteúdo do Dialog:
-- Título: "Excluir Carteira"
-- Aviso: "Esta ação é irreversível"
-- Info: quantidade de transações que serão excluídas
-- Input: digitar nome da carteira para confirmar
-- Botões: Cancelar / Excluir (desabilitado até confirmar)
-```
-
-### Arquivo 4: `src/pages/Wallets.tsx`
-
-- Adicionar estado para controlar dialog de exclusão
-- Adicionar handler `handlePermanentDelete`
-- Passar props para WalletCard
-
-### Arquivo 5: `src/i18n/locales/pt-BR.json`
-
-Adicionar traduções:
-
-```json
-"wallets": {
-  "deletePermanently": "Excluir permanentemente",
-  "deleteTitle": "Excluir Carteira",
-  "deleteWarning": "Esta ação é irreversível. A carteira e todas as transações vinculadas serão excluídas.",
-  "deleteConfirmLabel": "Digite o nome da carteira para confirmar:",
-  "deleteNameMismatch": "O nome digitado não corresponde",
-  "deleteSuccess": "Carteira excluída permanentemente",
-  "deleteError": "Erro ao excluir carteira",
-  "linkedTransactions": "{{count}} transações serão excluídas",
-  "linkedTransfers": "{{count}} transferências serão excluídas"
+```typescript
+interface CashFlowEntry {
+  id: string;
+  date: string;
+  created_at: string;  // ADICIONAR
+  description: string;
+  category?: string;
+  // ... resto igual
 }
 ```
 
-## Fluxo do Usuário
+#### 2. Atualizar conversão de transações (linhas 109-122)
 
-```text
-Menu da carteira (...)
-    ↓
-Clica "Excluir permanentemente"
-    ↓
-Dialog abre mostrando:
-  - Nome da carteira
-  - Quantidade de transações vinculadas
-  - Quantidade de transferências vinculadas
-    ↓
-Digita nome da carteira para confirmar
-    ↓
-Clica "Excluir"
-    ↓
-Carteira + dados vinculados removidos
-    ↓
-Toast: "Carteira excluída permanentemente"
+Incluir `created_at` do objeto original:
+
+```typescript
+const txEntries: CashFlowEntry[] = transactions.map(tx => ({
+  id: tx.id,
+  date: tx.date,
+  created_at: tx.created_at,  // ADICIONAR
+  description: tx.description,
+  // ... resto igual
+}));
 ```
 
-## Segurança
+#### 3. Atualizar conversão de transferências (linhas 131-142)
 
-| Proteção | Implementação |
-|----------|---------------|
-| Confirmação por nome | Usuário deve digitar nome exato da carteira |
-| Aviso visual | Ícone vermelho + texto de aviso |
-| Preview do impacto | Mostra quantas transações serão afetadas |
-| Separador no menu | Item de exclusão visualmente separado |
+Incluir `created_at` do objeto original:
+
+```typescript
+return {
+  id: t.id,
+  date: t.date,
+  created_at: t.created_at,  // ADICIONAR
+  description: t.description || `${fromName} → ${toName}`,
+  // ... resto igual
+};
+```
+
+#### 4. Corrigir ordenação para cálculo do balanceMap (linhas 170-172)
+
+Substituir a ordenação simples por uma com tie-breakers:
+
+```typescript
+// ANTES:
+const byDate = [...unifiedEntries].sort(
+  (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+);
+
+// DEPOIS:
+const byDate = [...unifiedEntries].sort((a, b) => {
+  // 1. Primeiro: ordenar por data
+  const dateCompare = new Date(a.date).getTime() - new Date(b.date).getTime();
+  if (dateCompare !== 0) return dateCompare;
+  
+  // 2. Segundo: ordenar por created_at (timestamp de criação)
+  const aCreated = a.created_at ? new Date(a.created_at).getTime() : 0;
+  const bCreated = b.created_at ? new Date(b.created_at).getTime() : 0;
+  const createdCompare = aCreated - bCreated;
+  if (createdCompare !== 0) return createdCompare;
+  
+  // 3. Terceiro: ordenar por ID (estabilidade garantida)
+  return a.id.localeCompare(b.id);
+});
+```
+
+## Resumo das Mudanças
+
+| Local | Alteração |
+|-------|-----------|
+| Interface `CashFlowEntry` | +1 campo: `created_at: string` |
+| Conversão de transactions | +1 linha: `created_at: tx.created_at` |
+| Conversão de transfers | +1 linha: `created_at: t.created_at` |
+| Ordenação do balanceMap | Substituir por ordenação com 3 critérios |
 
 ## Resultado Esperado
 
-- Nova opção "Excluir permanentemente" no menu de cada carteira
-- Dialog de confirmação seguro
-- Remoção completa da carteira e dados vinculados
-- Sincronização automática em todas as telas
+| Situação | Antes | Depois |
+|----------|-------|--------|
+| Ordenação ASC | Saldo X | Saldo X |
+| Ordenação DESC | Saldo Y (diferente!) | Saldo X (igual!) |
+| Múltiplas tx no mesmo dia | Ordem aleatória | Ordem por criação → id |
+
+## Validação
+
+1. Criar 3+ transações no mesmo dia
+2. Abrir modo Tabela (`/transactions`)
+3. Alternar entre ordenação ASC e DESC
+4. Confirmar que:
+   - O saldo de cada linha **permanece o mesmo**
+   - O saldo final bate com o Dashboard
+   - A ordem das transações no mesmo dia é consistente
 
