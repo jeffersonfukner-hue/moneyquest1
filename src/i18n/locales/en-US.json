@@ -2621,5 +2621,25 @@
     "deleteDescription": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
     "deleteSuccess": "Supplier deleted!",
     "deleteError": "Error deleting supplier"
+  },
+  "sidebar": {
+    "main": "Main",
+    "features": "Features",
+    "dashboard": "Dashboard",
+    "transactions": "Transactions",
+    "wallets": "Wallets",
+    "accounts": "Accounts",
+    "cards": "Cards",
+    "checks": "Checks",
+    "loans": "Loans",
+    "transfers": "Transfers",
+    "reconciliation": "Reconciliation",
+    "goals": "Goals",
+    "reports": "Reports",
+    "scheduled": "Scheduled",
+    "suppliers": "Suppliers",
+    "settings": "Settings",
+    "support": "Support",
+    "profile": "Profile"
   }
 }

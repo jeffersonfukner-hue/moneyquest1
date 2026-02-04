@@ -19,6 +19,7 @@ import {
   FileCheck,
   ArrowLeftRight,
   Scale,
+  Receipt,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
@@ -67,6 +68,7 @@ import { APP_ROUTES } from '@/routes/routes';
 // Main navigation - only existing routes
 const mainNavItems = [
   { title: 'dashboard', url: APP_ROUTES.DASHBOARD, icon: Home },
+  { title: 'transactions', url: APP_ROUTES.TRANSACTIONS, icon: Receipt },
 ];
 
 // Wallets sub-items (actual tabs in the Wallets page)
