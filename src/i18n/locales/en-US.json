@@ -19,7 +19,23 @@
     "source": "Source",
     "bankAccount": "Bank Account",
     "creditCard": "Credit Card",
-    "category": "Category"
+    "category": "Category",
+    "viewMode": {
+      "cards": "Cards",
+      "table": "Cash Flow",
+      "switchToCards": "View as cards",
+      "switchToTable": "View as cash flow"
+    },
+    "table": {
+      "date": "Date",
+      "description": "Description",
+      "category": "Category",
+      "supplier": "Supplier",
+      "wallet": "Account",
+      "income": "Income",
+      "expense": "Expense",
+      "balance": "Balance"
+    }
   },
   "creditCards": {
     "viewInvoices": "View Invoices",

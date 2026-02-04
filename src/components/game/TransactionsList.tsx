@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Locale } from 'date-fns';
 import { Transaction, SupportedCurrency } from '@/types/database';
-import { ArrowUpCircle, ArrowDownCircle, Trash2, Pencil, MoreVertical, CheckSquare, X, Wallet, Lock, Copy, ChevronDown, ChevronRight, TrendingUp, TrendingDown, Calendar, CreditCard, Landmark, Banknote, ArrowRightLeft } from 'lucide-react';
+import { ArrowUpCircle, ArrowDownCircle, Trash2, Pencil, MoreVertical, CheckSquare, X, Wallet, Lock, Copy, ChevronDown, ChevronRight, TrendingUp, TrendingDown, Calendar, CreditCard, Landmark, Banknote, ArrowRightLeft, LayoutGrid, TableIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -17,11 +17,12 @@ import { formatMoney } from '@/lib/formatters';
 import { getCategoryTranslationKey } from '@/lib/gameLogic';
 import { EditTransactionDialog } from './EditTransactionDialog';
 import { BatchWalletAssignDialog } from './BatchWalletAssignDialog';
+import { CashFlowTransactionTable } from './CashFlowTransactionTable';
 import { useWallets } from '@/hooks/useWallets';
 import { useCreditCards } from '@/hooks/useCreditCards';
 import { useWalletTransfers, WalletTransfer } from '@/hooks/useWalletTransfers';
 import { EditTransferDialog } from '@/components/wallets/EditTransferDialog';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useBreakpoint } from '@/hooks/use-mobile';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import {
@@ -76,10 +77,14 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
   const { creditCards } = useCreditCards();
   const { transfers, updateTransfer, deleteTransfer, getWalletName, getWalletIcon } = useWalletTransfers();
   const { isPremium, checkFeature } = useSubscription();
+  const breakpoint = useBreakpoint();
+  const isDesktop = breakpoint === 'desktop';
+  
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [editingTransfer, setEditingTransfer] = useState<WalletTransfer | null>(null);
   const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
   const [activeSourceTab, setActiveSourceTab] = useState<SourceTab>('account');
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   
   // Selection mode state
   const [isSelectionMode, setIsSelectionMode] = useState(false);
@@ -320,34 +325,82 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
 
   return (
     <div className="space-y-3 animate-slide-up" style={{ animationDelay: '0.4s' }}>
-      {/* Header */}
+      {/* Header with view mode toggle */}
       <div className="flex items-center justify-between px-1">
         <h3 className="font-display text-lg font-semibold text-foreground">
           {t('transactions.title')}
         </h3>
-        {!isSelectionMode && onBatchUpdateWallet && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleEnterSelectionMode}
-            className="gap-2"
-          >
-            {canBatchEdit ? (
-              <>
-                <CheckSquare className="w-4 h-4" />
-                <span className="hidden sm:inline">{t('transactions.batchActions.select')}</span>
-              </>
-            ) : (
-              <>
-                <Lock className="w-4 h-4" />
-                <span className="hidden sm:inline">{t('transactions.batchActions.select')}</span>
-              </>
-            )}
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          {/* View mode toggle - desktop only */}
+          {isDesktop && !isSelectionMode && (
+            <div className="flex gap-1 border rounded-lg p-1 bg-muted/30">
+              <TooltipProvider delayDuration={300}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={viewMode === 'cards' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setViewMode('cards')}
+                      className="h-7 w-7 p-0"
+                    >
+                      <LayoutGrid className="w-4 h-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{t('transactions.viewMode.switchToCards')}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider delayDuration={300}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={viewMode === 'table' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setViewMode('table')}
+                      className="h-7 w-7 p-0"
+                    >
+                      <TableIcon className="w-4 h-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{t('transactions.viewMode.switchToTable')}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          )}
+          {!isSelectionMode && onBatchUpdateWallet && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleEnterSelectionMode}
+              className="gap-2"
+            >
+              {canBatchEdit ? (
+                <>
+                  <CheckSquare className="w-4 h-4" />
+                  <span className="hidden sm:inline">{t('transactions.batchActions.select')}</span>
+                </>
+              ) : (
+                <>
+                  <Lock className="w-4 h-4" />
+                  <span className="hidden sm:inline">{t('transactions.batchActions.select')}</span>
+                </>
+              )}
+            </Button>
+          )}
+        </div>
       </div>
 
-      {/* Source Type Tabs */}
+      {/* Desktop Table View - Cash Flow Style */}
+      {isDesktop && viewMode === 'table' && activeSourceTab !== 'transfer' && (
+        <CashFlowTransactionTable
+          transactions={filteredBySource}
+          onUpdate={onUpdate}
+          onDelete={async (id) => { onDelete(id); return { error: null }; }}
+        />
+      )}
       <Tabs value={activeSourceTab} onValueChange={(v) => setActiveSourceTab(v as SourceTab)} className="w-full">
         <TabsList className="grid w-full grid-cols-4 h-auto p-1">
           <TooltipProvider delayDuration={300}>
@@ -469,8 +522,8 @@ export const TransactionsList = ({ transactions, onDelete, onUpdate, onBatchUpda
         </div>
       )}
 
-      {/* Month cards or empty state - for transactions */}
-      {activeSourceTab !== 'transfer' && (
+      {/* Month cards or empty state - for transactions (cards view or mobile) */}
+      {activeSourceTab !== 'transfer' && (!isDesktop || viewMode === 'cards') && (
         <>
           {filteredBySource.length === 0 ? (
             <div className="bg-card rounded-2xl p-6 shadow-md text-center">
